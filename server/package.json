@@ -1,0 +1,49 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "test:risk": "node src/risk/tradeRiskManager.test.js",
+    "test:trailing": "node src/risk/trailingEngine.test.js",
+    "dev": "nodemon src/app.js",
+    "start": "node src/app.js",
+    "test:pipeline": "vitest run src/tests/tradingPipeline.integration.test.js",
+    "test:alpaca-history": "node src/data/providers/alpacaHistoricalDataService.test.js",
+    "test:alpaca-live": "node src/data/providers/alpacaLiveMarketStream.test.js",
+    "live:paper": "node src/live/liveTradingBootstrap.js",
+    "test:fundamentals": "node src/data/providers/companyFundamentalDataProvider.test.js",
+    "test:sec-fundamentals": "node src/data/providers/secCompanyFundamentalDataProvider.test.js",
+    "test:macro": "node src/data/providers/usMacroDataProvider.test.js",
+    "test:country": "node src/data/providers/usCountryRiskDataProvider.test.js",
+    "test:fed-events": "node src/data/providers/federalReserveEventProvider.test.js",
+    "test:fed-interpret": "node src/data/providers/federalReserveEventInterpretation.test.js",
+    "test:federal-register": "node src/data/providers/federalRegisterEventProvider.test.js",
+    "test:event-relevance": "node src/analysis/eventRelevanceEngine.test.js",
+    "test:combined-events": "node src/tests/combinedEventPipeline.integration.test.js",
+    "test:alpaca-account": "node src/data/providers/alpacaPaperAccountProvider.test.js",
+    "test:risk-adapter": "node src/risk/tradeRiskAdapter.integration.test.js",
+    "test:social": "node src/data/providers/socialSentimentDataProvider.test.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "@api/alpaca-us": "file:.api/apis/alpaca-us",
+    "axios": "^1.19.0",
+    "cheerio": "^1.2.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "rss-parser": "^3.13.0",
+    "technicalindicators": "^3.1.0",
+    "ws": "^8.21.3",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14",
+    "vitest": "^4.1.10"
+  }
+}

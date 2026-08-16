@@ -1,0 +1,14 @@
+{
+  "$schema": "https://unpkg.com/api@7/schema.json",
+  "apis": [
+    {
+      "private": true,
+      "identifier": "alpaca-us",
+      "source": "@alpaca-us/v1.4#9ws3b5mmqfh0y6n",
+      "integrity": "sha512-+x4qmN92yuzqo0K+HkGRfaeR94y9dlWn7zo+1l/HBGT7lP70Z4ILkGmhKfo30vcuo0u2GsmlmZby+owGGJaO9Q==",
+      "installerVersion": "7.0.0",
+      "language": "js",
+      "createdAt": "2026-08-12T04:53:12.081Z"
+    }
+  ]
+}
