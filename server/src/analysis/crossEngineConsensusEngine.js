@@ -1,1587 +1,404 @@
-import {
-  TRADE_SIDE,
-} from "../config/riskConfig.js";
+import { TRADE_SIDE } from "../config/riskConfig.js";
 
 /**
  * ============================================================
- * TRADE SCORING ENGINE
+ * CROSS-ENGINE CONSENSUS ENGINE
  * ============================================================
  *
- * FINAL SCORE ARCHITECTURE
- * ------------------------
+ * PURPOSE
+ * -------
+ * Measure agreement between independent analysis engines.
  *
- * Technical Analysis              30
- * Macro / Market Regime           15
- * News / Event Intelligence       10
- * Company Fundamentals            10
- * Country / Economic Conditions   10
- * Social / Market Behaviour        5
- * Historical Analogue              5
- * Liquidity / Execution            5
- * Risk / Reward                    5
- * Cross-Engine Consensus           5
- *                                ----
- * TOTAL                           100
+ * This module DOES NOT calculate the final 100-point trade score.
+ * Final opportunity scoring belongs to the trade scoring layer.
  *
- * Minimum eligibility:
- *
- * 80 / 100
- *
- * IMPORTANT
- * ---------
- *
- * A score >= 80 does NOT execute a trade.
- *
- * It only means:
- *
- * TRADE CANDIDATE ELIGIBLE
- *
- * The trade must still pass:
- *
- * - event freeze
- * - risk manager
- * - account protection
- * - portfolio protection
- * - position sizing
- * - execution checks
+ * Expected inputs:
+ * - technical
+ * - macro
+ * - marketRegime
+ * - country
+ * - company
+ * - events
+ * - social
+ * - institutional (optional; included only when supplied)
+ * - historical
+ * - liquidity
+ * - riskReward
  */
 
-/**
- * ============================================================
- * CONFIGURATION
- * ============================================================
- */
+export const CONSENSUS_DIRECTION = Object.freeze({
+  LONG: "LONG",
+  SHORT: "SHORT",
+  NEUTRAL: "NEUTRAL",
+  CONFLICTED: "CONFLICTED",
+  INSUFFICIENT_DATA: "INSUFFICIENT_DATA",
+});
 
-export const FINAL_SCORING_CONFIG =
-  Object.freeze({
-    minimumScore: 80,
+export const DEFAULT_CONSENSUS_CONFIG = Object.freeze({
+  minimumEngines: 4,
+  minimumCoverage: 0.4,
+  directionalThreshold: 0.58,
+  minimumDirectionalEdge: 0.12,
+  conflictThreshold: 0.42,
 
-    ambiguousDifference: 8,
-
-    weights: {
-      technical: 30,
-
-      macroRegime: 15,
-
-      events: 10,
-
-      company: 10,
-
-      country: 10,
-
-      social: 5,
-
-      historical: 5,
-
-      liquidity: 5,
-
-      riskReward: 5,
-
-      consensus: 5,
-    },
-  });
-
-/**
- * ============================================================
- * HELPERS
- * ============================================================
- */
+  // These are consensus influence weights, NOT final trade-score points.
+  weights: Object.freeze({
+    technical: 1.25,
+    macro: 1.0,
+    marketRegime: 1.25,
+    country: 0.75,
+    company: 1.0,
+    events: 1.0,
+    social: 0.5,
+    institutional: 0.75,
+    historical: 0.75,
+    liquidity: 0.5,
+    riskReward: 1.0,
+  }),
+});
 
 function isFiniteNumber(value) {
-  return Number.isFinite(
-    Number(value),
-  );
+  return Number.isFinite(Number(value));
 }
 
-function clamp(
-  value,
-  min,
-  max,
-) {
-  return Math.min(
-    Math.max(
-      Number(value),
-      min,
-    ),
-    max,
-  );
+function clamp(value, min = 0, max = 1) {
+  const numeric = Number(value);
+  if (!Number.isFinite(numeric)) return min;
+  return Math.min(Math.max(numeric, min), max);
 }
 
-function round(
-  value,
-  decimals = 2,
-) {
-  if (!isFiniteNumber(value)) {
-    return null;
-  }
-
-  const factor =
-    10 ** decimals;
-
-  return (
-    Math.round(
-      (
-        Number(value) +
-        Number.EPSILON
-      ) * factor,
-    ) / factor
-  );
+function round(value, decimals = 4) {
+  if (!isFiniteNumber(value)) return null;
+  const factor = 10 ** decimals;
+  return Math.round((Number(value) + Number.EPSILON) * factor) / factor;
 }
 
-/**
- * ============================================================
- * DIRECTIONAL SUPPORT
- * ============================================================
- *
- * Standard expected format:
- *
- * directionalSupport: {
- *   long: 0-1,
- *   short: 0-1
- * }
- */
+function normalizeDirection(value) {
+  const direction = String(value ?? "").trim().toUpperCase();
 
-function getDirectionalSupport({
-  result,
-  side,
-}) {
-  if (!result) {
-    return null;
+  if (["LONG", "BUY", "BULL", "BULLISH", "STRONG_BULL", "STRONG_BULLISH"].includes(direction)) {
+    return CONSENSUS_DIRECTION.LONG;
   }
 
-  const support =
-    side === TRADE_SIDE.LONG
-      ? result
-          ?.directionalSupport
-          ?.long
-      : result
-          ?.directionalSupport
-          ?.short;
-
-  if (
-    isFiniteNumber(
-      support,
-    )
-  ) {
-    return clamp(
-      support,
-      0,
-      1,
-    );
+  if (["SHORT", "SELL", "BEAR", "BEARISH", "STRONG_BEAR", "STRONG_BEARISH"].includes(direction)) {
+    return CONSENSUS_DIRECTION.SHORT;
   }
 
-  /**
-   * Historical / consensus engines may
-   * already calculate pointContribution.
-   *
-   * We still prefer directionalSupport,
-   * because the scoring engine owns the
-   * final weight calculation.
-   */
-
-  return null;
-}
-
-/**
- * ============================================================
- * TECHNICAL SUPPORT
- * ============================================================
- *
- * The technical engine currently has a slightly
- * different output structure, so normalize it here.
- */
-
-function getTechnicalSupport({
-  technical,
-  side,
-}) {
-  if (
-    !technical ||
-    technical.approved !== true
-  ) {
-    return null;
-  }
-
-  if (
-    technical
-      ?.directionalSupport
-  ) {
-    return getDirectionalSupport({
-      result:
-        technical,
-
-      side,
-    });
-  }
-
-  const trend =
-    technical
-      ?.trend
-      ?.direction;
-
-  const bias =
-    technical
-      ?.bias
-      ?.direction;
-
-  let score = 0;
-  let parts = 0;
-
-  /**
-   * Trend contribution.
-   */
-
-  if (trend) {
-    parts += 1;
-
-    if (
-      side === TRADE_SIDE.LONG
-    ) {
-      if (
-        trend ===
-        "STRONG_BULLISH"
-      ) {
-        score += 1;
-      } else if (
-        trend ===
-        "BULLISH"
-      ) {
-        score += 0.8;
-      } else if (
-        trend ===
-        "SIDEWAYS"
-      ) {
-        score += 0.4;
-      }
-    }
-
-    if (
-      side === TRADE_SIDE.SHORT
-    ) {
-      if (
-        trend ===
-        "STRONG_BEARISH"
-      ) {
-        score += 1;
-      } else if (
-        trend ===
-        "BEARISH"
-      ) {
-        score += 0.8;
-      } else if (
-        trend ===
-        "SIDEWAYS"
-      ) {
-        score += 0.4;
-      }
-    }
-  }
-
-  /**
-   * Bias contribution.
-   */
-
-  if (bias) {
-    parts += 1;
-
-    if (
-      side === TRADE_SIDE.LONG &&
-      bias === "LONG"
-    ) {
-      score += 1;
-    } else if (
-      side === TRADE_SIDE.SHORT &&
-      bias === "SHORT"
-    ) {
-      score += 1;
-    } else if (
-      bias === "NEUTRAL"
-    ) {
-      score += 0.35;
-    }
-  }
-
-  /**
-   * Confirmation signals.
-   */
-
-  const confirmation =
-    technical
-      ?.confirmation;
-
-  if (confirmation) {
-    parts += 1;
-
-    let confirmationScore =
-      0;
-
-    let confirmationParts =
-      0;
-
-    if (
-      side === TRADE_SIDE.LONG
-    ) {
-      confirmationParts += 1;
-
-      if (
-        confirmation
-          .bullishTrend
-      ) {
-        confirmationScore +=
-          1;
-      }
-
-      confirmationParts += 1;
-
-      if (
-        confirmation
-          .bullishMomentum
-      ) {
-        confirmationScore +=
-          1;
-      }
-
-      confirmationParts += 1;
-
-      if (
-        confirmation
-          .aboveVWAP === true
-      ) {
-        confirmationScore +=
-          1;
-      }
-    }
-
-    if (
-      side === TRADE_SIDE.SHORT
-    ) {
-      confirmationParts += 1;
-
-      if (
-        confirmation
-          .bearishTrend
-      ) {
-        confirmationScore +=
-          1;
-      }
-
-      confirmationParts += 1;
-
-      if (
-        confirmation
-          .bearishMomentum
-      ) {
-        confirmationScore +=
-          1;
-      }
-
-      confirmationParts += 1;
-
-      if (
-        confirmation
-          .belowVWAP === true
-      ) {
-        confirmationScore +=
-          1;
-      }
-    }
-
-    confirmationParts += 1;
-
-    if (
-      confirmation.volume ===
-      true
-    ) {
-      confirmationScore +=
-        1;
-    }
-
-    if (
-      confirmationParts > 0
-    ) {
-      score +=
-        confirmationScore /
-        confirmationParts;
-    }
-  }
-
-  if (parts <= 0) {
-    return null;
-  }
-
-  return clamp(
-    score / parts,
-    0,
-    1,
-  );
-}
-
-/**
- * ============================================================
- * LIQUIDITY SUPPORT
- * ============================================================
- *
- * Liquidity is primarily quality/execution evidence rather
- * than directional market opinion.
- *
- * Therefore, both LONG and SHORT can receive the same
- * liquidity quality score.
- */
-
-function getLiquiditySupport(
-  liquidity,
-) {
-  if (!liquidity) {
-    return null;
-  }
-
-  if (
-    isFiniteNumber(
-      liquidity.qualityScore,
-    )
-  ) {
-    return clamp(
-      liquidity.qualityScore,
-      0,
-      1,
-    );
-  }
-
-  if (
-    isFiniteNumber(
-      liquidity.score,
-    )
-  ) {
-    const score =
-      Number(
-        liquidity.score,
-      );
-
-    /**
-     * If score is -1 to +1,
-     * convert quality from magnitude.
-     *
-     * Negative directional liquidity
-     * does not automatically make
-     * execution impossible.
-     */
-
-    if (
-      score >= -1 &&
-      score <= 1
-    ) {
-      const stress =
-        isFiniteNumber(
-          liquidity
-            ?.stressScore,
-        )
-          ? clamp(
-              liquidity
-                .stressScore,
-              0,
-              1,
-            )
-          : 0;
-
-      return clamp(
-        1 - stress,
-        0,
-        1,
-      );
-    }
-  }
-
-  if (
-    liquidity.approved === true
-  ) {
-    return 0.75;
+  if (["NEUTRAL", "SIDEWAYS", "MIXED", "NONE"].includes(direction)) {
+    return CONSENSUS_DIRECTION.NEUTRAL;
   }
 
   return null;
 }
 
-/**
- * ============================================================
- * RISK / REWARD SUPPORT
- * ============================================================
- */
+function supportFromDirection(direction, confidence = 0.65) {
+  const normalized = normalizeDirection(direction);
+  const strength = clamp(isFiniteNumber(confidence) ? confidence : 0.65);
+  const edge = strength * 0.5;
 
-function getRiskRewardSupport({
-  riskReward,
-  side,
-}) {
-  if (!riskReward) {
-    return null;
+  if (normalized === CONSENSUS_DIRECTION.LONG) {
+    return { long: 0.5 + edge, short: 0.5 - edge };
   }
 
-  const directional =
-    getDirectionalSupport({
-      result:
-        riskReward,
-
-      side,
-    });
-
-  if (
-    directional !== null
-  ) {
-    return directional;
+  if (normalized === CONSENSUS_DIRECTION.SHORT) {
+    return { long: 0.5 - edge, short: 0.5 + edge };
   }
 
-  const ratio =
-    side === TRADE_SIDE.LONG
-      ? riskReward
-          ?.longRewardRiskRatio ??
-        riskReward
-          ?.rewardRiskRatio
-      : riskReward
-          ?.shortRewardRiskRatio ??
-        riskReward
-          ?.rewardRiskRatio;
-
-  if (
-    !isFiniteNumber(
-      ratio,
-    )
-  ) {
-    return null;
+  if (normalized === CONSENSUS_DIRECTION.NEUTRAL) {
+    return { long: 0.5, short: 0.5 };
   }
 
-  const value =
-    Number(ratio);
-
-  if (value >= 4) {
-    return 1;
-  }
-
-  if (value >= 3) {
-    return 0.9;
-  }
-
-  if (value >= 2) {
-    return 0.8;
-  }
-
-  if (value >= 1.5) {
-    return 0.6;
-  }
-
-  if (value >= 1) {
-    return 0.3;
-  }
-
-  return 0;
+  return null;
 }
 
-/**
- * ============================================================
- * COMPONENT BUILDER
- * ============================================================
- */
+function extractDirectionalSupport(result) {
+  if (!result || result.approved === false || result.status === "ERROR") {
+    return null;
+  }
 
-function buildComponent({
-  name,
+  const long = result?.directionalSupport?.long;
+  const short = result?.directionalSupport?.short;
 
-  maximumPoints,
+  if (isFiniteNumber(long) && isFiniteNumber(short)) {
+    const l = clamp(long);
+    const s = clamp(short);
+    const total = l + s;
 
-  support,
+    if (total > 0) {
+      return { long: l / total, short: s / total };
+    }
+  }
 
-  required = false,
+  const direction =
+    result.direction ??
+    result.preferredSide ??
+    result.bias?.direction ??
+    result.trend?.direction ??
+    result.signal ??
+    null;
 
-  engineStatus = null,
-}) {
-  const available =
-    isFiniteNumber(
-      support,
-    );
+  const confidence =
+    result.confidence ??
+    result.qualityScore ??
+    result.score ??
+    null;
 
-  const normalized =
-    available
-      ? clamp(
-          support,
-          0,
-          1,
-        )
-      : 0;
+  return supportFromDirection(direction, confidence);
+}
+
+function buildEvidence(name, result, weight) {
+  const support = extractDirectionalSupport(result);
+
+  if (!support) {
+    return {
+      name,
+      available: false,
+      weight,
+      status: result?.status ?? "UNAVAILABLE",
+      approved: result?.approved ?? false,
+      direction: null,
+      confidence: 0,
+      directionalSupport: null,
+    };
+  }
+
+  const edge = support.long - support.short;
+  const direction =
+    edge > 0.08
+      ? CONSENSUS_DIRECTION.LONG
+      : edge < -0.08
+        ? CONSENSUS_DIRECTION.SHORT
+        : CONSENSUS_DIRECTION.NEUTRAL;
 
   return {
     name,
-
-    maximumPoints,
-
-    available,
-
-    required,
-
-    engineStatus,
-
-    support:
-      available
-        ? round(
-            normalized,
-            4,
-          )
-        : null,
-
-    points:
-      round(
-        normalized *
-          maximumPoints,
-        2,
-      ),
+    available: true,
+    weight,
+    status: result?.status ?? "COMPLETE",
+    approved: result?.approved !== false,
+    direction,
+    confidence: round(Math.abs(edge), 4),
+    directionalSupport: {
+      long: round(support.long, 4),
+      short: round(support.short, 4),
+    },
   };
 }
 
-/**
- * ============================================================
- * SCORE ONE SIDE
- * ============================================================
- */
-
-export function calculateSideScore({
-  side,
-
-  technical = null,
-
-  macro = null,
-
-  marketRegime = null,
-
-  events = null,
-
-  company = null,
-
-  country = null,
-
-  social = null,
-
-  historical = null,
-
-  liquidity = null,
-
-  riskReward = null,
-
-  consensus = null,
-
-  config =
-    FINAL_SCORING_CONFIG,
-} = {}) {
-  if (
-    side !== TRADE_SIDE.LONG &&
-    side !== TRADE_SIDE.SHORT
-  ) {
-    return {
-      approved: false,
-
-      side,
-
-      score: 0,
-
-      passed: false,
-
-      errors: [
-        "Trade side must be LONG or SHORT.",
-      ],
-    };
-  }
-
-  /**
-   * ========================================================
-   * MACRO + REGIME
-   * ========================================================
-   *
-   * Macro/Market Regime together have 15 points.
-   *
-   * We blend them rather than awarding both separately,
-   * because otherwise macro conditions would be counted twice.
-   */
-
-  const macroSupport =
-    getDirectionalSupport({
-      result:
-        macro,
-
-      side,
-    });
-
-  const regimeSupport =
-    getDirectionalSupport({
-      result:
-        marketRegime,
-
-      side,
-    });
-
-  let macroRegimeSupport =
-    null;
+function determineDirection({ longSupport, shortSupport, config }) {
+  const edge = longSupport - shortSupport;
 
   if (
-    macroSupport !== null &&
-    regimeSupport !== null
+    longSupport >= config.conflictThreshold &&
+    shortSupport >= config.conflictThreshold &&
+    Math.abs(edge) < config.minimumDirectionalEdge
   ) {
-    macroRegimeSupport =
-      (
-        macroSupport *
-        0.45
-      ) +
-      (
-        regimeSupport *
-        0.55
-      );
-  } else if (
-    regimeSupport !== null
-  ) {
-    macroRegimeSupport =
-      regimeSupport;
-  } else if (
-    macroSupport !== null
-  ) {
-    macroRegimeSupport =
-      macroSupport;
+    return CONSENSUS_DIRECTION.CONFLICTED;
   }
 
-  /**
-   * ========================================================
-   * COMPONENTS
-   * ========================================================
-   */
-
-  const components = [
-    buildComponent({
-      name:
-        "TECHNICAL",
-
-      maximumPoints:
-        config.weights
-          .technical,
-
-      support:
-        getTechnicalSupport({
-          technical,
-          side,
-        }),
-
-      required: true,
-
-      engineStatus:
-        technical
-          ?.status ??
-        null,
-    }),
-
-    buildComponent({
-      name:
-        "MACRO_REGIME",
-
-      maximumPoints:
-        config.weights
-          .macroRegime,
-
-      support:
-        macroRegimeSupport,
-
-      required: true,
-
-      engineStatus:
-        marketRegime
-          ?.status ??
-        macro
-          ?.status ??
-        null,
-    }),
-
-    buildComponent({
-      name:
-        "EVENTS",
-
-      maximumPoints:
-        config.weights
-          .events,
-
-      support:
-        getDirectionalSupport({
-          result:
-            events,
-
-          side,
-        }),
-
-      engineStatus:
-        events
-          ?.status ??
-        null,
-    }),
-
-    buildComponent({
-      name:
-        "COMPANY",
-
-      maximumPoints:
-        config.weights
-          .company,
-
-      support:
-        getDirectionalSupport({
-          result:
-            company,
-
-          side,
-        }),
-
-      engineStatus:
-        company
-          ?.status ??
-        null,
-    }),
-
-    buildComponent({
-      name:
-        "COUNTRY",
-
-      maximumPoints:
-        config.weights
-          .country,
-
-      support:
-        getDirectionalSupport({
-          result:
-            country,
-
-          side,
-        }),
-
-      engineStatus:
-        country
-          ?.status ??
-        null,
-    }),
-
-    buildComponent({
-      name:
-        "SOCIAL",
-
-      maximumPoints:
-        config.weights
-          .social,
-
-      support:
-        getDirectionalSupport({
-          result:
-            social,
-
-          side,
-        }),
-
-      engineStatus:
-        social
-          ?.status ??
-        null,
-    }),
-
-    buildComponent({
-      name:
-        "HISTORICAL",
-
-      maximumPoints:
-        config.weights
-          .historical,
-
-      support:
-        getDirectionalSupport({
-          result:
-            historical,
-
-          side,
-        }),
-
-      engineStatus:
-        historical
-          ?.status ??
-        null,
-    }),
-
-    buildComponent({
-      name:
-        "LIQUIDITY",
-
-      maximumPoints:
-        config.weights
-          .liquidity,
-
-      support:
-        getLiquiditySupport(
-          liquidity,
-        ),
-
-      required: true,
-
-      engineStatus:
-        liquidity
-          ?.status ??
-        null,
-    }),
-
-    buildComponent({
-      name:
-        "RISK_REWARD",
-
-      maximumPoints:
-        config.weights
-          .riskReward,
-
-      support:
-        getRiskRewardSupport({
-          riskReward,
-          side,
-        }),
-
-      required: true,
-
-      engineStatus:
-        riskReward
-          ?.status ??
-        null,
-    }),
-
-    buildComponent({
-      name:
-        "CONSENSUS",
-
-      maximumPoints:
-        config.weights
-          .consensus,
-
-      support:
-        getDirectionalSupport({
-          result:
-            consensus,
-
-          side,
-        }),
-
-      engineStatus:
-        consensus
-          ?.status ??
-        null,
-    }),
-  ];
-
-  /**
-   * ========================================================
-   * TOTAL
-   * ========================================================
-   */
-
-  const total =
-    components.reduce(
-      (
-        sum,
-        component,
-      ) =>
-        sum +
-        Number(
-          component.points ??
-          0,
-        ),
-      0,
-    );
-
-  /**
-   * ========================================================
-   * COVERAGE
-   * ========================================================
-   *
-   * A raw 80/100 based on only half of the engines
-   * should NOT be treated the same as an 80/100
-   * based on complete information.
-   */
-
-  const availablePoints =
-    components.reduce(
-      (
-        sum,
-        component,
-      ) =>
-        sum +
-        (
-          component.available
-            ? component
-                .maximumPoints
-            : 0
-        ),
-      0,
-    );
-
-  const coverage =
-    availablePoints /
-    100;
-
-  /**
-   * Required components.
-   */
-
-  const missingRequired =
-    components.filter(
-      (component) =>
-        component.required &&
-        !component.available,
-    );
-
-  /**
-   * ========================================================
-   * PASS
-   * ========================================================
-   */
-
-  const score =
-    round(
-      clamp(
-        total,
-        0,
-        100,
-      ),
-      2,
-    );
-
-  const passed =
-    score >=
-      config.minimumScore &&
-    missingRequired.length ===
-      0;
-
-  return {
-    approved: true,
-
-    side,
-
-    score,
-
-    minimumRequiredScore:
-      config.minimumScore,
-
-    passed,
-
-    coverage:
-      round(
-        coverage,
-        4,
-      ),
-
-    availablePoints,
-
-    components,
-
-    missingRequired:
-      missingRequired.map(
-        (component) =>
-          component.name,
-      ),
-
-    errors: [],
-  };
+  if (
+    longSupport >= config.directionalThreshold &&
+    edge >= config.minimumDirectionalEdge
+  ) {
+    return CONSENSUS_DIRECTION.LONG;
+  }
+
+  if (
+    shortSupport >= config.directionalThreshold &&
+    -edge >= config.minimumDirectionalEdge
+  ) {
+    return CONSENSUS_DIRECTION.SHORT;
+  }
+
+  return CONSENSUS_DIRECTION.NEUTRAL;
 }
 
-/**
- * ============================================================
- * FINAL OPPORTUNITY SCORE
- * ============================================================
- */
-
-export function scoreTradeOpportunity({
-  symbol = null,
-
+export function analyzeCrossEngineConsensus({
   technical = null,
-
   macro = null,
-
   marketRegime = null,
-
-  events = null,
-
-  company = null,
-
   country = null,
-
+  company = null,
+  events = null,
   social = null,
-
+  institutional = null,
   historical = null,
-
   liquidity = null,
-
   riskReward = null,
-
-  consensus = null,
-
-  config =
-    FINAL_SCORING_CONFIG,
+  config = DEFAULT_CONSENSUS_CONFIG,
 } = {}) {
   try {
-    /**
-     * ======================================================
-     * LONG
-     * ======================================================
-     */
+    const weights = {
+      ...DEFAULT_CONSENSUS_CONFIG.weights,
+      ...(config?.weights ?? {}),
+    };
 
-    const long =
-      calculateSideScore({
-        side:
-          TRADE_SIDE.LONG,
+    const effectiveConfig = {
+      ...DEFAULT_CONSENSUS_CONFIG,
+      ...config,
+      weights,
+    };
 
-        technical,
+    const evidence = [
+      buildEvidence("TECHNICAL", technical, weights.technical),
+      buildEvidence("MACRO", macro, weights.macro),
+      buildEvidence("MARKET_REGIME", marketRegime, weights.marketRegime),
+      buildEvidence("COUNTRY", country, weights.country),
+      buildEvidence("COMPANY", company, weights.company),
+      buildEvidence("EVENTS", events, weights.events),
+      buildEvidence("SOCIAL", social, weights.social),
 
-        macro,
+      /**
+       * Institutional positioning is optional and deliberately bounded.
+       *
+       * Backward compatibility:
+       * - when no institutional result is supplied, the historical
+       *   10-engine consensus denominator is preserved exactly;
+       * - when supplied, institutional evidence becomes an independent
+       *   0.75-weight consensus vote;
+       * - it cannot independently authorize a trade and it does not add
+       *   points to the 100-point trade-scoring budget.
+       */
+      ...(institutional !== null && institutional !== undefined
+        ? [
+            buildEvidence(
+              "INSTITUTIONAL",
+              institutional,
+              weights.institutional,
+            ),
+          ]
+        : []),
 
-        marketRegime,
+      buildEvidence("HISTORICAL", historical, weights.historical),
+      buildEvidence("LIQUIDITY", liquidity, weights.liquidity),
+      buildEvidence("RISK_REWARD", riskReward, weights.riskReward),
+    ];
 
-        events,
-
-        company,
-
-        country,
-
-        social,
-
-        historical,
-
-        liquidity,
-
-        riskReward,
-
-        consensus,
-
-        config,
-      });
-
-    /**
-     * ======================================================
-     * SHORT
-     * ======================================================
-     */
-
-    const short =
-      calculateSideScore({
-        side:
-          TRADE_SIDE.SHORT,
-
-        technical,
-
-        macro,
-
-        marketRegime,
-
-        events,
-
-        company,
-
-        country,
-
-        social,
-
-        historical,
-
-        liquidity,
-
-        riskReward,
-
-        consensus,
-
-        config,
-      });
+    const available = evidence.filter((item) => item.available);
+    const totalPossibleWeight = evidence.reduce((sum, item) => sum + item.weight, 0);
+    const availableWeight = available.reduce((sum, item) => sum + item.weight, 0);
+    const coverage = totalPossibleWeight > 0 ? availableWeight / totalPossibleWeight : 0;
 
     if (
-      !long.approved ||
-      !short.approved
+      available.length < effectiveConfig.minimumEngines ||
+      coverage < effectiveConfig.minimumCoverage
     ) {
       return {
         approved: false,
-
-        engine:
-          "TRADE_SCORING",
-
-        status:
-          "ERROR",
-
-        symbol,
-
-        long,
-
-        short,
-
-        tradeEligible:
-          false,
-
-        preferredSide:
-          null,
-
-        errors: [
-          ...(
-            long.errors ??
-            []
-          ),
-
-          ...(
-            short.errors ??
-            []
-          ),
+        engine: "CROSS_ENGINE_CONSENSUS",
+        status: "INSUFFICIENT_DATA",
+        direction: CONSENSUS_DIRECTION.INSUFFICIENT_DATA,
+        confidence: 0,
+        rawScore: 0,
+        directionalSupport: { long: 0.5, short: 0.5 },
+        coverage: round(coverage, 4),
+        availableEngines: available.length,
+        totalEngines: evidence.length,
+        evidence,
+        warnings: [
+          `Consensus requires at least ${effectiveConfig.minimumEngines} usable engines and ${round(effectiveConfig.minimumCoverage * 100, 0)}% weighted coverage.`,
         ],
-
-        timestamp:
-          new Date()
-            .toISOString(),
+        errors: [],
+        summary: "Cross-engine consensus has insufficient independent evidence.",
+        timestamp: new Date().toISOString(),
       };
     }
 
-    /**
-     * ======================================================
-     * PREFERRED SIDE
-     * ======================================================
-     */
+    let weightedLong = 0;
+    let weightedShort = 0;
 
-    const difference =
-      Math.abs(
-        Number(long.score) -
-        Number(short.score),
-      );
-
-    let preferredSide =
-      null;
-
-    let preferredScore =
-      0;
-
-    if (
-      long.score >
-      short.score
-    ) {
-      preferredSide =
-        TRADE_SIDE.LONG;
-
-      preferredScore =
-        long.score;
-    } else if (
-      short.score >
-      long.score
-    ) {
-      preferredSide =
-        TRADE_SIDE.SHORT;
-
-      preferredScore =
-        short.score;
+    for (const item of available) {
+      weightedLong += item.directionalSupport.long * item.weight;
+      weightedShort += item.directionalSupport.short * item.weight;
     }
 
-    /**
-     * ======================================================
-     * AMBIGUITY
-     * ======================================================
-     *
-     * Even if one side reaches 80, we do not want
-     * to force a trade when LONG and SHORT are too close.
-     */
+    const longSupport = availableWeight > 0 ? weightedLong / availableWeight : 0.5;
+    const shortSupport = availableWeight > 0 ? weightedShort / availableWeight : 0.5;
+    const rawScore = longSupport - shortSupport; // -1 SHORT ... +1 LONG
 
-    const ambiguous =
-      difference <
-      config
-        .ambiguousDifference;
+    const direction = determineDirection({
+      longSupport,
+      shortSupport,
+      config: effectiveConfig,
+    });
 
-    if (ambiguous) {
-      preferredSide =
-        null;
+    const directionalAgreement = Math.abs(rawScore);
+    const confidence = clamp(directionalAgreement * coverage);
+
+    const longVotes = available.filter((item) => item.direction === CONSENSUS_DIRECTION.LONG).length;
+    const shortVotes = available.filter((item) => item.direction === CONSENSUS_DIRECTION.SHORT).length;
+    const neutralVotes = available.filter((item) => item.direction === CONSENSUS_DIRECTION.NEUTRAL).length;
+
+    const warnings = [];
+
+    if (direction === CONSENSUS_DIRECTION.CONFLICTED) {
+      warnings.push("Independent engines are materially divided between LONG and SHORT evidence.");
     }
 
-    /**
-     * ======================================================
-     * EVENT FREEZE
-     * ======================================================
-     */
-
-    const eventFreeze =
-      events
-        ?.eventFreeze
-        ?.active === true;
-
-    /**
-     * ======================================================
-     * REQUIRED ENGINE SAFETY
-     * ======================================================
-     */
-
-    const preferredResult =
-      preferredSide ===
-        TRADE_SIDE.LONG
-        ? long
-        : preferredSide ===
-            TRADE_SIDE.SHORT
-          ? short
-          : null;
-
-    const requiredEnginesReady =
-      preferredResult
-        ? preferredResult
-            .missingRequired
-            .length === 0
-        : false;
-
-    /**
-     * ======================================================
-     * TRADE ELIGIBILITY
-     * ======================================================
-     */
-
-    const tradeEligible =
-      preferredResult !==
-        null &&
-      preferredResult
-        .score >=
-        config.minimumScore &&
-      requiredEnginesReady &&
-      !ambiguous &&
-      !eventFreeze;
-
-    /**
-     * ======================================================
-     * STATUS
-     * ======================================================
-     */
-
-    let status =
-      "NO_TRADE";
-
-    if (eventFreeze) {
-      status =
-        "EVENT_FREEZE";
-    } else if (ambiguous) {
-      status =
-        "AMBIGUOUS";
-    } else if (
-      preferredResult &&
-      preferredResult.score >=
-        config.minimumScore &&
-      requiredEnginesReady
-    ) {
-      status =
-        "TRADE_CANDIDATE";
-    } else if (
-      preferredResult
-    ) {
-      status =
-        "BELOW_THRESHOLD";
+    if (direction === CONSENSUS_DIRECTION.NEUTRAL) {
+      warnings.push("No sufficiently strong directional consensus is present.");
     }
 
-    /**
-     * ======================================================
-     * FRONTEND SUMMARY
-     * ======================================================
-     */
-
-    let summary;
-
-    if (eventFreeze) {
-      summary =
-        `${symbol ?? "Asset"} is blocked by the event safety layer despite the current scoring results.`;
-    } else if (ambiguous) {
-      summary =
-        `${symbol ?? "Asset"} has conflicting LONG and SHORT scores. No directional candidate should be selected.`;
-    } else if (
-      tradeEligible
-    ) {
-      summary =
-        `${symbol ?? "Asset"} qualifies as a ${preferredSide} trade candidate with a score of ${preferredScore}/100. Final risk approval is still required.`;
-    } else {
-      summary =
-        `${symbol ?? "Asset"} does not currently meet the ${config.minimumScore}/100 trade eligibility threshold.`;
+    if (coverage < 0.75) {
+      warnings.push("Consensus coverage is incomplete; confidence has been reduced.");
     }
 
-    /**
-     * ======================================================
-     * FINAL RESULT
-     * ======================================================
-     */
+    const summary =
+      direction === CONSENSUS_DIRECTION.LONG
+        ? `Cross-engine evidence favors LONG with ${round(longSupport * 100, 1)}% weighted support.`
+        : direction === CONSENSUS_DIRECTION.SHORT
+          ? `Cross-engine evidence favors SHORT with ${round(shortSupport * 100, 1)}% weighted support.`
+          : direction === CONSENSUS_DIRECTION.CONFLICTED
+            ? "Cross-engine evidence is conflicted. No directional consensus should be assumed."
+            : "Cross-engine evidence is neutral. No directional consensus should be assumed.";
 
     return {
       approved: true,
-
-      engine:
-        "TRADE_SCORING",
-
-      status,
-
-      symbol,
-
-      long,
-
-      short,
-
-      preferredSide,
-
-      preferredScore:
-        round(
-          preferredScore,
-          2,
-        ),
-
-      scoreDifference:
-        round(
-          difference,
-          2,
-        ),
-
-      ambiguous,
-
-      eventFreeze,
-
-      requiredEnginesReady,
-
-      tradeEligible,
-
-      minimumRequiredScore:
-        config.minimumScore,
-
-      summary,
-
-      /**
-       * This is where the future frontend can
-       * show all ten contributing components.
-       */
-
-      scorecard: {
-        long:
-          Object.fromEntries(
-            long.components.map(
-              (component) => [
-                component.name,
-                {
-                  points:
-                    component.points,
-
-                  maximum:
-                    component
-                      .maximumPoints,
-
-                  support:
-                    component.support,
-
-                  available:
-                    component.available,
-
-                  status:
-                    component
-                      .engineStatus,
-                },
-              ],
-            ),
-          ),
-
-        short:
-          Object.fromEntries(
-            short.components.map(
-              (component) => [
-                component.name,
-                {
-                  points:
-                    component.points,
-
-                  maximum:
-                    component
-                      .maximumPoints,
-
-                  support:
-                    component.support,
-
-                  available:
-                    component.available,
-
-                  status:
-                    component
-                      .engineStatus,
-                },
-              ],
-            ),
-          ),
+      engine: "CROSS_ENGINE_CONSENSUS",
+      status: direction === CONSENSUS_DIRECTION.CONFLICTED ? "CONFLICTED" : "COMPLETE",
+      direction,
+      confidence: round(confidence, 4),
+      rawScore: round(rawScore, 4),
+      directionalSupport: {
+        long: round(longSupport, 4),
+        short: round(shortSupport, 4),
       },
-
-      warnings: [
-        ...(
-          eventFreeze
-            ? [
-                "Event freeze is active. New entries are blocked.",
-              ]
-            : []
-        ),
-
-        ...(
-          ambiguous
-            ? [
-                "LONG and SHORT scores are too close for a reliable directional decision.",
-              ]
-            : []
-        ),
-
-        ...(
-          preferredResult
-            ?.missingRequired
-            ?.length >
-            0
-            ? [
-                `Required scoring inputs missing: ${preferredResult.missingRequired.join(
-                  ", ",
-                )}.`,
-              ]
-            : []
-        ),
-      ],
-
+      coverage: round(coverage, 4),
+      availableEngines: available.length,
+      totalEngines: evidence.length,
+      votes: {
+        long: longVotes,
+        short: shortVotes,
+        neutral: neutralVotes,
+      },
+      evidence,
+      warnings,
       errors: [],
-
-      timestamp:
-        new Date()
-          .toISOString(),
+      summary,
+      timestamp: new Date().toISOString(),
     };
   } catch (error) {
-    /**
-     * ======================================================
-     * SAFE FAIL
-     * ======================================================
-     */
-
     return {
       approved: false,
-
-      engine:
-        "TRADE_SCORING",
-
-      status:
-        "ERROR",
-
-      symbol,
-
-      preferredSide:
-        null,
-
-      preferredScore: 0,
-
-      tradeEligible:
-        false,
-
-      eventFreeze: false,
-
-      summary:
-        "Trade scoring failed safely. No trade candidate should be created.",
-
-      warnings: [
-        "Scoring failure must block new trade candidates.",
-      ],
-
-      errors: [
-        error instanceof Error
-          ? error.message
-          : String(error),
-      ],
-
-      timestamp:
-        new Date()
-          .toISOString(),
+      engine: "CROSS_ENGINE_CONSENSUS",
+      status: "ERROR",
+      direction: CONSENSUS_DIRECTION.INSUFFICIENT_DATA,
+      confidence: 0,
+      rawScore: 0,
+      directionalSupport: { long: 0.5, short: 0.5 },
+      coverage: 0,
+      availableEngines: 0,
+      totalEngines: 10,
+      evidence: [],
+      warnings: ["Consensus engine failed safely. No directional agreement should be assumed."],
+      errors: [error instanceof Error ? error.message : String(error)],
+      summary: "Cross-engine consensus failed safely.",
+      timestamp: new Date().toISOString(),
     };
   }
 }
 
-export default scoreTradeOpportunity;
+// Alias retained for compatibility with code that prefers a verb-neutral name.
+export const calculateCrossEngineConsensus = analyzeCrossEngineConsensus;
+
+export default analyzeCrossEngineConsensus;

@@ -1,0 +1,1319 @@
+/* ============================================================
+   AEMA CRYPTO RESEARCH DASHBOARD
+   Clean exchange-inspired visual system
+   Light + dark theme switch
+   ============================================================ */
+
+.crypto-shell {
+  --accent: #f0b90b;
+  --accent-strong: #d89f00;
+  --accent-soft: rgba(240, 185, 11, 0.10);
+
+  --green: #03a66d;
+  --red: #cf304a;
+  --warning: #c99400;
+
+  --sidebar-width: 244px;
+
+  min-height: 100vh;
+  display: flex;
+
+  color: var(--text-primary);
+  background: var(--page-bg);
+
+  transition:
+    background-color 180ms ease,
+    color 180ms ease;
+}
+
+
+/* ============================================================
+   THEME TOKENS
+   ============================================================ */
+
+.crypto-shell.crypto-theme-light {
+  --page-bg: #ffffff;
+  --surface: #ffffff;
+  --surface-soft: #f7f8fa;
+  --surface-hover: #f5f6f7;
+
+  --border: #e6e8eb;
+  --border-strong: #d9dde3;
+
+  --text-primary: #181a20;
+  --text-secondary: #474d57;
+  --text-muted: #929aa5;
+  --text-faint: #b7bdc6;
+
+  --icon-bg: #f5f6f7;
+
+  --shadow:
+    0 1px 2px rgba(16, 24, 40, 0.025),
+    0 10px 28px rgba(16, 24, 40, 0.035);
+}
+
+
+.crypto-shell.crypto-theme-dark {
+  --page-bg: #181a20;
+  --surface: #181a20;
+  --surface-soft: #1e2329;
+  --surface-hover: #20262d;
+
+  --border: #2b3139;
+  --border-strong: #3a414b;
+
+  --text-primary: #eaecef;
+  --text-secondary: #b7bdc6;
+  --text-muted: #848e9c;
+  --text-faint: #5e6673;
+
+  --icon-bg: #20262d;
+
+  --shadow: none;
+}
+
+
+/* ============================================================
+   PAGE
+   ============================================================ */
+
+.crypto-dashboard-page {
+  flex: 1 1 auto;
+  width: 0;
+  min-width: 0;
+  min-height: 100vh;
+
+  margin-left: 0;
+
+  padding:
+    30px
+    clamp(24px, 3vw, 46px)
+    44px;
+
+  overflow-x: hidden;
+
+  background: var(--page-bg);
+  color: var(--text-primary);
+}
+
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+
+.crypto-dashboard-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 32px;
+
+  margin-bottom: 28px;
+}
+
+
+.crypto-dashboard-heading {
+  min-width: 0;
+  max-width: 700px;
+
+  flex: 1 1 auto;
+}
+
+
+.crypto-eyebrow {
+  display: inline-flex;
+  align-items: center;
+
+  margin-bottom: 8px;
+
+  color: var(--accent-strong);
+
+  font-size: 11px;
+  font-weight: 700;
+
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+
+.crypto-dashboard-header h1 {
+  margin: 0;
+
+  color: var(--text-primary);
+
+  font-size:
+    clamp(
+      29px,
+      3vw,
+      42px
+    );
+
+  font-weight: 650;
+  line-height: 1.08;
+
+  letter-spacing: -0.035em;
+}
+
+
+.crypto-dashboard-header p {
+  max-width: 650px;
+
+  margin:
+    10px
+    0
+    0;
+
+  color: var(--text-muted);
+
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+
+.crypto-header-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  gap: 8px;
+
+  flex: 0 0 auto;
+
+  min-width: 0;
+}
+
+
+/* ============================================================
+   HEADER CONTROLS
+   ============================================================ */
+
+.crypto-workspace-jump {
+  min-width: 0;
+}
+
+
+.crypto-workspace-jump .workspace-jump-button,
+.crypto-dashboard-page .workspace-jump-button {
+  width: auto;
+  min-width: 0;
+  height: 40px;
+
+  display: inline-flex;
+  align-items: center;
+
+  gap: 8px;
+
+  padding:
+    0
+    12px;
+
+  color: var(--text-secondary);
+
+  background: transparent;
+
+  border:
+    1px solid
+    var(--border);
+
+  border-radius: 8px;
+
+  box-shadow: none;
+
+  text-decoration: none !important;
+
+  transition:
+    background-color 140ms ease,
+    border-color 140ms ease,
+    color 140ms ease;
+}
+
+
+.crypto-workspace-jump .workspace-jump-button:hover,
+.crypto-dashboard-page .workspace-jump-button:hover {
+  transform: none;
+
+  color: var(--text-primary);
+
+  background: var(--surface-hover);
+
+  border-color: var(--border-strong);
+}
+
+
+.crypto-workspace-jump
+.workspace-jump-button__icon,
+.crypto-dashboard-page
+.workspace-jump-button__icon {
+  width: auto;
+  height: auto;
+
+  display: grid;
+  place-items: center;
+
+  color: var(--accent-strong);
+  background: transparent;
+}
+
+
+.crypto-workspace-jump
+.workspace-jump-button__copy,
+.crypto-dashboard-page
+.workspace-jump-button__copy {
+  display: flex;
+  align-items: center;
+
+  min-width: 0;
+
+  white-space: nowrap;
+}
+
+
+.crypto-workspace-jump
+.workspace-jump-button__copy small,
+.crypto-dashboard-page
+.workspace-jump-button__copy small {
+  display: none !important;
+}
+
+
+.crypto-workspace-jump
+.workspace-jump-button__copy strong,
+.crypto-dashboard-page
+.workspace-jump-button__copy strong {
+  color: inherit;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  white-space: nowrap;
+}
+
+
+.crypto-workspace-jump
+.workspace-jump-button__arrow,
+.crypto-dashboard-page
+.workspace-jump-button__arrow {
+  width: 14px;
+  height: 14px;
+
+  color: var(--text-muted);
+}
+
+
+.crypto-runtime-pill {
+  height: 40px;
+
+  display: inline-flex;
+  align-items: center;
+
+  gap: 7px;
+
+  padding:
+    0
+    12px;
+
+  color: var(--text-secondary);
+
+  background: transparent;
+
+  border:
+    1px solid
+    var(--border);
+
+  border-radius: 8px;
+
+  font-size: 12px;
+  font-weight: 650;
+
+  letter-spacing: 0.04em;
+}
+
+
+.crypto-runtime-pill.healthy {
+  color: var(--green);
+}
+
+
+.crypto-runtime-pill.warning {
+  color: var(--warning);
+}
+
+
+.crypto-runtime-pill.danger {
+  color: var(--red);
+}
+
+
+.crypto-runtime-dot {
+  width: 7px;
+  height: 7px;
+
+  border-radius: 50%;
+
+  background: currentColor;
+}
+
+
+.crypto-theme-toggle,
+.crypto-refresh-button {
+  height: 40px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border:
+    1px solid
+    var(--border);
+
+  border-radius: 8px;
+
+  color: var(--text-secondary);
+
+  background: transparent;
+
+  font: inherit;
+
+  cursor: pointer;
+
+  transition:
+    color 140ms ease,
+    border-color 140ms ease,
+    background-color 140ms ease;
+}
+
+
+.crypto-theme-toggle {
+  width: 40px;
+  padding: 0;
+}
+
+
+.crypto-refresh-button {
+  gap: 8px;
+
+  padding:
+    0
+    13px;
+
+  font-size: 13px;
+  font-weight: 600;
+}
+
+
+.crypto-theme-toggle:hover,
+.crypto-refresh-button:hover:not(:disabled) {
+  color: var(--text-primary);
+
+  background: var(--surface-hover);
+
+  border-color: var(--border-strong);
+
+  transform: none;
+}
+
+
+.crypto-refresh-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+
+/* ============================================================
+   ERROR
+   ============================================================ */
+
+.crypto-error-banner {
+  display: flex;
+  flex-direction: column;
+
+  gap: 3px;
+
+  margin-bottom: 18px;
+
+  padding: 13px 15px;
+
+  color: var(--red);
+
+  background:
+    color-mix(
+      in srgb,
+      var(--red) 6%,
+      var(--surface)
+    );
+
+  border:
+    1px solid
+    color-mix(
+      in srgb,
+      var(--red) 20%,
+      var(--border)
+    );
+
+  border-radius: 8px;
+}
+
+
+.crypto-error-banner strong {
+  font-size: 13px;
+}
+
+
+.crypto-error-banner span {
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+
+/* ============================================================
+   SYSTEM STRIP
+   ============================================================ */
+
+.crypto-system-strip {
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+
+  overflow: hidden;
+
+  margin-bottom: 18px;
+
+  background: var(--surface);
+
+  border:
+    1px solid
+    var(--border);
+
+  border-radius: 10px;
+
+  box-shadow: var(--shadow);
+}
+
+
+.crypto-system-strip > div {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 5px;
+
+  padding:
+    14px
+    16px;
+}
+
+
+.crypto-system-strip > div + div {
+  border-left:
+    1px solid
+    var(--border);
+}
+
+
+.crypto-system-strip span {
+  color: var(--text-muted);
+
+  font-size: 10px;
+  font-weight: 600;
+
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+
+.crypto-system-strip strong {
+  color: var(--text-primary);
+
+  font-size: 13px;
+  font-weight: 650;
+}
+
+
+.crypto-system-strip strong.healthy {
+  color: var(--green);
+}
+
+
+.crypto-system-strip strong.warning {
+  color: var(--warning);
+}
+
+
+.crypto-system-strip strong.danger {
+  color: var(--red);
+}
+
+
+/* ============================================================
+   METRIC CARDS
+   ============================================================ */
+
+.crypto-metrics-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(6, minmax(0, 1fr));
+
+  gap: 12px;
+
+  margin-bottom: 18px;
+}
+
+
+.crypto-metric-card {
+  min-width: 0;
+  min-height: 132px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  gap: 18px;
+
+  padding: 16px;
+
+  background: var(--surface);
+
+  border:
+    1px solid
+    var(--border);
+
+  border-radius: 10px;
+
+  box-shadow: var(--shadow);
+
+  transition:
+    border-color 140ms ease,
+    background-color 140ms ease;
+}
+
+
+.crypto-metric-card:hover {
+  transform: none;
+  border-color: var(--border-strong);
+}
+
+
+.crypto-metric-card::after {
+  display: none;
+}
+
+
+.crypto-metric-icon {
+  width: 32px;
+  height: 32px;
+
+  display: grid;
+  place-items: center;
+
+  color: var(--accent-strong);
+
+  background: var(--accent-soft);
+
+  border-radius: 8px;
+}
+
+
+.crypto-metric-content {
+  min-width: 0;
+}
+
+
+.crypto-metric-content span,
+.crypto-metric-content strong,
+.crypto-metric-content small {
+  display: block;
+}
+
+
+.crypto-metric-content span {
+  margin-bottom: 5px;
+
+  color: var(--text-muted);
+
+  font-size: 10px;
+  font-weight: 600;
+
+  letter-spacing: 0.055em;
+  text-transform: uppercase;
+}
+
+
+.crypto-metric-content strong {
+  overflow: hidden;
+
+  color: var(--text-primary);
+
+  font-size: 18px;
+  font-weight: 600;
+
+  letter-spacing: -0.015em;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+.crypto-metric-content small {
+  margin-top: 4px;
+
+  overflow: hidden;
+
+  color: var(--text-muted);
+
+  font-size: 11px;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+.crypto-dashboard-page .positive,
+.crypto-metric-card.positive
+.crypto-metric-content strong {
+  color: var(--green) !important;
+}
+
+
+.crypto-dashboard-page .negative,
+.crypto-metric-card.negative
+.crypto-metric-content strong {
+  color: var(--red) !important;
+}
+
+
+.crypto-dashboard-page .neutral,
+.crypto-metric-card.neutral
+.crypto-metric-content strong {
+  color: var(--text-primary);
+}
+
+
+/* ============================================================
+   PANEL LAYOUT
+   ============================================================ */
+
+.crypto-dashboard-grid {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1.2fr)
+    minmax(0, 0.8fr);
+
+  gap: 14px;
+
+  margin-bottom: 14px;
+}
+
+
+.crypto-dashboard-grid--lower {
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+}
+
+
+.crypto-panel {
+  min-width: 0;
+
+  padding: 18px;
+
+  background: var(--surface);
+
+  border:
+    1px solid
+    var(--border);
+
+  border-radius: 10px;
+
+  box-shadow: var(--shadow);
+}
+
+
+.crypto-panel--runtime::after {
+  display: none;
+}
+
+
+.crypto-panel-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 12px;
+
+  margin-bottom: 16px;
+}
+
+
+.crypto-panel-heading > div {
+  min-width: 0;
+}
+
+
+.crypto-panel-heading span {
+  display: block;
+
+  margin-bottom: 4px;
+
+  color: var(--text-muted);
+
+  font-size: 10px;
+  font-weight: 600;
+
+  letter-spacing: 0.065em;
+  text-transform: uppercase;
+}
+
+
+.crypto-panel-heading h2 {
+  margin: 0;
+
+  color: var(--text-primary);
+
+  font-size: 16px;
+  font-weight: 600;
+
+  letter-spacing: -0.015em;
+}
+
+
+.crypto-panel-heading > svg {
+  color: var(--text-muted);
+}
+
+
+.crypto-count-pill {
+  min-width: 30px;
+  height: 30px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding:
+    0
+    9px;
+
+  color: var(--text-secondary);
+
+  background: var(--surface-soft);
+
+  border:
+    1px solid
+    var(--border);
+
+  border-radius: 999px;
+
+  font-size: 11px;
+  font-weight: 650;
+}
+
+
+/* ============================================================
+   RUNTIME GRID
+   ============================================================ */
+
+.crypto-runtime-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  gap: 8px;
+}
+
+
+.crypto-runtime-grid > div {
+  min-width: 0;
+
+  padding:
+    12px
+    13px;
+
+  background: var(--surface-soft);
+
+  border:
+    1px solid
+    var(--border);
+
+  border-radius: 8px;
+}
+
+
+.crypto-runtime-grid span {
+  display: block;
+
+  margin-bottom: 5px;
+
+  color: var(--text-muted);
+
+  font-size: 9px;
+  font-weight: 600;
+
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+
+.crypto-runtime-grid strong {
+  color: var(--text-primary);
+
+  font-size: 12px;
+  font-weight: 650;
+}
+
+
+.crypto-runtime-grid strong.healthy {
+  color: var(--green);
+}
+
+
+.crypto-runtime-grid strong.warning {
+  color: var(--warning);
+}
+
+
+.crypto-runtime-grid strong.danger {
+  color: var(--red);
+}
+
+
+/* ============================================================
+   POSITION / ORDER / TRADE ROWS
+   ============================================================ */
+
+.crypto-mobile-card-stack {
+  display: grid;
+  gap: 0;
+}
+
+
+.crypto-position-card,
+.crypto-order-card,
+.crypto-trade-card {
+  min-width: 0;
+
+  display: grid;
+
+  grid-template-columns:
+    minmax(120px, 1.4fr)
+    repeat(2, minmax(90px, 1fr));
+
+  align-items: center;
+
+  gap: 12px;
+
+  padding:
+    13px
+    2px;
+
+  background: transparent;
+
+  border: 0;
+  border-bottom:
+    1px solid
+    var(--border);
+
+  border-radius: 0;
+}
+
+
+.crypto-position-card:last-child,
+.crypto-order-card:last-child,
+.crypto-trade-card:last-child {
+  border-bottom: 0;
+}
+
+
+.crypto-position-card:hover,
+.crypto-order-card:hover,
+.crypto-trade-card:hover {
+  background: transparent;
+  border-color: var(--border);
+}
+
+
+.crypto-position-card > div,
+.crypto-order-card > div,
+.crypto-trade-card > div {
+  min-width: 0;
+}
+
+
+.crypto-position-card span,
+.crypto-order-card span,
+.crypto-trade-card span {
+  display: block;
+
+  margin-top: 3px;
+
+  color: var(--text-muted);
+
+  font-size: 10px;
+}
+
+
+.crypto-position-card strong,
+.crypto-order-card strong,
+.crypto-trade-card strong {
+  display: block;
+
+  overflow: hidden;
+
+  color: var(--text-primary);
+
+  font-size: 12px;
+  font-weight: 600;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+.crypto-position-card > div:not(:first-child),
+.crypto-order-card > div:not(:first-child),
+.crypto-trade-card > div:not(:first-child) {
+  text-align: right;
+}
+
+
+/* ============================================================
+   EMPTY STATE
+   ============================================================ */
+
+.crypto-empty-state {
+  min-height: 170px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+
+  text-align: center;
+
+  padding: 20px;
+
+  background: transparent;
+
+  border:
+    1px dashed
+    var(--border-strong);
+
+  border-radius: 8px;
+}
+
+
+.crypto-empty-dot {
+  width: 7px;
+  height: 7px;
+
+  margin-bottom: 12px;
+
+  border-radius: 50%;
+
+  background: var(--accent);
+}
+
+
+.crypto-empty-state strong {
+  margin-bottom: 5px;
+
+  color: var(--text-primary);
+
+  font-size: 13px;
+  font-weight: 600;
+}
+
+
+.crypto-empty-state span {
+  max-width: 350px;
+
+  color: var(--text-muted);
+
+  font-size: 11px;
+  line-height: 1.55;
+}
+
+
+/* ============================================================
+   FOOTER / LOADING
+   ============================================================ */
+
+.crypto-dashboard-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  flex-wrap: wrap;
+
+  gap: 8px 12px;
+
+  padding-top: 6px;
+
+  color: var(--text-faint);
+
+  font-size: 10px;
+}
+
+
+.crypto-loading-state {
+  min-height: 75vh;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+
+  gap: 7px;
+
+  text-align: center;
+
+  color: var(--text-secondary);
+}
+
+
+.crypto-loading-state svg {
+  margin-bottom: 5px;
+  color: var(--accent-strong);
+}
+
+
+.crypto-loading-state strong {
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+
+.crypto-loading-state span {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+
+.spin {
+  animation: crypto-spin 0.9s linear infinite;
+}
+
+
+@keyframes crypto-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 1450px) {
+  .crypto-metrics-grid {
+    grid-template-columns:
+      repeat(3, minmax(0, 1fr));
+  }
+}
+
+
+@media (max-width: 1180px) {
+  .crypto-dashboard-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .crypto-header-actions {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+}
+
+
+@media (max-width: 1100px) {
+  .crypto-dashboard-grid,
+  .crypto-dashboard-grid--lower {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+@media (max-width: 760px) {
+  .crypto-shell {
+    display: block;
+    min-height: 100dvh;
+  }
+
+  .crypto-dashboard-page {
+    width: 100%;
+    min-width: 0;
+
+    padding:
+      18px
+      12px
+      calc(30px + env(safe-area-inset-bottom));
+  }
+
+  .crypto-dashboard-header {
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  .crypto-dashboard-header h1 {
+    font-size: 28px;
+  }
+
+  .crypto-dashboard-header p {
+    font-size: 13px;
+  }
+
+  .crypto-header-actions {
+    display: grid;
+
+    grid-template-columns:
+      1fr
+      40px
+      auto;
+
+    width: 100%;
+  }
+
+  .crypto-workspace-jump {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+
+  .crypto-workspace-jump
+  .workspace-jump-button {
+    width: 100%;
+  }
+
+  .crypto-system-strip {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .crypto-system-strip > div + div {
+    border-left: 0;
+  }
+
+  .crypto-system-strip > div:nth-child(2n) {
+    border-left:
+      1px solid
+      var(--border);
+  }
+
+  .crypto-system-strip > div:nth-child(n + 3) {
+    border-top:
+      1px solid
+      var(--border);
+  }
+
+  .crypto-metrics-grid {
+    display: flex;
+
+    overflow-x: auto;
+
+    gap: 9px;
+
+    margin-right: -12px;
+
+    padding-right: 12px;
+    padding-bottom: 4px;
+
+    scrollbar-width: none;
+  }
+
+  .crypto-metrics-grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .crypto-metric-card {
+    flex:
+      0
+      0
+      min(74vw, 250px);
+
+    min-height: 122px;
+  }
+
+  .crypto-panel {
+    padding: 15px;
+  }
+
+  .crypto-runtime-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .crypto-position-card,
+  .crypto-order-card,
+  .crypto-trade-card {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+
+    gap: 9px;
+  }
+
+  .crypto-position-card > div:first-child,
+  .crypto-order-card > div:first-child,
+  .crypto-trade-card > div:first-child {
+    grid-column: 1 / -1;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding-bottom: 8px;
+
+    border-bottom:
+      1px solid
+      var(--border);
+  }
+
+  .crypto-position-card > div:not(:first-child),
+  .crypto-order-card > div:not(:first-child),
+  .crypto-trade-card > div:not(:first-child) {
+    text-align: left;
+  }
+}
+
+
+@media (max-width: 420px) {
+  .crypto-header-actions {
+    grid-template-columns:
+      1fr
+      40px;
+  }
+
+  .crypto-refresh-button {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+
+  .crypto-runtime-grid,
+  .crypto-system-strip {
+    grid-template-columns: 1fr;
+  }
+
+  .crypto-system-strip > div:nth-child(2n) {
+    border-left: 0;
+  }
+
+  .crypto-system-strip > div + div {
+    border-top:
+      1px solid
+      var(--border);
+  }
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+  .crypto-shell,
+  .crypto-theme-toggle,
+  .crypto-refresh-button,
+  .crypto-metric-card,
+  .crypto-workspace-jump
+  .workspace-jump-button {
+    transition: none;
+  }
+}

@@ -1,12 +1,15 @@
 import axios from "axios";
 
+import getMarketauxNews
+  from "./marketauxNewsProvider.js";
+
 /**
  * ============================================================
  * REAL COMPANY FUNDAMENTAL DATA PROVIDER
  * ============================================================
  *
- * PROVIDER:
- * Alpha Vantage
+ * PROVIDERS:
+ * Alpha Vantage + Marketaux classification enrichment
  *
  * PURPOSE
  * -------
@@ -43,6 +46,82 @@ import axios from "axios";
 
 const BASE_URL =
   "https://www.alphavantage.co/query";
+
+const REQUEST_SPACING_MS =
+  Number(
+    process.env
+      .ALPHA_VANTAGE_REQUEST_SPACING_MS ??
+    1200,
+  );
+
+const CACHE_TTL_MS =
+  Number(
+    process.env
+      .ALPHA_VANTAGE_FUNDAMENTAL_CACHE_TTL_MS ??
+    60 * 60 * 1000,
+  );
+
+const providerCache =
+  new Map();
+
+function sleep(
+  milliseconds,
+) {
+  return new Promise(
+    resolve =>
+      setTimeout(
+        resolve,
+        milliseconds,
+      ),
+  );
+}
+
+function getCachedResult(
+  symbol,
+) {
+  const entry =
+    providerCache.get(
+      symbol,
+    );
+
+  if (!entry) {
+    return null;
+  }
+
+  if (
+    Date.now() -
+      entry.cachedAt >
+    CACHE_TTL_MS
+  ) {
+    providerCache.delete(
+      symbol,
+    );
+
+    return null;
+  }
+
+  return structuredClone(
+    entry.value,
+  );
+}
+
+function setCachedResult(
+  symbol,
+  value,
+) {
+  providerCache.set(
+    symbol,
+    {
+      cachedAt:
+        Date.now(),
+
+      value:
+        structuredClone(
+          value,
+        ),
+    },
+  );
+}
 
 /**
  * ============================================================
@@ -254,6 +333,96 @@ async function requestFunction({
   }
 
   return data;
+}
+
+
+/**
+ * ============================================================
+ * RATE-SAFE ENDPOINT FETCHING
+ * ============================================================
+ *
+ * Alpha Vantage free plans can reject burst traffic.
+ * We therefore:
+ * - request endpoints sequentially
+ * - wait between calls
+ * - keep failures endpoint-local
+ * - preserve partial evidence
+ */
+
+async function safeRequestFunction({
+  functionName,
+  symbol,
+}) {
+  try {
+    const data =
+      await requestFunction({
+        functionName,
+        symbol,
+      });
+
+    return {
+      approved: true,
+      functionName,
+      data,
+      error: null,
+    };
+  } catch (error) {
+    return {
+      approved: false,
+      functionName,
+      data: null,
+      error:
+        error instanceof Error
+          ? error.message
+          : String(error),
+    };
+  }
+}
+
+async function fetchCompanyDatasets(
+  symbol,
+) {
+  const definitions = [
+    "OVERVIEW",
+    "INCOME_STATEMENT",
+    "BALANCE_SHEET",
+    "CASH_FLOW",
+    "EARNINGS",
+  ];
+
+  const results = {};
+
+  for (
+    let index = 0;
+    index < definitions.length;
+    index += 1
+  ) {
+    const functionName =
+      definitions[index];
+
+    const result =
+      await safeRequestFunction({
+        functionName,
+        symbol,
+      });
+
+    results[functionName] =
+      result;
+
+    if (
+      index <
+      definitions.length - 1
+    ) {
+      await sleep(
+        Math.max(
+          0,
+          REQUEST_SPACING_MS,
+        ),
+      );
+    }
+  }
+
+  return results;
 }
 
 /**
@@ -565,31 +734,29 @@ function buildFreeCashFlow(
    * Use absolute capex as cash consumed.
    */
 
-  const freeCashFlow =
-    capitalExpenditures !==
-      null
-      ? operatingCashFlow -
-        Math.abs(
-          capitalExpenditures,
-        )
-      : operatingCashFlow;
-
-  let previousFCF =
-    null;
-
   if (
-    previousOperating !==
+    capitalExpenditures ===
     null
   ) {
-    previousFCF =
-      previousCapex !==
-        null
-        ? previousOperating -
-          Math.abs(
-            previousCapex,
-          )
-        : previousOperating;
+    return null;
   }
+
+  const freeCashFlow =
+    operatingCashFlow -
+    Math.abs(
+      capitalExpenditures,
+    );
+
+  const previousFCF =
+    previousOperating !==
+      null &&
+    previousCapex !==
+      null
+      ? previousOperating -
+        Math.abs(
+          previousCapex,
+        )
+      : null;
 
   const growth =
     calculateGrowth(
@@ -697,6 +864,12 @@ function buildMargins(
       latest.totalRevenue,
     );
 
+  const grossProfit =
+    numberOrNull(
+      latest
+        .grossProfit,
+    );
+
   const operatingIncome =
     numberOrNull(
       latest
@@ -718,6 +891,12 @@ function buildMargins(
     numberOrNull(
       previous
         ?.operatingIncome,
+    );
+
+  const grossMargin =
+    safeDivide(
+      grossProfit,
+      revenue,
     );
 
   const operatingMargin =
@@ -748,6 +927,8 @@ function buildMargins(
       : null;
 
   if (
+    grossMargin ===
+      null &&
     operatingMargin ===
       null &&
     netMargin === null
@@ -756,6 +937,11 @@ function buildMargins(
   }
 
   return {
+    grossMargin:
+      round(
+        grossMargin,
+      ),
+
     operatingMargin:
       round(
         operatingMargin,
@@ -835,11 +1021,12 @@ function buildDebt(
     );
 
   const netDebt =
-    totalDebt !== null
+    totalDebt !==
+      null &&
+    cash !==
+      null
       ? totalDebt -
-        (
-          cash ?? 0
-        )
+        cash
       : null;
 
   const netDebtToEbitda =
@@ -922,6 +1109,271 @@ function buildInterestCoverage(
   };
 }
 
+
+/**
+ * ============================================================
+ * ALPHA / MARKETAUX FIELD COMPARISON
+ * ============================================================
+ *
+ * Alpha Vantage remains authoritative for actual fundamental
+ * metrics. Marketaux may fill only legitimate company identity
+ * / classification gaps. Missing values remain null.
+ */
+
+function textOrNull(
+  value,
+) {
+  const text =
+    String(
+      value ?? "",
+    ).trim();
+
+  return text ||
+    null;
+}
+
+function normalizeComparableText(
+  value,
+) {
+  const text =
+    textOrNull(
+      value,
+    );
+
+  return text
+    ? text
+        .replace(
+          /[^A-Za-z0-9]/g,
+          "",
+        )
+        .toUpperCase()
+    : null;
+}
+
+function normalizeCountryCode(
+  value,
+) {
+  const raw =
+    textOrNull(
+      value,
+    );
+
+  if (!raw) {
+    return null;
+  }
+
+  const normalized =
+    raw
+      .replaceAll(
+        ".",
+        "",
+      )
+      .trim()
+      .toUpperCase();
+
+  if (
+    [
+      "US",
+      "USA",
+      "UNITED STATES",
+      "UNITED STATES OF AMERICA",
+    ].includes(
+      normalized,
+    )
+  ) {
+    return "US";
+  }
+
+  return normalized;
+}
+
+function compareTextSource({
+  alphaValue,
+  marketauxValue,
+  normalize =
+    normalizeComparableText,
+} = {}) {
+  const alpha =
+    textOrNull(
+      alphaValue,
+    );
+
+  const marketaux =
+    textOrNull(
+      marketauxValue,
+    );
+
+  const selectedSource =
+    alpha !==
+      null
+      ? "ALPHA_VANTAGE"
+      : marketaux !==
+          null
+        ? "MARKETAUX"
+        : null;
+
+  const selected =
+    selectedSource ===
+      "ALPHA_VANTAGE"
+      ? alpha
+      : selectedSource ===
+          "MARKETAUX"
+        ? marketaux
+        : null;
+
+  const normalizedAlpha =
+    alpha !==
+      null
+      ? normalize(
+          alpha,
+        )
+      : null;
+
+  const normalizedMarketaux =
+    marketaux !==
+      null
+      ? normalize(
+          marketaux,
+        )
+      : null;
+
+  return {
+    alphaVantage:
+      alpha,
+
+    marketaux,
+
+    selected,
+
+    selectedSource,
+
+    agreement:
+      normalizedAlpha !==
+        null &&
+      normalizedMarketaux !==
+        null
+        ? normalizedAlpha ===
+            normalizedMarketaux
+        : null,
+  };
+}
+
+function compareNumericSource({
+  alphaValue,
+  marketauxValue = null,
+} = {}) {
+  const alpha =
+    numberOrNull(
+      alphaValue,
+    );
+
+  const marketaux =
+    numberOrNull(
+      marketauxValue,
+    );
+
+  const selectedSource =
+    alpha !==
+      null
+      ? "ALPHA_VANTAGE"
+      : marketaux !==
+          null
+        ? "MARKETAUX"
+        : null;
+
+  const selected =
+    selectedSource ===
+      "ALPHA_VANTAGE"
+      ? alpha
+      : selectedSource ===
+          "MARKETAUX"
+        ? marketaux
+        : null;
+
+  return {
+    alphaVantage:
+      alpha,
+
+    marketaux,
+
+    selected,
+
+    selectedSource,
+
+    agreement:
+      alpha !==
+        null &&
+      marketaux !==
+        null
+        ? Math.abs(
+            alpha -
+            marketaux,
+          ) <=
+          Math.max(
+            Math.abs(
+              alpha,
+            ) *
+              0.01,
+            0.000001,
+          )
+        : null,
+  };
+}
+
+function buildSourceComparison({
+  metadata,
+  marketauxProfile,
+} = {}) {
+  return {
+    industry:
+      compareTextSource({
+        alphaValue:
+          metadata
+            ?.industry,
+
+        marketauxValue:
+          marketauxProfile
+            ?.industry,
+      }),
+
+    country:
+      compareTextSource({
+        alphaValue:
+          metadata
+            ?.countryCode,
+
+        marketauxValue:
+          marketauxProfile
+            ?.country,
+
+        normalize:
+          normalizeCountryCode,
+      }),
+
+    pe:
+      compareNumericSource({
+        alphaValue:
+          metadata
+            ?.peRatio,
+
+        // Marketaux entity/news data does not provide P/E.
+        marketauxValue:
+          null,
+      }),
+
+    roe:
+      compareNumericSource({
+        alphaValue:
+          metadata
+            ?.returnOnEquity,
+
+        // Marketaux entity/news data does not provide ROE.
+        marketauxValue:
+          null,
+      }),
+  };
+}
+
 /**
  * ============================================================
  * COMPANY METADATA
@@ -956,10 +1408,168 @@ function buildCompanyMetadata(
           ?.PERatio,
       ),
 
+    trailingPE:
+      numberOrNull(
+        overview
+          ?.TrailingPE,
+      ),
+
+    forwardPE:
+      numberOrNull(
+        overview
+          ?.ForwardPE,
+      ),
+
+    pegRatio:
+      numberOrNull(
+        overview
+          ?.PEGRatio,
+      ),
+
     priceToBook:
       numberOrNull(
         overview
           ?.PriceToBookRatio,
+      ),
+
+    priceToSales:
+      numberOrNull(
+        overview
+          ?.PriceToSalesRatioTTM,
+      ),
+
+    evToRevenue:
+      numberOrNull(
+        overview
+          ?.EVToRevenue,
+      ),
+
+    evToEbitda:
+      numberOrNull(
+        overview
+          ?.EVToEBITDA,
+      ),
+
+    dividendYield:
+      numberOrNull(
+        overview
+          ?.DividendYield,
+      ),
+
+    returnOnEquity:
+      numberOrNull(
+        overview
+          ?.ReturnOnEquityTTM,
+      ),
+
+    returnOnAssets:
+      numberOrNull(
+        overview
+          ?.ReturnOnAssetsTTM,
+      ),
+
+    analystTargetPrice:
+      numberOrNull(
+        overview
+          ?.AnalystTargetPrice,
+      ),
+
+    analystRatings: {
+      strongBuy:
+        numberOrNull(
+          overview
+            ?.AnalystRatingStrongBuy,
+        ),
+
+      buy:
+        numberOrNull(
+          overview
+            ?.AnalystRatingBuy,
+        ),
+
+      hold:
+        numberOrNull(
+          overview
+            ?.AnalystRatingHold,
+        ),
+
+      sell:
+        numberOrNull(
+          overview
+            ?.AnalystRatingSell,
+        ),
+
+      strongSell:
+        numberOrNull(
+          overview
+            ?.AnalystRatingStrongSell,
+        ),
+    },
+  };
+}
+
+/**
+ * ============================================================
+ * VALUATION
+ * ============================================================
+ */
+
+function buildValuation(
+  overview,
+) {
+  const valuation = {
+    pe:
+      numberOrNull(
+        overview
+          ?.PERatio,
+      ),
+
+    trailingPE:
+      numberOrNull(
+        overview
+          ?.TrailingPE,
+      ),
+
+    forwardPE:
+      numberOrNull(
+        overview
+          ?.ForwardPE,
+      ),
+
+    peg:
+      numberOrNull(
+        overview
+          ?.PEGRatio,
+      ),
+
+    priceToBook:
+      numberOrNull(
+        overview
+          ?.PriceToBookRatio,
+      ),
+
+    priceToSales:
+      numberOrNull(
+        overview
+          ?.PriceToSalesRatioTTM,
+      ),
+
+    evToRevenue:
+      numberOrNull(
+        overview
+          ?.EVToRevenue,
+      ),
+
+    evToEbitda:
+      numberOrNull(
+        overview
+          ?.EVToEBITDA,
+      ),
+
+    marketCapitalization:
+      numberOrNull(
+        overview
+          ?.MarketCapitalization,
       ),
 
     dividendYield:
@@ -968,6 +1578,314 @@ function buildCompanyMetadata(
           ?.DividendYield,
       ),
   };
+
+  const hasValue =
+    Object.values(
+      valuation,
+    )
+      .some(
+        value =>
+          value !==
+            null &&
+          value !==
+            undefined,
+      );
+
+  return hasValue
+    ? valuation
+    : null;
+}
+
+/**
+ * ============================================================
+ * PROFITABILITY / RETURNS
+ * ============================================================
+ */
+
+function buildProfitability(
+  overview,
+) {
+  const profitability = {
+    roe:
+      numberOrNull(
+        overview
+          ?.ReturnOnEquityTTM,
+      ),
+
+    roa:
+      numberOrNull(
+        overview
+          ?.ReturnOnAssetsTTM,
+      ),
+
+    roic: null,
+  };
+
+  const hasValue =
+    Object.values(
+      profitability,
+    )
+      .some(
+        value =>
+          value !==
+            null &&
+          value !==
+            undefined,
+      );
+
+  return hasValue
+    ? profitability
+    : null;
+}
+
+/**
+ * ============================================================
+ * BALANCE SHEET QUALITY
+ * ============================================================
+ */
+
+function buildBalanceSheetQuality(
+  balanceReports,
+) {
+  const latest =
+    latestReports(
+      balanceReports,
+      1,
+    )[0];
+
+  if (!latest) {
+    return null;
+  }
+
+  const currentAssets =
+    numberOrNull(
+      latest
+        .totalCurrentAssets,
+    );
+
+  const currentLiabilities =
+    numberOrNull(
+      latest
+        .totalCurrentLiabilities,
+    );
+
+  const inventory =
+    numberOrNull(
+      latest
+        .inventory,
+    );
+
+  const currentRatio =
+    safeDivide(
+      currentAssets,
+      currentLiabilities,
+    );
+
+  const quickAssets =
+    currentAssets !==
+      null &&
+    inventory !==
+      null
+      ? currentAssets -
+        inventory
+      : null;
+
+  const quickRatio =
+    safeDivide(
+      quickAssets,
+      currentLiabilities,
+    );
+
+  if (
+    currentRatio ===
+      null &&
+    quickRatio ===
+      null
+  ) {
+    return null;
+  }
+
+  return {
+    currentRatio:
+      round(
+        currentRatio,
+      ),
+
+    quickRatio:
+      round(
+        quickRatio,
+      ),
+  };
+}
+
+/**
+ * ============================================================
+ * CAPITAL ALLOCATION
+ * ============================================================
+ */
+
+function buildCapitalAllocation({
+  balanceReports,
+  overview,
+}) {
+  const [
+    latest,
+    previous,
+  ] =
+    latestReports(
+      balanceReports,
+      2,
+    );
+
+  const currentShares =
+    numberOrNull(
+      latest
+        ?.commonStockSharesOutstanding,
+    ) ??
+    numberOrNull(
+      overview
+        ?.SharesOutstanding,
+    );
+
+  const previousShares =
+    numberOrNull(
+      previous
+        ?.commonStockSharesOutstanding,
+    );
+
+  const shareCountChange =
+    calculateGrowth(
+      currentShares,
+      previousShares,
+    );
+
+  const dividendYield =
+    numberOrNull(
+      overview
+        ?.DividendYield,
+    );
+
+  if (
+    shareCountChange ===
+      null &&
+    dividendYield ===
+      null
+  ) {
+    return null;
+  }
+
+  return {
+    shareCountChange:
+      round(
+        shareCountChange,
+      ),
+
+    buybackYield:
+      shareCountChange !==
+        null &&
+      shareCountChange <
+        0
+        ? round(
+            Math.abs(
+              shareCountChange,
+            ),
+          )
+        : null,
+
+    dividendYield:
+      round(
+        dividendYield,
+      ),
+  };
+}
+
+/**
+ * ============================================================
+ * FORWARD OUTLOOK
+ * ============================================================
+ *
+ * Alpha Vantage OVERVIEW does not provide full forward revenue
+ * and EPS growth estimates, but analyst ratings and target price
+ * are useful raw context. We expose only observed values here.
+ */
+
+function buildForwardOutlook(
+  overview,
+) {
+  const forward = {
+    analystTargetPrice:
+      numberOrNull(
+        overview
+          ?.AnalystTargetPrice,
+      ),
+
+    ratings: {
+      strongBuy:
+        numberOrNull(
+          overview
+            ?.AnalystRatingStrongBuy,
+        ),
+
+      buy:
+        numberOrNull(
+          overview
+            ?.AnalystRatingBuy,
+        ),
+
+      hold:
+        numberOrNull(
+          overview
+            ?.AnalystRatingHold,
+        ),
+
+      sell:
+        numberOrNull(
+          overview
+            ?.AnalystRatingSell,
+        ),
+
+      strongSell:
+        numberOrNull(
+          overview
+            ?.AnalystRatingStrongSell,
+        ),
+    },
+
+    revenueGrowthEstimate:
+      null,
+
+    epsGrowthEstimate:
+      null,
+
+    estimateRevisionDirection:
+      null,
+  };
+
+  const ratingValues =
+    Object.values(
+      forward.ratings,
+    );
+
+  const hasRatings =
+    ratingValues.some(
+      value =>
+        value !==
+          null &&
+        value !==
+          undefined,
+    );
+
+  const hasTarget =
+    forward
+      .analystTargetPrice !==
+    null;
+
+  return (
+    hasRatings ||
+    hasTarget
+  )
+    ? forward
+    : null;
 }
 
 /**
@@ -1011,54 +1929,101 @@ export async function getCompanyFundamentalData({
      * Fetch all company datasets together.
      */
 
+    const cached =
+      getCachedResult(
+        normalizedSymbol,
+      );
+
+    if (cached) {
+      return {
+        ...cached,
+
+        cache: {
+          hit: true,
+          ttlMs:
+            CACHE_TTL_MS,
+        },
+
+        fetchedAt:
+          new Date()
+            .toISOString(),
+      };
+    }
+
     const [
-      overview,
-      income,
-      balance,
-      cashflow,
-      earnings,
+      endpointResults,
+      marketauxResult,
     ] =
       await Promise.all([
-        requestFunction({
-          functionName:
-            "OVERVIEW",
+        fetchCompanyDatasets(
+          normalizedSymbol,
+        ),
 
-          symbol:
+        getMarketauxNews({
+          symbols: [
             normalizedSymbol,
-        }),
+          ],
 
-        requestFunction({
-          functionName:
-            "INCOME_STATEMENT",
+          limit: 3,
 
-          symbol:
-            normalizedSymbol,
-        }),
-
-        requestFunction({
-          functionName:
-            "BALANCE_SHEET",
-
-          symbol:
-            normalizedSymbol,
-        }),
-
-        requestFunction({
-          functionName:
-            "CASH_FLOW",
-
-          symbol:
-            normalizedSymbol,
-        }),
-
-        requestFunction({
-          functionName:
-            "EARNINGS",
-
-          symbol:
-            normalizedSymbol,
+          includeContent:
+            false,
         }),
       ]);
+
+    const marketauxProfile =
+      marketauxResult
+        ?.companyProfile ??
+      marketauxResult
+        ?.companyProfiles
+        ?.[
+          normalizedSymbol
+        ] ??
+      null;
+
+    const overview =
+      endpointResults
+        .OVERVIEW
+        ?.data ??
+      null;
+
+    const income =
+      endpointResults
+        .INCOME_STATEMENT
+        ?.data ??
+      null;
+
+    const balance =
+      endpointResults
+        .BALANCE_SHEET
+        ?.data ??
+      null;
+
+    const cashflow =
+      endpointResults
+        .CASH_FLOW
+        ?.data ??
+      null;
+
+    const earnings =
+      endpointResults
+        .EARNINGS
+        ?.data ??
+      null;
+
+    const endpointWarnings =
+      Object.values(
+        endpointResults,
+      )
+        .filter(
+          result =>
+            result?.approved !==
+            true,
+        )
+        .map(
+          result =>
+            `${result.functionName} unavailable: ${result.error}`,
+        );
 
     const incomeReports =
       income
@@ -1080,6 +2045,12 @@ export async function getCompanyFundamentalData({
         overview,
       );
 
+    const sourceComparison =
+      buildSourceComparison({
+        metadata,
+        marketauxProfile,
+      });
+
     const data = {
       symbol:
         normalizedSymbol,
@@ -1088,10 +2059,14 @@ export async function getCompanyFundamentalData({
         metadata.sector,
 
       industry:
-        metadata.industry,
+        sourceComparison
+          .industry
+          .selected,
 
       countryCode:
-        metadata.countryCode,
+        sourceComparison
+          .country
+          .selected,
 
       revenue:
         buildRevenue(
@@ -1135,21 +2110,57 @@ export async function getCompanyFundamentalData({
           earnings,
         ),
 
+      profitability:
+        buildProfitability(
+          overview,
+        ),
+
+      balanceSheet:
+        buildBalanceSheetQuality(
+          balanceReports,
+        ),
+
+      valuation:
+        buildValuation(
+          overview,
+        ),
+
+      capitalAllocation:
+        buildCapitalAllocation({
+          balanceReports,
+          overview,
+        }),
+
+      forward:
+        buildForwardOutlook(
+          overview,
+        ),
+
       /**
-       * We deliberately leave these null for now.
-       *
-       * Guidance requires another reliable source.
-       * Valuation should eventually be peer-relative
-       * rather than based on arbitrary absolute P/E thresholds.
+       * Guidance and economic sensitivity still require
+       * separate reliable evidence. Unknown stays null.
        */
-
       guidance: null,
-
-      valuation: null,
 
       sensitivity: null,
 
-      metadata,
+      sourceComparison,
+
+      marketauxProfile,
+
+      metadata: {
+        ...metadata,
+
+        industry:
+          sourceComparison
+            .industry
+            .selected,
+
+        countryCode:
+          sourceComparison
+            .country
+            .selected,
+      },
 
       source: {
         provider:
@@ -1158,8 +2169,44 @@ export async function getCompanyFundamentalData({
         retrievedAt:
           new Date()
             .toISOString(),
+
+        marketaux: {
+          approved:
+            marketauxResult
+              ?.approved ===
+            true,
+
+          status:
+            marketauxResult
+              ?.status ??
+            null,
+
+          articleCount:
+            marketauxResult
+              ?.count ??
+            0,
+        },
       },
     };
+
+    const hasMarketauxClassification =
+      [
+        marketauxProfile
+          ?.industry,
+        marketauxProfile
+          ?.country,
+        marketauxProfile
+          ?.name,
+        marketauxProfile
+          ?.exchange,
+      ]
+        .some(
+          value =>
+            textOrNull(
+              value,
+            ) !==
+            null,
+        );
 
     const evidenceFields = [
       data.revenue,
@@ -1170,11 +2217,18 @@ export async function getCompanyFundamentalData({
       data.debt,
       data.interestCoverage,
       data.earningsSurprise,
+      data.profitability,
+      data.balanceSheet,
+      data.valuation,
+      data.capitalAllocation,
+      data.forward,
+      data.guidance,
     ].filter(Boolean);
 
     if (
       evidenceFields.length ===
-      0
+        0 &&
+      !hasMarketauxClassification
     ) {
       return {
         approved: false,
@@ -1188,24 +2242,71 @@ export async function getCompanyFundamentalData({
         symbol:
           normalizedSymbol,
 
+        indicatorCount: 0,
+
         data: null,
+
+        cache: {
+          hit: false,
+          ttlMs:
+            CACHE_TTL_MS,
+        },
+
+        endpointStatus:
+          Object.fromEntries(
+            Object.entries(
+              endpointResults,
+            ).map(
+              (
+                [
+                  key,
+                  value,
+                ],
+              ) => [
+                key,
+                {
+                  approved:
+                    value
+                      ?.approved ===
+                    true,
+
+                  error:
+                    value
+                      ?.error ??
+                    null,
+                },
+              ],
+            ),
+          ),
 
         errors: [],
 
         warnings: [
           "No usable fundamental indicators were returned.",
+          ...endpointWarnings,
         ],
+
+        fetchedAt:
+          new Date()
+            .toISOString(),
       };
     }
 
-    return {
+    const status =
+      endpointWarnings.length >
+        0 ||
+      evidenceFields.length ===
+        0
+        ? "PARTIAL"
+        : "COMPLETE";
+
+    const result = {
       approved: true,
 
       provider:
         "ALPHA_VANTAGE",
 
-      status:
-        "COMPLETE",
+      status,
 
       symbol:
         normalizedSymbol,
@@ -1215,13 +2316,126 @@ export async function getCompanyFundamentalData({
 
       data,
 
-      warnings:
-        evidenceFields.length <
+      cache: {
+        hit: false,
+        ttlMs:
+          CACHE_TTL_MS,
+      },
+
+      endpointStatus:
+        Object.fromEntries(
+          Object.entries(
+            endpointResults,
+          ).map(
+            (
+              [
+                key,
+                value,
+              ],
+            ) => [
+              key,
+              {
+                approved:
+                  value
+                    ?.approved ===
+                  true,
+
+                error:
+                  value
+                    ?.error ??
+                  null,
+              },
+            ],
+          ),
+        ),
+
+      providers: {
+        alphaVantage: {
+          approved:
+            evidenceFields.length >
+            0,
+
+          endpointStatus:
+            Object.fromEntries(
+              Object.entries(
+                endpointResults,
+              ).map(
+                (
+                  [
+                    key,
+                    value,
+                  ],
+                ) => [
+                  key,
+                  {
+                    approved:
+                      value
+                        ?.approved ===
+                      true,
+
+                    error:
+                      value
+                        ?.error ??
+                      null,
+                  },
+                ],
+              ),
+            ),
+        },
+
+        marketaux: {
+          approved:
+            marketauxResult
+              ?.approved ===
+            true,
+
+          status:
+            marketauxResult
+              ?.status ??
+            null,
+
+          articleCount:
+            marketauxResult
+              ?.count ??
+            0,
+
+          companyProfile:
+            marketauxProfile,
+        },
+      },
+
+      sourceComparison,
+
+      warnings: [
+        ...(evidenceFields.length <
           5
           ? [
               "Fewer than five fundamental indicators are available.",
             ]
-          : [],
+          : []),
+
+        ...(
+          marketauxResult
+            ?.approved ===
+          true
+            ? []
+            : [
+                `Marketaux classification unavailable: ${
+                  marketauxResult
+                    ?.errors
+                    ?.[0] ??
+                  marketauxResult
+                    ?.warnings
+                    ?.[0] ??
+                  marketauxResult
+                    ?.status ??
+                  "UNKNOWN"
+                }`,
+              ]
+        ),
+
+        ...endpointWarnings,
+      ],
 
       errors: [],
 
@@ -1229,6 +2443,13 @@ export async function getCompanyFundamentalData({
         new Date()
           .toISOString(),
     };
+
+    setCachedResult(
+      normalizedSymbol,
+      result,
+    );
+
+    return result;
   } catch (error) {
     return {
       approved: false,

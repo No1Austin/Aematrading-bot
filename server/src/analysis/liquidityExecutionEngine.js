@@ -164,6 +164,8 @@ export const DEFAULT_LIQUIDITY_CONFIG =
     /**
      * Hard block.
      */
+    requireBidAsk: true,
+requireVolume: true,
     blockClosedMarket: true,
   });
 
@@ -861,6 +863,26 @@ export function analyzeLiquidityExecution({
         config,
       });
 
+      /**
+ * ======================================================
+ * REQUIRED QUOTE SAFETY
+ * ======================================================
+ *
+ * Live execution must not assume liquidity is safe when
+ * bid/ask information is missing.
+ *
+ * If configuration requires a quote, the trade is blocked.
+ */
+
+if (
+  config.requireBidAsk === true &&
+  spread.available !== true
+) {
+  blockers.push(
+    "Live bid/ask quote is required for execution analysis.",
+  );
+}
+
     /**
      * ======================================================
      * VOLUME
@@ -877,6 +899,16 @@ export function analyzeLiquidityExecution({
 
         config,
       });
+
+
+      if (
+  config.requireVolume === true &&
+  volume.available !== true
+) {
+  blockers.push(
+    "Reliable volume data is required for execution analysis.",
+  );
+}
 
     /**
      * ======================================================

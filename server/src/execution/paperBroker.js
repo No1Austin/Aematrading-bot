@@ -1035,6 +1035,597 @@ export function updatePaperPosition({
   }
 }
 
+
+
+/**
+ * ============================================================
+ * REDUCE PAPER POSITION
+ * ============================================================
+ *
+ * PURPOSE
+ * -------
+ *
+ * Partially close an existing paper position.
+ *
+ * Used by the Trade Thesis Monitor when the original
+ * reason for entering the trade begins to deteriorate.
+ *
+ * Example:
+ *
+ * 100 shares
+ * REDUCE_50
+ *
+ * → close 50 shares
+ * → keep 50 shares open
+ * → realize P&L on the 50 shares that were closed
+ *
+ * This function NEVER increases exposure.
+ */
+
+export function reducePaperPosition({
+  position,
+
+  currentPrice,
+
+  reductionPercent,
+
+  reason =
+    "THESIS_DETERIORATION",
+
+  slippagePercent = null,
+
+  config =
+    PAPER_BROKER_CONFIG,
+} = {}) {
+  try {
+    /**
+     * ======================================================
+     * VALIDATE POSITION
+     * ======================================================
+     */
+
+    if (
+      !position ||
+      position.status !==
+        PAPER_POSITION_STATUS.OPEN
+    ) {
+      return {
+        approved: false,
+
+        engine:
+          "PAPER_BROKER",
+
+        status:
+          "ERROR",
+
+        position,
+
+        execution: null,
+
+        errors: [
+          "Open paper position is required.",
+        ],
+
+        warnings: [],
+      };
+    }
+
+    if (
+      !positiveNumber(
+        currentPrice,
+      )
+    ) {
+      return {
+        approved: false,
+
+        engine:
+          "PAPER_BROKER",
+
+        status:
+          "ERROR",
+
+        position,
+
+        execution: null,
+
+        errors: [
+          "Valid current price is required.",
+        ],
+
+        warnings: [],
+      };
+    }
+
+    if (
+      !positiveNumber(
+        reductionPercent,
+      ) ||
+      Number(
+        reductionPercent,
+      ) > 1
+    ) {
+      return {
+        approved: false,
+
+        engine:
+          "PAPER_BROKER",
+
+        status:
+          "ERROR",
+
+        position,
+
+        execution: null,
+
+        errors: [
+          "Reduction percent must be greater than 0 and no greater than 1.",
+        ],
+
+        warnings: [],
+      };
+    }
+
+    const currentShares =
+      Math.floor(
+        Number(
+          position.shares,
+        ),
+      );
+
+    if (currentShares <= 0) {
+      return {
+        approved: false,
+
+        engine:
+          "PAPER_BROKER",
+
+        status:
+          "ERROR",
+
+        position,
+
+        execution: null,
+
+        errors: [
+          "Position has no shares available to reduce.",
+        ],
+
+        warnings: [],
+      };
+    }
+
+    /**
+     * ======================================================
+     * CALCULATE SHARES TO CLOSE
+     * ======================================================
+     */
+
+    let sharesToClose =
+      Math.floor(
+        currentShares *
+        Number(
+          reductionPercent,
+        ),
+      );
+
+    /**
+     * A valid reduction should remove at least one share.
+     */
+
+    sharesToClose =
+      Math.max(
+        1,
+        sharesToClose,
+      );
+
+    /**
+     * Partial reduction must not accidentally close more
+     * shares than currently exist.
+     */
+
+    sharesToClose =
+      Math.min(
+        currentShares,
+        sharesToClose,
+      );
+
+    /**
+     * If the requested reduction consumes the entire
+     * remaining position, use the normal close path.
+     */
+
+    if (
+      sharesToClose >=
+      currentShares
+    ) {
+      return closePaperPosition({
+        position,
+
+        currentPrice,
+
+        reason,
+
+        slippagePercent,
+
+        config,
+      });
+    }
+
+    /**
+     * ======================================================
+     * EXIT SLIPPAGE
+     * ======================================================
+     */
+
+    const slippage =
+      isFiniteNumber(
+        slippagePercent,
+      )
+        ? clamp(
+            slippagePercent,
+            0,
+            1,
+          )
+        : config
+            .defaultSlippagePercent;
+
+    const fillPrice =
+      applyExitSlippage({
+        side:
+          position.side,
+
+        price:
+          currentPrice,
+
+        slippagePercent:
+          slippage,
+      });
+
+    /**
+     * ======================================================
+     * REALIZED P&L ON CLOSED SHARES
+     * ======================================================
+     */
+
+    const entryPrice =
+      Number(
+        position.entryPrice,
+      );
+
+    let grossPnL = 0;
+
+    if (
+      position.side ===
+      TRADE_SIDE.LONG
+    ) {
+      grossPnL =
+        (
+          fillPrice -
+          entryPrice
+        ) *
+        sharesToClose;
+    }
+
+    if (
+      position.side ===
+      TRADE_SIDE.SHORT
+    ) {
+      grossPnL =
+        (
+          entryPrice -
+          fillPrice
+        ) *
+        sharesToClose;
+    }
+
+    const exitCommission =
+      calculateCommission({
+        shares:
+          sharesToClose,
+
+        config,
+      });
+
+    /**
+     * Allocate entry commission proportionally to
+     * the shares being removed.
+     */
+
+    const originalEntryCommission =
+      Number(
+        position
+          .entryCommission ??
+        0,
+      );
+
+    const allocatedEntryCommission =
+      currentShares > 0
+        ? originalEntryCommission *
+          (
+            sharesToClose /
+            currentShares
+          )
+        : 0;
+
+    const netPnL =
+      grossPnL -
+      allocatedEntryCommission -
+      exitCommission;
+
+    const remainingShares =
+      currentShares -
+      sharesToClose;
+
+    const previousRealizedPnL =
+      isFiniteNumber(
+        position.realizedPnL,
+      )
+        ? Number(
+            position.realizedPnL,
+          )
+        : 0;
+
+    const remainingEntryCommission =
+      Math.max(
+        0,
+        originalEntryCommission -
+        allocatedEntryCommission,
+      );
+
+    /**
+     * ======================================================
+     * UPDATE REMAINING POSITION
+     * ======================================================
+     */
+
+    const updatedPosition = {
+      ...position,
+
+      shares:
+        remainingShares,
+
+      currentPrice:
+        round(
+          fillPrice,
+          4,
+        ),
+
+      entryCommission:
+        round(
+          remainingEntryCommission,
+          2,
+        ),
+
+      realizedPnL:
+        round(
+          previousRealizedPnL +
+          netPnL,
+          2,
+        ),
+
+      lastReduction: {
+        reason,
+
+        sharesClosed:
+          sharesToClose,
+
+        sharesRemaining:
+          remainingShares,
+
+        reductionPercent:
+          round(
+            sharesToClose /
+            currentShares,
+            6,
+          ),
+
+        exitPrice:
+          round(
+            fillPrice,
+            4,
+          ),
+
+        grossPnL:
+          round(
+            grossPnL,
+            2,
+          ),
+
+        netPnL:
+          round(
+            netPnL,
+            2,
+          ),
+
+        timestamp:
+          new Date()
+            .toISOString(),
+      },
+
+      reductionHistory: [
+        ...(
+          Array.isArray(
+            position
+              .reductionHistory,
+          )
+            ? position
+                .reductionHistory
+            : []
+        ),
+
+        {
+          reason,
+
+          sharesClosed:
+            sharesToClose,
+
+          sharesRemaining:
+            remainingShares,
+
+          reductionPercent:
+            round(
+              sharesToClose /
+              currentShares,
+              6,
+            ),
+
+          exitPrice:
+            round(
+              fillPrice,
+              4,
+            ),
+
+          netPnL:
+            round(
+              netPnL,
+              2,
+            ),
+
+          timestamp:
+            new Date()
+              .toISOString(),
+        },
+      ],
+
+      updatedAt:
+        new Date()
+          .toISOString(),
+    };
+
+    /**
+     * Recalculate unrealized P&L for the remaining shares.
+     */
+
+    if (
+      position.side ===
+      TRADE_SIDE.LONG
+    ) {
+      updatedPosition
+        .unrealizedPnL =
+        round(
+          (
+            Number(
+              currentPrice,
+            ) -
+            entryPrice
+          ) *
+          remainingShares,
+          2,
+        );
+    }
+
+    if (
+      position.side ===
+      TRADE_SIDE.SHORT
+    ) {
+      updatedPosition
+        .unrealizedPnL =
+        round(
+          (
+            entryPrice -
+            Number(
+              currentPrice,
+            )
+          ) *
+          remainingShares,
+          2,
+        );
+    }
+
+    return {
+      approved: true,
+
+      engine:
+        "PAPER_BROKER",
+
+      status:
+        "POSITION_REDUCED",
+
+      position:
+        updatedPosition,
+
+      execution: {
+        action:
+          "PARTIAL_EXIT",
+
+        reason,
+
+        sharesClosed:
+          sharesToClose,
+
+        sharesRemaining:
+          remainingShares,
+
+        exitPrice:
+          round(
+            fillPrice,
+            4,
+          ),
+
+        grossPnL:
+          round(
+            grossPnL,
+            2,
+          ),
+
+        netPnL:
+          round(
+            netPnL,
+            2,
+          ),
+
+        reductionPercent:
+          round(
+            sharesToClose /
+            currentShares,
+            6,
+          ),
+
+        slippagePercent:
+          round(
+            slippage,
+            6,
+          ),
+      },
+
+      warnings: [],
+
+      errors: [],
+
+      timestamp:
+        new Date()
+          .toISOString(),
+    };
+  } catch (error) {
+    return {
+      approved: false,
+
+      engine:
+        "PAPER_BROKER",
+
+      status:
+        "ERROR",
+
+      position,
+
+      execution: null,
+
+      errors: [
+        error instanceof Error
+          ? error.message
+          : String(error),
+      ],
+
+      warnings: [
+        "Paper position reduction failed safely. Existing exposure was preserved.",
+      ],
+
+      timestamp:
+        new Date()
+          .toISOString(),
+    };
+  }
+}
 /**
  * ============================================================
  * CLOSE PAPER POSITION

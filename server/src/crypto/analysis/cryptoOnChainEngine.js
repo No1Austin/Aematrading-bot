@@ -1,0 +1,2 @@
+import{complete,insufficient}from"./cryptoEngineUtils.js";
+export default async function run(c,{supportingIntelligence=null}={}){const d=c?.preferredDirection??"LONG",bulk=supportingIntelligence?.onChain;if(Number.isFinite(Number(bulk?.score)))return complete("CRYPTO_ON_CHAIN",bulk.score,d,{...bulk.evidence,source:"BULK_RESEARCH_SNAPSHOT"});const m=c?.measurements??{},x=m?.onChain??{},score=x?.score??m?.onChainScore;if(!Number.isFinite(Number(score)))return insufficient("CRYPTO_ON_CHAIN",x);return complete("CRYPTO_ON_CHAIN",score,d,x);}

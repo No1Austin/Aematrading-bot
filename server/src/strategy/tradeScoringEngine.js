@@ -1,5 +1,4 @@
 import {
-  RISK_CONFIG,
   TRADE_SIDE,
 } from "../config/riskConfig.js";
 
@@ -8,31 +7,75 @@ import {
  * TRADE SCORING ENGINE
  * ============================================================
  *
- * PURPOSE
- * -------
+ * FINAL SCORE ARCHITECTURE
+ * ------------------------
  *
- * Convert technical / market evidence into a normalized
- * 0 - 100 score for:
+ * Technical Analysis              30
+ * Company Fundamentals            30
+ * Macro / Market Regime           10
+ * News / Event Intelligence       10
+ * Institutional Position           7.5
+ * Historical Intelligence          5
+ * Social / Market Behaviour        5
+ * Country / Economic Conditions    2.5
+ *                                ----
+ * DIRECTIONAL TOTAL              100
  *
- * - LONG setups
- * - SHORT setups
+ * Liquidity and Risk / Reward are execution gates, not score points.
+ * Cross-engine consensus is derived evidence and is not double-counted.
  *
- * This engine does NOT execute trades.
+ * Fundamentals and institutional positioning are independent
+ * directional engines. Missing optional evidence remains unavailable
+ * and lowers evidence coverage rather than becoming artificial support.
  *
- * It only answers:
+ * Minimum eligibility:
  *
- * "How strong is this setup?"
+ * 80 / 100
  *
- * A score must still pass:
+ * IMPORTANT
+ * ---------
  *
- * - Risk checks
- * - Liquidity checks
- * - Volatility checks
- * - Portfolio checks
- * - Market regime checks
+ * A score >= 80 does NOT execute a trade.
  *
- * before execution can ever happen.
+ * It only means:
+ *
+ * TRADE CANDIDATE ELIGIBLE
+ *
+ * The trade must still pass:
+ *
+ * - event freeze
+ * - risk manager
+ * - account protection
+ * - portfolio protection
+ * - position sizing
+ * - execution checks
  */
+
+/**
+ * ============================================================
+ * CONFIGURATION
+ * ============================================================
+ */
+
+export const FINAL_SCORING_CONFIG =
+  Object.freeze({
+    minimumScore: 80,
+
+    ambiguousDifference: 8,
+
+    // Directional research score only. Execution quality is handled
+    // separately by gates and never dilutes research conviction.
+    weights: {
+      technical: 30,
+      company: 30,
+      macroRegime: 10,
+      events: 10,
+      institutional: 7.5,
+      historical: 5,
+      social: 5,
+      country: 2.5,
+    },
+  });
 
 /**
  * ============================================================
@@ -41,6 +84,14 @@ import {
  */
 
 function isFiniteNumber(value) {
+  if (
+    value === null ||
+    value === undefined ||
+    value === ""
+  ) {
+    return false;
+  }
+
   return Number.isFinite(
     Number(value),
   );
@@ -83,498 +134,443 @@ function round(
 
 /**
  * ============================================================
- * WEIGHT HELPERS
+ * DIRECTIONAL SUPPORT
  * ============================================================
+ *
+ * Standard expected format:
+ *
+ * directionalSupport: {
+ *   long: 0-1,
+ *   short: 0-1
+ * }
  */
 
-function getWeight(name) {
-  return Number(
-    RISK_CONFIG.scoring.weights[
-      name
-    ] ?? 0,
-  );
-}
+function getDirectionalSupport({
+  result,
+  side,
+}) {
+  if (!result) {
+    return null;
+  }
 
-function normalizeComponent(
-  value,
-) {
-  return clamp(
-    value,
-    0,
-    1,
-  );
-}
+  const support =
+    side === TRADE_SIDE.LONG
+      ? result
+          ?.directionalSupport
+          ?.long
+      : result
+          ?.directionalSupport
+          ?.short;
 
-function applyWeight(
-  normalizedValue,
-  weight,
-) {
-  return (
-    normalizeComponent(
-      normalizedValue,
-    ) *
-    Number(weight)
-  );
+  if (
+    isFiniteNumber(
+      support,
+    )
+  ) {
+    return clamp(
+      support,
+      0,
+      1,
+    );
+  }
+
+  /**
+   * Historical / consensus engines may
+   * already calculate pointContribution.
+   *
+   * We still prefer directionalSupport,
+   * because the scoring engine owns the
+   * final weight calculation.
+   */
+
+  return null;
 }
 
 /**
  * ============================================================
- * TREND SCORE
+ * TECHNICAL SUPPORT
  * ============================================================
+ *
+ * The technical engine currently has a slightly
+ * different output structure, so normalize it here.
  */
 
-function scoreTrend({
+function getTechnicalSupport({
+  technical,
   side,
-  trend,
 }) {
   if (
-    !trend ||
-    !trend.direction
+    !technical ||
+    technical.approved !== true
   ) {
-    return 0;
+    return null;
   }
 
-  const strength =
-    isFiniteNumber(
-      trend.strength,
-    )
-      ? normalizeComponent(
-          trend.strength,
-        )
-      : 0;
+  if (
+    technical
+      ?.directionalSupport
+  ) {
+    return getDirectionalSupport({
+      result:
+        technical,
 
-  if (side === TRADE_SIDE.LONG) {
-    if (
-      trend.direction ===
-      "STRONG_BULLISH"
-    ) {
-      return Math.max(
-        0.9,
-        strength,
-      );
-    }
-
-    if (
-      trend.direction ===
-      "BULLISH"
-    ) {
-      return Math.max(
-        0.7,
-        strength,
-      );
-    }
-
-    if (
-      trend.direction ===
-      "SIDEWAYS"
-    ) {
-      return 0.3;
-    }
-
-    return 0;
+      side,
+    });
   }
 
-  if (side === TRADE_SIDE.SHORT) {
-    if (
-      trend.direction ===
-      "STRONG_BEARISH"
-    ) {
-      return Math.max(
-        0.9,
-        strength,
-      );
-    }
+  const trend =
+    technical
+      ?.trend
+      ?.direction;
 
-    if (
-      trend.direction ===
-      "BEARISH"
-    ) {
-      return Math.max(
-        0.7,
-        strength,
-      );
-    }
-
-    if (
-      trend.direction ===
-      "SIDEWAYS"
-    ) {
-      return 0.3;
-    }
-
-    return 0;
-  }
-
-  return 0;
-}
-
-/**
- * ============================================================
- * MOMENTUM SCORE
- * ============================================================
- */
-
-function scoreMomentum({
-  side,
-  indicators,
-}) {
-  if (!indicators) {
-    return 0;
-  }
+  const bias =
+    technical
+      ?.bias
+      ?.direction;
 
   let score = 0;
   let parts = 0;
 
   /**
-   * MACD contribution
+   * Trend contribution.
    */
-  const macdDirection =
-    indicators.macd
-      ?.analysis
-      ?.direction;
 
-  if (macdDirection) {
-    parts += 1;
-
-    if (
-      side === TRADE_SIDE.LONG &&
-      macdDirection ===
-        "BULLISH"
-    ) {
-      score += 1;
-    } else if (
-      side ===
-        TRADE_SIDE.SHORT &&
-      macdDirection ===
-        "BEARISH"
-    ) {
-      score += 1;
-    } else if (
-      macdDirection ===
-      "NEUTRAL"
-    ) {
-      score += 0.4;
-    }
-  }
-
-  /**
-   * RSI contribution
-   */
-  const rsi =
-    indicators.rsi;
-
-  if (rsi) {
+  if (trend) {
     parts += 1;
 
     if (
       side === TRADE_SIDE.LONG
     ) {
-      score +=
-        Number(
-          rsi.bullishScore ??
-          0,
-        );
+      if (
+        trend ===
+        "STRONG_BULLISH"
+      ) {
+        score += 1;
+      } else if (
+        trend ===
+        "BULLISH"
+      ) {
+        score += 0.8;
+      } else if (
+        trend ===
+        "SIDEWAYS"
+      ) {
+        score += 0.4;
+      }
     }
 
     if (
       side === TRADE_SIDE.SHORT
     ) {
-      score +=
-        Number(
-          rsi.bearishScore ??
-          0,
-        );
+      if (
+        trend ===
+        "STRONG_BEARISH"
+      ) {
+        score += 1;
+      } else if (
+        trend ===
+        "BEARISH"
+      ) {
+        score += 0.8;
+      } else if (
+        trend ===
+        "SIDEWAYS"
+      ) {
+        score += 0.4;
+      }
     }
   }
 
-  if (parts === 0) {
-    return 0;
-  }
+  /**
+   * Bias contribution.
+   */
 
-  return normalizeComponent(
-    score / parts,
-  );
-}
-
-/**
- * ============================================================
- * VOLUME SCORE
- * ============================================================
- */
-
-function scoreVolume({
-  volume,
-}) {
-  if (!volume) {
-    return 0;
-  }
-
-  const ratio =
-    Number(
-      volume.volumeRatio,
-    );
-
-  if (!isFiniteNumber(ratio)) {
-    return 0;
-  }
-
-  if (ratio >= 2) {
-    return 1;
-  }
-
-  if (ratio >= 1.5) {
-    return 0.9;
-  }
-
-  if (ratio >= 1.2) {
-    return 0.75;
-  }
-
-  if (ratio >= 1) {
-    return 0.5;
-  }
-
-  if (ratio >= 0.75) {
-    return 0.25;
-  }
-
-  return 0.1;
-}
-
-/**
- * ============================================================
- * TECHNICAL SETUP SCORE
- * ============================================================
- */
-
-function scoreTechnicalSetup({
-  side,
-  technical,
-}) {
-  if (!technical) {
-    return 0;
-  }
-
-  let score = 0;
-  let parts = 0;
-
-  const biasDirection =
-    technical.bias
-      ?.direction;
-
-  if (biasDirection) {
+  if (bias) {
     parts += 1;
 
     if (
       side === TRADE_SIDE.LONG &&
-      biasDirection === "LONG"
+      bias === "LONG"
     ) {
       score += 1;
     } else if (
-      side ===
-        TRADE_SIDE.SHORT &&
-      biasDirection === "SHORT"
+      side === TRADE_SIDE.SHORT &&
+      bias === "SHORT"
     ) {
       score += 1;
     } else if (
-      biasDirection ===
-      "NEUTRAL"
+      bias === "NEUTRAL"
     ) {
       score += 0.35;
     }
   }
 
+  /**
+   * Confirmation signals.
+   */
+
   const confirmation =
-    technical.confirmation;
+    technical
+      ?.confirmation;
 
   if (confirmation) {
-    /**
-     * Trend confirmation
-     */
     parts += 1;
+
+    let confirmationScore =
+      0;
+
+    let confirmationParts =
+      0;
 
     if (
-      side === TRADE_SIDE.LONG &&
-      confirmation.bullishTrend
+      side === TRADE_SIDE.LONG
     ) {
-      score += 1;
-    } else if (
-      side ===
-        TRADE_SIDE.SHORT &&
-      confirmation.bearishTrend
-    ) {
-      score += 1;
-    }
+      confirmationParts += 1;
 
-    /**
-     * Momentum confirmation
-     */
-    parts += 1;
+      if (
+        confirmation
+          .bullishTrend
+      ) {
+        confirmationScore +=
+          1;
+      }
+
+      confirmationParts += 1;
+
+      if (
+        confirmation
+          .bullishMomentum
+      ) {
+        confirmationScore +=
+          1;
+      }
+
+      confirmationParts += 1;
+
+      if (
+        confirmation
+          .aboveVWAP === true
+      ) {
+        confirmationScore +=
+          1;
+      }
+    }
 
     if (
-      side === TRADE_SIDE.LONG &&
-      confirmation.bullishMomentum
+      side === TRADE_SIDE.SHORT
     ) {
-      score += 1;
-    } else if (
-      side ===
-        TRADE_SIDE.SHORT &&
-      confirmation.bearishMomentum
-    ) {
-      score += 1;
+      confirmationParts += 1;
+
+      if (
+        confirmation
+          .bearishTrend
+      ) {
+        confirmationScore +=
+          1;
+      }
+
+      confirmationParts += 1;
+
+      if (
+        confirmation
+          .bearishMomentum
+      ) {
+        confirmationScore +=
+          1;
+      }
+
+      confirmationParts += 1;
+
+      if (
+        confirmation
+          .belowVWAP === true
+      ) {
+        confirmationScore +=
+          1;
+      }
     }
 
-    /**
-     * VWAP relationship
-     */
-    parts += 1;
-
-    if (
-      side === TRADE_SIDE.LONG &&
-      confirmation.aboveVWAP ===
-        true
-    ) {
-      score += 1;
-    } else if (
-      side ===
-        TRADE_SIDE.SHORT &&
-      confirmation.belowVWAP ===
-        true
-    ) {
-      score += 1;
-    }
-
-    /**
-     * Volume confirmation
-     */
-    parts += 1;
+    confirmationParts += 1;
 
     if (
       confirmation.volume ===
       true
     ) {
-      score += 1;
+      confirmationScore +=
+        1;
+    }
+
+    if (
+      confirmationParts > 0
+    ) {
+      score +=
+        confirmationScore /
+        confirmationParts;
     }
   }
 
-  if (parts === 0) {
-    return 0;
+  if (parts <= 0) {
+    return null;
   }
 
-  return normalizeComponent(
+  return clamp(
     score / parts,
+    0,
+    1,
   );
 }
 
 /**
  * ============================================================
- * VOLATILITY QUALITY SCORE
+ * LIQUIDITY SUPPORT
  * ============================================================
+ *
+ * Liquidity is primarily quality/execution evidence rather
+ * than directional market opinion.
+ *
+ * Therefore, both LONG and SHORT can receive the same
+ * liquidity quality score.
  */
 
-function scoreVolatility({
-  atrPercent,
-}) {
+function getLiquiditySupport(
+  liquidity,
+) {
+  if (!liquidity) {
+    return null;
+  }
+
   if (
-    !isFiniteNumber(
-      atrPercent,
+    isFiniteNumber(
+      liquidity.qualityScore,
     )
   ) {
-    return 0;
-  }
-
-  const atr =
-    Number(atrPercent);
-
-  /**
-   * Extremely low volatility:
-   * weak intraday opportunity.
-   */
-  if (atr < 0.002) {
-    return 0.1;
-  }
-
-  /**
-   * Healthy range.
-   */
-  if (
-    atr >= 0.002 &&
-    atr < 0.015
-  ) {
-    return 0.9;
+    return clamp(
+      liquidity.qualityScore,
+      0,
+      1,
+    );
   }
 
   if (
-    atr >= 0.015 &&
-    atr < 0.03
+    isFiniteNumber(
+      liquidity.score,
+    )
   ) {
-    return 1;
+    const score =
+      Number(
+        liquidity.score,
+      );
+
+    /**
+     * If score is -1 to +1,
+     * convert quality from magnitude.
+     *
+     * Negative directional liquidity
+     * does not automatically make
+     * execution impossible.
+     */
+
+    if (
+      score >= -1 &&
+      score <= 1
+    ) {
+      const stress =
+        isFiniteNumber(
+          liquidity
+            ?.stressScore,
+        )
+          ? clamp(
+              liquidity
+                .stressScore,
+              0,
+              1,
+            )
+          : 0;
+
+      return clamp(
+        1 - stress,
+        0,
+        1,
+      );
+    }
   }
 
-  /**
-   * Higher volatility can create opportunity
-   * but also increases risk.
-   */
   if (
-    atr >= 0.03 &&
-    atr < 0.05
+    liquidity.approved === true
   ) {
-    return 0.7;
+    return 0.75;
   }
 
-  if (
-    atr >= 0.05 &&
-    atr <= 0.08
-  ) {
-    return 0.4;
-  }
-
-  return 0;
+  return null;
 }
 
 /**
  * ============================================================
- * REWARD / RISK SCORE
+ * RISK / REWARD SUPPORT
  * ============================================================
  */
 
-function scoreRewardRisk({
-  rewardRiskRatio,
+function getRiskRewardSupport({
+  riskReward,
+  side,
 }) {
-  if (
-    !isFiniteNumber(
-      rewardRiskRatio,
-    )
-  ) {
-    /**
-     * Some trend trades may not
-     * have a fixed target.
-     */
-    return 0.5;
+  if (!riskReward) {
+    return null;
   }
 
-  const rr =
-    Number(
-      rewardRiskRatio,
-    );
+  const directional =
+    getDirectionalSupport({
+      result:
+        riskReward,
 
-  if (rr >= 4) {
+      side,
+    });
+
+  if (
+    directional !== null
+  ) {
+    return directional;
+  }
+
+  const ratio =
+    side === TRADE_SIDE.LONG
+      ? riskReward
+          ?.longRewardRiskRatio ??
+        riskReward
+          ?.rewardRiskRatio
+      : riskReward
+          ?.shortRewardRiskRatio ??
+        riskReward
+          ?.rewardRiskRatio;
+
+  if (
+    !isFiniteNumber(
+      ratio,
+    )
+  ) {
+    return null;
+  }
+
+  const value =
+    Number(ratio);
+
+  if (value >= 4) {
     return 1;
   }
 
-  if (rr >= 3) {
+  if (value >= 3) {
     return 0.9;
   }
 
-  if (rr >= 2) {
+  if (value >= 2) {
     return 0.8;
   }
 
-  if (rr >= 1.5) {
+  if (value >= 1.5) {
     return 0.6;
   }
 
-  if (rr >= 1) {
+  if (value >= 1) {
     return 0.3;
   }
 
@@ -583,213 +579,180 @@ function scoreRewardRisk({
 
 /**
  * ============================================================
- * MARKET REGIME SCORE
- * ============================================================
- */
-
-function scoreMarketRegime({
-  side,
-  regime,
-}) {
-  switch (regime) {
-    case "STRONG_BULL":
-      return side ===
-        TRADE_SIDE.LONG
-        ? 1
-        : 0.2;
-
-    case "BULL":
-      return side ===
-        TRADE_SIDE.LONG
-        ? 0.9
-        : 0.35;
-
-    case "SIDEWAYS":
-      return 0.5;
-
-    case "BEAR":
-      return side ===
-        TRADE_SIDE.SHORT
-        ? 0.9
-        : 0.35;
-
-    case "STRONG_BEAR":
-      return side ===
-        TRADE_SIDE.SHORT
-        ? 1
-        : 0.2;
-
-    case "HIGH_VOLATILITY":
-      return 0.25;
-
-    default:
-      return 0.4;
-  }
-}
-
-/**
- * ============================================================
- * LIQUIDITY QUALITY SCORE
- * ============================================================
- */
-
-function scoreLiquidity({
-  spreadPercent,
-  averageDailyVolume,
-}) {
-  let score = 0;
-  let parts = 0;
-
-  if (
-    isFiniteNumber(
-      spreadPercent,
-    )
-  ) {
-    parts += 1;
-
-    const spread =
-      Number(
-        spreadPercent,
-      );
-
-    if (spread <= 0.0005) {
-      score += 1;
-    } else if (
-      spread <= 0.001
-    ) {
-      score += 0.9;
-    } else if (
-      spread <= 0.002
-    ) {
-      score += 0.7;
-    } else if (
-      spread <= 0.003
-    ) {
-      score += 0.5;
-    }
-  }
-
-  if (
-    isFiniteNumber(
-      averageDailyVolume,
-    )
-  ) {
-    parts += 1;
-
-    const volume =
-      Number(
-        averageDailyVolume,
-      );
-
-    if (
-      volume >=
-      10_000_000
-    ) {
-      score += 1;
-    } else if (
-      volume >=
-      5_000_000
-    ) {
-      score += 0.9;
-    } else if (
-      volume >=
-      1_000_000
-    ) {
-      score += 0.7;
-    } else if (
-      volume >=
-      500_000
-    ) {
-      score += 0.5;
-    }
-  }
-
-  if (parts === 0) {
-    return 0;
-  }
-
-  return normalizeComponent(
-    score / parts,
-  );
-}
-
-/**
- * ============================================================
- * NEWS / SENTIMENT SCORE
+ * HISTORICAL INTELLIGENCE SUPPORT
  * ============================================================
  *
- * Placeholder until we build
- * the news/sentiment engine.
+ * The bot's own completed-trade history is preferred when it
+ * has a usable COMPLETE outcome result.
+ *
+ * If bot-history evidence is unavailable / insufficient, fall
+ * back to the existing market historical analogue engine.
+ *
+ * IMPORTANT:
+ * - Never score both at once.
+ * - Never convert missing bot history into zero support.
+ * - Preserve the existing 5-point historical slot.
  */
 
-function scoreSentiment({
+function getHistoricalIntelligenceSupport({
+  historyOutcome,
+  historical,
   side,
-  sentiment,
 }) {
-  if (!sentiment) {
-    return 0.5;
+  const outcomeStatus =
+    String(
+      historyOutcome?.status ??
+      "",
+    )
+      .trim()
+      .toUpperCase();
+
+  const outcomeConfidence =
+    String(
+      historyOutcome?.confidence ??
+      "",
+    )
+      .trim()
+      .toUpperCase();
+
+  const outcomeUsable =
+    historyOutcome?.approved === true &&
+    outcomeStatus === "COMPLETE" &&
+    outcomeConfidence !== "INSUFFICIENT";
+
+  if (outcomeUsable) {
+    const support =
+      getDirectionalSupport({
+        result:
+          historyOutcome,
+
+        side,
+      });
+
+    if (support !== null) {
+      return {
+        support,
+
+        source:
+          "TRADE_HISTORY_OUTCOME",
+
+        engineStatus:
+          historyOutcome
+            ?.status ??
+          null,
+      };
+    }
   }
 
-  const bullish =
-    Number(
-      sentiment.bullishScore ??
-      0.5,
-    );
+  const fallbackSupport =
+    getDirectionalSupport({
+      result:
+        historical,
 
-  const bearish =
-    Number(
-      sentiment.bearishScore ??
-      0.5,
-    );
+      side,
+    });
 
-  if (
-    side === TRADE_SIDE.LONG
-  ) {
-    return normalizeComponent(
-      bullish,
-    );
+  if (fallbackSupport !== null) {
+    return {
+      support:
+        fallbackSupport,
+
+      source:
+        "HISTORICAL_ANALOGUE",
+
+      engineStatus:
+        historical
+          ?.status ??
+        null,
+    };
   }
 
-  return normalizeComponent(
-    bearish,
-  );
+  return {
+    support: null,
+
+    source:
+      "UNAVAILABLE",
+
+    engineStatus:
+      historyOutcome
+        ?.status ??
+      historical
+        ?.status ??
+      null,
+  };
 }
 
 /**
  * ============================================================
- * BUILD WEIGHTED COMPONENT
+ * COMPONENT BUILDER
  * ============================================================
  */
 
 function buildComponent({
   name,
-  normalizedScore,
+
+  maximumPoints,
+
+  support,
+
+  required = false,
+
+  engineStatus = null,
+
+  source = null,
 }) {
-  const weight =
-    getWeight(name);
+  const available =
+    isFiniteNumber(
+      support,
+    );
+
+  // Missing/unusable directional evidence is neutral, not bearish.
+  // We still keep `available: false` so evidence coverage remains honest.
+  const neutralFallbackApplied =
+    !available;
 
   const normalized =
-    normalizeComponent(
-      normalizedScore,
-    );
+    available
+      ? clamp(
+          support,
+          0,
+          1,
+        )
+      : 0.5;
 
   return {
     name,
 
-    normalizedScore:
+    maximumPoints,
+
+    available,
+
+    neutralFallbackApplied,
+
+    required,
+
+    engineStatus,
+
+    source,
+
+    support:
       round(
         normalized,
         4,
       ),
 
-    weight,
+    observedSupport:
+      available
+        ? round(
+            normalized,
+            4,
+          )
+        : null,
 
     points:
       round(
-        applyWeight(
-          normalized,
-          weight,
-        ),
+        normalized *
+          maximumPoints,
         2,
       ),
   };
@@ -797,25 +760,42 @@ function buildComponent({
 
 /**
  * ============================================================
- * SCORE ONE DIRECTION
+ * SCORE ONE SIDE
  * ============================================================
  */
 
-export function scoreTradeDirection({
+export function calculateSideScore({
   side,
 
-  technical,
+  technical = null,
 
-  regime,
+  macro = null,
 
-  rewardRiskRatio,
+  marketRegime = null,
 
-  spreadPercent,
+  events = null,
 
-  averageDailyVolume,
+  company = null,
 
-  sentiment = null,
-}) {
+  country = null,
+
+  social = null,
+
+  institutional = null,
+
+  historical = null,
+
+  historyOutcome = null,
+
+  liquidity = null,
+
+  riskReward = null,
+
+  consensus = null,
+
+  config =
+    FINAL_SCORING_CONFIG,
+} = {}) {
   if (
     side !== TRADE_SIDE.LONG &&
     side !== TRADE_SIDE.SHORT
@@ -823,208 +803,398 @@ export function scoreTradeDirection({
     return {
       approved: false,
 
+      side,
+
+      score: 0,
+
+      passed: false,
+
       errors: [
         "Trade side must be LONG or SHORT.",
       ],
     };
   }
 
-  if (
-    !technical ||
-    technical.approved !== true
-  ) {
-    return {
-      approved: false,
+  /**
+   * ========================================================
+   * MACRO + REGIME
+   * ========================================================
+   *
+   * Macro/Market Regime together have 15 points.
+   *
+   * We blend them rather than awarding both separately,
+   * because otherwise macro conditions would be counted twice.
+   */
 
-      errors: [
-        "Approved technical analysis is required.",
-      ],
-    };
+  const macroSupport =
+    getDirectionalSupport({
+      result:
+        macro,
+
+      side,
+    });
+
+  const regimeSupport =
+    getDirectionalSupport({
+      result:
+        marketRegime,
+
+      side,
+    });
+
+  let macroRegimeSupport =
+    null;
+
+  if (
+    macroSupport !== null &&
+    regimeSupport !== null
+  ) {
+    macroRegimeSupport =
+      (
+        macroSupport *
+        0.45
+      ) +
+      (
+        regimeSupport *
+        0.55
+      );
+  } else if (
+    regimeSupport !== null
+  ) {
+    macroRegimeSupport =
+      regimeSupport;
+  } else if (
+    macroSupport !== null
+  ) {
+    macroRegimeSupport =
+      macroSupport;
   }
 
-  const indicators =
-    technical.indicators;
+  /**
+   * ========================================================
+   * HISTORICAL INTELLIGENCE
+   * ========================================================
+   *
+   * One five-point historical slot only.
+   *
+   * Priority:
+   * 1. Usable completed bot-trade outcome history.
+   * 2. Existing market historical analogue evidence.
+   * 3. Unavailable evidence remains unavailable.
+   *
+   * This prevents double-counting and prevents missing
+   * historical evidence from being represented as real
+   * zero-support evidence.
+   */
+  const historicalIntelligence =
+    getHistoricalIntelligenceSupport({
+      historyOutcome,
+      historical,
+      side,
+    });
+
+  /**
+   * ========================================================
+   * DIRECTIONAL RESEARCH COMPONENTS
+   * ========================================================
+   *
+   * Technical + Fundamental/company evidence form 60% of the
+   * intended research budget. Institutional evidence is its own
+   * 7.5-point engine and never reduces the fundamental allocation.
+   * Missing/unusable evidence remains unavailable for coverage, but
+   * contributes neutral 50% support instead of artificial zero support.
+   * This prevents missing data from being interpreted as opposition.
+   */
 
   const components = [
     buildComponent({
       name:
-        "technicalSetup",
+        "TECHNICAL",
 
-      normalizedScore:
-        scoreTechnicalSetup({
-          side,
+      maximumPoints:
+        config.weights
+          .technical,
+
+      support:
+        getTechnicalSupport({
           technical,
-        }),
-    }),
-
-    buildComponent({
-      name:
-        "trend",
-
-      normalizedScore:
-        scoreTrend({
           side,
-          trend:
-            technical.trend,
         }),
+
+      required: true,
+
+      engineStatus:
+        technical
+          ?.status ??
+        null,
     }),
 
     buildComponent({
       name:
-        "momentum",
+        "MACRO_REGIME",
 
-      normalizedScore:
-        scoreMomentum({
+      maximumPoints:
+        config.weights
+          .macroRegime,
+
+      support:
+        macroRegimeSupport,
+
+      required: true,
+
+      engineStatus:
+        marketRegime
+          ?.status ??
+        macro
+          ?.status ??
+        null,
+    }),
+
+    buildComponent({
+      name:
+        "EVENTS",
+
+      maximumPoints:
+        config.weights
+          .events,
+
+      support:
+        getDirectionalSupport({
+          result:
+            events,
+
           side,
-          indicators,
         }),
+
+      engineStatus:
+        events
+          ?.status ??
+        null,
     }),
 
     buildComponent({
       name:
-        "volume",
+        "COMPANY",
 
-      normalizedScore:
-        scoreVolume({
-          volume:
-            indicators.volume,
-        }),
-    }),
+      maximumPoints:
+        config.weights
+          .company,
 
-    buildComponent({
-      name:
-        "marketRegime",
+      support:
+        getDirectionalSupport({
+          result:
+            company,
 
-      normalizedScore:
-        scoreMarketRegime({
           side,
-          regime,
         }),
+
+      engineStatus:
+        company
+          ?.status ??
+        null,
     }),
 
     buildComponent({
       name:
-        "volatilityQuality",
+        "INSTITUTIONAL",
 
-      normalizedScore:
-        scoreVolatility({
-          atrPercent:
-            indicators.atr
-              ?.percent,
-        }),
-    }),
+      maximumPoints:
+        config.weights
+          .institutional,
 
-    buildComponent({
-      name:
-        "rewardRisk",
+      support:
+        getDirectionalSupport({
+          result:
+            institutional,
 
-      normalizedScore:
-        scoreRewardRisk({
-          rewardRiskRatio,
-        }),
-    }),
-
-    buildComponent({
-      name:
-        "newsSentiment",
-
-      normalizedScore:
-        scoreSentiment({
           side,
-          sentiment,
         }),
+
+      required: false,
+
+      engineStatus:
+        institutional
+          ?.status ??
+        null,
+
+      source:
+        "INSTITUTIONAL_POSITION",
     }),
 
     buildComponent({
       name:
-        "liquidityQuality",
+        "COUNTRY",
 
-      normalizedScore:
-        scoreLiquidity({
-          spreadPercent,
-          averageDailyVolume,
+      maximumPoints:
+        config.weights
+          .country,
+
+      support:
+        getDirectionalSupport({
+          result:
+            country,
+
+          side,
         }),
+
+      engineStatus:
+        country
+          ?.status ??
+        null,
     }),
+
+    buildComponent({
+      name:
+        "SOCIAL",
+
+      maximumPoints:
+        config.weights
+          .social,
+
+      support:
+        getDirectionalSupport({
+          result:
+            social,
+
+          side,
+        }),
+
+      engineStatus:
+        social
+          ?.status ??
+        null,
+    }),
+
+    buildComponent({
+      name:
+        "HISTORICAL",
+
+      maximumPoints:
+        config.weights
+          .historical,
+
+      support:
+        historicalIntelligence
+          .support,
+
+      required: false,
+
+      engineStatus:
+        historicalIntelligence
+          .engineStatus,
+
+      source:
+        historicalIntelligence
+          .source,
+    }),
+
   ];
 
-  const totalPoints =
+  /**
+   * ========================================================
+   * DIRECTIONAL CONVICTION + EVIDENCE COVERAGE
+   * ========================================================
+   *
+   * Raw points preserve the intended 100-point architecture.
+   * Missing/unusable evidence contributes 50% of its allocation while
+   * remaining unavailable for evidence-coverage reporting. This makes
+   * UNKNOWN neutral rather than accidentally bearish/bullish.
+   */
+
+  const rawPoints =
     components.reduce(
-      (
-        sum,
-        component,
-      ) =>
-        sum +
-        Number(
-          component.points ||
-          0,
-        ),
+      (sum, component) =>
+        sum + Number(component.points ?? 0),
       0,
     );
 
-  const maximumPoints =
+  const availablePoints =
     components.reduce(
-      (
-        sum,
-        component,
-      ) =>
+      (sum, component) =>
         sum +
-        Number(
-          component.weight ||
-          0,
-        ),
+        (component.available
+          ? Number(component.maximumPoints ?? 0)
+          : 0),
       0,
     );
 
-  const score =
-    maximumPoints > 0
-      ? (
-          totalPoints /
-          maximumPoints
-        ) * 100
+  const intendedPoints =
+    components.reduce(
+      (sum, component) =>
+        sum + Number(component.maximumPoints ?? 0),
+      0,
+    );
+
+  const coverage =
+    intendedPoints > 0
+      ? availablePoints / intendedPoints
       : 0;
 
-  const finalScore =
-    round(
-      clamp(
-        score,
-        0,
-        100,
-      ),
-      2,
+  const score =
+    intendedPoints > 0
+      ? round(
+          clamp(
+            (rawPoints / intendedPoints) * 100,
+            0,
+            100,
+          ),
+          2,
+        )
+      : 0;
+
+  const missingRequired =
+    components.filter(
+      (component) =>
+        component.required &&
+        !component.available,
     );
+
+  const passed =
+    score >= config.minimumScore &&
+    missingRequired.length === 0;
 
   return {
     approved: true,
 
     side,
 
-    score:
-      finalScore,
-
-    passed:
-      finalScore >=
-      RISK_CONFIG.entry
-        .minimumScore,
+    score,
 
     minimumRequiredScore:
-      RISK_CONFIG.entry
-        .minimumScore,
+      config.minimumScore,
+
+    passed,
+
+    coverage:
+      round(
+        coverage,
+        4,
+      ),
+
+    evidenceCoveragePercent:
+      round(coverage * 100, 2),
+
+    rawPoints:
+      round(rawPoints, 2),
+
+    availablePoints,
+
+    intendedPoints,
+
+    neutralFallbackPolicy: {
+      enabled: true,
+      support: 0.5,
+      rule:
+        "Missing, insufficient, stale or errored directional evidence is neutral for scoring while remaining unavailable for coverage.",
+    },
 
     components,
 
-    totals: {
-      points:
-        round(
-          totalPoints,
-          2,
-        ),
-
-      maximumPoints:
-        round(
-          maximumPoints,
-          2,
-        ),
-    },
+    missingRequired:
+      missingRequired.map(
+        (component) =>
+          component.name,
+      ),
 
     errors: [],
   };
@@ -1032,170 +1202,582 @@ export function scoreTradeDirection({
 
 /**
  * ============================================================
- * SCORE BOTH LONG AND SHORT
+ * FINAL OPPORTUNITY SCORE
  * ============================================================
- *
- * This allows the bot to compare both possibilities rather
- * than assuming direction before analysis.
  */
 
 export function scoreTradeOpportunity({
-  technical,
+  symbol = null,
 
-  regime,
+  technical = null,
 
-  longRewardRiskRatio = null,
+  macro = null,
 
-  shortRewardRiskRatio = null,
+  marketRegime = null,
 
-  spreadPercent,
+  events = null,
 
-  averageDailyVolume,
+  company = null,
 
-  sentiment = null,
-}) {
-  const longResult =
-    scoreTradeDirection({
-      side:
-        TRADE_SIDE.LONG,
+  country = null,
 
-      technical,
+  social = null,
 
-      regime,
+  institutional = null,
 
-      rewardRiskRatio:
-        longRewardRiskRatio,
+  historical = null,
 
-      spreadPercent,
+  historyOutcome = null,
 
-      averageDailyVolume,
+  liquidity = null,
 
-      sentiment,
-    });
+  riskReward = null,
 
-  const shortResult =
-    scoreTradeDirection({
-      side:
-        TRADE_SIDE.SHORT,
+  consensus = null,
 
-      technical,
+  config =
+    FINAL_SCORING_CONFIG,
+} = {}) {
+  try {
+    /**
+     * ======================================================
+     * LONG
+     * ======================================================
+     */
 
-      regime,
+    const long =
+      calculateSideScore({
+        side:
+          TRADE_SIDE.LONG,
 
-      rewardRiskRatio:
-        shortRewardRiskRatio,
+        technical,
 
-      spreadPercent,
+        macro,
 
-      averageDailyVolume,
+        marketRegime,
 
-      sentiment,
-    });
+        events,
 
-  if (
-    !longResult.approved ||
-    !shortResult.approved
-  ) {
+        company,
+
+        country,
+
+        social,
+
+        institutional,
+
+        historical,
+
+        historyOutcome,
+
+        liquidity,
+
+        riskReward,
+
+        consensus,
+
+        config,
+      });
+
+    /**
+     * ======================================================
+     * SHORT
+     * ======================================================
+     */
+
+    const short =
+      calculateSideScore({
+        side:
+          TRADE_SIDE.SHORT,
+
+        technical,
+
+        macro,
+
+        marketRegime,
+
+        events,
+
+        company,
+
+        country,
+
+        social,
+
+        institutional,
+
+        historical,
+
+        historyOutcome,
+
+        liquidity,
+
+        riskReward,
+
+        consensus,
+
+        config,
+      });
+
+    if (
+      !long.approved ||
+      !short.approved
+    ) {
+      return {
+        approved: false,
+
+        engine:
+          "TRADE_SCORING",
+
+        status:
+          "ERROR",
+
+        symbol,
+
+        long,
+
+        short,
+
+        tradeEligible:
+          false,
+
+        preferredSide:
+          null,
+
+        errors: [
+          ...(
+            long.errors ??
+            []
+          ),
+
+          ...(
+            short.errors ??
+            []
+          ),
+        ],
+
+        timestamp:
+          new Date()
+            .toISOString(),
+      };
+    }
+
+    /**
+     * ======================================================
+     * PREFERRED SIDE
+     * ======================================================
+     */
+
+    const difference =
+      Math.abs(
+        Number(long.score) -
+        Number(short.score),
+      );
+
+    let preferredSide =
+      null;
+
+    let preferredScore =
+      0;
+
+    if (
+      long.score >
+      short.score
+    ) {
+      preferredSide =
+        TRADE_SIDE.LONG;
+
+      preferredScore =
+        long.score;
+    } else if (
+      short.score >
+      long.score
+    ) {
+      preferredSide =
+        TRADE_SIDE.SHORT;
+
+      preferredScore =
+        short.score;
+    }
+
+    /**
+     * ======================================================
+     * AMBIGUITY
+     * ======================================================
+     *
+     * Even if one side reaches 80, we do not want
+     * to force a trade when LONG and SHORT are too close.
+     */
+
+    const ambiguous =
+      difference <
+      config
+        .ambiguousDifference;
+
+    if (ambiguous) {
+      preferredSide =
+        null;
+    }
+
+    /**
+     * ======================================================
+     * EVENT FREEZE
+     * ======================================================
+     */
+
+    const eventFreeze =
+      events
+        ?.eventFreeze
+        ?.active === true;
+
+    /**
+     * ======================================================
+     * REQUIRED ENGINE SAFETY
+     * ======================================================
+     */
+
+    const preferredResult =
+      preferredSide ===
+        TRADE_SIDE.LONG
+        ? long
+        : preferredSide ===
+            TRADE_SIDE.SHORT
+          ? short
+          : null;
+
+    const requiredEnginesReady =
+      preferredResult
+        ? preferredResult
+            .missingRequired
+            .length === 0
+        : false;
+
+    /**
+     * ======================================================
+     * EXECUTION GATES
+     * ======================================================
+     *
+     * Liquidity and risk/reward no longer contribute points to the
+     * directional research score. They answer a different question:
+     * whether a strong research setup is executable.
+     */
+
+    const liquiditySupport =
+      getLiquiditySupport(liquidity);
+
+    const riskRewardSupport =
+      preferredSide
+        ? getRiskRewardSupport({
+            riskReward,
+            side: preferredSide,
+          })
+        : null;
+
+    const liquidityReady =
+      liquiditySupport !== null &&
+      liquidity?.approved !== false;
+
+    const riskRewardReady =
+      riskRewardSupport !== null &&
+      riskReward?.approved !== false;
+
+    const executionReady =
+      liquidityReady &&
+      riskRewardReady;
+
+    const executionGates = {
+      liquidity: {
+        available: liquiditySupport !== null,
+        passed: liquidityReady,
+        support: liquiditySupport,
+        status: liquidity?.status ?? null,
+      },
+      riskReward: {
+        available: riskRewardSupport !== null,
+        passed: riskRewardReady,
+        support: riskRewardSupport,
+        status: riskReward?.status ?? null,
+      },
+    };
+
+    /**
+     * ======================================================
+     * TRADE ELIGIBILITY
+     * ======================================================
+     */
+
+    const tradeEligible =
+      preferredResult !==
+        null &&
+      preferredResult
+        .score >=
+        config.minimumScore &&
+      requiredEnginesReady &&
+      executionReady &&
+      !ambiguous &&
+      !eventFreeze;
+
+    /**
+     * ======================================================
+     * STATUS
+     * ======================================================
+     */
+
+    let status =
+      "NO_TRADE";
+
+    if (eventFreeze) {
+      status =
+        "EVENT_FREEZE";
+    } else if (ambiguous) {
+      status =
+        "AMBIGUOUS";
+    } else if (
+      preferredResult &&
+      preferredResult.score >=
+        config.minimumScore &&
+      requiredEnginesReady &&
+      executionReady
+    ) {
+      status =
+        "TRADE_CANDIDATE";
+    } else if (
+      preferredResult
+    ) {
+      status =
+        "BELOW_THRESHOLD";
+    }
+
+    /**
+     * ======================================================
+     * FRONTEND SUMMARY
+     * ======================================================
+     */
+
+    let summary;
+
+    if (eventFreeze) {
+      summary =
+        `${symbol ?? "Asset"} is blocked by the event safety layer despite the current scoring results.`;
+    } else if (ambiguous) {
+      summary =
+        `${symbol ?? "Asset"} has conflicting LONG and SHORT scores. No directional candidate should be selected.`;
+    } else if (
+      tradeEligible
+    ) {
+      summary =
+        `${symbol ?? "Asset"} qualifies as a ${preferredSide} trade candidate with a score of ${preferredScore}/100. Final risk approval is still required.`;
+    } else {
+      summary =
+        `${symbol ?? "Asset"} does not currently meet the ${config.minimumScore}/100 trade eligibility threshold.`;
+    }
+
+    /**
+     * ======================================================
+     * FINAL RESULT
+     * ======================================================
+     */
+
+    return {
+      approved: true,
+
+      engine:
+        "TRADE_SCORING",
+
+      status,
+
+      symbol,
+
+      long,
+
+      short,
+
+      preferredSide,
+
+      preferredScore:
+        round(
+          preferredScore,
+          2,
+        ),
+
+      scoreDifference:
+        round(
+          difference,
+          2,
+        ),
+
+      ambiguous,
+
+      eventFreeze,
+
+      requiredEnginesReady,
+
+      executionReady,
+
+      executionGates,
+
+      tradeEligible,
+
+      minimumRequiredScore:
+        config.minimumScore,
+
+      summary,
+
+      /**
+       * This is where the future frontend can
+       * show all contributing components.
+       *
+       * The scorecard contains the eight directional research engines.
+       * Liquidity and risk/reward are exposed separately as execution gates.
+       */
+
+      scorecard: {
+        long:
+          Object.fromEntries(
+            long.components.map(
+              (component) => [
+                component.name,
+                {
+                  points:
+                    component.points,
+
+                  maximum:
+                    component
+                      .maximumPoints,
+
+                  support:
+                    component.support,
+
+                  available:
+                    component.available,
+
+                  status:
+                    component
+                      .engineStatus,
+
+                  source:
+                    component
+                      .source,
+                },
+              ],
+            ),
+          ),
+
+        short:
+          Object.fromEntries(
+            short.components.map(
+              (component) => [
+                component.name,
+                {
+                  points:
+                    component.points,
+
+                  maximum:
+                    component
+                      .maximumPoints,
+
+                  support:
+                    component.support,
+
+                  available:
+                    component.available,
+
+                  status:
+                    component
+                      .engineStatus,
+
+                  source:
+                    component
+                      .source,
+                },
+              ],
+            ),
+          ),
+      },
+
+      warnings: [
+        ...(
+          eventFreeze
+            ? [
+                "Event freeze is active. New entries are blocked.",
+              ]
+            : []
+        ),
+
+        ...(
+          ambiguous
+            ? [
+                "LONG and SHORT scores are too close for a reliable directional decision.",
+              ]
+            : []
+        ),
+
+        ...(
+          preferredResult
+            ?.missingRequired
+            ?.length >
+            0
+            ? [
+                `Required scoring inputs missing: ${preferredResult.missingRequired.join(
+                  ", ",
+                )}.`,
+              ]
+            : []
+        ),
+      ],
+
+      errors: [],
+
+      timestamp:
+        new Date()
+          .toISOString(),
+    };
+  } catch (error) {
+    /**
+     * ======================================================
+     * SAFE FAIL
+     * ======================================================
+     */
+
     return {
       approved: false,
 
-      long:
-        longResult,
+      engine:
+        "TRADE_SCORING",
 
-      short:
-        shortResult,
+      status:
+        "ERROR",
+
+      symbol,
+
+      preferredSide:
+        null,
+
+      preferredScore: 0,
+
+      tradeEligible:
+        false,
+
+      eventFreeze: false,
+
+      summary:
+        "Trade scoring failed safely. No trade candidate should be created.",
+
+      warnings: [
+        "Scoring failure must block new trade candidates.",
+      ],
 
       errors: [
-        ...(
-          longResult.errors ??
-          []
-        ),
-
-        ...(
-          shortResult.errors ??
-          []
-        ),
+        error instanceof Error
+          ? error.message
+          : String(error),
       ],
+
+      timestamp:
+        new Date()
+          .toISOString(),
     };
   }
-
-  let preferredSide =
-    null;
-
-  let preferredScore =
-    0;
-
-  if (
-    longResult.score >
-    shortResult.score
-  ) {
-    preferredSide =
-      TRADE_SIDE.LONG;
-
-    preferredScore =
-      longResult.score;
-  } else if (
-    shortResult.score >
-    longResult.score
-  ) {
-    preferredSide =
-      TRADE_SIDE.SHORT;
-
-    preferredScore =
-      shortResult.score;
-  }
-
-  /**
-   * If both directions are too close,
-   * don't force a trade.
-   */
-  const scoreDifference =
-    Math.abs(
-      longResult.score -
-      shortResult.score,
-    );
-
-  const ambiguous =
-    scoreDifference < 8;
-
-  if (ambiguous) {
-    preferredSide =
-      null;
-  }
-
-  return {
-    approved: true,
-
-    long:
-      longResult,
-
-    short:
-      shortResult,
-
-    preferredSide,
-
-    preferredScore:
-      round(
-        preferredScore,
-        2,
-      ),
-
-    scoreDifference:
-      round(
-        scoreDifference,
-        2,
-      ),
-
-    ambiguous,
-
-    tradeEligible:
-      !ambiguous &&
-      preferredScore >=
-        RISK_CONFIG.entry
-          .minimumScore,
-
-    errors: [],
-  };
 }
 
 export default scoreTradeOpportunity;

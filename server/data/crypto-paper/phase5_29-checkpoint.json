@@ -1,0 +1,367 @@
+{
+  "version": 1,
+  "createdAt": "2026-09-12T20:50:07.926Z",
+  "metadata": {
+    "diagnostic": "PHASE_5_29",
+    "processedCycles": 5,
+    "mutationCount": 8,
+    "shutdownAt": "2026-09-12T20:50:07.925Z",
+    "finalCheckpoint": true,
+    "automaticCheckpoint": true,
+    "reason": "FINAL_SHUTDOWN_CHECKPOINT",
+    "dirtyBeforeCheckpoint": false,
+    "requestedAt": "2026-09-12T20:50:07.925Z",
+    "checkpointType": "AEMA_CRYPTO_PAPER_TRADING",
+    "capturedAt": "2026-09-12T20:50:07.925Z",
+    "paperExecution": true,
+    "liveExecution": false
+  },
+  "state": {
+    "capturedAt": "2026-09-12T20:50:07.925Z",
+    "ledger": {
+      "version": 1,
+      "startingEquity": 10000,
+      "realizedPnl": 120,
+      "unrealizedPnl": 0,
+      "tradingFees": 7,
+      "fundingPnl": -2,
+      "equity": 10111,
+      "peakEquity": 10193,
+      "drawdownUsd": 82,
+      "drawdownPercent": 0.8045,
+      "grossProfit": 120,
+      "grossLoss": 0,
+      "closedTrades": 1,
+      "winningTrades": 1,
+      "losingTrades": 0,
+      "breakevenTrades": 0,
+      "positions": [
+        {
+          "symbol": "BTCUSDT",
+          "position": {
+            "symbol": "BTCUSDT",
+            "direction": "FLAT",
+            "quantity": 0,
+            "averageEntryPrice": null,
+            "markPrice": null,
+            "unrealizedPnl": 0,
+            "realizedPnl": 0,
+            "tradingFees": 3,
+            "fundingPnl": -2,
+            "openedAt": null,
+            "updatedAt": "2026-09-12T20:50:07.925Z"
+          }
+        },
+        {
+          "symbol": "ETHUSDT",
+          "position": {
+            "symbol": "ETHUSDT",
+            "direction": "LONG",
+            "quantity": 4,
+            "averageEntryPrice": 200,
+            "markPrice": 200,
+            "unrealizedPnl": 0,
+            "realizedPnl": 0,
+            "tradingFees": 1,
+            "fundingPnl": 0,
+            "openedAt": "2026-09-12T20:50:07.921Z",
+            "updatedAt": "2026-09-12T20:50:07.921Z"
+          }
+        }
+      ],
+      "processedFillIds": [
+        "P529-BTC-FILL",
+        "P529-ETH-FILL-4",
+        "FEE:P529-FEE-1",
+        "P529-BTC-REDUCE-FILL",
+        "P529-BTC-CLOSE-FILL"
+      ],
+      "processedFundingIds": [
+        "P529-FUNDING-1"
+      ],
+      "transactions": [
+        {
+          "type": "FILL",
+          "fillId": "P529-BTC-FILL",
+          "symbol": "BTCUSDT",
+          "intent": "OPEN",
+          "direction": "LONG",
+          "side": "BUY",
+          "filledQuantity": 10,
+          "fillPrice": 100,
+          "fee": 1,
+          "timestamp": "2026-09-12T20:50:07.920Z"
+        },
+        {
+          "type": "FILL",
+          "fillId": "P529-ETH-FILL-4",
+          "symbol": "ETHUSDT",
+          "intent": "OPEN",
+          "direction": "LONG",
+          "side": "BUY",
+          "filledQuantity": 4,
+          "fillPrice": 200,
+          "fee": 1,
+          "timestamp": "2026-09-12T20:50:07.921Z"
+        },
+        {
+          "type": "FUNDING",
+          "fundingId": "P529-FUNDING-1",
+          "symbol": "BTCUSDT",
+          "amount": -2,
+          "timestamp": "2026-09-12T20:50:07.922Z"
+        },
+        {
+          "type": "FEE",
+          "feeId": "P529-FEE-1",
+          "symbol": null,
+          "amount": 3,
+          "timestamp": "2026-09-12T20:50:07.922Z"
+        },
+        {
+          "type": "FILL",
+          "fillId": "P529-BTC-REDUCE-FILL",
+          "symbol": "BTCUSDT",
+          "intent": "REDUCE",
+          "direction": "LONG",
+          "side": "SELL",
+          "filledQuantity": 4,
+          "fillPrice": 115,
+          "fee": 1,
+          "timestamp": "2026-09-12T20:50:07.924Z"
+        },
+        {
+          "type": "FILL",
+          "fillId": "P529-BTC-CLOSE-FILL",
+          "symbol": "BTCUSDT",
+          "intent": "CLOSE",
+          "direction": "LONG",
+          "side": "SELL",
+          "filledQuantity": 6,
+          "fillPrice": 110,
+          "fee": 1,
+          "timestamp": "2026-09-12T20:50:07.925Z"
+        }
+      ],
+      "startedAt": "2026-09-12T20:50:07.918Z",
+      "updatedAt": "2026-09-12T20:50:07.925Z",
+      "defaultFeeRate": 0,
+      "paperExecution": true,
+      "liveExecution": false,
+      "executionAuthority": false
+    },
+    "runtime": {
+      "version": 1,
+      "mode": "PAPER",
+      "paperOnly": true,
+      "liveExecutionEnabled": false,
+      "cycle": 0,
+      "startedAt": "2026-09-12T20:50:07.919Z",
+      "symbols": [
+        {
+          "symbol": "BTCUSDT",
+          "state": {
+            "symbol": "BTCUSDT",
+            "position": {
+              "symbol": "BTCUSDT",
+              "direction": "FLAT",
+              "quantity": 0,
+              "exposure": 0,
+              "averageEntryPrice": null,
+              "stopPrice": 98,
+              "lifecycleState": "CLOSED",
+              "exitPending": false,
+              "lastExecutionStatus": null,
+              "lastClientOrderId": null,
+              "updatedAt": "2026-09-12T20:50:07.925Z"
+            },
+            "activeOrder": null,
+            "protectiveStop": {
+              "symbol": "BTCUSDT",
+              "direction": "LONG",
+              "stopPrice": 98,
+              "updatedAt": "2026-09-12T20:50:07.921Z"
+            },
+            "lastDecision": null,
+            "lastCycleKey": null,
+            "cycleCount": 0,
+            "updatedAt": "2026-09-12T20:50:07.921Z",
+            "entryEngines": null,
+            "riskPlan": null
+          }
+        },
+        {
+          "symbol": "ETHUSDT",
+          "state": {
+            "symbol": "ETHUSDT",
+            "position": {
+              "symbol": "ETHUSDT",
+              "direction": "LONG",
+              "quantity": 4,
+              "exposure": 0,
+              "averageEntryPrice": 200,
+              "stopPrice": null,
+              "lifecycleState": "OPEN",
+              "exitPending": false,
+              "lastExecutionStatus": null,
+              "lastClientOrderId": null,
+              "updatedAt": "2026-09-12T20:50:07.921Z"
+            },
+            "activeOrder": {
+              "clientOrderId": "P529-ETH-PARTIAL",
+              "status": "PARTIALLY_FILLED",
+              "requestedQuantity": 10,
+              "filledQuantity": 4,
+              "remainingQuantity": 6
+            },
+            "protectiveStop": null,
+            "lastDecision": null,
+            "lastCycleKey": null,
+            "cycleCount": 0,
+            "updatedAt": null,
+            "entryEngines": null,
+            "riskPlan": null
+          }
+        }
+      ],
+      "processedCycleKeys": [],
+      "processedClientOrderIds": [
+        "P529-ETH-PARTIAL"
+      ],
+      "lockedSymbols": [],
+      "exportedAt": "2026-09-12T20:50:07.925Z",
+      "paperExecution": true,
+      "liveExecution": false,
+      "executionAuthority": false
+    },
+    "exchange": {
+      "version": 1,
+      "adapter": "AEMA_PAPER_CRYPTO_EXCHANGE",
+      "paperExecution": true,
+      "liveExecution": false,
+      "orders": [
+        {
+          "orderId": "PAPER-ORDER-000001",
+          "clientOrderId": "P529-BTC-OPEN",
+          "symbol": "BTCUSDT",
+          "side": "BUY",
+          "requestedQuantity": 10,
+          "filledQuantity": 10,
+          "remainingQuantity": 0,
+          "averageFillPrice": 100,
+          "reduceOnly": false,
+          "status": "FILLED",
+          "createdAt": "2026-09-12T20:50:07.919Z",
+          "updatedAt": "2026-09-12T20:50:07.919Z"
+        },
+        {
+          "orderId": "PAPER-ORDER-000002",
+          "clientOrderId": "P529-ETH-PARTIAL",
+          "symbol": "ETHUSDT",
+          "side": "BUY",
+          "requestedQuantity": 10,
+          "filledQuantity": 4,
+          "remainingQuantity": 6,
+          "averageFillPrice": 200,
+          "reduceOnly": false,
+          "status": "PARTIALLY_FILLED",
+          "createdAt": "2026-09-12T20:50:07.921Z",
+          "updatedAt": "2026-09-12T20:50:07.921Z"
+        },
+        {
+          "orderId": "PAPER-ORDER-000003",
+          "clientOrderId": "P529-BTC-REDUCE",
+          "symbol": "BTCUSDT",
+          "side": "SELL",
+          "requestedQuantity": 4,
+          "filledQuantity": 4,
+          "remainingQuantity": 0,
+          "averageFillPrice": 115,
+          "reduceOnly": true,
+          "status": "FILLED",
+          "createdAt": "2026-09-12T20:50:07.924Z",
+          "updatedAt": "2026-09-12T20:50:07.924Z"
+        },
+        {
+          "orderId": "PAPER-ORDER-000004",
+          "clientOrderId": "P529-BTC-CLOSE",
+          "symbol": "BTCUSDT",
+          "side": "SELL",
+          "requestedQuantity": 6,
+          "filledQuantity": 6,
+          "remainingQuantity": 0,
+          "averageFillPrice": 110,
+          "reduceOnly": true,
+          "status": "FILLED",
+          "createdAt": "2026-09-12T20:50:07.925Z",
+          "updatedAt": "2026-09-12T20:50:07.925Z"
+        }
+      ],
+      "positions": [
+        {
+          "symbol": "ETHUSDT",
+          "direction": "LONG",
+          "quantity": 4,
+          "averageEntryPrice": 200,
+          "updatedAt": "2026-09-12T20:50:07.921Z"
+        }
+      ],
+      "fills": [
+        {
+          "fillId": "PAPER-FILL-000001",
+          "orderId": "PAPER-ORDER-000001",
+          "clientOrderId": "P529-BTC-OPEN",
+          "symbol": "BTCUSDT",
+          "side": "BUY",
+          "quantity": 10,
+          "price": 100,
+          "reduceOnly": false,
+          "timestamp": "2026-09-12T20:50:07.919Z"
+        },
+        {
+          "fillId": "PAPER-FILL-000002",
+          "orderId": "PAPER-ORDER-000002",
+          "clientOrderId": "P529-ETH-PARTIAL",
+          "symbol": "ETHUSDT",
+          "side": "BUY",
+          "quantity": 4,
+          "price": 200,
+          "reduceOnly": false,
+          "timestamp": "2026-09-12T20:50:07.921Z"
+        },
+        {
+          "fillId": "PAPER-FILL-000003",
+          "orderId": "PAPER-ORDER-000003",
+          "clientOrderId": "P529-BTC-REDUCE",
+          "symbol": "BTCUSDT",
+          "side": "SELL",
+          "quantity": 4,
+          "price": 115,
+          "reduceOnly": true,
+          "timestamp": "2026-09-12T20:50:07.924Z"
+        },
+        {
+          "fillId": "PAPER-FILL-000004",
+          "orderId": "PAPER-ORDER-000004",
+          "clientOrderId": "P529-BTC-CLOSE",
+          "symbol": "BTCUSDT",
+          "side": "SELL",
+          "quantity": 6,
+          "price": 110,
+          "reduceOnly": true,
+          "timestamp": "2026-09-12T20:50:07.925Z"
+        }
+      ],
+      "stops": [],
+      "exportedAt": "2026-09-12T20:50:07.925Z"
+    },
+    "safety": {
+      "paperExecution": true,
+      "liveExecution": false,
+      "executionAuthority": false
+    }
+  },
+  "paperExecution": true,
+  "liveExecution": false,
+  "executionAuthority": false
+}

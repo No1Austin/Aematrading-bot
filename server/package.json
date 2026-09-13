@@ -24,7 +24,15 @@
     "test:combined-events": "node src/tests/combinedEventPipeline.integration.test.js",
     "test:alpaca-account": "node src/data/providers/alpacaPaperAccountProvider.test.js",
     "test:risk-adapter": "node src/risk/tradeRiskAdapter.integration.test.js",
-    "test:social": "node src/data/providers/socialSentimentDataProvider.test.js"
+    "test:social": "node src/data/providers/socialSentimentDataProvider.test.js",
+    "test:historical-snapshot": "node src/data/providers/historicalSnapshotProvider.test.js",
+    "test:historical-records": "node src/data/providers/historicalRecordsProvider.test.js",
+    "test:liquidity": "node src/analysis/liquidityExecutionEngine.test.js",
+    "test:regime": "node src/regime/marketRegimeEngine.test.js",
+    "test:consensus": "node src/analysis/crossEngineConsensusEngine.test.js",
+    "test:scoring": "node src/strategy/tradeScoringEngine.test.js",
+    "test:decision-gate": "node src/strategy/tradeDecisionGate.test.js",
+    "test:thesis": "node src/analysis/tradeThesisMonitor.test.js"
   },
   "keywords": [],
   "author": "",

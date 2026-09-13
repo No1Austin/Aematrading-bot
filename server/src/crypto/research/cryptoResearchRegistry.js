@@ -1,0 +1,8 @@
+const records=new Map();
+const keyFor=x=>String(typeof x==="string"?x:(x?.assetId??x?.symbol??"")).trim().toLowerCase();
+export function upsertCryptoResearchRecord(record){const key=keyFor(record);if(!key)return{accepted:false,reason:"RESEARCH_ID_REQUIRED"};const next={...(records.get(key)??{}),...record,updatedAt:new Date().toISOString()};records.set(key,next);return{accepted:true,record:next};}
+export const getCryptoResearchRecord=x=>records.get(keyFor(x))??null;
+export function listCryptoResearchRecords({limit=100,status=null,candidateType=null}={}){let rows=[...records.values()];if(status)rows=rows.filter(x=>x?.status===status);if(candidateType)rows=rows.filter(x=>x?.candidateType===candidateType);rows.sort((a,b)=>String(b?.updatedAt??"").localeCompare(String(a?.updatedAt??"")));return Number.isInteger(limit)&&limit>0?rows.slice(0,limit):rows;}
+export function getCryptoResearchRegistryStats(){const rows=[...records.values()],count=s=>rows.filter(x=>x?.status===s).length;return{total:rows.length,queued:count("QUEUED"),running:count("RUNNING"),completed:count("COMPLETE"),failed:count("FAILED"),approved:rows.filter(x=>x?.approved===true).length,botHandoffAllowed:rows.filter(x=>x?.botHandoffAllowed===true).length,executionEligible:rows.filter(x=>x?.executionEligible===true).length};}
+export const clearCryptoResearchRegistry=()=>records.clear();
+export default{upsertCryptoResearchRecord,getCryptoResearchRecord,listCryptoResearchRecords,getCryptoResearchRegistryStats,clearCryptoResearchRegistry};

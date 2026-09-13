@@ -1154,9 +1154,22 @@ export function analyzeSocialSentiment({
 
         rawScore: 0,
 
+        // Unknown social evidence is neutral, not opposition.
         directionalSupport: {
-          long: 0,
-          short: 0,
+          long: 0.5,
+          short: 0.5,
+        },
+
+        directionalSupportPercent: {
+          long: 50,
+          short: 50,
+        },
+
+        scoring: {
+          directional: true,
+          maximumPoints: 5,
+          evidenceAvailable: false,
+          neutralFallbackApplied: true,
         },
 
         sentiment: null,
@@ -1372,6 +1385,18 @@ export function analyzeSocialSentiment({
 
       directionalSupport,
 
+      directionalSupportPercent: {
+        long: round(directionalSupport.long * 100, 2),
+        short: round(directionalSupport.short * 100, 2),
+      },
+
+      scoring: {
+        directional: true,
+        maximumPoints: 5,
+        evidenceAvailable: true,
+        neutralFallbackApplied: false,
+      },
+
       sentiment:
         sentimentResult,
 
@@ -1415,9 +1440,22 @@ export function analyzeSocialSentiment({
 
       rawScore: 0,
 
+      // Engine errors are neutral for directional scoring.
       directionalSupport: {
-        long: 0,
-        short: 0,
+        long: 0.5,
+        short: 0.5,
+      },
+
+      directionalSupportPercent: {
+        long: 50,
+        short: 50,
+      },
+
+      scoring: {
+        directional: true,
+        maximumPoints: 5,
+        evidenceAvailable: false,
+        neutralFallbackApplied: true,
       },
 
       sentiment: null,

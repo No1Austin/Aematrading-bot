@@ -16,6 +16,10 @@ import axios from "axios";
  *
  * src/analysis/macroRegimeEngine.js
  *
+ * The macro analysis layer can combine these real conditions with
+ * companyEconomicExposureEngine.js so the same macro environment can
+ * affect different companies differently.
+ *
  * This provider DOES NOT decide whether to buy or sell.
  *
  * It only:

@@ -889,6 +889,11 @@ export async function runHistoricalReplay({
             slippagePercent:
               config
                 .slippagePercent,
+
+            monitorThesis:
+              false,
+
+            asOfTimestamp,
           });
 
         if (
@@ -1215,6 +1220,232 @@ export async function runHistoricalReplay({
 
       /**
        * ====================================================
+       * OPEN POSITION — FRESH THESIS CHECK
+       * ====================================================
+       *
+       * Price protection already ran earlier for this candle.
+       * Fresh point-in-time intelligence is now available.
+       *
+       * The thesis monitor may HOLD, REDUCE, or EXIT.
+       */
+
+      if (openPosition) {
+        const intelligence = {
+          technical:
+            analysis
+              ?.results
+              ?.technical ??
+            null,
+
+          macro:
+            analysis
+              ?.results
+              ?.macro ??
+            null,
+
+          marketRegime:
+            analysis
+              ?.results
+              ?.marketRegime ??
+            null,
+
+          events:
+            analysis
+              ?.results
+              ?.events ??
+            null,
+
+          company:
+            analysis
+              ?.results
+              ?.company ??
+            null,
+
+          country:
+            analysis
+              ?.results
+              ?.country ??
+            null,
+
+          social:
+            analysis
+              ?.results
+              ?.social ??
+            null,
+
+          historical:
+            analysis
+              ?.results
+              ?.historical ??
+            null,
+
+          liquidity:
+            analysis
+              ?.results
+              ?.liquidity ??
+            null,
+
+          consensus:
+            analysis
+              ?.results
+              ?.consensus ??
+            null,
+
+          scoring:
+            analysis
+              ?.results
+              ?.scoring ??
+            null,
+
+          decisionGate:
+            analysis
+              ?.results
+              ?.decisionGate ??
+            null,
+
+          finalDecision:
+            analysis
+              ?.finalDecision ??
+            null,
+        };
+
+        const thesisUpdate =
+          await processPaperPositionUpdate({
+            position:
+              openPosition,
+
+            currentPrice,
+
+            atr,
+
+            slippagePercent:
+              config
+                .slippagePercent,
+
+            intelligence,
+
+            monitorThesis:
+              true,
+
+            asOfTimestamp,
+          });
+
+        if (
+          thesisUpdate?.approved ===
+            true &&
+          thesisUpdate?.position
+        ) {
+          openPosition =
+            thesisUpdate.position;
+
+          account.openPositions =
+            openPosition?.status ===
+            "OPEN"
+              ? [
+                  openPosition,
+                ]
+              : [];
+
+          account.portfolioExposure =
+            openPosition?.status ===
+              "OPEN"
+              ? Number(
+                  openPosition
+                    ?.positionValue ??
+                  0,
+                )
+              : 0;
+
+          /**
+           * Thesis invalidation can close the trade.
+           * Do not re-enter on the same candle.
+           */
+
+          if (
+            thesisUpdate.status ===
+              "POSITION_CLOSED" ||
+            thesisUpdate.shouldExit ===
+              true
+          ) {
+            const realizedPnL =
+              Number(
+                thesisUpdate
+                  ?.position
+                  ?.realizedPnL ??
+                0,
+              );
+
+            account.balance +=
+              realizedPnL;
+
+            account.buyingPower =
+              account.balance;
+
+            account.dailyPnL +=
+              realizedPnL;
+
+            if (currentTrade) {
+              currentTrade.status =
+                "CLOSED";
+
+              currentTrade.exitTimestamp =
+                asOfTimestamp;
+
+              currentTrade.exitPrice =
+                thesisUpdate
+                  ?.execution
+                  ?.exitPrice ??
+                thesisUpdate
+                  ?.position
+                  ?.exitPrice ??
+                currentPrice;
+
+              currentTrade.exitReason =
+                thesisUpdate
+                  ?.exitReason ??
+                "THESIS_INVALIDATED";
+
+              currentTrade.realizedPnL =
+                realizedPnL;
+
+              currentTrade.finalR =
+                thesisUpdate
+                  ?.management
+                  ?.metrics
+                  ?.finalR ??
+                null;
+
+              currentTrade.peakR =
+                thesisUpdate
+                  ?.management
+                  ?.metrics
+                  ?.peakR ??
+                null;
+            }
+
+            openPosition =
+              null;
+
+            account.openPositions =
+              [];
+
+            account.portfolioExposure =
+              0;
+
+            currentTrade =
+              null;
+
+            cooldownRemaining =
+              config
+                .cooldownCandles;
+
+            continue;
+          }
+        }
+      }
+
+      /**
+       * ====================================================
        * NO APPROVED TRADE
        * ====================================================
        */
@@ -1258,6 +1489,85 @@ export async function runHistoricalReplay({
           slippagePercent:
             config
               .slippagePercent,
+
+          intelligence: {
+            technical:
+              analysis
+                ?.results
+                ?.technical ??
+              null,
+
+            macro:
+              analysis
+                ?.results
+                ?.macro ??
+              null,
+
+            marketRegime:
+              analysis
+                ?.results
+                ?.marketRegime ??
+              null,
+
+            events:
+              analysis
+                ?.results
+                ?.events ??
+              null,
+
+            company:
+              analysis
+                ?.results
+                ?.company ??
+              null,
+
+            country:
+              analysis
+                ?.results
+                ?.country ??
+              null,
+
+            social:
+              analysis
+                ?.results
+                ?.social ??
+              null,
+
+            historical:
+              analysis
+                ?.results
+                ?.historical ??
+              null,
+
+            liquidity:
+              analysis
+                ?.results
+                ?.liquidity ??
+              null,
+
+            consensus:
+              analysis
+                ?.results
+                ?.consensus ??
+              null,
+
+            scoring:
+              analysis
+                ?.results
+                ?.scoring ??
+              null,
+
+            decisionGate:
+              analysis
+                ?.results
+                ?.decisionGate ??
+              null,
+
+            finalDecision:
+              analysis
+                ?.finalDecision ??
+              null,
+          },
 
           metadata: {
             replay: true,
@@ -1430,6 +1740,14 @@ export async function runHistoricalReplay({
           slippagePercent:
             config
               .slippagePercent,
+
+          monitorThesis:
+            false,
+
+          asOfTimestamp:
+            timestampOf(
+              lastCandle,
+            ),
         });
 
       /**

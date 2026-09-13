@@ -186,6 +186,68 @@ function scoreBreadth(
       score: 0,
       confidence: 0,
       evidence: [],
+      available: false,
+    };
+  }
+
+  /**
+   * Support an already-normalized breadth provider result.
+   *
+   * This keeps the engine compatible with either:
+   *
+   * - raw breadth fields, or
+   * - a provider that has already normalized breadth to -1 → +1.
+   */
+  const hasRawBreadth =
+    isFiniteNumber(
+      breadth.advanceDeclineRatio,
+    ) ||
+    isFiniteNumber(
+      breadth.percentAbove50DMA,
+    ) ||
+    isFiniteNumber(
+      breadth.percentAbove200DMA,
+    );
+
+  if (
+    !hasRawBreadth &&
+    isFiniteNumber(
+      breadth.score,
+    )
+  ) {
+    return {
+      score:
+        round(
+          clamp(
+            breadth.score,
+            -1,
+            1,
+          ),
+          4,
+        ),
+
+      confidence:
+        isFiniteNumber(
+          breadth.confidence,
+        )
+          ? round(
+              clamp(
+                breadth.confidence,
+                0,
+                1,
+              ),
+              4,
+            )
+          : 1,
+
+      evidence:
+        Array.isArray(
+          breadth.evidence,
+        )
+          ? breadth.evidence
+          : [],
+
+      available: true,
     };
   }
 
@@ -333,6 +395,7 @@ function scoreBreadth(
       score: 0,
       confidence: 0,
       evidence,
+      available: false,
     };
   }
 
@@ -357,6 +420,8 @@ function scoreBreadth(
       ),
 
     evidence,
+
+    available: true,
   };
 }
 
@@ -382,6 +447,86 @@ function analyzeVolatility(
       level: "UNKNOWN",
       score: 0,
       extreme: false,
+      available: false,
+    };
+  }
+
+  /**
+   * Support a pre-normalized volatility provider result.
+   */
+  const hasRawVolatility =
+    isFiniteNumber(
+      volatility.atrPercent,
+    ) ||
+    isFiniteNumber(
+      volatility.volatilityIndex,
+    ) ||
+    isFiniteNumber(
+      volatility.realizedVolatility,
+    );
+
+  if (
+    !hasRawVolatility &&
+    isFiniteNumber(
+      volatility.score,
+    )
+  ) {
+    const normalizedScore =
+      clamp(
+        volatility.score,
+        0,
+        1,
+      );
+
+    let level =
+      String(
+        volatility.level ??
+        "",
+      )
+        .trim()
+        .toUpperCase();
+
+    if (
+      ![
+        "LOW",
+        "NORMAL",
+        "ELEVATED",
+        "HIGH",
+        "EXTREME",
+      ].includes(
+        level,
+      )
+    ) {
+      level =
+        normalizedScore >= 0.8
+          ? "EXTREME"
+          : normalizedScore >= 0.6
+            ? "HIGH"
+            : normalizedScore >= 0.3
+              ? "ELEVATED"
+              : normalizedScore >= 0.15
+                ? "NORMAL"
+                : "LOW";
+    }
+
+    return {
+      level,
+
+      score:
+        round(
+          normalizedScore,
+          4,
+        ),
+
+      extreme:
+        volatility.extreme ===
+          true ||
+        normalizedScore >=
+          0.8 ||
+        level ===
+          "EXTREME",
+
+      available: true,
     };
   }
 
@@ -422,10 +567,6 @@ function analyzeVolatility(
 
   /**
    * Volatility index.
-   *
-   * This is generic.
-   * For US markets this could later
-   * receive VIX.
    */
   if (
     isFiniteNumber(
@@ -489,6 +630,7 @@ function analyzeVolatility(
       level: "UNKNOWN",
       score: 0,
       extreme: false,
+      available: false,
     };
   }
 
@@ -533,6 +675,8 @@ function analyzeVolatility(
 
     extreme:
       score >= 0.8,
+
+    available: true,
   };
 }
 
@@ -556,8 +700,26 @@ function scoreLiquidity(
     return {
       score: 0,
       stress: 0,
+      available: false,
     };
   }
+
+  /**
+   * Preferred contract:
+   *
+   * {
+   *   direction: "EXPANDING" | "CONTRACTING" | "STABLE",
+   *   stressScore: 0 - 1
+   * }
+   *
+   * Also support the output of liquidityExecutionEngine.js:
+   *
+   * {
+   *   qualityScore,
+   *   executionDecision,
+   *   liquidityStatus
+   * }
+   */
 
   const direction =
     String(
@@ -569,19 +731,30 @@ function scoreLiquidity(
 
   let score = 0;
 
+  let observed =
+    false;
+
   if (
     direction ===
     "EXPANDING"
   ) {
     score = 0.6;
+    observed = true;
   } else if (
     direction ===
     "CONTRACTING"
   ) {
     score = -0.6;
+    observed = true;
+  } else if (
+    direction ===
+    "STABLE"
+  ) {
+    score = 0;
+    observed = true;
   }
 
-  const stress =
+  let stress =
     isFiniteNumber(
       liquidity.stressScore,
     )
@@ -590,24 +763,106 @@ function scoreLiquidity(
           0,
           1,
         )
-      : 0;
+      : null;
+
+  if (
+    stress !== null
+  ) {
+    score -=
+      stress * 0.4;
+
+    observed = true;
+  }
 
   /**
-   * High liquidity stress
-   * creates bearish pressure.
+   * Adapt the Liquidity Execution Engine output.
    */
-  score -=
-    stress * 0.4;
+  if (
+    isFiniteNumber(
+      liquidity.qualityScore,
+    )
+  ) {
+    const quality =
+      clamp(
+        liquidity.qualityScore,
+        0,
+        1,
+      );
+
+    const executionDecision =
+      String(
+        liquidity.executionDecision ??
+        "",
+      )
+        .trim()
+        .toUpperCase();
+
+    if (
+      executionDecision ===
+      "BLOCK"
+    ) {
+      score = -1;
+      stress = 1;
+    } else {
+      /**
+       * Map execution quality from 0 → 1 into a conservative
+       * regime contribution of -0.6 → +0.6.
+       */
+      score =
+        (
+          quality -
+          0.5
+        ) *
+        1.2;
+
+      stress =
+        1 -
+        quality;
+
+      if (
+        executionDecision ===
+        "REDUCE_SIZE"
+      ) {
+        score =
+          Math.min(
+            score,
+            0.2,
+          );
+      }
+    }
+
+    observed = true;
+  }
+
+  if (
+    stress === null
+  ) {
+    stress = 0;
+  }
 
   return {
     score:
-      clamp(
-        score,
-        -1,
-        1,
+      round(
+        clamp(
+          score,
+          -1,
+          1,
+        ),
+        4,
       ),
 
-    stress,
+    stress:
+      round(
+        clamp(
+          stress,
+          0,
+          1,
+        ),
+        4,
+      ),
+
+    available:
+      observed,
   };
 }
 
@@ -765,23 +1020,83 @@ function calculateConfidence({
   macroScore,
   breadthResult,
   liquidityResult,
-}) {
-  const signals = [
-    technicalScore,
-    macroScore,
-    breadthResult.score,
-    liquidityResult.score,
-  ].filter(
-    isFiniteNumber,
-  );
+  technicalAvailable = true,
+  macroAvailable = true,
+} = {}) {
+  /**
+   * Confidence should measure more than raw signal magnitude.
+   *
+   * It combines:
+   *
+   * - signal strength
+   * - directional agreement
+   * - data coverage
+   *
+   * This prevents +1 / -1 conflicts from appearing highly
+   * confident merely because every signal is individually strong.
+   */
+
+  const candidates = [
+    {
+      value:
+        technicalScore,
+      available:
+        technicalAvailable,
+    },
+
+    {
+      value:
+        macroScore,
+      available:
+        macroAvailable,
+    },
+
+    {
+      value:
+        breadthResult
+          ?.score,
+      available:
+        breadthResult
+          ?.available ===
+        true,
+    },
+
+    {
+      value:
+        liquidityResult
+          ?.score,
+      available:
+        liquidityResult
+          ?.available ===
+        true,
+    },
+  ];
+
+  const availableSignals =
+    candidates.filter(
+      (item) =>
+        item.available &&
+        isFiniteNumber(
+          item.value,
+        ),
+    );
 
   if (
-    signals.length === 0
+    availableSignals.length ===
+    0
   ) {
     return 0;
   }
 
-  const averageAbsolute =
+  const signals =
+    availableSignals.map(
+      (item) =>
+        Number(
+          item.value,
+        ),
+    );
+
+  const strength =
     signals.reduce(
       (
         sum,
@@ -789,15 +1104,62 @@ function calculateConfidence({
       ) =>
         sum +
         Math.abs(
-          Number(value),
+          value,
         ),
       0,
     ) /
     signals.length;
 
+  const signedMean =
+    signals.reduce(
+      (
+        sum,
+        value,
+      ) =>
+        sum +
+        value,
+      0,
+    ) /
+    signals.length;
+
+  /**
+   * 1 = same directional story.
+   * 0 = strong signals cancel one another.
+   */
+  const agreement =
+    strength > 0
+      ? clamp(
+          Math.abs(
+            signedMean,
+          ) /
+            strength,
+          0,
+          1,
+        )
+      : 1;
+
+  const coverage =
+    availableSignals.length /
+    candidates.length;
+
+  /**
+   * Agreement modulates strength, while coverage prevents a
+   * single available component from producing high confidence.
+   */
+  const confidence =
+    strength *
+    (
+      0.5 +
+      (
+        agreement *
+        0.5
+      )
+    ) *
+    coverage;
+
   return round(
     clamp(
-      averageAbsolute,
+      confidence,
       0,
       1,
     ),
@@ -986,6 +1348,19 @@ export function analyzeMarketRegime({
         macroScore,
         breadthResult,
         liquidityResult,
+
+        technicalAvailable:
+          Boolean(
+            technical?.trend
+              ?.direction,
+          ),
+
+        macroAvailable:
+          Boolean(
+            macro?.direction,
+          ) &&
+          macro?.approved ===
+            true,
       });
 
     /**
@@ -1013,11 +1388,25 @@ export function analyzeMarketRegime({
       warnings.push(
         "Market breadth data was not supplied.",
       );
+    } else if (
+      breadthResult.available !==
+      true
+    ) {
+      warnings.push(
+        "Market breadth input was supplied but contained no usable breadth signals.",
+      );
     }
 
     if (!liquidity) {
       warnings.push(
         "Market liquidity data was not supplied.",
+      );
+    } else if (
+      liquidityResult.available !==
+      true
+    ) {
+      warnings.push(
+        "Market liquidity input was supplied but could not be normalized.",
       );
     }
 
@@ -1090,13 +1479,17 @@ export function analyzeMarketRegime({
       regime,
 
       direction:
-        normalizedComposite >
-          0.15
-          ? "LONG"
-          : normalizedComposite <
-              -0.15
-            ? "SHORT"
-            : "NEUTRAL",
+        regime ===
+          MARKET_REGIME
+            .HIGH_VOLATILITY
+          ? "NEUTRAL"
+          : normalizedComposite >
+              0.15
+            ? "LONG"
+            : normalizedComposite <
+                -0.15
+              ? "SHORT"
+              : "NEUTRAL",
 
       confidence,
 

@@ -1003,6 +1003,19 @@ describe(
                 0,
             });
 
+          if (result.approved !== true) {
+            console.dir(
+              {
+                test: "LONG Position Management",
+                currentPrice,
+                result,
+              },
+              {
+                depth: null,
+              },
+            );
+          }
+
           expect(
             result.approved,
           ).toBe(true);
@@ -1137,6 +1150,19 @@ describe(
               slippagePercent:
                 0,
             });
+
+          if (result.approved !== true) {
+            console.dir(
+              {
+                test: "SHORT Position Management",
+                currentPrice,
+                result,
+              },
+              {
+                depth: null,
+              },
+            );
+          }
 
           expect(
             result.approved,

@@ -1,0 +1,642 @@
+:root {
+  --text: #6b6375;
+  --text-h: #08060d;
+  --bg: #fff;
+  --border: #e5e4e7;
+  --code-bg: #f4f3ec;
+  --accent: #aa3bff;
+  --accent-bg: rgba(170, 59, 255, 0.1);
+  --accent-border: rgba(170, 59, 255, 0.5);
+  --social-bg: rgba(244, 243, 236, 0.5);
+  --shadow:
+    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+
+  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --mono: ui-monospace, Consolas, monospace;
+
+  font: 18px/145% var(--sans);
+  letter-spacing: 0.18px;
+  color-scheme: light dark;
+  color: var(--text);
+  background: var(--bg);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  @media (max-width: 1024px) {
+    font-size: 16px;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --text: #9ca3af;
+    --text-h: #f3f4f6;
+    --bg: #16171d;
+    --border: #2e303a;
+    --code-bg: #1f2028;
+    --accent: #c084fc;
+    --accent-bg: rgba(192, 132, 252, 0.15);
+    --accent-border: rgba(192, 132, 252, 0.5);
+    --social-bg: rgba(47, 48, 58, 0.5);
+    --shadow:
+      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
+  }
+
+  #social .button-icon {
+    filter: invert(1) brightness(2);
+  }
+}
+
+body {
+  margin: 0;
+}
+
+#root {
+  width: 1126px;
+  max-width: 100%;
+  margin: 0 auto;
+  text-align: center;
+  border-inline: 1px solid var(--border);
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+h1,
+h2 {
+  font-family: var(--heading);
+  font-weight: 500;
+  color: var(--text-h);
+}
+
+h1 {
+  font-size: 56px;
+  letter-spacing: -1.68px;
+  margin: 32px 0;
+  @media (max-width: 1024px) {
+    font-size: 36px;
+    margin: 20px 0;
+  }
+}
+h2 {
+  font-size: 24px;
+  line-height: 118%;
+  letter-spacing: -0.24px;
+  margin: 0 0 8px;
+  @media (max-width: 1024px) {
+    font-size: 20px;
+  }
+}
+p {
+  margin: 0;
+}
+
+code,
+.counter {
+  font-family: var(--mono);
+  display: inline-flex;
+  border-radius: 4px;
+  color: var(--text-h);
+}
+
+code {
+  font-size: 15px;
+  line-height: 135%;
+  padding: 4px 8px;
+  background: var(--code-bg);
+}
+/* ============================================================
+   AEMA DASHBOARD WORKSPACE SWITCH
+   STOCKS <-> CRYPTO
+   ============================================================ */
+
+.workspace-jump-button {
+  position: relative;
+  isolation: isolate;
+
+  min-width: 205px;
+  min-height: 52px;
+
+  display: grid;
+  grid-template-columns:
+    36px minmax(0, 1fr) 25px;
+
+  align-items: center;
+  gap: 10px;
+
+  padding: 7px 9px;
+
+  border:
+    1px solid rgba(
+      148,
+      163,
+      184,
+      0.14
+    );
+
+  border-radius: 14px;
+
+  text-decoration: none;
+
+  overflow: hidden;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(15, 25, 42, 0.96),
+      rgba(8, 16, 29, 0.98)
+    );
+
+  box-shadow:
+    0 10px 28px
+      rgba(2, 6, 23, 0.24),
+    inset 0 1px 0
+      rgba(255, 255, 255, 0.025);
+
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    background 160ms ease;
+}
+
+
+.workspace-jump-button::before {
+  content: "";
+
+  position: absolute;
+  inset: 0;
+
+  opacity: 0;
+
+  pointer-events: none;
+
+  transition:
+    opacity 160ms ease;
+
+  z-index: -1;
+}
+
+
+.workspace-jump-button:hover {
+  transform:
+    translateY(-2px);
+
+  box-shadow:
+    0 16px 36px
+      rgba(2, 6, 23, 0.32),
+    inset 0 1px 0
+      rgba(255, 255, 255, 0.04);
+}
+
+
+.workspace-jump-button:hover::before {
+  opacity: 1;
+}
+
+
+.workspace-jump-button:active {
+  transform:
+    translateY(0)
+    scale(0.99);
+}
+
+
+.workspace-jump-button:focus-visible {
+  outline:
+    2px solid #60a5fa;
+
+  outline-offset:
+    3px;
+}
+
+
+/* ============================================================
+   ICON
+   ============================================================ */
+
+.workspace-jump-button__icon {
+  width: 36px;
+  height: 36px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 11px;
+
+  flex-shrink: 0;
+}
+
+
+/* ============================================================
+   TEXT
+   ============================================================ */
+
+.workspace-jump-button__copy {
+  display: block;
+
+  min-width: 0;
+}
+
+
+.workspace-jump-button__copy small,
+.workspace-jump-button__copy strong {
+  display: block;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+.workspace-jump-button__copy small {
+  margin-bottom: 2px;
+
+  font-size: 0.58rem;
+  line-height: 1;
+
+  font-weight: 800;
+
+  letter-spacing: 0.1em;
+
+  text-transform: uppercase;
+}
+
+
+.workspace-jump-button__copy strong {
+  font-size: 0.78rem;
+
+  line-height: 1.2;
+
+  font-weight: 800;
+
+  letter-spacing:
+    -0.01em;
+}
+
+
+/* ============================================================
+   ARROW
+   ============================================================ */
+
+.workspace-jump-button__arrow {
+  width: 25px;
+  height: 25px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 8px;
+
+  transition:
+    transform 160ms ease,
+    background 160ms ease;
+}
+
+
+.workspace-jump-button:hover
+.workspace-jump-button__arrow {
+  transform:
+    translate(
+      1px,
+      -1px
+    );
+}
+
+
+/* ============================================================
+   CRYPTO VERSION
+   ============================================================ */
+
+.workspace-jump-button--crypto {
+  border-color:
+    rgba(
+      245,
+      158,
+      11,
+      0.19
+    );
+}
+
+
+.workspace-jump-button--crypto::before {
+  background:
+    linear-gradient(
+      120deg,
+      rgba(
+        245,
+        158,
+        11,
+        0.11
+      ),
+      transparent 60%
+    );
+}
+
+
+.workspace-jump-button--crypto:hover {
+  border-color:
+    rgba(
+      245,
+      158,
+      11,
+      0.38
+    );
+
+  box-shadow:
+    0 16px 38px
+      rgba(2, 6, 23, 0.34),
+    0 0 32px
+      rgba(
+        245,
+        158,
+        11,
+        0.055
+      );
+}
+
+
+.workspace-jump-button--crypto
+.workspace-jump-button__icon {
+  color:
+    #fbbf24;
+
+  border:
+    1px solid
+    rgba(
+      245,
+      158,
+      11,
+      0.14
+    );
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(
+        245,
+        158,
+        11,
+        0.18
+      ),
+      rgba(
+        180,
+        83,
+        9,
+        0.06
+      )
+    );
+}
+
+
+.workspace-jump-button--crypto
+.workspace-jump-button__copy
+small {
+  color:
+    #b98a38;
+}
+
+
+.workspace-jump-button--crypto
+.workspace-jump-button__copy
+strong {
+  color:
+    #fff2d2;
+}
+
+
+.workspace-jump-button--crypto
+.workspace-jump-button__arrow {
+  color:
+    #fbbf24;
+
+  background:
+    rgba(
+      245,
+      158,
+      11,
+      0.07
+    );
+}
+
+
+/* ============================================================
+   STOCK VERSION
+   ============================================================ */
+
+.workspace-jump-button--stocks {
+  border-color:
+    rgba(
+      96,
+      165,
+      250,
+      0.18
+    );
+}
+
+
+.workspace-jump-button--stocks::before {
+  background:
+    linear-gradient(
+      120deg,
+      rgba(
+        59,
+        130,
+        246,
+        0.13
+      ),
+      transparent 60%
+    );
+}
+
+
+.workspace-jump-button--stocks:hover {
+  border-color:
+    rgba(
+      96,
+      165,
+      250,
+      0.4
+    );
+
+  box-shadow:
+    0 16px 38px
+      rgba(2, 6, 23, 0.34),
+    0 0 32px
+      rgba(
+        59,
+        130,
+        246,
+        0.06
+      );
+}
+
+
+.workspace-jump-button--stocks
+.workspace-jump-button__icon {
+  color:
+    #60a5fa;
+
+  border:
+    1px solid
+    rgba(
+      96,
+      165,
+      250,
+      0.13
+    );
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(
+        59,
+        130,
+        246,
+        0.18
+      ),
+      rgba(
+        30,
+        64,
+        175,
+        0.06
+      )
+    );
+}
+
+
+.workspace-jump-button--stocks
+.workspace-jump-button__copy
+small {
+  color:
+    #638bbd;
+}
+
+
+.workspace-jump-button--stocks
+.workspace-jump-button__copy
+strong {
+  color:
+    #e5f1ff;
+}
+
+
+.workspace-jump-button--stocks
+.workspace-jump-button__arrow {
+  color:
+    #60a5fa;
+
+  background:
+    rgba(
+      59,
+      130,
+      246,
+      0.07
+    );
+}
+
+
+/* ============================================================
+   TABLET
+   ============================================================ */
+
+@media (
+  max-width: 900px
+) {
+  .workspace-jump-button {
+    min-width:
+      190px;
+  }
+}
+
+
+/* ============================================================
+   MOBILE
+   ============================================================ */
+
+@media (
+  max-width: 760px
+) {
+  .workspace-jump-button {
+    width: 100%;
+
+    min-width: 0;
+
+    min-height: 54px;
+
+    grid-template-columns:
+      38px
+      minmax(0, 1fr)
+      28px;
+
+    padding:
+      8px 10px;
+
+    border-radius:
+      13px;
+  }
+
+
+  .workspace-jump-button__icon {
+    width: 38px;
+    height: 38px;
+  }
+
+
+  .workspace-jump-button__copy
+  small {
+    font-size:
+      0.56rem;
+  }
+
+
+  .workspace-jump-button__copy
+  strong {
+    font-size:
+      0.8rem;
+  }
+
+
+  .workspace-jump-button__arrow {
+    justify-self:
+      end;
+  }
+}
+
+
+/* ============================================================
+   SMALL PHONE
+   ============================================================ */
+
+@media (
+  max-width: 420px
+) {
+  .workspace-jump-button {
+    min-height:
+      52px;
+
+    grid-template-columns:
+      36px
+      minmax(0, 1fr)
+      26px;
+
+    gap: 9px;
+  }
+
+
+  .workspace-jump-button__icon {
+    width: 36px;
+    height: 36px;
+  }
+
+
+  .workspace-jump-button__copy
+  strong {
+    font-size:
+      0.76rem;
+  }
+}

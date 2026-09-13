@@ -7,7 +7,9 @@ import getFederalReserveEvents from "../data/providers/federalReserveEventProvid
 import getFederalRegisterEvents from "../data/providers/federalRegisterEventProvider.js";
 import getAlpacaPaperAccountData from "../data/providers/alpacaPaperAccountProvider.js";
 import filterRelevantEvents from "../analysis/eventRelevanceEngine.js";
-
+import {
+  processLivePaperDecision,
+} from "../services/livePaperTradingRuntime.js";
 import getMarketEvents from "../data/providers/marketEventDataProvider.js";
 
 import interpretMarketEvents from "../analysis/eventInterpretationEngine.js";
@@ -1237,121 +1239,245 @@ return finalEvents;
      * ------------------------------------------------------
      */
 
-    onDecision({
-      symbol,
-      finalDecision,
-      analysis,
-    }) {
-      console.log(
-        "\n====================================",
-      );
+    onDecision: async ({
+  symbol,
+  finalDecision,
+  analysis,
+}) => {
+  console.log(
+    "\n====================================",
+  );
 
-      console.log(
-        `LIVE ENGINE DECISION — ${symbol}`,
-      );
+  console.log(
+    `LIVE ENGINE DECISION — ${symbol}`,
+  );
 
-      console.log(
-        "====================================",
-      );
+  console.log(
+    "====================================",
+  );
 
-      console.log(
-        "LONG:",
-        finalDecision
-          ?.longScore ??
-          0,
-      );
+  console.log(
+    "LONG:",
+    finalDecision
+      ?.longScore ??
+      0,
+  );
 
-      console.log(
-        "SHORT:",
-        finalDecision
-          ?.shortScore ??
-          0,
-      );
+  console.log(
+    "SHORT:",
+    finalDecision
+      ?.shortScore ??
+      0,
+  );
 
-      console.log(
-        "Preferred side:",
-        finalDecision
-          ?.preferredSide ??
+  console.log(
+    "Preferred side:",
+    finalDecision
+      ?.preferredSide ??
+      "NONE",
+  );
+
+  console.log(
+    "Score:",
+    finalDecision
+      ?.preferredScore ??
+      0,
+  );
+
+  console.log(
+    "Decision:",
+    finalDecision
+      ?.decision ??
+      "NO_TRADE",
+  );
+
+  console.log(
+    "Status:",
+    finalDecision
+      ?.status ??
+      "UNKNOWN",
+  );
+
+  console.log(
+    "Market regime:",
+    finalDecision
+      ?.marketRegime ??
+      "UNKNOWN",
+  );
+
+  console.log(
+    "Consensus:",
+    finalDecision
+      ?.consensus ??
+      "UNKNOWN",
+  );
+
+  console.log(
+    "Risk approved:",
+    finalDecision
+      ?.riskApproved ===
+      true
+      ? "YES"
+      : "NO",
+  );
+
+  console.log(
+    "====================================",
+  );
+
+  /**
+   * ========================================================
+   * LIVE PAPER TRADING RUNTIME
+   * ========================================================
+   *
+   * IMPORTANT:
+   *
+   * This uses the SAME completed analysis produced by the
+   * LiveEngineRunner.
+   *
+   * We do NOT run the stock analysis again.
+   *
+   * The runtime will:
+   *
+   * - create/reuse the registered trading session
+   * - refuse execution without real live market data
+   * - refuse execution unless analysis + risk approve it
+   * - open an approved paper position
+   * - manage an already-open position
+   * - route thesis monitoring through PositionManager
+   */
+
+  try {
+    const runtimeResult =
+      await processLivePaperDecision({
+        symbol,
+
+        analysis,
+      });
+
+    console.log(
+      "[PAPER RUNTIME]",
+      {
+        symbol,
+
+        approved:
+          runtimeResult
+            ?.approved ===
+          true,
+
+        status:
+          runtimeResult
+            ?.status ??
+          "UNKNOWN",
+
+        action:
+          runtimeResult
+            ?.action ??
           "NONE",
+
+        marketPrice:
+          runtimeResult
+            ?.marketPrice ??
+          null,
+
+        marketPriceSource:
+          runtimeResult
+            ?.marketPriceSource ??
+          null,
+
+        positionId:
+          runtimeResult
+            ?.position
+            ?.id ??
+          null,
+
+        positionSide:
+          runtimeResult
+            ?.position
+            ?.side ??
+          null,
+
+        positionShares:
+          runtimeResult
+            ?.position
+            ?.shares ??
+          null,
+      },
+    );
+
+    if (
+      Array.isArray(
+        runtimeResult
+          ?.warnings,
+      ) &&
+      runtimeResult
+        .warnings
+        .length > 0
+    ) {
+      console.warn(
+        "[PAPER RUNTIME WARNINGS]",
+        runtimeResult
+          .warnings,
       );
+    }
 
-      console.log(
-        "Score:",
-        finalDecision
-          ?.preferredScore ??
-          0,
-      );
-
-      console.log(
-        "Decision:",
-        finalDecision
-          ?.decision ??
-          "NO_TRADE",
-      );
-
-      console.log(
-        "Status:",
-        finalDecision
-          ?.status ??
-          "UNKNOWN",
-      );
-
-      console.log(
-        "Market regime:",
-        finalDecision
-          ?.marketRegime ??
-          "UNKNOWN",
-      );
-
-      console.log(
-        "Consensus:",
-        finalDecision
-          ?.consensus ??
-          "UNKNOWN",
-      );
-
-      console.log(
-        "Risk approved:",
-        finalDecision
-          ?.riskApproved ===
-          true
-          ? "YES"
-          : "NO",
-      );
-
-      console.log(
-        "====================================\n",
-      );
-
-      /**
-       * Keep complete analysis available
-       * for future database/frontend work.
-       */
-
-      if (
-        analysis
-          ?.approved !== true
-      ) {
-        console.warn(
-          `[${symbol}] Analysis completed with errors.`,
-        );
-      }
-    },
-
-    onError({
-      symbol,
-      phase,
-      message,
-    }) {
+    if (
+      Array.isArray(
+        runtimeResult
+          ?.errors,
+      ) &&
+      runtimeResult
+        .errors
+        .length > 0
+    ) {
       console.error(
-        `[LIVE ENGINE ERROR]`,
-        {
-          symbol,
-          phase,
-          message,
-        },
+        "[PAPER RUNTIME ERRORS]",
+        runtimeResult
+          .errors,
       );
-    },
+    }
+  } catch (error) {
+    /**
+     * Fail closed.
+     *
+     * A runtime error must not crash the live intelligence
+     * engine and must never create a synthetic trade.
+     */
+
+    console.error(
+      "[PAPER RUNTIME ERROR]",
+      {
+        symbol,
+
+        message:
+          error instanceof Error
+            ? error.message
+            : String(
+                error,
+              ),
+      },
+    );
+  }
+
+  /**
+   * Keep complete analysis available for future
+   * database/frontend work.
+   */
+
+  if (
+    analysis
+      ?.approved !==
+    true
+  ) {
+    console.warn(
+      `[${symbol}] Analysis completed with errors.`,
+    );
+  }
+
+  console.log(
+    "====================================\n",
+  );
+},
   });
 
 /**

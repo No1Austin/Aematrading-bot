@@ -1,0 +1,2 @@
+import{complete,insufficient}from"./cryptoEngineUtils.js";
+export default async function run(c,{supportingIntelligence=null}={}){const d=c?.preferredDirection??"LONG",bulk=supportingIntelligence?.historical;if(Number.isFinite(Number(bulk?.score)))return complete("CRYPTO_HISTORICAL",bulk.score,d,{...bulk.evidence,source:"BULK_RESEARCH_SNAPSHOT"});const m=c?.measurements??{},x=m?.historicalIntelligence??{},score=x?.score??m?.historicalScore;if(!Number.isFinite(Number(score)))return insufficient("CRYPTO_HISTORICAL",x);return complete("CRYPTO_HISTORICAL",score,d,x);}

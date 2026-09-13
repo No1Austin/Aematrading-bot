@@ -1,12 +1,16 @@
 import runTradingAnalysis from "../orchestration/engineOrchestrator.js";
 
 import {
+  getInstitutionalEvidence,
+} from "../services/institutionalEvidenceBootstrap.js";
+
+import {
   createMarketSnapshot,
   getMarketCandles,
   getLatestQuote,
+  isQuoteFresh,
   subscribeToMarketData,
 } from "../data/marketDataHub.js";
-
 /**
  * ============================================================
  * LIVE ENGINE RUNNER
@@ -144,6 +148,8 @@ export class LiveEngineRunner {
 
     socialProvider = null,
 
+    institutionalProvider = getInstitutionalEvidence,
+
     historicalRecordsProvider =
       null,
 
@@ -192,6 +198,9 @@ export class LiveEngineRunner {
 
     this.socialProvider =
       socialProvider;
+
+    this.institutionalProvider =
+      institutionalProvider;
 
     this.historicalRecordsProvider =
       historicalRecordsProvider;
@@ -462,6 +471,19 @@ export class LiveEngineRunner {
    * ========================================================
    */
 
+    /**
+   * ========================================================
+   * BUILD LIQUIDITY INPUT
+   * ========================================================
+   *
+   * IMPORTANT:
+   *
+   * This function must never manufacture liquidity.
+   *
+   * Missing/stale bid-ask data remains unavailable.
+   * We do not convert a missing quote into a zero spread.
+   */
+
   buildLiquidityInput({
     symbol,
     bar,
@@ -471,21 +493,111 @@ export class LiveEngineRunner {
   }) {
     const price =
       Number(
-        bar.close,
+        bar?.close,
       );
 
     /**
-     * Average recent volume.
+     * ======================================================
+     * QUOTE VALIDATION
+     * ======================================================
      */
 
+    const quoteFresh =
+      isQuoteFresh(
+        symbol,
+      );
+
+    const rawBid =
+      Number(
+        quote?.bid,
+      );
+
+    const rawAsk =
+      Number(
+        quote?.ask,
+      );
+
+    const bid =
+      quoteFresh &&
+      Number.isFinite(
+        rawBid,
+      ) &&
+      rawBid > 0
+        ? rawBid
+        : null;
+
+    const ask =
+      quoteFresh &&
+      Number.isFinite(
+        rawAsk,
+      ) &&
+      rawAsk > 0
+        ? rawAsk
+        : null;
+
+    /**
+     * Never allow an inverted quote.
+     */
+
+    const validQuote =
+      bid !== null &&
+      ask !== null &&
+      ask >= bid;
+
+    /**
+     * ======================================================
+     * VOLUME
+     * ======================================================
+     */
+
+    const safeCandles =
+      Array.isArray(
+        candles,
+      )
+        ? candles
+        : [];
+
+    /**
+     * Current bar volume.
+     */
+
+    const currentVolumeCandidate =
+      Number(
+        bar?.volume,
+      );
+
+    const currentVolume =
+      Number.isFinite(
+        currentVolumeCandidate,
+      ) &&
+      currentVolumeCandidate >= 0
+        ? currentVolumeCandidate
+        : null;
+
+    /**
+     * Use prior bars for average volume.
+     *
+     * Excluding the current bar prevents the current spike
+     * from influencing its own baseline.
+     */
+
+    const previousCandles =
+      safeCandles
+        .filter(
+          (item) =>
+            item?.timestamp !==
+            bar?.timestamp,
+        )
+        .slice(
+          -20,
+        );
+
     const recentVolumes =
-      candles
-        .slice(-20)
+      previousCandles
         .map(
           (item) =>
             Number(
-              item.volume ??
-              0,
+              item?.volume,
             ),
         )
         .filter(
@@ -508,50 +620,357 @@ export class LiveEngineRunner {
             0,
           ) /
           recentVolumes.length
-        : Number(
-            bar.volume ??
-            0,
-          );
-
-    const positionValue =
-      positiveNumber(
-        account?.balance,
-      )
-        ? Number(
-            account.balance,
-          ) *
-          0.25
         : null;
 
-    return {
-      price,
+    /**
+     * ======================================================
+     * REALIZED VOLATILITY
+     * ======================================================
+     *
+     * Calculate the standard deviation of recent percentage
+     * returns.
+     *
+     * This is not IV/VIX.
+     *
+     * It is short-term realized volatility for execution-risk
+     * estimation.
+     */
 
+    const recentCloses =
+      safeCandles
+        .slice(
+          -21,
+        )
+        .map(
+          (item) =>
+            Number(
+              item?.close,
+            ),
+        )
+        .filter(
+          (value) =>
+            Number.isFinite(
+              value,
+            ) &&
+            value > 0,
+        );
+
+    const returns = [];
+
+    for (
+      let index = 1;
+      index <
+      recentCloses.length;
+      index += 1
+    ) {
+      const previous =
+        recentCloses[
+          index - 1
+        ];
+
+      const current =
+        recentCloses[
+          index
+        ];
+
+      if (
+        previous <= 0
+      ) {
+        continue;
+      }
+
+      const change =
+        (
+          current -
+          previous
+        ) /
+        previous;
+
+      if (
+        Number.isFinite(
+          change,
+        )
+      ) {
+        returns.push(
+          change,
+        );
+      }
+    }
+
+    let volatilityPercent =
+      null;
+
+    if (
+      returns.length >= 2
+    ) {
+      const mean =
+        returns.reduce(
+          (
+            sum,
+            value,
+          ) =>
+            sum +
+            value,
+          0,
+        ) /
+        returns.length;
+
+      const variance =
+        returns.reduce(
+          (
+            sum,
+            value,
+          ) =>
+            sum +
+            (
+              value -
+              mean
+            ) **
+              2,
+          0,
+        ) /
+        (
+          returns.length -
+          1
+        );
+
+      const standardDeviation =
+        Math.sqrt(
+          variance,
+        );
+
+      if (
+        Number.isFinite(
+          standardDeviation,
+        )
+      ) {
+        volatilityPercent =
+          standardDeviation;
+      }
+    }
+
+    /**
+     * ======================================================
+     * MARKET SESSION
+     * ======================================================
+     *
+     * Determine U.S. market session using America/New_York
+     * rather than the computer's local timezone.
+     */
+
+    const timestamp =
+      bar?.timestamp
+        ? new Date(
+            bar.timestamp,
+          )
+        : new Date();
+
+    let session =
+      "CLOSED";
+
+    if (
+      !Number.isNaN(
+        timestamp.getTime(),
+      )
+    ) {
+      const parts =
+        new Intl.DateTimeFormat(
+          "en-US",
+          {
+            timeZone:
+              "America/New_York",
+
+            weekday:
+              "short",
+
+            hour:
+              "2-digit",
+
+            minute:
+              "2-digit",
+
+            hourCycle:
+              "h23",
+          },
+        )
+          .formatToParts(
+            timestamp,
+          );
+
+      const getPart =
+        (type) =>
+          parts.find(
+            (part) =>
+              part.type ===
+              type,
+          )?.value;
+
+      const weekday =
+        getPart(
+          "weekday",
+        );
+
+      const hour =
+        Number(
+          getPart(
+            "hour",
+          ),
+        );
+
+      const minute =
+        Number(
+          getPart(
+            "minute",
+          ),
+        );
+
+      const weekdayOpen =
+        ![
+          "Sat",
+          "Sun",
+        ].includes(
+          weekday,
+        );
+
+      if (
+        weekdayOpen &&
+        Number.isFinite(
+          hour,
+        ) &&
+        Number.isFinite(
+          minute,
+        )
+      ) {
+        const minutes =
+          hour *
+            60 +
+          minute;
+
+        /**
+         * U.S. Eastern Time:
+         *
+         * Pre-market:   04:00 - 09:30
+         * Regular:      09:30 - 16:00
+         * After-hours:  16:00 - 20:00
+         */
+
+        if (
+          minutes >=
+            4 * 60 &&
+          minutes <
+            (
+              9 *
+                60 +
+              30
+            )
+        ) {
+          session =
+            "PRE_MARKET";
+        } else if (
+          minutes >=
+            (
+              9 *
+                60 +
+              30
+            ) &&
+          minutes <
+            16 *
+              60
+        ) {
+          session =
+            "REGULAR";
+        } else if (
+          minutes >=
+            16 *
+              60 &&
+          minutes <
+            20 *
+              60
+        ) {
+          session =
+            "AFTER_HOURS";
+        }
+      }
+    }
+
+    /**
+     * ======================================================
+     * PROVISIONAL POSITION VALUE
+     * ======================================================
+     *
+     * Do NOT assume 25% of the account.
+     *
+     * Final position sizing belongs to tradeRiskManager.
+     *
+     * If a real proposed position value eventually exists in
+     * account/context, we can use it here.
+     */
+
+    const proposedPositionValue =
+      Number(
+        account
+          ?.proposedPositionValue,
+      );
+
+    const positionValue =
+      Number.isFinite(
+        proposedPositionValue,
+      ) &&
+      proposedPositionValue >
+        0
+        ? proposedPositionValue
+        : null;
+
+    /**
+     * ======================================================
+     * FINAL LIQUIDITY INPUT
+     * ======================================================
+     */
+
+    return {
+      price:
+        Number.isFinite(
+          price,
+        ) &&
+        price > 0
+          ? price
+          : null,
+
+      /**
+       * Missing quote remains missing.
+       */
       bid:
-        quote?.bid ??
-        price,
+        validQuote
+          ? bid
+          : null,
 
       ask:
-        quote?.ask ??
-        price,
+        validQuote
+          ? ask
+          : null,
 
-      currentVolume:
-        Number(
-          bar.volume ??
-          0,
-        ),
+      currentVolume,
 
       averageVolume,
 
       positionValue,
 
-      volatilityPercent:
-        null,
+      volatilityPercent,
 
-      session:
-        "REGULAR",
+      session,
+
+      /**
+       * Diagnostic information.
+       *
+       * The orchestrator can ignore this for now.
+       */
+      quoteFresh,
+
+      quoteAvailable:
+        validQuote,
     };
   }
-
+  
   /**
    * ========================================================
    * PROVIDER HELPER
@@ -775,6 +1194,7 @@ export class LiveEngineRunner {
         companyInput,
         events,
         socialInput,
+        institutionalInput,
         breadth,
         volatility,
         historicalRecords,
@@ -1006,6 +1426,8 @@ export class LiveEngineRunner {
           events,
 
           socialInput,
+
+          institutionalInput,
 
           historicalRecords,
 

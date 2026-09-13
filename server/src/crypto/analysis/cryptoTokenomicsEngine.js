@@ -1,0 +1,4 @@
+import{finite,clamp,complete,insufficient}from"./cryptoEngineUtils.js";
+export default async function run(c){const m=c?.measurements??{},t=m?.tokenomics??m?.discoveryIntelligence?.tokenomics??{},d=c?.preferredDirection??"LONG";if(Number.isFinite(Number(t?.score)))return complete("CRYPTO_TOKENOMICS",t.score,d,t);
+const mc=finite(m?.marketCapUsd),fdv=finite(m?.fullyDilutedValuationUsd??m?.fdvUsd),circ=finite(m?.circulatingSupply),total=finite(m?.maxSupply??m?.totalSupply);if(!mc&&!fdv&&!circ&&!total)return insufficient("CRYPTO_TOKENOMICS");
+let score=60;if(mc&&fdv){const x=fdv/mc;score+=x<=1.25?20:x<=2?8:x<=4?-8:-20;}if(circ&&total){const x=circ/total;score+=x>=.75?15:x>=.5?7:x>=.25?-5:-15;}return complete("CRYPTO_TOKENOMICS",clamp(score),d,{marketCapUsd:mc||null,fdvUsd:fdv||null,circulatingSupply:circ||null,totalSupply:total||null});}

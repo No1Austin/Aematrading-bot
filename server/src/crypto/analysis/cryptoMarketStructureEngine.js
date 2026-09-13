@@ -1,0 +1,2 @@
+import{finite,clamp,complete,insufficient}from"./cryptoEngineUtils.js";
+export default async function run(c){const m=c?.measurements??{},d=c?.preferredDirection??"LONG",r=finite(m?.intradayRangePercent),e=finite(c?.directionEdge),v=finite(c?.venues?.venueCount??m?.venueCount);if(!r&&!e&&!v)return insufficient("CRYPTO_MARKET_STRUCTURE");const rs=r<=0?50:r<=4?60:r<=12?90:r<=30?70:40;return complete("CRYPTO_MARKET_STRUCTURE",rs*.35+clamp(e*3)*.4+clamp(v*15)*.25,d,{intradayRangePercent:r,directionEdge:e,venueCount:v});}

@@ -1,0 +1,395 @@
+{
+  "generatedAt": "2026-09-13T18:03:04.666Z",
+  "config": {
+    "sampleSize": 50,
+    "concurrency": 1
+  },
+  "summary": {
+    "requested": 50,
+    "completed": 0,
+    "failed": 50,
+    "average": null,
+    "minimum": null,
+    "maximum": null,
+    "p25": null,
+    "median": null,
+    "p75": null,
+    "p90": null,
+    "score50Plus": 0,
+    "score60Plus": 0,
+    "score65Plus": 0,
+    "score70Plus": 0,
+    "score75Plus": 0,
+    "score80Plus": 0,
+    "score85Plus": 0,
+    "actualTradeEligible": 0
+  },
+  "engineStats": [
+    {
+      "engine": "technical",
+      "maximum": null,
+      "averagePoints": null,
+      "averageSupportPercent": 0,
+      "fallbackCount": 0,
+      "fallbackPercent": 0
+    },
+    {
+      "engine": "company",
+      "maximum": null,
+      "averagePoints": null,
+      "averageSupportPercent": 0,
+      "fallbackCount": 0,
+      "fallbackPercent": 0
+    },
+    {
+      "engine": "macro",
+      "maximum": null,
+      "averagePoints": null,
+      "averageSupportPercent": 0,
+      "fallbackCount": 0,
+      "fallbackPercent": 0
+    },
+    {
+      "engine": "events",
+      "maximum": null,
+      "averagePoints": null,
+      "averageSupportPercent": 0,
+      "fallbackCount": 0,
+      "fallbackPercent": 0
+    },
+    {
+      "engine": "institutional",
+      "maximum": null,
+      "averagePoints": null,
+      "averageSupportPercent": 0,
+      "fallbackCount": 0,
+      "fallbackPercent": 0
+    },
+    {
+      "engine": "historical",
+      "maximum": null,
+      "averagePoints": null,
+      "averageSupportPercent": 0,
+      "fallbackCount": 0,
+      "fallbackPercent": 0
+    },
+    {
+      "engine": "social",
+      "maximum": null,
+      "averagePoints": null,
+      "averageSupportPercent": 0,
+      "fallbackCount": 0,
+      "fallbackPercent": 0
+    },
+    {
+      "engine": "country",
+      "maximum": null,
+      "averagePoints": null,
+      "averageSupportPercent": 0,
+      "fallbackCount": 0,
+      "fallbackPercent": 0
+    }
+  ],
+  "results": [
+    {
+      "symbol": "IHAK",
+      "ok": false,
+      "durationMs": 18169,
+      "error": "fetch failed"
+    },
+    {
+      "symbol": "GETY",
+      "ok": false,
+      "durationMs": 2,
+      "error": "fetch failed"
+    },
+    {
+      "symbol": "TLIH",
+      "ok": false,
+      "durationMs": 1,
+      "error": "fetch failed"
+    },
+    {
+      "symbol": "TAXX",
+      "ok": false,
+      "durationMs": 1,
+      "error": "fetch failed"
+    },
+    {
+      "symbol": "AIXI",
+      "ok": false,
+      "durationMs": 1,
+      "error": "fetch failed"
+    },
+    {
+      "symbol": "SHO.PRI",
+      "ok": false,
+      "durationMs": 1,
+      "error": "fetch failed"
+    },
+    {
+      "symbol": "SCII",
+      "ok": false,
+      "durationMs": 1,
+      "error": "fetch failed"
+    },
+    {
+      "symbol": "RWT.PRA",
+      "ok": false,
+      "durationMs": 2,
+      "error": "fetch failed"
+    },
+    {
+      "symbol": "REGCP",
+      "ok": false,
+      "durationMs": 0,
+      "error": "fetch failed"
+    },
+    {
+      "symbol": "QQQG",
+      "ok": false,
+      "durationMs": 1,
+      "error": "fetch failed"
+    },
+    {
+      "symbol": "PSR",
+      "ok": false,
+      "durationMs": 1,
+      "error": "fetch failed"
+    },
+    {
+      "symbol": "DBRG.PRI",
+      "ok": false,
+      "durationMs": 1,
+      "error": "fetch failed"
+    },
+    {
+      "symbol": "WIT",
+      "ok": false,
+      "durationMs": 1,
+      "error": "fetch failed"
+    },
+    {
+      "symbol": "PGHY",
+      "ok": false,
+      "durationMs": 0,
+      "error": "fetch failed"
+    },
+    {
+      "symbol": "TDIV",
+      "ok": false,
+      "durationMs": 2,
+      "error": "fetch failed"
+    },
+    {
+      "symbol": "GROW",
+      "ok": false,
+      "durationMs": 1,
+      "error": "fetch failed"
+    },
+    {
+      "symbol": "ZDAI",
+      "ok": false,
+      "durationMs": 1,
+      "error": "fetch failed"
+    },
+    {
+      "symbol": "XYLD",
+      "ok": false,
+      "durationMs": 2,
+      "error": "fetch failed"
+    },
+    {
+      "symbol": "XCLR",
+      "ok": false,
+      "durationMs": 0,
+      "error": "fetch failed"
+    },
+    {
+      "symbol": "WFC.PRC",
+      "ok": false,
+      "durationMs": 1,
+      "error": "fetch failed"
+    },
+    {
+      "symbol": "VNRX",
+      "ok": false,
+      "durationMs": 1,
+      "error": "fetch failed"
+    },
+    {
+      "symbol": "VAIE",
+      "ok": false,
+      "durationMs": 1,
+      "error": "fetch failed"
+    },
+    {
+      "symbol": "TWLVR",
+      "ok": false,
+      "durationMs": 1,
+      "error": "fetch failed"
+    },
+    {
+      "symbol": "SZZLU",
+      "ok": false,
+      "durationMs": 1,
+      "error": "fetch failed"
+    },
+    {
+      "symbol": "SOUL",
+      "ok": false,
+      "durationMs": 1,
+      "error": "fetch failed"
+    },
+    {
+      "symbol": "SAMT",
+      "ok": false,
+      "durationMs": 0,
+      "error": "fetch failed"
+    },
+    {
+      "symbol": "RFV",
+      "ok": false,
+      "durationMs": 1,
+      "error": "fetch failed"
+    },
+    {
+      "symbol": "PRIF.PRD",
+      "ok": false,
+      "durationMs": 1,
+      "error": "fetch failed"
+    },
+    {
+      "symbol": "OHACR",
+      "ok": false,
+      "durationMs": 0,
+      "error": "fetch failed"
+    },
+    {
+      "symbol": "OACCW",
+      "ok": false,
+      "durationMs": 1,
+      "error": "fetch failed"
+    },
+    {
+      "symbol": "NUAG",
+      "ok": false,
+      "durationMs": 0,
+      "error": "fetch failed"
+    },
+    {
+      "symbol": "MPU",
+      "ok": false,
+      "durationMs": 1,
+      "error": "fetch failed"
+    },
+    {
+      "symbol": "MCGAW",
+      "ok": false,
+      "durationMs": 1,
+      "error": "fetch failed"
+    },
+    {
+      "symbol": "LGDS",
+      "ok": false,
+      "durationMs": 1,
+      "error": "fetch failed"
+    },
+    {
+      "symbol": "KDKRW",
+      "ok": false,
+      "durationMs": 1,
+      "error": "fetch failed"
+    },
+    {
+      "symbol": "IPEX",
+      "ok": false,
+      "durationMs": 1,
+      "error": "fetch failed"
+    },
+    {
+      "symbol": "IBIG",
+      "ok": false,
+      "durationMs": 1,
+      "error": "fetch failed"
+    },
+    {
+      "symbol": "BMNG",
+      "ok": false,
+      "durationMs": 1,
+      "error": "fetch failed"
+    },
+    {
+      "symbol": "HBNB",
+      "ok": false,
+      "durationMs": 1,
+      "error": "fetch failed"
+    },
+    {
+      "symbol": "GSGO",
+      "ok": false,
+      "durationMs": 1,
+      "error": "fetch failed"
+    },
+    {
+      "symbol": "GL.PRD",
+      "ok": false,
+      "durationMs": 1,
+      "error": "fetch failed"
+    },
+    {
+      "symbol": "MINV",
+      "ok": false,
+      "durationMs": 1,
+      "error": "fetch failed"
+    },
+    {
+      "symbol": "FSYD",
+      "ok": false,
+      "durationMs": 0,
+      "error": "fetch failed"
+    },
+    {
+      "symbol": "FLOW",
+      "ok": false,
+      "durationMs": 1,
+      "error": "fetch failed"
+    },
+    {
+      "symbol": "FEBO",
+      "ok": false,
+      "durationMs": 1,
+      "error": "fetch failed"
+    },
+    {
+      "symbol": "ORIQU",
+      "ok": false,
+      "durationMs": 1,
+      "error": "fetch failed"
+    },
+    {
+      "symbol": "EMOP",
+      "ok": false,
+      "durationMs": 2,
+      "error": "fetch failed"
+    },
+    {
+      "symbol": "EAI",
+      "ok": false,
+      "durationMs": 0,
+      "error": "fetch failed"
+    },
+    {
+      "symbol": "DIVS",
+      "ok": false,
+      "durationMs": 1,
+      "error": "fetch failed"
+    },
+    {
+      "symbol": "CYN",
+      "ok": false,
+      "durationMs": 0,
+      "error": "fetch failed"
+    }
+  ]
+}

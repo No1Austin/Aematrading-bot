@@ -1,0 +1,5 @@
+import "dotenv/config";
+import runCryptoDiscoveryCycle from "../src/crypto/scanner/cryptoDiscoveryCycle.js";
+const runs=Math.max(2,Math.min(5,Number(process.env.CRYPTO_DISCOVERY_STABILITY_RUNS)||3)),results=[];
+for(let i=0;i<runs;i++){const r=await runCryptoDiscoveryCycle({refreshUniverse:i===0,includeDexDiscovery:true}),c=r.selectedCandidates??[];results.push({run:i+1,approved:r.approved,status:r.status,scanned:r?.scanner?.scanned??null,researchable:r?.scanner?.researchable??null,qualified:r?.scanner?.qualified??null,selected:c.length,cex:c.filter(x=>x?.candidateType==="CEX").length,emerging:c.filter(x=>x?.candidateType==="EMERGING").length,symbols:c.map(x=>x?.symbol).join(", ")});}
+console.log("\nAEMA CRYPTO DISCOVERY STABILITY DIAGNOSTIC\n");console.table(results.map(({symbols,...x})=>x));for(const r of results)console.log(`RUN ${r.run} SYMBOLS: ${r.symbols}`);const counts=results.map(x=>x.selected);console.log({runs,selectedCounts:counts,minSelected:Math.min(...counts),maxSelected:Math.max(...counts),spread:Math.max(...counts)-Math.min(...counts)});

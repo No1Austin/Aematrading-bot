@@ -1,0 +1,282 @@
+{
+  "version": 1,
+  "createdAt": "2026-09-13T15:15:56.234Z",
+  "metadata": {
+    "diagnostic": "PHASE_5_28",
+    "checkpointType": "AEMA_CRYPTO_PAPER_TRADING",
+    "capturedAt": "2026-09-13T15:15:56.234Z",
+    "paperExecution": true,
+    "liveExecution": false
+  },
+  "state": {
+    "capturedAt": "2026-09-13T15:15:56.234Z",
+    "ledger": {
+      "version": 1,
+      "startingEquity": 10000,
+      "realizedPnl": 0,
+      "unrealizedPnl": 40,
+      "tradingFees": 3,
+      "fundingPnl": -1,
+      "equity": 10036,
+      "peakEquity": 10038,
+      "drawdownUsd": 2,
+      "drawdownPercent": 0.0199,
+      "grossProfit": 0,
+      "grossLoss": 0,
+      "closedTrades": 0,
+      "winningTrades": 0,
+      "losingTrades": 0,
+      "breakevenTrades": 0,
+      "positions": [
+        {
+          "symbol": "BTCUSDT",
+          "position": {
+            "symbol": "BTCUSDT",
+            "direction": "LONG",
+            "quantity": 4,
+            "averageEntryPrice": 100,
+            "markPrice": 110,
+            "unrealizedPnl": 40,
+            "realizedPnl": 0,
+            "tradingFees": 2,
+            "fundingPnl": -1,
+            "openedAt": "2026-09-13T15:15:56.233Z",
+            "updatedAt": "2026-09-13T15:15:56.233Z"
+          }
+        },
+        {
+          "symbol": "ETHUSDT",
+          "position": {
+            "symbol": "ETHUSDT",
+            "direction": "LONG",
+            "quantity": 4,
+            "averageEntryPrice": 200,
+            "markPrice": 200,
+            "unrealizedPnl": 0,
+            "realizedPnl": 0,
+            "tradingFees": 1,
+            "fundingPnl": 0,
+            "openedAt": "2026-09-13T15:15:56.233Z",
+            "updatedAt": "2026-09-13T15:15:56.233Z"
+          }
+        }
+      ],
+      "processedFillIds": [
+        "RESTART-BTC-FILL",
+        "RESTART-ETH-FILL-4"
+      ],
+      "processedFundingIds": [
+        "RESTART-FUNDING-1"
+      ],
+      "transactions": [
+        {
+          "type": "FILL",
+          "fillId": "RESTART-BTC-FILL",
+          "symbol": "BTCUSDT",
+          "intent": "OPEN",
+          "direction": "LONG",
+          "side": "BUY",
+          "filledQuantity": 4,
+          "fillPrice": 100,
+          "fee": 2,
+          "timestamp": "2026-09-13T15:15:56.233Z"
+        },
+        {
+          "type": "FUNDING",
+          "fundingId": "RESTART-FUNDING-1",
+          "symbol": "BTCUSDT",
+          "amount": -1,
+          "timestamp": "2026-09-13T15:15:56.233Z"
+        },
+        {
+          "type": "FILL",
+          "fillId": "RESTART-ETH-FILL-4",
+          "symbol": "ETHUSDT",
+          "intent": "OPEN",
+          "direction": "LONG",
+          "side": "BUY",
+          "filledQuantity": 4,
+          "fillPrice": 200,
+          "fee": 1,
+          "timestamp": "2026-09-13T15:15:56.233Z"
+        }
+      ],
+      "startedAt": "2026-09-13T15:15:56.232Z",
+      "updatedAt": "2026-09-13T15:15:56.233Z",
+      "defaultFeeRate": 0,
+      "paperExecution": true,
+      "liveExecution": false,
+      "executionAuthority": false
+    },
+    "runtime": {
+      "version": 1,
+      "mode": "PAPER",
+      "paperOnly": true,
+      "liveExecutionEnabled": false,
+      "cycle": 0,
+      "startedAt": "2026-09-13T15:15:56.233Z",
+      "symbols": [
+        {
+          "symbol": "BTCUSDT",
+          "state": {
+            "symbol": "BTCUSDT",
+            "position": {
+              "symbol": "BTCUSDT",
+              "direction": "LONG",
+              "quantity": 4,
+              "exposure": 1,
+              "averageEntryPrice": 100,
+              "stopPrice": 95,
+              "lifecycleState": "OPEN",
+              "exitPending": false,
+              "lastExecutionStatus": null,
+              "lastClientOrderId": null,
+              "updatedAt": "2026-09-13T15:15:56.233Z"
+            },
+            "activeOrder": null,
+            "protectiveStop": {
+              "symbol": "BTCUSDT",
+              "direction": "LONG",
+              "stopPrice": 95,
+              "updatedAt": "2026-09-13T15:15:56.233Z"
+            },
+            "lastDecision": null,
+            "lastCycleKey": null,
+            "cycleCount": 0,
+            "updatedAt": "2026-09-13T15:15:56.233Z",
+            "entryEngines": null,
+            "riskPlan": null
+          }
+        },
+        {
+          "symbol": "ETHUSDT",
+          "state": {
+            "symbol": "ETHUSDT",
+            "position": {
+              "symbol": "ETHUSDT",
+              "direction": "LONG",
+              "quantity": 10,
+              "exposure": 0,
+              "averageEntryPrice": 200,
+              "stopPrice": null,
+              "lifecycleState": "OPEN",
+              "exitPending": false,
+              "lastExecutionStatus": null,
+              "lastClientOrderId": null,
+              "updatedAt": "2026-09-13T15:15:56.233Z"
+            },
+            "activeOrder": {
+              "clientOrderId": "RESTART-ETH-PARTIAL",
+              "status": "PARTIALLY_FILLED",
+              "requestedQuantity": 10,
+              "filledQuantity": 4,
+              "remainingQuantity": 6
+            },
+            "protectiveStop": null,
+            "lastDecision": null,
+            "lastCycleKey": null,
+            "cycleCount": 0,
+            "updatedAt": null,
+            "entryEngines": null,
+            "riskPlan": null
+          }
+        }
+      ],
+      "processedCycleKeys": [],
+      "processedClientOrderIds": [
+        "RESTART-ETH-PARTIAL"
+      ],
+      "lockedSymbols": [],
+      "exportedAt": "2026-09-13T15:15:56.234Z",
+      "paperExecution": true,
+      "liveExecution": false,
+      "executionAuthority": false
+    },
+    "exchange": {
+      "version": 1,
+      "adapter": "AEMA_PAPER_CRYPTO_EXCHANGE",
+      "paperExecution": true,
+      "liveExecution": false,
+      "orders": [
+        {
+          "orderId": "PAPER-ORDER-000001",
+          "clientOrderId": "RESTART-BTC-OPEN",
+          "symbol": "BTCUSDT",
+          "side": "BUY",
+          "requestedQuantity": 4,
+          "filledQuantity": 4,
+          "remainingQuantity": 0,
+          "averageFillPrice": 100,
+          "reduceOnly": false,
+          "status": "FILLED",
+          "createdAt": "2026-09-13T15:15:56.233Z",
+          "updatedAt": "2026-09-13T15:15:56.233Z"
+        },
+        {
+          "orderId": "PAPER-ORDER-000002",
+          "clientOrderId": "RESTART-ETH-PARTIAL",
+          "symbol": "ETHUSDT",
+          "side": "BUY",
+          "requestedQuantity": 10,
+          "filledQuantity": 10,
+          "remainingQuantity": 0,
+          "averageFillPrice": 200,
+          "reduceOnly": false,
+          "status": "FILLED",
+          "createdAt": "2026-09-13T15:15:56.233Z",
+          "updatedAt": "2026-09-13T15:15:56.233Z"
+        }
+      ],
+      "positions": [
+        {
+          "symbol": "BTCUSDT",
+          "direction": "LONG",
+          "quantity": 4,
+          "averageEntryPrice": 100,
+          "updatedAt": "2026-09-13T15:15:56.233Z"
+        },
+        {
+          "symbol": "ETHUSDT",
+          "direction": "LONG",
+          "quantity": 10,
+          "averageEntryPrice": 200,
+          "updatedAt": "2026-09-13T15:15:56.233Z"
+        }
+      ],
+      "fills": [
+        {
+          "fillId": "PAPER-FILL-000001",
+          "orderId": "PAPER-ORDER-000001",
+          "clientOrderId": "RESTART-BTC-OPEN",
+          "symbol": "BTCUSDT",
+          "side": "BUY",
+          "quantity": 4,
+          "price": 100,
+          "reduceOnly": false,
+          "timestamp": "2026-09-13T15:15:56.233Z"
+        },
+        {
+          "fillId": "PAPER-FILL-000002",
+          "orderId": "PAPER-ORDER-000002",
+          "clientOrderId": "RESTART-ETH-PARTIAL",
+          "symbol": "ETHUSDT",
+          "side": "BUY",
+          "quantity": 10,
+          "price": 200,
+          "reduceOnly": false,
+          "timestamp": "2026-09-13T15:15:56.233Z"
+        }
+      ],
+      "stops": [],
+      "exportedAt": "2026-09-13T15:15:56.234Z"
+    },
+    "safety": {
+      "paperExecution": true,
+      "liveExecution": false,
+      "executionAuthority": false
+    }
+  },
+  "paperExecution": true,
+  "liveExecution": false,
+  "executionAuthority": false
+}

@@ -1,0 +1,5 @@
+const BASE='https://api.coinbase.com/api/v3/brokerage';
+async function fetchJson(url){const r=await fetch(url,{headers:{accept:'application/json','cache-control':'no-cache'}});if(!r.ok)throw new Error(`Coinbase ${r.status}: ${await r.text()}`);return r.json();}
+export async function listCoinbaseProducts(){const result=await fetchJson(`${BASE}/market/products`);return Array.isArray(result?.products)?result.products:[];}
+export function normalizeCoinbaseProduct(product){return {exchange:'COINBASE',venueType:'CEX',productId:product?.product_id??null,base:product?.base_currency_id??product?.base_name??String(product?.product_id??'').split('-')[0],quote:product?.quote_currency_id??product?.quote_name??String(product?.product_id??'').split('-')[1],price:Number(product?.price),volume24h:Number(product?.volume_24h),priceChange24hPercent:Number(product?.price_percentage_change_24h),tradable:!['OFFLINE','DELISTED'].includes(String(product?.status??'').toUpperCase()),raw:product};}
+export default {listCoinbaseProducts,normalizeCoinbaseProduct};

@@ -1,0 +1,80 @@
+{
+  "version": 1,
+  "createdAt": "2026-09-13T21:30:17.295Z",
+  "metadata": {
+    "automaticCheckpoint": true,
+    "reason": "PERIODIC_CHECKPOINT",
+    "dirtyBeforeCheckpoint": true,
+    "requestedAt": "2026-09-13T21:30:17.294Z",
+    "checkpointType": "AEMA_CRYPTO_PAPER_TRADING",
+    "capturedAt": "2026-09-13T21:30:17.295Z",
+    "paperExecution": true,
+    "liveExecution": false
+  },
+  "state": {
+    "capturedAt": "2026-09-13T21:30:17.295Z",
+    "ledger": {
+      "version": 1,
+      "startingEquity": 10000,
+      "realizedPnl": 0,
+      "unrealizedPnl": 0,
+      "tradingFees": 0,
+      "fundingPnl": 0,
+      "equity": 10000,
+      "peakEquity": 10000,
+      "drawdownUsd": 0,
+      "drawdownPercent": 0,
+      "grossProfit": 0,
+      "grossLoss": 0,
+      "closedTrades": 0,
+      "winningTrades": 0,
+      "losingTrades": 0,
+      "breakevenTrades": 0,
+      "positions": [],
+      "processedFillIds": [],
+      "processedFundingIds": [],
+      "transactions": [],
+      "startedAt": "2026-09-12T21:58:14.210Z",
+      "updatedAt": "2026-09-13T21:29:17.291Z",
+      "defaultFeeRate": 0,
+      "paperExecution": true,
+      "liveExecution": false,
+      "executionAuthority": false
+    },
+    "runtime": {
+      "version": 1,
+      "mode": "PAPER",
+      "paperOnly": true,
+      "liveExecutionEnabled": false,
+      "cycle": 0,
+      "startedAt": "2026-09-12T21:58:14.211Z",
+      "symbols": [],
+      "processedCycleKeys": [],
+      "processedClientOrderIds": [],
+      "lockedSymbols": [],
+      "exportedAt": "2026-09-13T21:30:17.295Z",
+      "paperExecution": true,
+      "liveExecution": false,
+      "executionAuthority": false
+    },
+    "exchange": {
+      "version": 1,
+      "adapter": "AEMA_PAPER_CRYPTO_EXCHANGE",
+      "paperExecution": true,
+      "liveExecution": false,
+      "orders": [],
+      "positions": [],
+      "fills": [],
+      "stops": [],
+      "exportedAt": "2026-09-13T21:30:17.295Z"
+    },
+    "safety": {
+      "paperExecution": true,
+      "liveExecution": false,
+      "executionAuthority": false
+    }
+  },
+  "paperExecution": true,
+  "liveExecution": false,
+  "executionAuthority": false
+}

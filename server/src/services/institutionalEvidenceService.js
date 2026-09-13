@@ -1,0 +1,2021 @@
+/**
+ * ============================================================
+ * INSTITUTIONAL EVIDENCE SERVICE
+ * ============================================================
+ *
+ * FILE:
+ * server/src/services/institutionalEvidenceService.jsx
+ *
+ * PURPOSE
+ * -------
+ * Build real, normalized institutional evidence for:
+ *
+ *   institutionalPositionEngine.js
+ *
+ * SOURCES
+ * -------
+ * - SEC EDGAR 13F holdings
+ * - FINRA Reg SHO
+ *
+ * SAFETY
+ * ------
+ * - Never fabricates institutional positions.
+ * - Never guesses ticker from CUSIP.
+ * - Never fuzzy-matches issuer names.
+ * - Never converts FINRA short volume into fake 13F ownership.
+ * - Never treats missing evidence as bullish/bearish.
+ * - Never leaks future filings into historical analysis.
+ *
+ * IMPORTANT
+ * ---------
+ * SEC 13F holdings can only contribute position-change evidence
+ * when a VERIFIED security resolver identifies the requested
+ * symbol.
+ *
+ * Until such a resolver is supplied, SEC holdings remain raw
+ * evidence only.
+ */
+
+import createSecInstitutionalFilingsProvider
+  from "../data/providers/institutional/secInstitutionalFilingsProvider.js";
+
+import createFinraRegShoProvider
+  from "../data/providers/institutional/finraRegShoProvider.js";
+
+/**
+ * ============================================================
+ * STATUS
+ * ============================================================
+ */
+
+export const INSTITUTIONAL_EVIDENCE_STATUS =
+  Object.freeze({
+    COMPLETE:
+      "COMPLETE",
+
+    PARTIAL:
+      "PARTIAL",
+
+    INSUFFICIENT_DATA:
+      "INSUFFICIENT_DATA",
+
+    INVALID_REQUEST:
+      "INVALID_REQUEST",
+
+    ERROR:
+      "ERROR",
+  });
+
+/**
+ * ============================================================
+ * BASIC HELPERS
+ * ============================================================
+ */
+
+function normalizeSymbol(
+  value,
+) {
+  const symbol =
+    String(
+      value ??
+        "",
+    )
+      .trim()
+      .toUpperCase();
+
+  return symbol ||
+    null;
+}
+
+function normalizeCik(
+  value,
+) {
+  const digits =
+    String(
+      value ??
+        "",
+    )
+      .replace(
+        /\D/g,
+        "",
+      );
+
+  return digits
+    ? digits.padStart(
+        10,
+        "0",
+      )
+    : null;
+}
+
+function numberOrNull(
+  value,
+) {
+  if (
+    value === null ||
+    value === undefined ||
+    value === ""
+  ) {
+    return null;
+  }
+
+  const number =
+    Number(
+      value,
+    );
+
+  return Number.isFinite(
+    number,
+  )
+    ? number
+    : null;
+}
+
+function nonNegativeNumber(
+  value,
+) {
+  const number =
+    numberOrNull(
+      value,
+    );
+
+  if (
+    number === null ||
+    number < 0
+  ) {
+    return 0;
+  }
+
+  return number;
+}
+
+function safeArray(
+  value,
+) {
+  return Array.isArray(
+    value,
+  )
+    ? value
+    : [];
+}
+
+function safeErrorMessage(
+  error,
+) {
+  if (
+    error instanceof Error
+  ) {
+    return error.message;
+  }
+
+  return String(
+    error,
+  );
+}
+
+function uniqueStrings(
+  values,
+) {
+  return [
+    ...new Set(
+      safeArray(
+        values,
+      )
+        .map(
+          value =>
+            String(
+              value ??
+                "",
+            )
+              .trim(),
+        )
+        .filter(
+          Boolean,
+        ),
+    ),
+  ];
+}
+
+function dateMs(
+  value,
+) {
+  if (!value) {
+    return null;
+  }
+
+  const date =
+    new Date(
+      value,
+    );
+
+  const time =
+    date.getTime();
+
+  return Number.isFinite(
+    time,
+  )
+    ? time
+    : null;
+}
+
+function latestTimestamp(
+  values,
+) {
+  const valid =
+    safeArray(
+      values,
+    )
+      .map(
+        value => ({
+          value,
+          time:
+            dateMs(
+              value,
+            ),
+        }),
+      )
+      .filter(
+        item =>
+          item.time !==
+          null,
+      )
+      .sort(
+        (
+          a,
+          b,
+        ) =>
+          b.time -
+          a.time,
+      );
+
+  return (
+    valid[0]
+      ?.value ??
+    null
+  );
+}
+
+/**
+ * ============================================================
+ * MANAGER NORMALIZATION
+ * ============================================================
+ *
+ * manager input:
+ *
+ * {
+ *   cik: "0001364742",
+ *   name: "BlackRock Inc."
+ * }
+ *
+ * CIKs are NOT hardcoded here.
+ */
+
+function normalizeManagers(
+  managers,
+) {
+  return safeArray(
+    managers,
+  )
+    .map(
+      manager => {
+        if (
+          typeof manager ===
+          "string"
+        ) {
+          const cik =
+            normalizeCik(
+              manager,
+            );
+
+          return cik
+            ? {
+                cik,
+                name: null,
+              }
+            : null;
+        }
+
+        if (
+          !manager ||
+          typeof manager !==
+            "object"
+        ) {
+          return null;
+        }
+
+        const cik =
+          normalizeCik(
+            manager.cik,
+          );
+
+        if (!cik) {
+          return null;
+        }
+
+        return {
+          cik,
+
+          name:
+            manager.name ??
+            manager.managerName ??
+            null,
+        };
+      },
+    )
+    .filter(
+      Boolean,
+    );
+}
+
+/**
+ * ============================================================
+ * VERIFIED SECURITY RESOLUTION
+ * ============================================================
+ *
+ * resolver may be:
+ *
+ * async ({ symbol, holding }) => ({
+ *   matched: true,
+ *   symbol: "AAPL",
+ *   confidence: 1,
+ *   method: "VERIFIED_CUSIP"
+ * })
+ *
+ * OR:
+ *
+ * async ({ symbol, holding }) => false
+ *
+ * No resolver = no SEC security match.
+ */
+
+async function resolveHoldingMatch({
+  symbol,
+
+  holding,
+
+  securityResolver,
+}) {
+  if (
+    typeof securityResolver !==
+    "function"
+  ) {
+    return {
+      matched: false,
+
+      reason:
+        "NO_VERIFIED_SECURITY_RESOLVER",
+    };
+  }
+
+  try {
+    const result =
+      await securityResolver({
+        symbol,
+        holding,
+      });
+
+    if (
+      result === true
+    ) {
+      return {
+        matched: true,
+
+        symbol,
+
+        method:
+          "VERIFIED_EXTERNAL_RESOLVER",
+      };
+    }
+
+    if (
+      !result ||
+      typeof result !==
+        "object"
+    ) {
+      return {
+        matched: false,
+
+        reason:
+          "SECURITY_NOT_MATCHED",
+      };
+    }
+
+    const resolvedSymbol =
+      normalizeSymbol(
+        result.symbol,
+      );
+
+    const matched =
+      result.matched ===
+        true &&
+      resolvedSymbol ===
+        symbol;
+
+    return {
+      ...result,
+
+      matched,
+
+      symbol:
+        resolvedSymbol,
+    };
+  } catch (error) {
+    return {
+      matched: false,
+
+      reason:
+        "SECURITY_RESOLUTION_ERROR",
+
+      error:
+        safeErrorMessage(
+          error,
+        ),
+    };
+  }
+}
+
+/**
+ * ============================================================
+ * GROUP HOLDINGS BY REPORTING PERIOD
+ * ============================================================
+ */
+
+function groupHoldingsByReportDate(
+  holdings,
+) {
+  const periods =
+    new Map();
+
+  for (
+    const holding
+    of safeArray(
+      holdings,
+    )
+  ) {
+    const reportDate =
+      holding
+        ?.reportDate ??
+      null;
+
+    if (!reportDate) {
+      continue;
+    }
+
+    if (
+      !periods.has(
+        reportDate,
+      )
+    ) {
+      periods.set(
+        reportDate,
+        [],
+      );
+    }
+
+    periods
+      .get(
+        reportDate,
+      )
+      .push(
+        holding,
+      );
+  }
+
+  return [
+    ...periods.entries(),
+  ]
+    .map(
+      (
+        [
+          reportDate,
+          periodHoldings,
+        ],
+      ) => ({
+        reportDate,
+
+        holdings:
+          periodHoldings,
+      }),
+    )
+    .sort(
+      (
+        a,
+        b,
+      ) =>
+        (
+          dateMs(
+            b.reportDate,
+          ) ??
+          0
+        ) -
+        (
+          dateMs(
+            a.reportDate,
+          ) ??
+          0
+        ),
+    );
+}
+
+/**
+ * ============================================================
+ * TOTAL MATCHED SHARES
+ * ============================================================
+ */
+
+function totalShares(
+  holdings,
+) {
+  return safeArray(
+    holdings,
+  )
+    .reduce(
+      (
+        total,
+        holding,
+      ) =>
+        total +
+        nonNegativeNumber(
+          holding
+            ?.shares,
+        ),
+      0,
+    );
+}
+
+/**
+ * ============================================================
+ * ANALYZE ONE MANAGER
+ * ============================================================
+ */
+
+async function analyzeManager({
+  symbol,
+
+  manager,
+
+  asOf,
+
+  secProvider,
+
+  securityResolver,
+}) {
+  try {
+    const result =
+      await secProvider
+        .get13FHoldings({
+          cik:
+            manager.cik,
+
+          asOf,
+
+          /**
+           * We need at least two reporting periods.
+           *
+           * Amendments may mean more than two filings are
+           * required, therefore we retrieve several recent
+           * filings and group by reportDate below.
+           */
+          filingLimit: 6,
+        });
+
+    const holdings =
+      safeArray(
+        result
+          ?.holdings,
+      );
+
+    const matchedHoldings =
+      [];
+
+    const resolutionErrors =
+      [];
+
+    for (
+      const holding
+      of holdings
+    ) {
+      const resolution =
+        await resolveHoldingMatch({
+          symbol,
+
+          holding,
+
+          securityResolver,
+        });
+
+      if (
+        resolution
+          ?.error
+      ) {
+        resolutionErrors.push(
+          resolution.error,
+        );
+      }
+
+      if (
+        resolution
+          ?.matched !==
+        true
+      ) {
+        continue;
+      }
+
+      matchedHoldings.push({
+        ...holding,
+
+        resolvedSymbol:
+          symbol,
+
+        securityResolution:
+          resolution,
+      });
+    }
+
+    const periods =
+      groupHoldingsByReportDate(
+        matchedHoldings,
+      );
+
+    const current =
+      periods[0] ??
+      null;
+
+    const previous =
+      periods[1] ??
+      null;
+
+    const currentShares =
+      current
+        ? totalShares(
+            current.holdings,
+          )
+        : 0;
+
+    const previousShares =
+      previous
+        ? totalShares(
+            previous.holdings,
+          )
+        : 0;
+
+    let changeType =
+      "INSUFFICIENT_HISTORY";
+
+    let sharesAdded =
+      0;
+
+    let sharesReduced =
+      0;
+
+    if (
+      current &&
+      previous
+    ) {
+      if (
+        previousShares ===
+          0 &&
+        currentShares >
+          0
+      ) {
+        changeType =
+          "NEW_POSITION";
+
+        sharesAdded =
+          currentShares;
+      } else if (
+        previousShares >
+          0 &&
+        currentShares ===
+          0
+      ) {
+        changeType =
+          "EXITED_POSITION";
+
+        sharesReduced =
+          previousShares;
+      } else if (
+        currentShares >
+        previousShares
+      ) {
+        changeType =
+          "INCREASED";
+
+        sharesAdded =
+          currentShares -
+          previousShares;
+      } else if (
+        currentShares <
+        previousShares
+      ) {
+        changeType =
+          "REDUCED";
+
+        sharesReduced =
+          previousShares -
+          currentShares;
+      } else {
+        changeType =
+          "UNCHANGED";
+      }
+    }
+
+    const evidenceAt =
+      latestTimestamp(
+        safeArray(
+          current
+            ?.holdings,
+        )
+          .map(
+            holding =>
+              holding
+                ?.availableFrom ??
+              holding
+                ?.acceptanceDateTime ??
+              holding
+                ?.filingDate ??
+              null,
+          ),
+      );
+
+    return {
+      approved:
+        Boolean(
+          current &&
+          previous,
+        ),
+
+      managerCik:
+        manager.cik,
+
+      managerName:
+        result
+          ?.filerName ??
+        manager.name ??
+        null,
+
+      providerStatus:
+        result
+          ?.status ??
+        null,
+
+      holdingCount:
+        holdings.length,
+
+      matchedHoldingCount:
+        matchedHoldings.length,
+
+      reportingPeriods:
+        periods.map(
+          period => ({
+            reportDate:
+              period.reportDate,
+
+            shares:
+              totalShares(
+                period.holdings,
+              ),
+
+            holdingCount:
+              period
+                .holdings
+                .length,
+          }),
+        ),
+
+      currentReportDate:
+        current
+          ?.reportDate ??
+        null,
+
+      previousReportDate:
+        previous
+          ?.reportDate ??
+        null,
+
+      currentShares,
+
+      previousShares,
+
+      changeType,
+
+      sharesAdded,
+
+      sharesReduced,
+
+      evidenceAt,
+
+      raw:
+        result,
+
+      warnings:
+        uniqueStrings([
+          ...safeArray(
+            result
+              ?.warnings,
+          ),
+
+          ...(
+            typeof securityResolver !==
+            "function"
+              ? [
+                  "SEC holdings were retrieved but cannot be assigned to the requested symbol without a verified security resolver.",
+                ]
+              : []
+          ),
+        ]),
+
+      errors:
+        uniqueStrings([
+          ...safeArray(
+            result
+              ?.errors,
+          ),
+
+          ...resolutionErrors,
+        ]),
+    };
+  } catch (error) {
+    return {
+      approved: false,
+
+      managerCik:
+        manager.cik,
+
+      managerName:
+        manager.name ??
+        null,
+
+      providerStatus:
+        "ERROR",
+
+      holdingCount: 0,
+
+      matchedHoldingCount: 0,
+
+      reportingPeriods:
+        [],
+
+      currentReportDate:
+        null,
+
+      previousReportDate:
+        null,
+
+      currentShares: 0,
+
+      previousShares: 0,
+
+      changeType:
+        "ERROR",
+
+      sharesAdded: 0,
+
+      sharesReduced: 0,
+
+      evidenceAt:
+        null,
+
+      raw:
+        null,
+
+      warnings:
+        [],
+
+      errors: [
+        safeErrorMessage(
+          error,
+        ),
+      ],
+    };
+  }
+}
+
+/**
+ * ============================================================
+ * AGGREGATE SEC MANAGER EVIDENCE
+ * ============================================================
+ */
+
+function aggregateManagerEvidence(
+  managers,
+) {
+  const usable =
+    safeArray(
+      managers,
+    )
+      .filter(
+        manager =>
+          manager
+            ?.approved ===
+          true,
+      );
+
+  let increasedPositions =
+    0;
+
+  let reducedPositions =
+    0;
+
+  let newPositions =
+    0;
+
+  let exitedPositions =
+    0;
+
+  let sharesAdded =
+    0;
+
+  let sharesReduced =
+    0;
+
+  for (
+    const manager
+    of usable
+  ) {
+    switch (
+      manager.changeType
+    ) {
+      case "INCREASED":
+        increasedPositions +=
+          1;
+
+        sharesAdded +=
+          nonNegativeNumber(
+            manager
+              .sharesAdded,
+          );
+
+        break;
+
+      case "REDUCED":
+        reducedPositions +=
+          1;
+
+        sharesReduced +=
+          nonNegativeNumber(
+            manager
+              .sharesReduced,
+          );
+
+        break;
+
+      case "NEW_POSITION":
+        newPositions +=
+          1;
+
+        sharesAdded +=
+          nonNegativeNumber(
+            manager
+              .sharesAdded,
+          );
+
+        break;
+
+      case "EXITED_POSITION":
+        exitedPositions +=
+          1;
+
+        sharesReduced +=
+          nonNegativeNumber(
+            manager
+              .sharesReduced,
+          );
+
+        break;
+
+      default:
+        break;
+    }
+  }
+
+  return {
+    institutionsEvaluated:
+      usable.length,
+
+    increasedPositions,
+
+    reducedPositions,
+
+    newPositions,
+
+    exitedPositions,
+
+    sharesAdded,
+
+    sharesReduced,
+
+    evidenceAt:
+      latestTimestamp(
+        usable.map(
+          manager =>
+            manager
+              .evidenceAt,
+        ),
+      ),
+
+    reportingPeriodEnd:
+      latestTimestamp(
+        usable.map(
+          manager =>
+            manager
+              .currentReportDate,
+        ),
+      ),
+  };
+}
+
+/**
+ * ============================================================
+ * FINRA NORMALIZATION
+ * ============================================================
+ *
+ * FINRA Reg SHO daily short-sale volume is supporting
+ * positioning-pressure evidence.
+ *
+ * IMPORTANT:
+ *
+ * - It is NOT short interest.
+ * - It is NOT 13F ownership.
+ * - It is NOT converted into institutional ownership.
+ * - Missing values remain unavailable.
+ * - Real provider values are preserved.
+ */
+
+function normalizeFinraEvidence(
+  result,
+) {
+  if (
+    !result ||
+    typeof result !==
+      "object" ||
+    Array.isArray(
+      result,
+    )
+  ) {
+    return {
+      approved: false,
+
+      status:
+        "INSUFFICIENT_DATA",
+
+      evidenceAt:
+        null,
+
+      data:
+        null,
+
+      raw:
+        result ??
+        null,
+    };
+  }
+
+  const rows =
+    safeArray(
+      result.rows ??
+      result.data?.rows ??
+      result.result?.rows,
+    );
+
+  /**
+   * ========================================================
+   * AGGREGATE VALUES
+   * ========================================================
+   *
+   * Prefer values calculated by the provider.
+   *
+   * Only calculate from rows when the provider did not
+   * supply an aggregate value.
+   */
+
+  const rowTotalVolume =
+    rows.reduce(
+      (
+        total,
+        row,
+      ) =>
+        total +
+        nonNegativeNumber(
+          row?.totalVolume,
+        ),
+      0,
+    );
+
+  const rowShortVolume =
+    rows.reduce(
+      (
+        total,
+        row,
+      ) =>
+        total +
+        nonNegativeNumber(
+          row?.shortVolume,
+        ),
+      0,
+    );
+
+  const rowShortExemptVolume =
+    rows.reduce(
+      (
+        total,
+        row,
+      ) =>
+        total +
+        nonNegativeNumber(
+          row?.shortExemptVolume,
+        ),
+      0,
+    );
+
+  const totalVolume =
+    numberOrNull(
+      result.totalVolume ??
+      result.aggregate
+        ?.totalVolume ??
+      result.data
+        ?.totalVolume,
+    ) ??
+    (
+      rows.length > 0
+        ? rowTotalVolume
+        : null
+    );
+
+  const shortVolume =
+    numberOrNull(
+      result.shortVolume ??
+      result.aggregate
+        ?.shortVolume ??
+      result.data
+        ?.shortVolume,
+    ) ??
+    (
+      rows.length > 0
+        ? rowShortVolume
+        : null
+    );
+
+  const shortExemptVolume =
+    numberOrNull(
+      result.shortExemptVolume ??
+      result.aggregate
+        ?.shortExemptVolume ??
+      result.data
+        ?.shortExemptVolume,
+    ) ??
+    (
+      rows.length > 0
+        ? rowShortExemptVolume
+        : null
+    );
+
+  let shortVolumeRatio =
+    numberOrNull(
+      result.shortVolumeRatio ??
+      result.aggregate
+        ?.shortVolumeRatio ??
+      result.data
+        ?.shortVolumeRatio,
+    );
+
+  if (
+    shortVolumeRatio ===
+      null &&
+    totalVolume !==
+      null &&
+    totalVolume >
+      0 &&
+    shortVolume !==
+      null
+  ) {
+    shortVolumeRatio =
+      shortVolume /
+      totalVolume;
+  }
+
+  /**
+   * ========================================================
+   * EVIDENCE DATE
+   * ========================================================
+   *
+   * The FINRA provider may return tradeDate:null when the
+   * response contains several trading dates.
+   *
+   * Therefore derive the newest actual trade date from rows.
+   */
+
+  const latestTradeDate =
+    latestTimestamp(
+      rows.map(
+        row =>
+          row?.tradeDate ??
+          null,
+      ),
+    );
+
+  const evidenceAt =
+    result.evidenceAt ??
+    result.publishedAt ??
+    result.tradeDate ??
+    result.asOf ??
+    latestTradeDate ??
+    result.aggregate
+      ?.evidenceAt ??
+    result.aggregate
+      ?.date ??
+    result.data
+      ?.evidenceAt ??
+    null;
+
+  /**
+   * A successful HTTP/provider response with zero usable rows
+   * should not become usable market evidence.
+   */
+
+  const hasVolumeEvidence =
+    rows.length >
+      0 &&
+    totalVolume !==
+      null &&
+    totalVolume >
+      0 &&
+    shortVolume !==
+      null &&
+    shortVolumeRatio !==
+      null;
+
+  const approved =
+    result.approved ===
+      true &&
+    hasVolumeEvidence;
+
+  return {
+    approved,
+
+    status:
+      approved
+        ? (
+            result.status ??
+            "COMPLETE"
+          )
+        : "INSUFFICIENT_DATA",
+
+    evidenceAt,
+
+    data: {
+      symbol:
+        normalizeSymbol(
+          result.symbol,
+        ),
+
+      tradeDate:
+        result.tradeDate ??
+        latestTradeDate,
+
+      latestTradeDate,
+
+      rowCount:
+        rows.length,
+
+      totalVolume,
+
+      shortVolume,
+
+      shortExemptVolume,
+
+      shortVolumeRatio,
+
+      interpretation:
+        "SHORT_VOLUME_PROXY_NOT_SHORT_INTEREST",
+
+      rows,
+    },
+
+    raw:
+      result,
+  };
+}
+
+/**
+ * ============================================================
+ * CALL FINRA PROVIDER
+ * ============================================================
+ *
+ * Prefer the provider contract that actually exists in the
+ * current FINRA Reg SHO provider:
+ *
+ * getDailyShortVolume({
+ *   symbol,
+ *   tradeDate,
+ *   limit
+ * })
+ *
+ * Older method names remain compatibility fallbacks.
+ */
+
+async function getFinraEvidence({
+  symbol,
+
+  asOf,
+
+  provider,
+}) {
+  if (
+    !provider ||
+    typeof provider !==
+      "object"
+  ) {
+    return {
+      approved: false,
+
+      status:
+        "UNAVAILABLE",
+
+      evidenceAt:
+        null,
+
+      data:
+        null,
+
+      raw:
+        null,
+
+      method:
+        null,
+
+      warnings: [
+        "FINRA Reg SHO provider is unavailable.",
+      ],
+
+      errors: [],
+    };
+  }
+
+  /**
+   * ========================================================
+   * PREFERRED CURRENT INTERFACE
+   * ========================================================
+   */
+
+  if (
+    typeof provider
+      .getDailyShortVolume ===
+      "function"
+  ) {
+    try {
+      /**
+       * Do NOT automatically convert `asOf` into tradeDate.
+       *
+       * A historical analysis timestamp can include time and
+       * may refer to a non-trading day.
+       *
+       * Passing null allows the provider to retrieve its
+       * normal recent FINRA window.
+       */
+
+      const result =
+        await provider
+          .getDailyShortVolume({
+            symbol,
+
+            tradeDate:
+              null,
+
+            limit:
+              100,
+          });
+
+      const normalized =
+        normalizeFinraEvidence(
+          result,
+        );
+
+      return {
+        ...normalized,
+
+        method:
+          "getDailyShortVolume",
+
+        requestedAsOf:
+          asOf ??
+          null,
+
+        warnings:
+          uniqueStrings([
+            ...safeArray(
+              result
+                ?.warnings,
+            ),
+
+            "FINRA daily short-sale volume is a positioning-pressure proxy and must not be interpreted as short interest.",
+          ]),
+
+        errors:
+          uniqueStrings(
+            safeArray(
+              result
+                ?.errors,
+            ),
+          ),
+      };
+    } catch (error) {
+      return {
+        approved: false,
+
+        status:
+          "ERROR",
+
+        evidenceAt:
+          null,
+
+        data:
+          null,
+
+        raw:
+          null,
+
+        method:
+          "getDailyShortVolume",
+
+        requestedAsOf:
+          asOf ??
+          null,
+
+        warnings: [],
+
+        errors: [
+          safeErrorMessage(
+            error,
+          ),
+        ],
+      };
+    }
+  }
+
+  /**
+   * ========================================================
+   * LEGACY / COMPATIBILITY INTERFACES
+   * ========================================================
+   */
+
+  const fallbackMethods = [
+    "getSymbolShortVolume",
+    "getShortVolume",
+    "getRegShoData",
+    "get",
+  ];
+
+  const method =
+    fallbackMethods.find(
+      name =>
+        typeof provider[
+          name
+        ] ===
+          "function",
+    );
+
+  if (!method) {
+    return {
+      approved: false,
+
+      status:
+        "UNSUPPORTED_PROVIDER_INTERFACE",
+
+      evidenceAt:
+        null,
+
+      data:
+        null,
+
+      raw:
+        null,
+
+      method:
+        null,
+
+      warnings: [
+        "FINRA Reg SHO provider does not expose a recognized symbol-query method.",
+      ],
+
+      errors: [],
+    };
+  }
+
+  try {
+    const result =
+      await provider[
+        method
+      ]({
+        symbol,
+
+        asOf,
+      });
+
+    const normalized =
+      normalizeFinraEvidence(
+        result,
+      );
+
+    return {
+      ...normalized,
+
+      method,
+
+      requestedAsOf:
+        asOf ??
+        null,
+
+      warnings:
+        uniqueStrings([
+          ...safeArray(
+            result
+              ?.warnings,
+          ),
+
+          "FINRA provider is using a compatibility interface rather than getDailyShortVolume.",
+        ]),
+
+      errors:
+        uniqueStrings(
+          safeArray(
+            result
+              ?.errors,
+          ),
+        ),
+    };
+  } catch (error) {
+    return {
+      approved: false,
+
+      status:
+        "ERROR",
+
+      evidenceAt:
+        null,
+
+      data:
+        null,
+
+      raw:
+        null,
+
+      method,
+
+      requestedAsOf:
+        asOf ??
+        null,
+
+      warnings: [],
+
+      errors: [
+        safeErrorMessage(
+          error,
+        ),
+      ],
+    };
+  }
+}
+
+/**
+ * ============================================================
+ * SERVICE FACTORY
+ * ============================================================
+ */
+
+export function createInstitutionalEvidenceService({
+  secProvider = null,
+
+  finraProvider = null,
+
+  securityResolver = null,
+
+  institutionalManagers =
+    [],
+} = {}) {
+  const resolvedSecProvider =
+    secProvider ??
+    createSecInstitutionalFilingsProvider();
+
+  const resolvedFinraProvider =
+    finraProvider ??
+    createFinraRegShoProvider();
+
+  const managers =
+    normalizeManagers(
+      institutionalManagers,
+    );
+
+  /**
+   * ==========================================================
+   * GET INSTITUTIONAL EVIDENCE
+   * ==========================================================
+   */
+
+  async function getInstitutionalEvidence({
+    symbol,
+
+    asOf =
+      new Date()
+        .toISOString(),
+
+    managers:
+      managerOverrides =
+        null,
+  } = {}) {
+    const normalizedSymbol =
+      normalizeSymbol(
+        symbol,
+      );
+
+    if (!normalizedSymbol) {
+      return {
+        approved: false,
+
+        service:
+          "INSTITUTIONAL_EVIDENCE",
+
+        status:
+          INSTITUTIONAL_EVIDENCE_STATUS
+            .INVALID_REQUEST,
+
+        symbol:
+          null,
+
+        evidence:
+          null,
+
+        providers:
+          {},
+
+        warnings:
+          [],
+
+        errors: [
+          "A valid stock symbol is required.",
+        ],
+      };
+    }
+
+    const selectedManagers =
+      managerOverrides !==
+        null
+        ? normalizeManagers(
+            managerOverrides,
+          )
+        : managers;
+
+    try {
+      /**
+       * FINRA can be queried independently.
+       *
+       * SEC managers are deliberately sequential because the
+       * underlying SEC provider already enforces request pacing.
+       */
+
+      const finraPromise =
+        getFinraEvidence({
+          symbol:
+            normalizedSymbol,
+
+          asOf,
+
+          provider:
+            resolvedFinraProvider,
+        });
+
+      const managerResults =
+        [];
+
+      for (
+        const manager
+        of selectedManagers
+      ) {
+        managerResults.push(
+          await analyzeManager({
+            symbol:
+              normalizedSymbol,
+
+            manager,
+
+            asOf,
+
+            secProvider:
+              resolvedSecProvider,
+
+            securityResolver,
+          }),
+        );
+      }
+
+      const finra =
+        await finraPromise;
+
+      const sec =
+        aggregateManagerEvidence(
+          managerResults,
+        );
+
+      /**
+       * IMPORTANT:
+       *
+       * Only verified SEC position comparisons populate the
+       * institutionalPositionEngine's directional fields.
+       *
+       * FINRA remains supporting evidence and does NOT get
+       * transformed into fabricated manager position changes.
+       */
+
+      const hasSecDirectionalEvidence =
+        sec
+          .institutionsEvaluated >
+        0;
+
+      const evidenceAt =
+        latestTimestamp([
+          sec.evidenceAt,
+          finra.evidenceAt,
+        ]);
+
+      const evidence = {
+        symbol:
+          normalizedSymbol,
+
+        evidenceAt,
+
+        filedAt:
+          sec.evidenceAt,
+
+        publishedAt:
+          finra.evidenceAt,
+
+        reportingPeriodEnd:
+          sec
+            .reportingPeriodEnd,
+
+        institutionsEvaluated:
+          sec
+            .institutionsEvaluated,
+
+        increasedPositions:
+          sec
+            .increasedPositions,
+
+        reducedPositions:
+          sec
+            .reducedPositions,
+
+        newPositions:
+          sec
+            .newPositions,
+
+        exitedPositions:
+          sec
+            .exitedPositions,
+
+        sharesAdded:
+          sec
+            .sharesAdded,
+
+        sharesReduced:
+          sec
+            .sharesReduced,
+
+        /**
+         * We do not have verified total shares outstanding from
+         * these providers here, therefore ownership percentage
+         * must remain unavailable.
+         */
+
+        ownershipPercent:
+          null,
+
+        previousOwnershipPercent:
+          null,
+
+        /**
+         * Raw source context for frontend / diagnostics.
+         */
+
+        sources: {
+          sec: {
+            approved:
+              hasSecDirectionalEvidence,
+
+            managerCount:
+              selectedManagers
+                .length,
+
+            institutionsEvaluated:
+              sec
+                .institutionsEvaluated,
+
+            managers:
+              managerResults,
+          },
+
+          finra,
+        },
+      };
+
+      const warnings =
+        uniqueStrings([
+          ...managerResults
+            .flatMap(
+              result =>
+                safeArray(
+                  result
+                    ?.warnings,
+                ),
+            ),
+
+          ...safeArray(
+            finra
+              ?.warnings,
+          ),
+
+          ...(
+            selectedManagers.length ===
+              0
+              ? [
+                  "No institutional manager CIKs were supplied. SEC 13F position-change evidence is unavailable.",
+                ]
+              : []
+          ),
+
+          ...(
+            typeof securityResolver !==
+            "function" &&
+            selectedManagers.length >
+              0
+              ? [
+                  "No verified security resolver was supplied. SEC 13F holdings were not mapped to the requested ticker.",
+                ]
+              : []
+          ),
+        ]);
+
+      const errors =
+        uniqueStrings([
+          ...managerResults
+            .flatMap(
+              result =>
+                safeArray(
+                  result
+                    ?.errors,
+                ),
+            ),
+
+          ...safeArray(
+            finra
+              ?.errors,
+          ),
+        ]);
+
+      let status =
+        INSTITUTIONAL_EVIDENCE_STATUS
+          .INSUFFICIENT_DATA;
+
+      if (
+        hasSecDirectionalEvidence &&
+        finra.approved
+      ) {
+        status =
+          INSTITUTIONAL_EVIDENCE_STATUS
+            .COMPLETE;
+      } else if (
+        hasSecDirectionalEvidence ||
+        finra.approved
+      ) {
+        status =
+          INSTITUTIONAL_EVIDENCE_STATUS
+            .PARTIAL;
+      }
+
+      return {
+        /**
+         * approved means at least one real source supplied usable
+         * evidence. It does NOT mean a directional institutional
+         * score necessarily exists.
+         */
+
+        approved:
+          hasSecDirectionalEvidence ||
+          finra.approved ===
+            true,
+
+        service:
+          "INSTITUTIONAL_EVIDENCE",
+
+        status,
+
+        symbol:
+          normalizedSymbol,
+
+        asOf,
+
+        evidence,
+
+        providers: {
+          sec: {
+            approved:
+              hasSecDirectionalEvidence,
+
+            managerCount:
+              selectedManagers
+                .length,
+
+            institutionsEvaluated:
+              sec
+                .institutionsEvaluated,
+
+            evidenceAt:
+              sec.evidenceAt,
+
+            reportingPeriodEnd:
+              sec
+                .reportingPeriodEnd,
+          },
+
+          finra: {
+            approved:
+              finra.approved,
+
+            status:
+              finra.status,
+
+            evidenceAt:
+              finra.evidenceAt,
+          },
+        },
+
+        warnings,
+
+        errors,
+      };
+    } catch (error) {
+      return {
+        approved: false,
+
+        service:
+          "INSTITUTIONAL_EVIDENCE",
+
+        status:
+          INSTITUTIONAL_EVIDENCE_STATUS
+            .ERROR,
+
+        symbol:
+          normalizedSymbol,
+
+        asOf,
+
+        evidence:
+          null,
+
+        providers:
+          {},
+
+        warnings: [
+          "Institutional evidence could not be assembled. No institutional directional evidence should be awarded.",
+        ],
+
+        errors: [
+          safeErrorMessage(
+            error,
+          ),
+        ],
+      };
+    }
+  }
+
+  return {
+    getInstitutionalEvidence,
+  };
+}
+
+/**
+ * ============================================================
+ * DEFAULT SERVICE
+ * ============================================================
+ */
+
+const defaultInstitutionalEvidenceService =
+  createInstitutionalEvidenceService();
+
+/**
+ * ============================================================
+ * DEFAULT FUNCTION
+ * ============================================================
+ */
+
+export async function getInstitutionalEvidence(
+  options = {},
+) {
+  return defaultInstitutionalEvidenceService
+    .getInstitutionalEvidence(
+      options,
+    );
+}
+
+export default
+  getInstitutionalEvidence;

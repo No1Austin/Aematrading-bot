@@ -1,0 +1,1419 @@
+/* =========================================================
+   AEMA STOCK RESEARCH ENGINE
+   RESEARCH POSITIONS PAGE
+   ========================================================= */
+
+
+/* =========================================================
+   01. PAGE
+   ========================================================= */
+
+.positions-page {
+  min-height: 100vh;
+
+  padding-bottom: 52px;
+}
+
+
+/* =========================================================
+   02. PAGE HEADER
+   ========================================================= */
+
+.positions-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+
+  gap: 24px;
+}
+
+.positions-header > div:first-child {
+  min-width: 0;
+}
+
+.positions-kicker {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 7px;
+
+  margin-bottom: 8px;
+
+  color: #7690b7;
+
+  font-size: 9px;
+  font-weight: 750;
+
+  letter-spacing: 0.1em;
+
+  text-transform: uppercase;
+}
+
+.positions-kicker svg {
+  color: #77a8fb;
+}
+
+.positions-header h1 {
+  margin: 0;
+
+  color: #f4f8ff;
+
+  font-size:
+    clamp(
+      27px,
+      3vw,
+      34px
+    );
+
+  font-weight: 760;
+
+  line-height: 1.08;
+
+  letter-spacing: -0.035em;
+}
+
+.positions-header p {
+  max-width: 640px;
+
+  margin:
+    8px
+    0
+    0;
+
+  color: #7184a1;
+
+  font-size: 10.5px;
+
+  line-height: 1.55;
+}
+
+
+/* =========================================================
+   03. REFRESH BUTTON
+   ========================================================= */
+
+.positions-refresh {
+  min-height: 39px;
+
+  flex-shrink: 0;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  padding:
+    0
+    13px;
+
+  color: #a7b8cf;
+
+  background:
+    rgba(11, 24, 42, 0.82);
+
+  border:
+    1px solid
+    #1a2b45;
+
+  border-radius: 9px;
+
+  font-size: 10px;
+  font-weight: 650;
+
+  transition:
+    color 150ms ease,
+    border-color 150ms ease,
+    background-color 150ms ease,
+    transform 150ms ease;
+}
+
+.positions-refresh:hover:not(:disabled) {
+  color: #eef4fc;
+
+  background: #102039;
+
+  border-color: #294767;
+}
+
+.positions-refresh:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.positions-refresh:disabled {
+  opacity: 0.55;
+
+  cursor: not-allowed;
+}
+
+
+/* =========================================================
+   04. REFRESH SPINNER
+   ========================================================= */
+
+.positions-spin {
+  animation:
+    positions-spin
+    0.8s linear infinite;
+}
+
+@keyframes positions-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+/* =========================================================
+   05. SUMMARY GRID
+   ========================================================= */
+
+.positions-summary {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      5,
+      minmax(0, 1fr)
+    );
+
+  gap: 10px;
+
+  margin-top: 20px;
+}
+
+.positions-summary-card {
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  padding:
+    13px
+    12px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(14, 29, 50, 0.96),
+      rgba(8, 18, 32, 0.98)
+    );
+
+  border:
+    1px solid
+    rgba(39, 62, 94, 0.78);
+
+  border-radius: 11px;
+
+  box-shadow:
+    0 12px 30px
+    rgba(0, 0, 0, 0.1);
+}
+
+.positions-summary-icon {
+  width: 32px;
+  height: 32px;
+
+  flex-shrink: 0;
+
+  display: grid;
+  place-items: center;
+
+  color: #7fa9ee;
+
+  background:
+    rgba(56, 107, 196, 0.1);
+
+  border-radius: 8px;
+}
+
+.positions-summary-card.positive
+.positions-summary-icon {
+  color: #5bd7a6;
+
+  background:
+    rgba(45, 159, 117, 0.1);
+}
+
+.positions-summary-card.negative
+.positions-summary-icon {
+  color: #ff7e87;
+
+  background:
+    rgba(196, 64, 74, 0.09);
+}
+
+.positions-summary-card.performance
+.positions-summary-icon {
+  color: #d9ab61;
+
+  background:
+    rgba(189, 129, 37, 0.09);
+}
+
+.positions-summary-card > div {
+  min-width: 0;
+}
+
+.positions-summary-card span,
+.positions-summary-card strong {
+  display: block;
+}
+
+.positions-summary-card div > span {
+  color: #687d9b;
+
+  font-size: 8px;
+  font-weight: 600;
+
+  white-space: nowrap;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+}
+
+.positions-summary-card strong {
+  margin-top: 4px;
+
+  overflow: hidden;
+
+  color: #e8eef8;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  white-space: nowrap;
+
+  text-overflow: ellipsis;
+}
+
+
+/* =========================================================
+   06. POSITIONS LIST
+   ========================================================= */
+
+.positions-list {
+  display: grid;
+
+  gap: 15px;
+
+  margin-top: 16px;
+}
+
+
+/* =========================================================
+   07. POSITION CARD
+   ========================================================= */
+
+.research-position-card {
+  position: relative;
+
+  padding: 18px;
+
+  overflow: hidden;
+
+  background:
+    radial-gradient(
+      circle at 100% 0%,
+      rgba(44, 101, 206, 0.065),
+      transparent 28%
+    ),
+    linear-gradient(
+      155deg,
+      rgba(14, 28, 49, 0.97),
+      rgba(7, 17, 31, 0.99)
+    );
+
+  border:
+    1px solid
+    rgba(40, 66, 102, 0.84);
+
+  border-radius: 15px;
+
+  box-shadow:
+    0 18px 45px
+    rgba(0, 0, 0, 0.14);
+}
+
+
+/* =========================================================
+   08. POSITION HEADER
+   ========================================================= */
+
+.research-position-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 18px;
+}
+
+.research-position-identity {
+  min-width: 0;
+}
+
+.research-position-symbol-row {
+  display: flex;
+  align-items: center;
+
+  flex-wrap: wrap;
+
+  gap: 8px;
+}
+
+.research-position-symbol-row h2 {
+  margin: 0;
+
+  color: #f1f6ff;
+
+  font-size: 22px;
+  font-weight: 760;
+
+  letter-spacing: -0.03em;
+}
+
+.research-position-side {
+  display: inline-flex;
+  align-items: center;
+
+  min-height: 22px;
+
+  padding:
+    0
+    7px;
+
+  border-radius: 5px;
+
+  font-size: 7px;
+  font-weight: 800;
+
+  letter-spacing: 0.07em;
+
+  text-transform: uppercase;
+}
+
+.research-position-side.long {
+  color: #58d8a4;
+
+  background:
+    rgba(40, 155, 112, 0.12);
+
+  border:
+    1px solid
+    rgba(57, 186, 137, 0.16);
+}
+
+.research-position-side.short {
+  color: #ff7e87;
+
+  background:
+    rgba(192, 55, 67, 0.11);
+
+  border:
+    1px solid
+    rgba(211, 76, 87, 0.15);
+}
+
+.research-position-opened {
+  display: flex;
+  align-items: center;
+
+  gap: 5px;
+
+  margin-top: 5px;
+
+  color: #627997;
+
+  font-size: 8px;
+}
+
+
+/* =========================================================
+   09. ACTION BADGE
+   ========================================================= */
+
+.research-position-action {
+  display: inline-flex;
+  align-items: center;
+
+  flex-shrink: 0;
+
+  min-height: 26px;
+
+  padding:
+    0
+    9px;
+
+  color: #8fa4c1;
+
+  background:
+    rgba(83, 109, 148, 0.08);
+
+  border:
+    1px solid
+    rgba(93, 120, 157, 0.13);
+
+  border-radius: 999px;
+
+  font-size: 7px;
+  font-weight: 800;
+
+  letter-spacing: 0.06em;
+
+  text-transform: uppercase;
+}
+
+
+/* =========================================================
+   10. PERFORMANCE HERO
+   ========================================================= */
+
+.research-position-performance {
+  display: flex;
+  align-items: center;
+
+  gap: 11px;
+
+  margin-top: 16px;
+
+  padding:
+    13px
+    14px;
+
+  border-radius: 11px;
+}
+
+.research-position-performance.positive {
+  background:
+    rgba(38, 145, 105, 0.075);
+
+  border:
+    1px solid
+    rgba(57, 178, 132, 0.13);
+}
+
+.research-position-performance.negative {
+  background:
+    rgba(178, 53, 64, 0.07);
+
+  border:
+    1px solid
+    rgba(209, 73, 83, 0.13);
+}
+
+.research-position-performance-icon {
+  width: 37px;
+  height: 37px;
+
+  flex-shrink: 0;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 9px;
+}
+
+.research-position-performance.positive
+.research-position-performance-icon {
+  color: #55d7a2;
+
+  background:
+    rgba(44, 154, 112, 0.1);
+}
+
+.research-position-performance.negative
+.research-position-performance-icon {
+  color: #ff7d87;
+
+  background:
+    rgba(190, 58, 69, 0.1);
+}
+
+.research-position-performance-copy > span {
+  color: #7184a0;
+
+  font-size: 8px;
+  font-weight: 600;
+}
+
+.research-position-performance-value {
+  display: flex;
+  align-items: baseline;
+
+  flex-wrap: wrap;
+
+  gap: 8px;
+
+  margin-top: 3px;
+}
+
+.research-position-performance-value strong {
+  color: #eef4fc;
+
+  font-size: 20px;
+  font-weight: 750;
+}
+
+.research-position-performance.positive small {
+  color: #57d6a3;
+}
+
+.research-position-performance.negative small {
+  color: #ff818a;
+}
+
+
+/* =========================================================
+   11. CORE METRICS GRID
+   ========================================================= */
+
+.research-position-metrics-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      4,
+      minmax(0, 1fr)
+    );
+
+  gap: 8px;
+
+  margin-top: 13px;
+}
+
+.research-position-metric {
+  min-width: 0;
+
+  padding:
+    10px
+    11px;
+
+  background:
+    rgba(8, 19, 34, 0.74);
+
+  border:
+    1px solid
+    rgba(35, 57, 88, 0.72);
+
+  border-radius: 9px;
+}
+
+.research-position-metric span,
+.research-position-metric strong {
+  display: block;
+}
+
+.research-position-metric span {
+  color: #667b99;
+
+  font-size: 7px;
+  font-weight: 600;
+
+  text-transform: uppercase;
+
+  letter-spacing: 0.045em;
+}
+
+.research-position-metric strong {
+  margin-top: 5px;
+
+  overflow: hidden;
+
+  color: #c9d5e6;
+
+  font-size: 10px;
+  font-weight: 650;
+
+  white-space: nowrap;
+
+  text-overflow: ellipsis;
+}
+
+
+/* =========================================================
+   12. MONITORING + THESIS
+   ========================================================= */
+
+.research-position-detail-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(0, 1fr)
+    );
+
+  gap: 10px;
+
+  margin-top: 12px;
+}
+
+.research-position-section {
+  min-width: 0;
+
+  padding: 13px;
+
+  background:
+    rgba(9, 20, 36, 0.72);
+
+  border:
+    1px solid
+    rgba(36, 59, 91, 0.72);
+
+  border-radius: 11px;
+}
+
+.research-position-section-heading {
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+
+  padding-bottom: 10px;
+
+  border-bottom:
+    1px solid
+    rgba(45, 66, 96, 0.45);
+}
+
+.research-position-section-heading svg {
+  flex-shrink: 0;
+
+  color: #7fa8ed;
+}
+
+.research-position-section-heading strong,
+.research-position-section-heading span {
+  display: block;
+}
+
+.research-position-section-heading strong {
+  color: #dce6f4;
+
+  font-size: 10px;
+}
+
+.research-position-section-heading span {
+  margin-top: 2px;
+
+  color: #5c718d;
+
+  font-size: 7px;
+}
+
+
+/* =========================================================
+   13. DETAIL ROWS
+   ========================================================= */
+
+.research-detail-list {
+  display: grid;
+
+  margin-top: 6px;
+}
+
+.research-detail-row {
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 12px;
+
+  padding:
+    8px
+    1px;
+
+  border-bottom:
+    1px solid
+    rgba(40, 59, 86, 0.32);
+}
+
+.research-detail-row:last-child {
+  border-bottom: 0;
+}
+
+.research-detail-row > span {
+  color: #667b98;
+
+  font-size: 8px;
+}
+
+.research-detail-row > strong {
+  max-width: 55%;
+
+  overflow-wrap: anywhere;
+
+  color: #b9c7d9;
+
+  font-size: 8px;
+  font-weight: 650;
+
+  text-align: right;
+}
+
+
+/* =========================================================
+   14. CONDITION STATUS
+   ========================================================= */
+
+.research-condition-status {
+  display: inline-flex;
+
+  padding:
+    4px
+    6px;
+
+  border-radius: 5px;
+
+  font-size: 6px;
+  font-weight: 800;
+
+  letter-spacing: 0.05em;
+}
+
+.research-condition-status.valid {
+  color: #58d6a3;
+
+  background:
+    rgba(44, 158, 115, 0.11);
+}
+
+.research-condition-status.invalid {
+  color: #efb35d;
+
+  background:
+    rgba(188, 127, 38, 0.1);
+}
+
+.research-condition-status.unknown {
+  color: #8295af;
+
+  background:
+    rgba(90, 112, 144, 0.09);
+}
+
+
+/* =========================================================
+   15. RESEARCH REASONING
+   ========================================================= */
+
+.research-position-reasons-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(0, 1fr)
+    );
+
+  gap: 10px;
+
+  margin-top: 12px;
+}
+
+.research-reason-card {
+  min-width: 0;
+
+  padding: 13px;
+
+  background:
+    rgba(8, 19, 34, 0.66);
+
+  border:
+    1px solid
+    rgba(34, 56, 87, 0.68);
+
+  border-radius: 11px;
+}
+
+.research-reason-heading {
+  display: flex;
+  align-items: center;
+
+  gap: 7px;
+}
+
+.research-reason-heading svg {
+  color: #7aa7ef;
+}
+
+.research-reason-heading h3 {
+  margin: 0;
+
+  color: #d7e1ef;
+
+  font-size: 10px;
+}
+
+.research-reason-card ul {
+  display: grid;
+
+  gap: 6px;
+
+  margin:
+    10px
+    0
+    0;
+
+  padding-left: 17px;
+
+  color: #889bb5;
+
+  font-size: 8px;
+
+  line-height: 1.55;
+}
+
+.research-reason-card p {
+  margin:
+    10px
+    0
+    0;
+
+  color: #697d99;
+
+  font-size: 8px;
+
+  line-height: 1.55;
+}
+
+
+/* =========================================================
+   16. WARNINGS
+   ========================================================= */
+
+.research-position-warning {
+  margin-top: 12px;
+
+  padding:
+    11px
+    12px;
+
+  color: #cfa967;
+
+  background:
+    rgba(175, 116, 28, 0.075);
+
+  border:
+    1px solid
+    rgba(198, 139, 48, 0.13);
+
+  border-radius: 9px;
+}
+
+.research-warning-heading {
+  display: flex;
+  align-items: center;
+
+  gap: 6px;
+}
+
+.research-warning-heading strong {
+  font-size: 8px;
+
+  text-transform: uppercase;
+
+  letter-spacing: 0.05em;
+}
+
+.research-position-warning p {
+  margin:
+    6px
+    0
+    0;
+
+  color: #9b8562;
+
+  font-size: 8px;
+}
+
+
+/* =========================================================
+   17. DISCLAIMER
+   ========================================================= */
+
+.research-position-disclaimer {
+  margin-top: 12px;
+
+  padding-top: 10px;
+
+  color: #4f647f;
+
+  border-top:
+    1px solid
+    rgba(44, 64, 91, 0.35);
+
+  font-size: 7px;
+
+  text-align: center;
+}
+
+
+/* =========================================================
+   18. ERROR
+   ========================================================= */
+
+.positions-error {
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+
+  margin-top: 15px;
+
+  padding:
+    11px
+    12px;
+
+  color: #e5979c;
+
+  background:
+    rgba(180, 50, 61, 0.08);
+
+  border:
+    1px solid
+    rgba(211, 74, 84, 0.14);
+
+  border-radius: 9px;
+
+  font-size: 9px;
+}
+
+
+/* =========================================================
+   19. LOADING
+   ========================================================= */
+
+.positions-loading {
+  min-height: 220px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  margin-top: 16px;
+
+  color: #7590b2;
+
+  background:
+    rgba(9, 20, 36, 0.7);
+
+  border:
+    1px solid
+    rgba(37, 59, 90, 0.7);
+
+  border-radius: 13px;
+}
+
+.positions-loading strong {
+  margin-top: 5px;
+
+  color: #cad6e5;
+
+  font-size: 11px;
+}
+
+.positions-loading span {
+  color: #647b99;
+
+  font-size: 8px;
+}
+
+
+/* =========================================================
+   20. EMPTY STATE
+   ========================================================= */
+
+.positions-empty-state {
+  min-height: 280px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  margin-top: 16px;
+
+  padding: 30px;
+
+  text-align: center;
+
+  background:
+    radial-gradient(
+      circle at 50% 10%,
+      rgba(44, 94, 184, 0.07),
+      transparent 40%
+    ),
+    rgba(8, 19, 34, 0.7);
+
+  border:
+    1px solid
+    rgba(36, 59, 91, 0.74);
+
+  border-radius: 14px;
+}
+
+.positions-empty-icon {
+  width: 46px;
+  height: 46px;
+
+  display: grid;
+  place-items: center;
+
+  color: #759fdc;
+
+  background:
+    rgba(53, 100, 181, 0.09);
+
+  border:
+    1px solid
+    rgba(73, 123, 204, 0.12);
+
+  border-radius: 12px;
+}
+
+.positions-empty-state h2 {
+  margin:
+    13px
+    0
+    0;
+
+  color: #dfe7f3;
+
+  font-size: 15px;
+}
+
+.positions-empty-state p {
+  max-width: 420px;
+
+  margin:
+    7px
+    auto
+    0;
+
+  color: #6d819e;
+
+  font-size: 9px;
+
+  line-height: 1.55;
+}
+
+.positions-empty-state > span {
+  margin-top: 13px;
+
+  padding:
+    5px
+    8px;
+
+  color: #6e85a4;
+
+  background:
+    rgba(73, 101, 142, 0.07);
+
+  border-radius: 999px;
+
+  font-size: 7px;
+}
+
+
+/* =========================================================
+   21. COMPACT DESKTOP
+   ========================================================= */
+
+@media (max-width: 1180px) {
+  .positions-summary {
+    grid-template-columns:
+      repeat(
+        3,
+        minmax(0, 1fr)
+      );
+  }
+
+  .research-position-metrics-grid {
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
+  }
+}
+
+
+/* =========================================================
+   22. TABLET
+   ========================================================= */
+
+@media (max-width: 900px) {
+  .positions-summary {
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
+  }
+
+  .research-position-detail-grid,
+  .research-position-reasons-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* =========================================================
+   23. MOBILE
+   ========================================================= */
+
+@media (max-width: 760px) {
+  .positions-page {
+    padding-top: 17px;
+
+    padding-bottom:
+      calc(
+        28px +
+        env(
+          safe-area-inset-bottom
+        )
+      );
+  }
+
+  .positions-header {
+    flex-direction: column;
+
+    align-items: stretch;
+
+    gap: 13px;
+  }
+
+  .positions-kicker {
+    margin-bottom: 6px;
+
+    font-size: 8px;
+  }
+
+  .positions-header h1 {
+    font-size:
+      clamp(
+        25px,
+        8vw,
+        30px
+      );
+  }
+
+  .positions-header p {
+    margin-top: 6px;
+
+    font-size: 9px;
+  }
+
+  .positions-refresh {
+    width: 100%;
+
+    min-height: 44px;
+  }
+
+  .positions-summary {
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
+
+    gap: 7px;
+
+    margin-top: 15px;
+  }
+
+  .positions-summary-card {
+    min-height: 61px;
+
+    padding:
+      9px
+      8px;
+
+    gap: 8px;
+  }
+
+  .positions-summary-icon {
+    width: 29px;
+    height: 29px;
+  }
+
+  .positions-summary-card div > span {
+    font-size: 7px;
+  }
+
+  .positions-summary-card strong {
+    font-size: 12px;
+  }
+
+  .research-position-card {
+    padding: 13px;
+
+    border-radius: 13px;
+  }
+
+  .research-position-header {
+    align-items: flex-start;
+
+    gap: 10px;
+  }
+
+  .research-position-symbol-row h2 {
+    font-size: 19px;
+  }
+
+  .research-position-opened {
+    align-items: flex-start;
+
+    font-size: 7px;
+
+    line-height: 1.4;
+  }
+
+  .research-position-action {
+    min-height: 24px;
+
+    padding:
+      0
+      7px;
+
+    font-size: 6px;
+  }
+
+  .research-position-performance {
+    margin-top: 12px;
+
+    padding:
+      11px
+      10px;
+  }
+
+  .research-position-performance-icon {
+    width: 33px;
+    height: 33px;
+  }
+
+  .research-position-performance-value strong {
+    font-size: 17px;
+  }
+
+  .research-position-metrics-grid {
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
+
+    gap: 6px;
+
+    margin-top: 9px;
+  }
+
+  .research-position-metric {
+    padding:
+      9px
+      8px;
+  }
+
+  .research-position-metric span {
+    font-size: 6px;
+  }
+
+  .research-position-metric strong {
+    font-size: 9px;
+  }
+
+  .research-position-detail-grid,
+  .research-position-reasons-grid {
+    grid-template-columns: 1fr;
+
+    gap: 8px;
+
+    margin-top: 8px;
+  }
+
+  .research-position-section,
+  .research-reason-card {
+    padding: 11px;
+  }
+
+  .research-detail-row {
+    padding:
+      8px
+      0;
+  }
+
+  .positions-loading,
+  .positions-empty-state {
+    min-height: 230px;
+
+    margin-top: 12px;
+  }
+}
+
+
+/* =========================================================
+   24. VERY SMALL PHONES
+   ========================================================= */
+
+@media (max-width: 390px) {
+  .positions-summary {
+    gap: 6px;
+  }
+
+  .positions-summary-card {
+    padding:
+      8px
+      7px;
+  }
+
+  .positions-summary-icon {
+    width: 26px;
+    height: 26px;
+  }
+
+  .research-position-card {
+    padding: 11px;
+  }
+
+  .research-position-metrics-grid {
+    gap: 5px;
+  }
+
+  .research-position-metric {
+    padding:
+      8px
+      7px;
+  }
+
+  .research-position-performance-value {
+    gap: 5px;
+  }
+
+  .research-position-performance-value strong {
+    font-size: 16px;
+  }
+}
+
+
+/* =========================================================
+   25. ACCESSIBILITY
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .positions-spin {
+    animation: none;
+  }
+
+  .positions-refresh {
+    transition: none;
+  }
+}

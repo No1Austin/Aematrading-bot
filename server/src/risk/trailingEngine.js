@@ -63,6 +63,14 @@ import {
  */
 
 function isFiniteNumber(value) {
+  if (
+    value === null ||
+    value === undefined ||
+    value === ""
+  ) {
+    return false;
+  }
+
   return Number.isFinite(
     Number(value),
   );

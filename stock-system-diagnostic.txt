@@ -1,0 +1,2637 @@
+
+============================================================
+AEMA STOCK SYSTEM — FULL DIAGNOSTIC
+============================================================
+Started: Sat Sep 12 11:04:21 EDT 2026
+Root: /Users/no1austin/Desktop/Msc /MscSE-Day-4/trading-bot
+Node: v24.18.0
+NPM: 11.16.0
+
+============================================================
+1. PROJECT STRUCTURE
+============================================================
+✅ PASS: server/src exists
+✅ PASS: client/src exists
+
+Server JS files:
+     292
+Server JSX files:
+       0
+Client JSX files:
+      19
+
+============================================================
+2. BACKEND FILE EXTENSIONS
+============================================================
+✅ PASS: No .jsx production files found in server/src
+
+============================================================
+3. BACKEND JAVASCRIPT SYNTAX
+============================================================
+✅ PASS: All backend JS files passed node --check
+
+============================================================
+4. BROKEN RELATIVE IMPORTS
+============================================================
+FAIL: 1 broken relative import(s):
+src/live/liveEngineRunner.js  ->  ./institutionalEvidenceBootstrap.js
+❌ FAIL: Broken relative import(s) detected
+
+============================================================
+5. DUPLICATE / PARALLEL ENGINE IMPLEMENTATIONS
+============================================================
+Institutional position engines:
+src/analysis/institutionalPositionEngine.js
+src/engines/institutionalPositionEngine.js
+src/tests/institutionalPositionEngine.test.js
+
+Scoring engines:
+src/strategy/tradeScoringEngine.js
+src/strategy/tradeScoringEngine.test.js
+src/tests/tradeScoringEngine.test.js
+
+Liquidity engines:
+src/analysis/liquidityExecutionEngine.js
+src/analysis/liquidityExecutionEngine.test.js
+src/crypto/analysis/cryptoLiquidityEngine.js
+src/risk/liquidityStressEngine.js
+src/tests/liquidityStressEngine.test.js
+
+Potential duplicated basename files:
+companyFundamentalDataProvider.test.js
+cryptoDynamicStopManager.js
+historicalRecordsProvider.test.js
+institutionalPositionEngine.js
+tradeScoringEngine.test.js
+
+============================================================
+6. INSTITUTIONAL PIPELINE
+============================================================
+--- getInstitutionalEvidence references ---
+src/live/liveEngineRunner.js:4:  configuredInstitutionalEvidenceService as getInstitutionalEvidence,
+src/live/liveEngineRunner.js:151:    institutionalProvider = getInstitutionalEvidence,
+src/services/stockAnalysisRunner.js:50:import getInstitutionalEvidence
+src/services/stockAnalysisRunner.js:1080:        : getInstitutionalEvidence,
+src/services/liveStockAnalysisService.js:69:  configuredInstitutionalEvidenceService as getInstitutionalEvidence,
+src/services/liveStockAnalysisService.js:345:  return getInstitutionalEvidence({
+src/services/institutionalEvidenceService.js:1615:  async function getInstitutionalEvidence({
+src/services/institutionalEvidenceService.js:1992:    getInstitutionalEvidence,
+src/services/institutionalEvidenceService.js:2011:export async function getInstitutionalEvidence(
+src/services/institutionalEvidenceService.js:2015:    .getInstitutionalEvidence(
+src/services/institutionalEvidenceService.js:2021:  getInstitutionalEvidence;
+
+--- Institutional service exports ---
+1586:export function createInstitutionalEvidenceService({
+2003:  createInstitutionalEvidenceService();
+2011:export async function getInstitutionalEvidence(
+2020:export default
+
+--- Configured institutional bootstrap ---
+./diagnose-stock-system.sh: line 363: [: missing `]'
+./diagnose-stock-system.sh: line 365: -f: command not found
+./diagnose-stock-system.sh: line 366: ]: command not found
+⚠️  WARN: institutionalEvidenceBootstrap.js missing
+
+--- Suspicious configured-service aliases ---
+src/live/liveEngineRunner.js:4:  configuredInstitutionalEvidenceService as getInstitutionalEvidence,
+src/services/liveStockAnalysisService.js:69:  configuredInstitutionalEvidenceService as getInstitutionalEvidence,
+
+============================================================
+7. INSTITUTIONAL SECURITY RESOLUTION
+============================================================
+src/services/stockAnalysisRunner.js:1350:                          ?.institutionalManagers ??
+src/services/securityResolver.js:63:export function createSecurityResolver({
+src/services/securityResolver.js:64:  lookupSecurityIdentity = null,
+src/services/securityResolver.js:87:    if (!identity && typeof lookupSecurityIdentity === "function") {
+src/services/securityResolver.js:89:        await lookupSecurityIdentity({ symbol: normalized }),
+src/services/securityResolver.js:99:  async function securityResolver({ symbol, holding } = {}) {
+src/services/securityResolver.js:129:      method: "VERIFIED_CUSIP",
+src/services/securityResolver.js:135:  securityResolver.resolveIdentity = resolveIdentity;
+src/services/securityResolver.js:136:  securityResolver.clearCache = () => identityCache.clear();
+src/services/securityResolver.js:138:  return securityResolver;
+src/services/securityResolver.js:141:export default createSecurityResolver;
+src/services/institutionalEvidenceBootstrap.js:13:import createSecurityResolver
+src/services/institutionalEvidenceBootstrap.js:14:  from "./securityResolver.js";
+src/services/institutionalEvidenceBootstrap.js:16:import getInstitutionalManagers
+src/services/institutionalEvidenceBootstrap.js:22:  lookupSecurityIdentity = null,
+src/services/institutionalEvidenceBootstrap.js:27:  const securityResolver = createSecurityResolver({
+src/services/institutionalEvidenceBootstrap.js:28:    lookupSecurityIdentity,
+src/services/institutionalEvidenceBootstrap.js:32:  const institutionalManagers =
+src/services/institutionalEvidenceBootstrap.js:35:      : getInstitutionalManagers({ limit: managerLimit });
+src/services/institutionalEvidenceBootstrap.js:40:    securityResolver,
+src/services/institutionalEvidenceBootstrap.js:41:    institutionalManagers,
+src/services/institutionalEvidenceService.js:341: *   method: "VERIFIED_CUSIP"
+src/services/institutionalEvidenceService.js:356:  securityResolver,
+src/services/institutionalEvidenceService.js:359:    typeof securityResolver !==
+src/services/institutionalEvidenceService.js:372:      await securityResolver({
+src/services/institutionalEvidenceService.js:561:  securityResolver,
+src/services/institutionalEvidenceService.js:604:          securityResolver,
+src/services/institutionalEvidenceService.js:819:            typeof securityResolver !==
+src/services/institutionalEvidenceService.js:1591:  securityResolver = null,
+src/services/institutionalEvidenceService.js:1593:  institutionalManagers =
+src/services/institutionalEvidenceService.js:1606:      institutionalManagers,
+src/services/institutionalEvidenceService.js:1706:            securityResolver,
+src/services/institutionalEvidenceService.js:1847:            typeof securityResolver !==
+src/data/reference/institutionalManagerRegistry.js:21:export function getInstitutionalManagers({
+src/data/reference/institutionalManagerRegistry.js:39:export default getInstitutionalManagers;
+
+============================================================
+8. MARKET DATA + VOLUME PIPELINE
+============================================================
+--- Current / Average / Relative volume references ---
+src/services/stockAnalysisRunner.js:576:    currentVolume:
+src/services/stockAnalysisRunner.js:579:          ?.currentVolume,
+src/services/stockAnalysisRunner.js:586:    averageVolume:
+src/services/stockAnalysisRunner.js:589:          ?.averageVolume,
+src/scanner/marketMeasurementProvider.js:33:  relativeVolumeComparisonWindows: 8,
+src/scanner/marketMeasurementProvider.js:247:function windowRelativeVolume(candles, bars, comparisonWindows = 8) {
+src/scanner/marketMeasurementProvider.js:380:  const dollarVolume =
+src/scanner/marketMeasurementProvider.js:391:  const rvol1m = windowRelativeVolume(
+src/scanner/marketMeasurementProvider.js:394:    config.relativeVolumeComparisonWindows,
+src/scanner/marketMeasurementProvider.js:396:  const rvol5m = windowRelativeVolume(
+src/scanner/marketMeasurementProvider.js:399:    config.relativeVolumeComparisonWindows,
+src/scanner/marketMeasurementProvider.js:401:  const rvol15m = windowRelativeVolume(
+src/scanner/marketMeasurementProvider.js:404:    config.relativeVolumeComparisonWindows,
+src/scanner/marketMeasurementProvider.js:406:  const rvol30m = windowRelativeVolume(
+src/scanner/marketMeasurementProvider.js:409:    config.relativeVolumeComparisonWindows,
+src/scanner/marketMeasurementProvider.js:411:  const rvol60m = windowRelativeVolume(
+src/scanner/marketMeasurementProvider.js:414:    config.relativeVolumeComparisonWindows,
+src/scanner/marketMeasurementProvider.js:450:    dollarVolume,
+src/scanner/marketMeasurementProvider.js:454:    relativeVolume: rvol15m,
+src/scanner/marketMeasurementProvider.js:472:    relativeVolume1m: rvol1m,
+src/scanner/marketMeasurementProvider.js:473:    relativeVolume5m: rvol5m,
+src/scanner/marketMeasurementProvider.js:474:    relativeVolume15m: rvol15m,
+src/scanner/marketMeasurementProvider.js:475:    relativeVolume30m: rvol30m,
+src/scanner/marketMeasurementProvider.js:476:    relativeVolume60m: rvol60m,
+src/analysis/liquidityExecutionEngine.js:113:    excellentDollarVolume:
+src/analysis/liquidityExecutionEngine.js:116:    goodDollarVolume:
+src/analysis/liquidityExecutionEngine.js:119:    acceptableDollarVolume:
+src/analysis/liquidityExecutionEngine.js:122:    minimumDollarVolume:
+src/analysis/liquidityExecutionEngine.js:128:    excellentRelativeVolume: 1.5,
+src/analysis/liquidityExecutionEngine.js:129:    goodRelativeVolume: 1,
+src/analysis/liquidityExecutionEngine.js:130:    minimumRelativeVolume: 0.5,
+src/analysis/liquidityExecutionEngine.js:339:  currentVolume,
+src/analysis/liquidityExecutionEngine.js:340:  averageVolume,
+src/analysis/liquidityExecutionEngine.js:345:    !positiveNumber(averageVolume)
+src/analysis/liquidityExecutionEngine.js:352:      dollarVolume: null,
+src/analysis/liquidityExecutionEngine.js:354:      relativeVolume: null,
+src/analysis/liquidityExecutionEngine.js:361:  const averageVolumeValue =
+src/analysis/liquidityExecutionEngine.js:362:    Number(averageVolume);
+src/analysis/liquidityExecutionEngine.js:364:  const dollarVolume =
+src/analysis/liquidityExecutionEngine.js:366:    averageVolumeValue;
+src/analysis/liquidityExecutionEngine.js:368:  const relativeVolume =
+src/analysis/liquidityExecutionEngine.js:370:      currentVolume,
+src/analysis/liquidityExecutionEngine.js:372:      ? Number(currentVolume) /
+src/analysis/liquidityExecutionEngine.js:373:        averageVolumeValue
+src/analysis/liquidityExecutionEngine.js:380:  let dollarVolumeScore = 0;
+src/analysis/liquidityExecutionEngine.js:383:    dollarVolume >=
+src/analysis/liquidityExecutionEngine.js:384:    config.excellentDollarVolume
+src/analysis/liquidityExecutionEngine.js:386:    dollarVolumeScore = 1;
+src/analysis/liquidityExecutionEngine.js:388:    dollarVolume >=
+src/analysis/liquidityExecutionEngine.js:389:    config.goodDollarVolume
+src/analysis/liquidityExecutionEngine.js:391:    dollarVolumeScore = 0.9;
+src/analysis/liquidityExecutionEngine.js:393:    dollarVolume >=
+src/analysis/liquidityExecutionEngine.js:394:    config.acceptableDollarVolume
+src/analysis/liquidityExecutionEngine.js:396:    dollarVolumeScore = 0.7;
+src/analysis/liquidityExecutionEngine.js:398:    dollarVolume >=
+src/analysis/liquidityExecutionEngine.js:399:    config.minimumDollarVolume
+src/analysis/liquidityExecutionEngine.js:401:    dollarVolumeScore = 0.4;
+src/analysis/liquidityExecutionEngine.js:408:  let relativeVolumeScore =
+src/analysis/liquidityExecutionEngine.js:412:    relativeVolume !== null
+src/analysis/liquidityExecutionEngine.js:415:      relativeVolume >=
+src/analysis/liquidityExecutionEngine.js:416:      config.excellentRelativeVolume
+src/analysis/liquidityExecutionEngine.js:418:      relativeVolumeScore = 1;
+src/analysis/liquidityExecutionEngine.js:420:      relativeVolume >=
+src/analysis/liquidityExecutionEngine.js:421:      config.goodRelativeVolume
+src/analysis/liquidityExecutionEngine.js:423:      relativeVolumeScore = 0.85;
+src/analysis/liquidityExecutionEngine.js:425:      relativeVolume >=
+src/analysis/liquidityExecutionEngine.js:426:      config.minimumRelativeVolume
+src/analysis/liquidityExecutionEngine.js:428:      relativeVolumeScore = 0.6;
+src/analysis/liquidityExecutionEngine.js:430:      relativeVolumeScore = 0.25;
+src/analysis/liquidityExecutionEngine.js:436:      dollarVolumeScore *
+src/analysis/liquidityExecutionEngine.js:440:      relativeVolumeScore *
+src/analysis/liquidityExecutionEngine.js:447:    averageVolume:
+src/analysis/liquidityExecutionEngine.js:448:      averageVolumeValue,
+src/analysis/liquidityExecutionEngine.js:450:    currentVolume:
+src/analysis/liquidityExecutionEngine.js:452:        currentVolume,
+src/analysis/liquidityExecutionEngine.js:455:            currentVolume,
+src/analysis/liquidityExecutionEngine.js:459:    dollarVolume:
+src/analysis/liquidityExecutionEngine.js:461:        dollarVolume,
+src/analysis/liquidityExecutionEngine.js:465:    relativeVolume:
+src/analysis/liquidityExecutionEngine.js:466:      relativeVolume !== null
+src/analysis/liquidityExecutionEngine.js:468:            relativeVolume,
+src/analysis/liquidityExecutionEngine.js:473:    dollarVolumeScore:
+src/analysis/liquidityExecutionEngine.js:475:        dollarVolumeScore,
+src/analysis/liquidityExecutionEngine.js:479:    relativeVolumeScore:
+src/analysis/liquidityExecutionEngine.js:481:        relativeVolumeScore,
+src/analysis/liquidityExecutionEngine.js:511:  dollarVolume,
+src/analysis/liquidityExecutionEngine.js:519:      dollarVolume,
+src/analysis/liquidityExecutionEngine.js:535:    Number(dollarVolume);
+src/analysis/liquidityExecutionEngine.js:792:  currentVolume = null,
+src/analysis/liquidityExecutionEngine.js:794:  averageVolume,
+src/analysis/liquidityExecutionEngine.js:896:        currentVolume,
+src/analysis/liquidityExecutionEngine.js:898:        averageVolume,
+src/analysis/liquidityExecutionEngine.js:923:        dollarVolume:
+src/analysis/liquidityExecutionEngine.js:924:          volume.dollarVolume,
+src/analysis/liquidityExecutionEngine.js:1054:      volume.dollarVolume <
+src/analysis/liquidityExecutionEngine.js:1055:        config.minimumDollarVolume
+src/analysis/liquidityExecutionEngine.js:1107:      volume.relativeVolume !==
+src/analysis/liquidityExecutionEngine.js:1109:      volume.relativeVolume <
+src/analysis/liquidityExecutionEngine.js:1110:        config.minimumRelativeVolume
+
+--- Live bar ingestion ---
+src/data/providers/alpacaLiveMarketStream.js:846:          volume:
+src/data/marketDataHub.js:15: * - Receive real live bars
+src/data/marketDataHub.js:361:    volume:
+src/data/marketDataHub.js:752: * INGEST LIVE BAR
+src/data/marketDataHub.js:809:        "Out-of-order live bar rejected.",
+src/data/marketDataHub.js:874:   * NEW LIVE BAR
+
+============================================================
+9. SCANNER ARCHITECTURE
+============================================================
+--- Continuous scanner auto-start ---
+src/scanner/continuousMarketScanner.js:239:function shouldAutoStartScanner() {
+src/scanner/continuousMarketScanner.js:254:   *   AEMA_SCANNER_AUTO_START=true
+src/scanner/continuousMarketScanner.js:260:      .AEMA_SCANNER_AUTO_START,
+src/routes/scannerRoutes.js:1134:          .start();
+
+--- Discovery flow ---
+src/scanner/alpacaUniverseWarmer.js:21: *   marketMeasurementProvider
+src/scanner/alpacaUniverseWarmer.js:551:export async function warmAlpacaUniverseBatch({
+src/scanner/alpacaUniverseWarmer.js:1138:  warmAlpacaUniverseBatch;
+src/scanner/marketScannerConfig.js:136:        maximumCandidatesPerScan:
+src/scanner/marketScanner.js:85:  maximumCandidates =
+src/scanner/marketScanner.js:86:    config?.candidateManagement?.maximumCandidatesPerScan ?? 20,
+src/scanner/marketScanner.js:111:    Number.isInteger(maximumCandidates) &&
+src/scanner/marketScanner.js:112:    maximumCandidates > 0
+src/scanner/marketScanner.js:113:      ? researchable.slice(0, maximumCandidates)
+src/scanner/autonomousDiscoveryCycle.js:50:  getMarketUniverse,
+src/scanner/autonomousDiscoveryCycle.js:58:  warmAlpacaUniverseBatch,
+src/scanner/autonomousDiscoveryCycle.js:399:  maximumCandidates =
+src/scanner/autonomousDiscoveryCycle.js:402:      .maximumCandidatesPerScan,
+src/scanner/autonomousDiscoveryCycle.js:423:  maximumCandidatesPerBatch =
+src/scanner/autonomousDiscoveryCycle.js:467:    warmAlpacaUniverseBatch,
+src/scanner/autonomousDiscoveryCycle.js:477:  const safeMaximumCandidates =
+src/scanner/autonomousDiscoveryCycle.js:479:      maximumCandidates,
+src/scanner/autonomousDiscoveryCycle.js:483:        .maximumCandidatesPerScan,
+src/scanner/autonomousDiscoveryCycle.js:502:      await getMarketUniverse({
+src/scanner/autonomousDiscoveryCycle.js:556:            safeMaximumCandidates,
+src/scanner/autonomousDiscoveryCycle.js:624:            safeMaximumCandidates,
+src/scanner/autonomousDiscoveryCycle.js:675:        maximumCandidatesPerBatch:
+src/scanner/autonomousDiscoveryCycle.js:677:            maximumCandidatesPerBatch,
+src/scanner/autonomousDiscoveryCycle.js:681:        maximumCandidatesPerCycle:
+src/scanner/autonomousDiscoveryCycle.js:682:          safeMaximumCandidates,
+src/scanner/autonomousDiscoveryCycle.js:816:              safeMaximumCandidates,
+src/scanner/autonomousDiscoveryCycle.js:821:              safeMaximumCandidates,
+src/scanner/autonomousDiscoveryCycle.js:949:            safeMaximumCandidates,
+src/scanner/autonomousDiscoveryCycle.js:1000:              safeMaximumCandidates,
+src/scanner/autonomousDiscoveryCycle.js:1080:          safeMaximumCandidates,
+src/scanner/continuousMarketScanner.js:101:    maximumCandidates:
+src/scanner/continuousMarketScanner.js:110:    maximumCandidatesPerBatch:
+src/scanner/continuousMarketScanner.js:392:      maximumCandidates:
+src/scanner/continuousMarketScanner.js:394:          .maximumCandidates,
+src/scanner/continuousMarketScanner.js:404:      maximumCandidatesPerBatch:
+src/scanner/continuousMarketScanner.js:406:          .maximumCandidatesPerBatch,
+src/scanner/marketUniverseProvider.js:520:export function getMarketUniverseCacheStatus() {
+src/scanner/marketUniverseProvider.js:549:export async function getMarketUniverse({
+src/scanner/marketUniverseProvider.js:832:  getMarketUniverse;
+src/scanner/universeMarketDataService.singleWarm.patch.js:39:  maximumCandidatesPerCycle,
+src/scanner/universeMarketDataService.singleWarm.patch.js:149:        maximumCandidates:
+src/scanner/universeMarketDataService.singleWarm.patch.js:150:          maximumCandidatesPerCycle,
+src/scanner/universeMarketDataService.singleWarm.patch.js:222: *     maximumCandidatesPerCycle:
+src/scanner/universeMarketDataService.singleWarm.patch.js:223: *       resolvedMaximumCandidatesPerCycle,
+src/scanner/universeMarketDataService.js:13:} from "./marketMeasurementProvider.js";
+src/scanner/universeMarketDataService.js:36:  maximumCandidatesPerBatch: 20,
+src/scanner/universeMarketDataService.js:37:  maximumCandidatesPerCycle: 20,
+src/scanner/universeMarketDataService.js:288:  maximumCandidatesPerBatch,
+src/scanner/universeMarketDataService.js:331:      maximumCandidates: maximumCandidatesPerBatch,
+src/scanner/universeMarketDataService.js:482:  maximumCandidatesPerCycle,
+src/scanner/universeMarketDataService.js:486:    maximumCandidatesPerCycle,
+src/scanner/universeMarketDataService.js:531:  maximumCandidatesPerBatch =
+src/scanner/universeMarketDataService.js:532:    DEFAULT_CONFIG.maximumCandidatesPerBatch,
+src/scanner/universeMarketDataService.js:533:  maximumCandidatesPerCycle =
+src/scanner/universeMarketDataService.js:534:    DEFAULT_CONFIG.maximumCandidatesPerCycle,
+src/scanner/universeMarketDataService.js:610:    maximumCandidatesPerBatch,
+src/scanner/universeMarketDataService.js:611:    DEFAULT_CONFIG.maximumCandidatesPerBatch,
+src/scanner/universeMarketDataService.js:615:    maximumCandidatesPerCycle,
+src/scanner/universeMarketDataService.js:616:    DEFAULT_CONFIG.maximumCandidatesPerCycle,
+src/scanner/universeMarketDataService.js:735:          maximumCandidatesPerBatch:
+src/scanner/universeMarketDataService.js:793:        maximumCandidatesPerCycle:
+
+============================================================
+10. ENVIRONMENT CONFIGURATION
+============================================================
+MISSING REQUIRED APCA_API_KEY_ID
+MISSING REQUIRED APCA_API_SECRET_KEY
+NOT SET OPTIONAL ALPACA_TRADING_BASE_URL
+NOT SET OPTIONAL AEMA_SCANNER_AUTO_START
+NOT SET OPTIONAL SEC_CONTACT_EMAIL
+SET OPTIONAL FINRA_CLIENT_ID
+SET OPTIONAL FINRA_CLIENT_SECRET
+
+============================================================
+11. BACKEND PROCESS
+============================================================
+✅ PASS: Port 8000 is listening
+COMMAND   PID      USER   FD   TYPE             DEVICE SIZE/OFF NODE NAME
+node    93020 no1austin   17u  IPv6 0x7862e2793bfa6477      0t0  TCP *:irdmi (LISTEN)
+
+============================================================
+12. API HEALTH
+============================================================
+
+----- Markets status -----
+HTTP 200
+{
+    "success": true,
+    "service": "MARKET_OVERVIEW_API",
+    "status": "READY",
+    "timestamp": "2026-09-12T15:04:27.604Z"
+}
+✅ PASS: Markets status returned HTTP 200
+
+----- Scanner status -----
+HTTP 200
+{
+    "approved": true,
+    "service": "SCANNER_API",
+    "scanner": {
+        "service": "CONTINUOUS_MARKET_SCANNER",
+        "status": "STOPPED",
+        "active": false,
+        "runningCycle": false,
+        "intervalMs": 300000,
+        "cycleCount": 0,
+        "skippedCycles": 0,
+        "startedAt": null,
+        "stoppedAt": null,
+        "lastCycleStartedAt": null,
+        "lastCycleCompletedAt": null,
+        "nextCycleAt": null,
+        "lastError": null,
+        "discoveryOptions": {
+            "maximumUniverseSymbols": null,
+            "maximumCandidates": 20,
+            "batchSize": 100,
+            "batchConcurrency": 1,
+            "maximumCandidatesPerBatch": 20,
+            "submitForDeepResearch": true,
+            "waitForDeepResearch": false,
+            "marketRegime": "NEUTRAL"
+        },
+        "lastResult": null
+    },
+    "registry": {
+        "total": 0,
+        "byStatus": {}
+    },
+    "timestamp": "2026-09-12T15:04:27.662Z"
+}
+✅ PASS: Scanner status returned HTTP 200
+
+----- Scanner snapshot -----
+HTTP 200
+{
+    "approved": true,
+    "service": "SCANNER_API",
+    "scanner": {
+        "service": "CONTINUOUS_MARKET_SCANNER",
+        "status": "STOPPED",
+        "active": false,
+        "runningCycle": false,
+        "intervalMs": 300000,
+        "cycleCount": 0,
+        "skippedCycles": 0,
+        "startedAt": null,
+        "stoppedAt": null,
+        "lastCycleStartedAt": null,
+        "lastCycleCompletedAt": null,
+        "nextCycleAt": null,
+        "lastError": null,
+        "discoveryOptions": {
+            "maximumUniverseSymbols": null,
+            "maximumCandidates": 20,
+            "batchSize": 100,
+            "batchConcurrency": 1,
+            "maximumCandidatesPerBatch": 20,
+            "submitForDeepResearch": true,
+            "waitForDeepResearch": false,
+            "marketRegime": "NEUTRAL"
+        },
+        "lastResult": null
+    },
+    "registry": {
+        "total": 0,
+        "byStatus": {}
+    },
+    "candidates": [],
+    "qualifiedCandidates": [],
+    "researchProgress": {
+        "current": null,
+        "running": [],
+        "queued": [],
+        "completed": [],
+        "failed": [],
+        "counts": {
+            "total": 0,
+            "running": 0,
+            "queued": 0,
+            "completed": 0,
+            "failed": 0
+        },
+        "candidates": []
+    },
+    "timestamp": "2026-09-12T15:04:27.695Z"
+}
+✅ PASS: Scanner snapshot returned HTTP 200
+
+----- Markets overview -----
+HTTP 200
+{
+    "success": true,
+    "approved": true,
+    "service": "MARKET_OVERVIEW",
+    "status": "COMPLETE",
+    "feed": "iex",
+    "universe": {
+        "status": "COMPLETE",
+        "assetCount": 13126,
+        "longEligibleCount": 13126,
+        "shortEligibleCount": 5189
+    },
+    "movers": {
+        "usableCount": 13079,
+        "universeSize": 13126
+    },
+    "gainers": [
+        {
+            "symbol": "BDRX",
+            "name": "Biodexa Pharmaceuticals plc American Depositary Shs",
+            "exchange": "NASDAQ",
+            "tradable": true,
+            "marginable": true,
+            "shortable": false,
+            "borrowStatus": "hard_to_borrow",
+            "shortCandidateEligible": false,
+            "price": 1.22,
+            "latestTradePrice": 1.22,
+            "bid": 1.02,
+            "ask": 2,
+            "midpoint": 1.51,
+            "minuteClose": 1.22,
+            "dailyOpen": 0.8826,
+            "dailyHigh": 1.54,
+            "dailyLow": 0.8451,
+            "dailyClose": 1.3,
+            "previousClose": 0.7942,
+            "absoluteChange": 0.5058,
+            "changePercent": 63.68672878368169,
+            "volume": 593895,
+            "tradeCount": 3148,
+            "vwap": 1.306611,
+            "latestTradeTimestamp": "2026-09-11T20:59:28.607529783Z",
+            "latestQuoteTimestamp": "2026-09-11T20:52:23.182642665Z",
+            "minuteTimestamp": "2026-09-11T20:59:00Z",
+            "dailyTimestamp": "2026-09-11T04:00:00Z",
+            "timestamp": "2026-09-11T20:59:28.607529783Z"
+        },
+        {
+            "symbol": "ACVA",
+            "name": "ACV Auctions Inc.",
+            "exchange": "NYSE",
+            "tradable": true,
+            "marginable": true,
+            "shortable": true,
+            "borrowStatus": "easy_to_borrow",
+            "shortCandidateEligible": true,
+            "price": 10.42,
+            "latestTradePrice": 10.42,
+            "bid": 10.4,
+            "ask": 10.43,
+            "midpoint": 10.415,
+            "minuteClose": 10.42,
+            "dailyOpen": 10.455,
+            "dailyHigh": 10.455,
+            "dailyLow": 10.41,
+            "dailyClose": 10.41,
+            "previousClose": 7.225,
+            "absoluteChange": 3.1850000000000005,
+            "changePercent": 44.08304498269897,
+            "volume": 3213665,
+            "tradeCount": 5515,
+            "vwap": 10.424159,
+            "latestTradeTimestamp": "2026-09-11T20:12:21.142219731Z",
+            "latestQuoteTimestamp": "2026-09-11T20:19:55.101819846Z",
+            "minuteTimestamp": "2026-09-11T20:12:00Z",
+            "dailyTimestamp": "2026-09-11T04:00:00Z",
+            "timestamp": "2026-09-11T20:12:21.142219731Z"
+        },
+        {
+            "symbol": "SWRD",
+            "name": "Stewards Inc Common Stock",
+            "exchange": "NASDAQ",
+            "tradable": true,
+            "marginable": true,
+            "shortable": false,
+            "borrowStatus": "hard_to_borrow",
+            "shortCandidateEligible": false,
+            "price": 2.93,
+            "latestTradePrice": 2.93,
+            "bid": 2.91,
+            "ask": 2.96,
+            "midpoint": 2.935,
+            "minuteClose": 2.93,
+            "dailyOpen": 2.525,
+            "dailyHigh": 5.47,
+            "dailyLow": 2.525,
+            "dailyClose": 2.93,
+            "previousClose": 2.13,
+            "absoluteChange": 0.8000000000000003,
+            "changePercent": 37.558685446009406,
+            "volume": 133511,
+            "tradeCount": 1543,
+            "vwap": 3.670503,
+            "latestTradeTimestamp": "2026-09-11T19:59:57.222200687Z",
+            "latestQuoteTimestamp": "2026-09-11T20:00:00.013323076Z",
+            "minuteTimestamp": "2026-09-11T19:59:00Z",
+            "dailyTimestamp": "2026-09-11T04:00:00Z",
+            "timestamp": "2026-09-11T19:59:57.222200687Z"
+        },
+        {
+            "symbol": "ATEC",
+            "name": "Alphatec Holdings, Inc. Common Stock",
+            "exchange": "NASDAQ",
+            "tradable": true,
+            "marginable": true,
+            "shortable": true,
+            "borrowStatus": "easy_to_borrow",
+            "shortCandidateEligible": true,
+            "price": 10.59,
+            "latestTradePrice": 10.59,
+            "bid": 9.09,
+            "ask": 12,
+            "midpoint": 10.545,
+            "minuteClose": 10.59,
+            "dailyOpen": 9.43,
+            "dailyHigh": 10.6,
+            "dailyLow": 9.43,
+            "dailyClose": 10.59,
+            "previousClose": 8.84,
+            "absoluteChange": 1.75,
+            "changePercent": 19.79638009049774,
+            "volume": 431490,
+            "tradeCount": 4703,
+            "vwap": 10.296305,
+            "latestTradeTimestamp": "2026-09-11T19:59:55.835409029Z",
+            "latestQuoteTimestamp": "2026-09-11T20:00:00.74117187Z",
+            "minuteTimestamp": "2026-09-11T19:59:00Z",
+            "dailyTimestamp": "2026-09-11T04:00:00Z",
+            "timestamp": "2026-09-11T19:59:55.835409029Z"
+        },
+        {
+            "symbol": "ODD",
+            "name": "ODDITY Tech Ltd. Class A Ordinary Shares",
+            "exchange": "NASDAQ",
+            "tradable": true,
+            "marginable": true,
+            "shortable": true,
+            "borrowStatus": "easy_to_borrow",
+            "shortCandidateEligible": true,
+            "price": 18.27,
+            "latestTradePrice": 18.27,
+            "bid": 15.82,
+            "ask": 21.51,
+            "midpoint": 18.665,
+            "minuteClose": 18.27,
+            "dailyOpen": 16.64,
+            "dailyHigh": 20.08,
+            "dailyLow": 15.89,
+            "dailyClose": 18.27,
+            "previousClose": 15.97,
+            "absoluteChange": 2.299999999999999,
+            "changePercent": 14.40200375704445,
+            "volume": 140283,
+            "tradeCount": 2282,
+            "vwap": 18.332059,
+            "latestTradeTimestamp": "2026-09-11T19:59:44.770004021Z",
+            "latestQuoteTimestamp": "2026-09-11T20:00:00.709413604Z",
+            "minuteTimestamp": "2026-09-11T19:59:00Z",
+            "dailyTimestamp": "2026-09-11T04:00:00Z",
+            "timestamp": "2026-09-11T19:59:44.770004021Z"
+        },
+        {
+            "symbol": "CMRC",
+            "name": "Commerce.com, Inc. Series 1 Common Stock",
+            "exchange": "NASDAQ",
+            "tradable": true,
+            "marginable": true,
+            "shortable": true,
+            "borrowStatus": "easy_to_borrow",
+            "shortCandidateEligible": true,
+            "price": 3.5,
+            "latestTradePrice": 3.5,
+            "bid": 3,
+            "ask": 0,
+            "midpoint": null,
+            "minuteClose": 3.5,
+            "dailyOpen": 3.16,
+            "dailyHigh": 3.595,
+            "dailyLow": 3.115,
+            "dailyClose": 3.5,
+            "previousClose": 3.095,
+            "absoluteChange": 0.4049999999999998,
+            "changePercent": 13.085621970920833,
+            "volume": 137607,
+            "tradeCount": 1393,
+            "vwap": 3.455765,
+            "latestTradeTimestamp": "2026-09-11T19:59:56.556261034Z",
+            "latestQuoteTimestamp": "2026-09-11T20:00:03.99687988Z",
+            "minuteTimestamp": "2026-09-11T19:59:00Z",
+            "dailyTimestamp": "2026-09-11T04:00:00Z",
+            "timestamp": "2026-09-11T19:59:56.556261034Z"
+        },
+        {
+            "symbol": "TNON",
+            "name": "Tenon Medical, Inc. Common Stock",
+            "exchange": "NASDAQ",
+            "tradable": true,
+            "marginable": true,
+            "shortable": false,
+            "borrowStatus": "hard_to_borrow",
+            "shortCandidateEligible": false,
+            "price": 5.69,
+            "latestTradePrice": 5.69,
+            "bid": 5.03,
+            "ask": 6.75,
+            "midpoint": 5.890000000000001,
+            "minuteClose": 5.69,
+            "dailyOpen": 8.13,
+            "dailyHigh": 10.76,
+            "dailyLow": 5.25,
+            "dailyClose": 5.93,
+            "previousClose": 5.245,
+            "absoluteChange": 0.6849999999999996,
+            "changePercent": 13.060057197330782,
+            "volume": 340282,
+            "tradeCount": 3107,
+            "vwap": 8.136141,
+            "latestTradeTimestamp": "2026-09-11T20:50:23.384568225Z",
+            "latestQuoteTimestamp": "2026-09-11T20:00:00.184290088Z",
+            "minuteTimestamp": "2026-09-11T20:50:00Z",
+            "dailyTimestamp": "2026-09-11T04:00:00Z",
+            "timestamp": "2026-09-11T20:50:23.384568225Z"
+        },
+        {
+            "symbol": "HPE",
+            "name": "Hewlett Packard Enterprise Company",
+            "exchange": "NYSE",
+            "tradable": true,
+            "marginable": true,
+            "shortable": true,
+            "borrowStatus": "easy_to_borrow",
+            "shortCandidateEligible": true,
+            "price": 62.08,
+            "latestTradePrice": 62.08,
+            "bid": 58.07,
+            "ask": 0,
+            "midpoint": null,
+            "minuteClose": 62.08,
+            "dailyOpen": 56.37,
+            "dailyHigh": 62.15,
+            "dailyLow": 56.37,
+            "dailyClose": 62.08,
+            "previousClose": 55.23,
+            "absoluteChange": 6.850000000000001,
+            "changePercent": 12.402679703059935,
+            "volume": 1605281,
+            "tradeCount": 15224,
+            "vwap": 60.928048,
+            "latestTradeTimestamp": "2026-09-11T19:59:59.903451681Z",
+            "latestQuoteTimestamp": "2026-09-11T20:00:01.757317486Z",
+            "minuteTimestamp": "2026-09-11T19:59:00Z",
+            "dailyTimestamp": "2026-09-11T04:00:00Z",
+            "timestamp": "2026-09-11T19:59:59.903451681Z"
+        },
+        {
+            "symbol": "DELL",
+            "name": "Dell Technologies Inc.",
+            "exchange": "NYSE",
+            "tradable": true,
+            "marginable": true,
+            "shortable": true,
+            "borrowStatus": "easy_to_borrow",
+            "shortCandidateEligible": true,
+            "price": 566.56,
+            "latestTradePrice": 566.56,
+            "bid": 536.35,
+            "ask": 0,
+            "midpoint": null,
+            "minuteClose": 566.56,
+            "dailyOpen": 519.53,
+            "dailyHigh": 567.52,
+            "dailyLow": 519.53,
+            "dailyClose": 567.135,
+            "previousClose": 506.89,
+            "absoluteChange": 60.245000000000005,
+            "changePercent": 11.885221645721952,
+            "volume": 334459,
+            "tradeCount": 6932,
+            "vwap": 557.424039,
+            "latestTradeTimestamp": "2026-09-11T20:28:58.506525584Z",
+            "latestQuoteTimestamp": "2026-09-11T20:00:03.72708104Z",
+            "minuteTimestamp": "2026-09-11T20:28:00Z",
+            "dailyTimestamp": "2026-09-11T04:00:00Z",
+            "timestamp": "2026-09-11T20:28:58.506525584Z"
+        },
+        {
+            "symbol": "RLMD",
+            "name": "Relmada Therapeutics, Inc. Common Stock",
+            "exchange": "NASDAQ",
+            "tradable": true,
+            "marginable": true,
+            "shortable": true,
+            "borrowStatus": "easy_to_borrow",
+            "shortCandidateEligible": true,
+            "price": 4.53,
+            "latestTradePrice": 4.53,
+            "bid": 3.89,
+            "ask": 5.42,
+            "midpoint": 4.655,
+            "minuteClose": 4.53,
+            "dailyOpen": 4.645,
+            "dailyHigh": 4.65,
+            "dailyLow": 4.295,
+            "dailyClose": 4.53,
+            "previousClose": 4.09,
+            "absoluteChange": 0.4400000000000004,
+            "changePercent": 10.757946210268958,
+            "volume": 172235,
+            "tradeCount": 2390,
+            "vwap": 4.482563,
+            "latestTradeTimestamp": "2026-09-11T19:59:55.677557308Z",
+            "latestQuoteTimestamp": "2026-09-11T20:00:02.426214093Z",
+            "minuteTimestamp": "2026-09-11T19:59:00Z",
+            "dailyTimestamp": "2026-09-11T04:00:00Z",
+            "timestamp": "2026-09-11T19:59:55.677557308Z"
+        }
+    ],
+    "losers": [
+        {
+            "symbol": "SMR",
+            "name": "NuScale Power Corporation",
+            "exchange": "NYSE",
+            "tradable": true,
+            "marginable": true,
+            "shortable": true,
+            "borrowStatus": "easy_to_borrow",
+            "shortCandidateEligible": true,
+            "price": 8.64,
+            "latestTradePrice": 8.64,
+            "bid": 8.61,
+            "ask": 0,
+            "midpoint": null,
+            "minuteClose": 8.64,
+            "dailyOpen": 9.66,
+            "dailyHigh": 9.765,
+            "dailyLow": 8.57,
+            "dailyClose": 8.605,
+            "previousClose": 10.205,
+            "absoluteChange": -1.5999999999999996,
+            "changePercent": -15.678588926996568,
+            "volume": 2908515,
+            "tradeCount": 9202,
+            "vwap": 8.943398,
+            "latestTradeTimestamp": "2026-09-11T20:36:25.376957406Z",
+            "latestQuoteTimestamp": "2026-09-11T20:00:10.578463736Z",
+            "minuteTimestamp": "2026-09-11T20:36:00Z",
+            "dailyTimestamp": "2026-09-11T04:00:00Z",
+            "timestamp": "2026-09-11T20:36:25.376957406Z"
+        },
+        {
+            "symbol": "SLS",
+            "name": "SELLAS Life Sciences Group, Inc. Common Stock",
+            "exchange": "NASDAQ",
+            "tradable": true,
+            "marginable": true,
+            "shortable": false,
+            "borrowStatus": "hard_to_borrow",
+            "shortCandidateEligible": false,
+            "price": 11.545,
+            "latestTradePrice": 11.545,
+            "bid": 10.01,
+            "ask": 13.34,
+            "midpoint": 11.675,
+            "minuteClose": 11.545,
+            "dailyOpen": 13.53,
+            "dailyHigh": 13.705,
+            "dailyLow": 11.38,
+            "dailyClose": 11.545,
+            "previousClose": 13.47,
+            "absoluteChange": -1.9250000000000007,
+            "changePercent": -14.291017074981443,
+            "volume": 316580,
+            "tradeCount": 3947,
+            "vwap": 12.084041,
+            "latestTradeTimestamp": "2026-09-11T19:59:59.934894117Z",
+            "latestQuoteTimestamp": "2026-09-11T20:00:00.002302147Z",
+            "minuteTimestamp": "2026-09-11T19:59:00Z",
+            "dailyTimestamp": "2026-09-11T04:00:00Z",
+            "timestamp": "2026-09-11T19:59:59.934894117Z"
+        },
+        {
+            "symbol": "IMSR",
+            "name": "Terrestrial Energy Inc. Common Stock",
+            "exchange": "NASDAQ",
+            "tradable": true,
+            "marginable": true,
+            "shortable": true,
+            "borrowStatus": "easy_to_borrow",
+            "shortCandidateEligible": true,
+            "price": 4.74,
+            "latestTradePrice": 4.74,
+            "bid": 4.11,
+            "ask": 0,
+            "midpoint": null,
+            "minuteClose": 4.74,
+            "dailyOpen": 5.26,
+            "dailyHigh": 5.26,
+            "dailyLow": 4.735,
+            "dailyClose": 4.74,
+            "previousClose": 5.255,
+            "absoluteChange": -0.5149999999999997,
+            "changePercent": -9.80019029495718,
+            "volume": 179310,
+            "tradeCount": 1860,
+            "vwap": 4.860457,
+            "latestTradeTimestamp": "2026-09-11T19:59:30.318308996Z",
+            "latestQuoteTimestamp": "2026-09-11T20:00:03.094919284Z",
+            "minuteTimestamp": "2026-09-11T19:59:00Z",
+            "dailyTimestamp": "2026-09-11T04:00:00Z",
+            "timestamp": "2026-09-11T19:59:30.318308996Z"
+        },
+        {
+            "symbol": "OKLO",
+            "name": "Oklo Inc.",
+            "exchange": "NYSE",
+            "tradable": true,
+            "marginable": true,
+            "shortable": true,
+            "borrowStatus": "easy_to_borrow",
+            "shortCandidateEligible": true,
+            "price": 36.245,
+            "latestTradePrice": 36.245,
+            "bid": 34.43,
+            "ask": 38.55,
+            "midpoint": 36.489999999999995,
+            "minuteClose": 36.245,
+            "dailyOpen": 38.74,
+            "dailyHigh": 38.995,
+            "dailyLow": 36.21,
+            "dailyClose": 36.245,
+            "previousClose": 39.87,
+            "absoluteChange": -3.625,
+            "changePercent": -9.092049159769251,
+            "volume": 466439,
+            "tradeCount": 6532,
+            "vwap": 37.007266,
+            "latestTradeTimestamp": "2026-09-11T19:59:54.879241608Z",
+            "latestQuoteTimestamp": "2026-09-11T20:00:00.470619438Z",
+            "minuteTimestamp": "2026-09-11T19:59:00Z",
+            "dailyTimestamp": "2026-09-11T04:00:00Z",
+            "timestamp": "2026-09-11T19:59:54.879241608Z"
+        },
+        {
+            "symbol": "NMRA",
+            "name": "Neumora Therapeutics, Inc. Common Stock",
+            "exchange": "NASDAQ",
+            "tradable": true,
+            "marginable": true,
+            "shortable": true,
+            "borrowStatus": "easy_to_borrow",
+            "shortCandidateEligible": true,
+            "price": 1.035,
+            "latestTradePrice": 1.035,
+            "bid": 0.8772,
+            "ask": 1.19,
+            "midpoint": 1.0335999999999999,
+            "minuteClose": 1.035,
+            "dailyOpen": 1.15,
+            "dailyHigh": 1.155,
+            "dailyLow": 1.025,
+            "dailyClose": 1.035,
+            "previousClose": 1.135,
+            "absoluteChange": -0.10000000000000009,
+            "changePercent": -8.810572687224678,
+            "volume": 101635,
+            "tradeCount": 714,
+            "vwap": 1.060443,
+            "latestTradeTimestamp": "2026-09-11T19:59:56.792497016Z",
+            "latestQuoteTimestamp": "2026-09-11T20:00:00.435338126Z",
+            "minuteTimestamp": "2026-09-11T19:59:00Z",
+            "dailyTimestamp": "2026-09-11T04:00:00Z",
+            "timestamp": "2026-09-11T19:59:56.792497016Z"
+        },
+        {
+            "symbol": "ASM",
+            "name": "Avino Silver & Gold Mines Ltd. (Canada)",
+            "exchange": "AMEX",
+            "tradable": true,
+            "marginable": true,
+            "shortable": true,
+            "borrowStatus": "easy_to_borrow",
+            "shortCandidateEligible": true,
+            "price": 6.505,
+            "latestTradePrice": 6.505,
+            "bid": 5.56,
+            "ask": 7.36,
+            "midpoint": 6.46,
+            "minuteClose": 6.505,
+            "dailyOpen": 7.225,
+            "dailyHigh": 7.29,
+            "dailyLow": 6.435,
+            "dailyClose": 6.505,
+            "previousClose": 7.115,
+            "absoluteChange": -0.6100000000000003,
+            "changePercent": -8.573436401967678,
+            "volume": 177074,
+            "tradeCount": 830,
+            "vwap": 6.651299,
+            "latestTradeTimestamp": "2026-09-11T19:59:59.832732412Z",
+            "latestQuoteTimestamp": "2026-09-11T20:00:01.465704166Z",
+            "minuteTimestamp": "2026-09-11T19:59:00Z",
+            "dailyTimestamp": "2026-09-11T04:00:00Z",
+            "timestamp": "2026-09-11T19:59:59.832732412Z"
+        },
+        {
+            "symbol": "ASPI",
+            "name": "ASP Isotopes Inc. Common Stock",
+            "exchange": "NASDAQ",
+            "tradable": true,
+            "marginable": true,
+            "shortable": true,
+            "borrowStatus": "easy_to_borrow",
+            "shortCandidateEligible": true,
+            "price": 3.3,
+            "latestTradePrice": 3.3,
+            "bid": 2.87,
+            "ask": 3.78,
+            "midpoint": 3.325,
+            "minuteClose": 3.3,
+            "dailyOpen": 3.6,
+            "dailyHigh": 3.605,
+            "dailyLow": 3.3,
+            "dailyClose": 3.3,
+            "previousClose": 3.6,
+            "absoluteChange": -0.30000000000000027,
+            "changePercent": -8.333333333333341,
+            "volume": 207130,
+            "tradeCount": 1345,
+            "vwap": 3.378976,
+            "latestTradeTimestamp": "2026-09-11T19:59:56.880818866Z",
+            "latestQuoteTimestamp": "2026-09-11T20:00:01.577523459Z",
+            "minuteTimestamp": "2026-09-11T19:59:00Z",
+            "dailyTimestamp": "2026-09-11T04:00:00Z",
+            "timestamp": "2026-09-11T19:59:56.880818866Z"
+        },
+        {
+            "symbol": "LAR",
+            "name": "Lithium Argentina AG",
+            "exchange": "NYSE",
+            "tradable": true,
+            "marginable": true,
+            "shortable": true,
+            "borrowStatus": "easy_to_borrow",
+            "shortCandidateEligible": true,
+            "price": 5.89,
+            "latestTradePrice": 5.89,
+            "bid": 5.03,
+            "ask": 6.91,
+            "midpoint": 5.970000000000001,
+            "minuteClose": 5.89,
+            "dailyOpen": 6.37,
+            "dailyHigh": 6.37,
+            "dailyLow": 5.85,
+            "dailyClose": 5.89,
+            "previousClose": 6.41,
+            "absoluteChange": -0.5200000000000005,
+            "changePercent": -8.112324492979726,
+            "volume": 235771,
+            "tradeCount": 1841,
+            "vwap": 6.109839,
+            "latestTradeTimestamp": "2026-09-11T19:59:59.891811702Z",
+            "latestQuoteTimestamp": "2026-09-11T20:00:01.464480804Z",
+            "minuteTimestamp": "2026-09-11T19:59:00Z",
+            "dailyTimestamp": "2026-09-11T04:00:00Z",
+            "timestamp": "2026-09-11T19:59:59.891811702Z"
+        },
+        {
+            "symbol": "SID",
+            "name": "Companhia Siderurgica Nacional S.A. (CSN)",
+            "exchange": "NYSE",
+            "tradable": true,
+            "marginable": true,
+            "shortable": true,
+            "borrowStatus": "easy_to_borrow",
+            "shortCandidateEligible": true,
+            "price": 1.265,
+            "latestTradePrice": 1.265,
+            "bid": 1.22,
+            "ask": 1.31,
+            "midpoint": 1.2650000000000001,
+            "minuteClose": 1.265,
+            "dailyOpen": 1.31,
+            "dailyHigh": 1.31,
+            "dailyLow": 1.245,
+            "dailyClose": 1.265,
+            "previousClose": 1.37,
+            "absoluteChange": -0.1050000000000002,
+            "changePercent": -7.66423357664235,
+            "volume": 352719,
+            "tradeCount": 495,
+            "vwap": 1.274357,
+            "latestTradeTimestamp": "2026-09-11T19:58:31.071907033Z",
+            "latestQuoteTimestamp": "2026-09-11T20:01:00.105442453Z",
+            "minuteTimestamp": "2026-09-11T19:58:00Z",
+            "dailyTimestamp": "2026-09-11T04:00:00Z",
+            "timestamp": "2026-09-11T19:58:31.071907033Z"
+        },
+        {
+            "symbol": "ALMS",
+            "name": "Alumis Inc. Common Stock",
+            "exchange": "NASDAQ",
+            "tradable": true,
+            "marginable": true,
+            "shortable": true,
+            "borrowStatus": "easy_to_borrow",
+            "shortCandidateEligible": true,
+            "price": 9.175,
+            "latestTradePrice": 9.175,
+            "bid": 7.92,
+            "ask": 0,
+            "midpoint": null,
+            "minuteClose": 9.175,
+            "dailyOpen": 10.06,
+            "dailyHigh": 10.06,
+            "dailyLow": 9.14,
+            "dailyClose": 9.175,
+            "previousClose": 9.895,
+            "absoluteChange": -0.7199999999999989,
+            "changePercent": -7.276402223345113,
+            "volume": 168663,
+            "tradeCount": 2462,
+            "vwap": 9.325949,
+            "latestTradeTimestamp": "2026-09-11T19:59:55.447444435Z",
+            "latestQuoteTimestamp": "2026-09-11T20:00:02.055859338Z",
+            "minuteTimestamp": "2026-09-11T19:59:00Z",
+            "dailyTimestamp": "2026-09-11T04:00:00Z",
+            "timestamp": "2026-09-11T19:59:55.447444435Z"
+        }
+    ],
+    "warnings": [],
+    "errors": [],
+    "startedAt": "2026-09-12T15:04:27.728Z",
+    "completedAt": "2026-09-12T15:04:28.820Z",
+    "timestamp": "2026-09-12T15:04:28.820Z"
+}
+✅ PASS: Markets overview returned HTTP 200
+
+----- Markets news -----
+HTTP 200
+{
+    "success": true,
+    "approved": true,
+    "service": "MARKET_NEWS",
+    "provider": "ALPACA_MARKET_NEWS",
+    "source": "ALPACA",
+    "status": "COMPLETE",
+    "news": [
+        {
+            "id": 61754166,
+            "headline": "We Paid a $50K Nonrefundable Deposit on a New Home. Then My Husband Gambled Away $121K Day Trading and Put the House in Jeopardy",
+            "summary": "A couple thought they were in a strong position to buy their next home. They earned about $240,000 a year, had sold their previous townhouse and had already put down a $50,000 nonrefundable deposit on a $550,000 house.",
+            "author": "Adrian Volenik",
+            "source": "benzinga",
+            "symbols": [],
+            "createdAt": "2026-09-12T14:15:45Z",
+            "updatedAt": "2026-09-12T14:15:45Z",
+            "url": "https://www.benzinga.com/news/26/09/61754166/we-paid-a-50k-nonrefundable-deposit-on-a-new-home-then-my-husband-gambled-away-121k-day-trading-and-put-the-house-in-jeopardy",
+            "content": "",
+            "provider": "ALPACA",
+            "sentiment": null
+        },
+        {
+            "id": 61754145,
+            "headline": "A Dating App Is Outperforming Apple, Meta and Microsoft on This Metric\u2014 Only Nvidia Can Claim a Higher Number",
+            "summary": "Why Grindr generates $3M in revenue per employee, beating tech giants like Apple and Meta, and trailing only Nvidia in financial efficiency.",
+            "author": "Rishabh Mishra",
+            "source": "benzinga",
+            "symbols": [
+                "AAPL",
+                "AMZN",
+                "GOOG",
+                "GOOGL",
+                "GRND",
+                "META",
+                "MSFT",
+                "NVDA",
+                "TSLA"
+            ],
+            "createdAt": "2026-09-12T14:00:18Z",
+            "updatedAt": "2026-09-12T14:00:18Z",
+            "url": "https://www.benzinga.com/markets/equities/26/09/61754145/a-dating-app-is-outperforming-apple-meta-and-microsoft-on-this-metric-only-nvidia-can-claim-a-higher-number",
+            "content": "",
+            "provider": "ALPACA",
+            "sentiment": null
+        },
+        {
+            "id": 61754044,
+            "headline": "Benzinga Bulls and Bears: GameStop, Marvell, Robinhood",
+            "summary": "Benzinga examined the prospects for many investors\u2019 favorite stocks over the last week \u2014 here\u2019s a look at some of our top stories.",
+            "author": "Benzinga Senior Editor",
+            "source": "benzinga",
+            "symbols": [
+                "AAPL",
+                "AMGN",
+                "AVAV",
+                "CASY",
+                "GME",
+                "HOOD",
+                "LLY",
+                "MRVL",
+                "NVDA",
+                "ORCL",
+                "PLTR",
+                "TTAN"
+            ],
+            "createdAt": "2026-09-12T12:49:43Z",
+            "updatedAt": "2026-09-12T12:52:20Z",
+            "url": "https://www.benzinga.com/markets/market-summary/26/09/61754044/benzinga-bulls-and-bears-gamestop-marvell-robinhood",
+            "content": "",
+            "provider": "ALPACA",
+            "sentiment": null
+        },
+        {
+            "id": 61754055,
+            "headline": "GameStop, Oracle, Apple and More: Five Stocks Investors Couldn't Stop Buzzing About This Week",
+            "summary": "Retail investors talked up 5 hot stocks during week (Sept. 7 to Sept. 11) on X and Reddit&#39;s r/WallStreetBets: GME, AAPL, ADBE, ORCL, CASY.",
+            "author": "Rishabh Mishra",
+            "source": "benzinga",
+            "symbols": [
+                "AAPL",
+                "ADBE",
+                "CASY",
+                "GME",
+                "ORCL"
+            ],
+            "createdAt": "2026-09-12T12:50:59Z",
+            "updatedAt": "2026-09-12T12:51:05Z",
+            "url": "https://www.benzinga.com/markets/equities/26/09/61754055/gamestop-oracle-apple-and-more-5-stocks-investors-couldnt-stop-buzzing-about-this-week",
+            "content": "",
+            "provider": "ALPACA",
+            "sentiment": null
+        },
+        {
+            "id": 61754007,
+            "headline": "Benzinga's 'Stock Whisper' Index: 5 Stocks Investors Secretly Monitor But Don't Talk About Yet",
+            "summary": "The Stock Whisper Index is a market indicator by Benzinga that tracks under-the-radar stocks attracting sudden interest from traders due to unusual volume or shifting sentiment.",
+            "author": "Chris Katje",
+            "source": "benzinga",
+            "symbols": [
+                "MSI",
+                "NU",
+                "TTWO",
+                "WPM",
+                "XMTR"
+            ],
+            "createdAt": "2026-09-12T12:00:07Z",
+            "updatedAt": "2026-09-12T12:00:07Z",
+            "url": "https://www.benzinga.com/trading-ideas/long-ideas/26/09/61754007/benzingas-stock-whisper-index-5-stocks-investors-secretly-monitor-but-dont-talk-about-yet-126",
+            "content": "",
+            "provider": "ALPACA",
+            "sentiment": null
+        }
+    ],
+    "count": 5,
+    "nextPageToken": "MTc4OTIxNDQwNzAwMDAwMDAwMHw2MTc1NDAwNw==",
+    "warnings": [],
+    "errors": [],
+    "providerAttempts": {
+        "alpaca": {
+            "attempted": true,
+            "approved": true,
+            "status": "COMPLETE",
+            "httpStatus": 200
+        },
+        "marketaux": {
+            "attempted": false,
+            "approved": null,
+            "status": "NOT_RUN"
+        }
+    },
+    "timestamp": "2026-09-12T15:04:28.906Z",
+    "cache": {
+        "hit": false,
+        "stale": false
+    }
+}
+✅ PASS: Markets news returned HTTP 200
+
+============================================================
+13. SCANNER STATE
+============================================================
+{
+    "approved": true,
+    "service": "SCANNER_API",
+    "scanner": {
+        "service": "CONTINUOUS_MARKET_SCANNER",
+        "status": "STOPPED",
+        "active": false,
+        "runningCycle": false,
+        "intervalMs": 300000,
+        "cycleCount": 0,
+        "skippedCycles": 0,
+        "startedAt": null,
+        "stoppedAt": null,
+        "lastCycleStartedAt": null,
+        "lastCycleCompletedAt": null,
+        "nextCycleAt": null,
+        "lastError": null,
+        "discoveryOptions": {
+            "maximumUniverseSymbols": null,
+            "maximumCandidates": 20,
+            "batchSize": 100,
+            "batchConcurrency": 1,
+            "maximumCandidatesPerBatch": 20,
+            "submitForDeepResearch": true,
+            "waitForDeepResearch": false,
+            "marketRegime": "NEUTRAL"
+        },
+        "lastResult": null
+    },
+    "registry": {
+        "total": 0,
+        "byStatus": {}
+    },
+    "timestamp": "2026-09-12T15:04:28.976Z"
+}
+
+Could not parse scanner status: Unexpected end of JSON input
+
+============================================================
+14. TRADE SCORING
+============================================================
+./diagnose-stock-system.sh: line 723: [: missing `]'
+./diagnose-stock-system.sh: line 725: -f: command not found
+./diagnose-stock-system.sh: line 726: ]: command not found
+❌ FAIL: tradeScoringEngine.js missing
+
+============================================================
+15. DIRECTION RESOLUTION
+============================================================
+src/strategy/tradeDecisionGate.test.js:49:    preferredSide: side,
+src/strategy/tradeDecisionGate.test.js:106:  direction = "LONG",
+src/strategy/tradeDecisionGate.test.js:116:        direction === "LONG"
+src/strategy/tradeDecisionGate.test.js:118:          : direction === "SHORT"
+src/strategy/tradeDecisionGate.test.js:122:        direction === "SHORT"
+src/strategy/tradeDecisionGate.test.js:124:          : direction === "LONG"
+src/strategy/tradeDecisionGate.test.js:198:        direction: "LONG",
+src/strategy/tradeDecisionGate.test.js:289: * 3. AMBIGUOUS SCORES BLOCK
+src/strategy/tradeDecisionGate.test.js:294:  "Ambiguous LONG and SHORT scores block",
+src/strategy/tradeDecisionGate.test.js:319:        direction: "LONG",
+src/strategy/tradeDecisionGate.test.js:329:      "Ambiguous direction must block.",
+src/strategy/tradeDecisionGate.test.js:334:        "AMBIGUOUS",
+src/strategy/tradeDecisionGate.test.js:335:      "Expected AMBIGUOUS status.",
+src/strategy/tradeDecisionGate.test.js:528:        direction: "SHORT",
+src/strategy/tradeDecisionGate.test.js:581:        direction: "SHORT",
+src/strategy/tradeScoringEngine.js:64:    ambiguousDifference: 8,
+src/strategy/tradeScoringEngine.js:1323:        preferredSide:
+src/strategy/tradeScoringEngine.js:1356:    let preferredSide =
+src/strategy/tradeScoringEngine.js:1366:      preferredSide =
+src/strategy/tradeScoringEngine.js:1375:      preferredSide =
+src/strategy/tradeScoringEngine.js:1391:    const ambiguous =
+src/strategy/tradeScoringEngine.js:1394:        .ambiguousDifference;
+src/strategy/tradeScoringEngine.js:1396:    if (ambiguous) {
+src/strategy/tradeScoringEngine.js:1397:      preferredSide =
+src/strategy/tradeScoringEngine.js:1419:      preferredSide ===
+src/strategy/tradeScoringEngine.js:1422:        : preferredSide ===
+src/strategy/tradeScoringEngine.js:1448:      preferredSide
+src/strategy/tradeScoringEngine.js:1451:            side: preferredSide,
+src/strategy/tradeScoringEngine.js:1496:      !ambiguous &&
+src/strategy/tradeScoringEngine.js:1511:    } else if (ambiguous) {
+src/strategy/tradeScoringEngine.js:1513:        "AMBIGUOUS";
+src/strategy/tradeScoringEngine.js:1541:    } else if (ambiguous) {
+src/strategy/tradeScoringEngine.js:1548:        `${symbol ?? "Asset"} qualifies as a ${preferredSide} trade candidate with a score of ${preferredScore}/100. Final risk approval is still required.`;
+src/strategy/tradeScoringEngine.js:1574:      preferredSide,
+src/strategy/tradeScoringEngine.js:1582:      scoreDifference:
+src/strategy/tradeScoringEngine.js:1588:      ambiguous,
+src/strategy/tradeScoringEngine.js:1687:          ambiguous
+src/strategy/tradeScoringEngine.js:1732:      preferredSide:
+src/strategy/tradeScoringEngine.test.js:227:      result.preferredSide ===
+src/strategy/tradeScoringEngine.test.js:331:      result.preferredSide ===
+src/strategy/tradeScoringEngine.test.js:432:        result.ambiguous === true,
+src/strategy/tradeScoringEngine.test.js:440: * 5. AMBIGUOUS LONG/SHORT
+src/strategy/tradeScoringEngine.test.js:445:  "Ambiguous directional scores",
+src/strategy/tradeScoringEngine.test.js:516:      result.ambiguous === true,
+src/strategy/tradeScoringEngine.test.js:517:      "Close LONG/SHORT scores should be ambiguous.",
+src/strategy/tradeScoringEngine.test.js:521:      result.preferredSide === null,
+src/strategy/tradeScoringEngine.test.js:522:      "Ambiguous setup should not select a side.",
+src/strategy/tradeScoringEngine.test.js:527:      "Ambiguous setup must not be trade eligible.",
+src/strategy/tradeScoringEngine.test.js:532:        "AMBIGUOUS",
+src/strategy/tradeScoringEngine.test.js:533:      "Ambiguous setup should return AMBIGUOUS.",
+src/strategy/tradeDecisionGate.js:26: * 2. Direction is LONG or SHORT.
+src/strategy/tradeDecisionGate.js:54:    AMBIGUOUS:
+src/strategy/tradeDecisionGate.js:55:      "AMBIGUOUS",
+src/strategy/tradeDecisionGate.js:102:     * This remains too ambiguous.
+src/strategy/tradeDecisionGate.js:104:    minimumScoreDifference: 8,
+src/strategy/tradeDecisionGate.js:591:        ?.preferredSide ??
+src/strategy/tradeDecisionGate.js:602:    const scoreDifference =
+src/strategy/tradeDecisionGate.js:699:            .AMBIGUOUS,
+src/strategy/tradeDecisionGate.js:759:      scoreDifference <
+src/strategy/tradeDecisionGate.js:761:        .minimumScoreDifference
+src/strategy/tradeDecisionGate.js:768:            .AMBIGUOUS,
+src/strategy/tradeDecisionGate.js:780:            scoreDifference,
+src/strategy/tradeDecisionGate.js:787:          scoreDifference,
+src/strategy/tradeDecisionGate.js:1055:      scoreDifference:
+src/strategy/tradeDecisionGate.js:1057:          scoreDifference,
+src/orchestration/engineOrchestrator.js:1365:          directionalSupport: { long: 0, short: 0 },
+src/orchestration/engineOrchestrator.js:2123:      preferredSide:
+src/orchestration/engineOrchestrator.js:4273:  preferredSide: decisionGate?.side ?? null,
+src/orchestration/engineOrchestrator.js:4515:      preferredSide:
+
+============================================================
+16. TIMEOUTS / PERFORMANCE RISKS
+============================================================
+src/services/liveMarketStreamService.js:207:  timeoutMs =
+src/services/liveMarketStreamService.js:219:    timeoutMs
+src/services/liveMarketStreamService.js:362:        timeoutMs:
+src/services/stockAnalysisRunner.js:84:  45_000;
+src/services/stockAnalysisRunner.js:194:async function withTimeout({
+src/services/stockAnalysisRunner.js:197:  timeoutMs,
+src/services/stockAnalysisRunner.js:203:      timeoutMs,
+src/services/stockAnalysisRunner.js:264:  timeoutMs,
+src/services/stockAnalysisRunner.js:292:      await withTimeout({
+src/services/stockAnalysisRunner.js:296:        timeoutMs,
+src/services/stockAnalysisRunner.js:998:  providerTimeoutMs =
+src/services/stockAnalysisRunner.js:999:    30_000,
+src/services/stockAnalysisRunner.js:1001:  engineTimeoutMs =
+src/services/stockAnalysisRunner.js:1002:    30_000,
+src/services/stockAnalysisRunner.js:1004:  runnerTimeoutMs =
+src/services/stockAnalysisRunner.js:1249:          timeoutMs:
+src/services/stockAnalysisRunner.js:1250:            providerTimeoutMs,
+src/services/stockAnalysisRunner.js:1271:          timeoutMs:
+src/services/stockAnalysisRunner.js:1272:            providerTimeoutMs,
+src/services/stockAnalysisRunner.js:1293:          timeoutMs:
+src/services/stockAnalysisRunner.js:1294:            providerTimeoutMs,
+src/services/stockAnalysisRunner.js:1323:          timeoutMs:
+src/services/stockAnalysisRunner.js:1324:            providerTimeoutMs,
+src/services/stockAnalysisRunner.js:1355:          timeoutMs:
+src/services/stockAnalysisRunner.js:1356:            providerTimeoutMs,
+src/services/stockAnalysisRunner.js:1704:      engineTimeoutMs,
+src/services/stockAnalysisRunner.js:1710:      await withTimeout({
+src/services/stockAnalysisRunner.js:1717:        timeoutMs:
+src/services/stockAnalysisRunner.js:1718:          runnerTimeoutMs,
+src/services/liveSocialSentimentService.js:100:   *   cacheTtlMs: 300000
+src/services/liveStockAnalysisService.js:105:  30_000;
+src/services/liveStockAnalysisService.js:108:  30_000;
+src/services/liveStockAnalysisService.js:111:  45_000;
+src/services/liveStockAnalysisService.js:114:  30_000;
+src/services/liveStockAnalysisService.js:179:async function withTimeout({
+src/services/liveStockAnalysisService.js:181:  timeoutMs,
+src/services/liveStockAnalysisService.js:192:      timeoutMs,
+src/services/liveStockAnalysisService.js:497:  providerTimeoutMs =
+src/services/liveStockAnalysisService.js:500:  engineTimeoutMs =
+src/services/liveStockAnalysisService.js:503:  runnerTimeoutMs =
+src/services/liveStockAnalysisService.js:506:  historicalRecordsTimeoutMs =
+src/services/liveStockAnalysisService.js:624:          await withTimeout({
+src/services/liveStockAnalysisService.js:646:            timeoutMs:
+src/services/liveStockAnalysisService.js:648:                historicalRecordsTimeoutMs,
+src/services/liveStockAnalysisService.js:711:        providerTimeoutMs:
+src/services/liveStockAnalysisService.js:713:            providerTimeoutMs,
+src/services/liveStockAnalysisService.js:717:        engineTimeoutMs:
+src/services/liveStockAnalysisService.js:719:            engineTimeoutMs,
+src/services/liveStockAnalysisService.js:723:        runnerTimeoutMs:
+src/services/liveStockAnalysisService.js:725:            runnerTimeoutMs,
+src/data/providers/usCountryRiskDataProvider.js:281:      30_000,
+src/data/providers/institutional/secInstitutionalFilingsProvider.js:18:  timeoutMs: 15000,
+src/data/providers/institutional/secInstitutionalFilingsProvider.js:107:      timer = setTimeout(() => controller.abort(), config.timeoutMs);
+src/data/providers/institutional/finraRegShoProvider.js:7:  timeoutMs: 15000,
+src/data/providers/institutional/finraRegShoProvider.js:33:async function fetchWithTimeout(url, options, timeoutMs) {
+src/data/providers/institutional/finraRegShoProvider.js:35:  const timer = setTimeout(() => controller.abort(), timeoutMs);
+src/data/providers/institutional/finraRegShoProvider.js:48:  const response = await fetchWithTimeout(
+src/data/providers/institutional/finraRegShoProvider.js:57:    config.timeoutMs,
+src/data/providers/institutional/finraRegShoProvider.js:78:      const response = await fetchWithTimeout(
+src/data/providers/institutional/finraRegShoProvider.js:89:        config.timeoutMs,
+src/data/providers/alpacaHistoricalDataService.js:202:    timeout: 30_000,
+src/data/providers/companyFundamentalDataProvider.js:289:        timeout: 30_000,
+src/data/providers/social/adanosSocialAdapter.js:10:  timeoutMs: 8000,
+src/data/providers/social/adanosSocialAdapter.js:319:async function fetchJsonWithTimeout({ url, apiKey, fetchImpl, timeoutMs }) {
+src/data/providers/social/adanosSocialAdapter.js:321:  const timer = controller ? setTimeout(() => controller.abort(), timeoutMs) : null;
+src/data/providers/social/adanosSocialAdapter.js:476:      body: await fetchJsonWithTimeout({
+src/data/providers/social/adanosSocialAdapter.js:480:        timeoutMs: Math.max(1, Number(cfg.timeoutMs) || 8000),
+src/data/providers/companyProfileProvider.js:151:  timeoutMs,
+src/data/providers/companyProfileProvider.js:160:      timeoutMs,
+src/data/providers/companyProfileProvider.js:329:  timeoutMs =
+src/data/providers/companyProfileProvider.js:441:        timeoutMs,
+src/data/providers/secCompanyFundamentalDataProvider.js:71:    timeout: 30_000,
+src/data/providers/alpacaLiveMarketStream.js:71:      30_000,
+src/data/providers/alpacaLiveMarketStream.js:73:    heartbeatTimeoutMs:
+src/data/providers/alpacaLiveMarketStream.js:249:    heartbeatTimeoutMs =
+src/data/providers/alpacaLiveMarketStream.js:251:        .heartbeatTimeoutMs,
+src/data/providers/alpacaLiveMarketStream.js:282:    this.heartbeatTimeoutMs =
+src/data/providers/alpacaLiveMarketStream.js:283:      heartbeatTimeoutMs;
+src/data/providers/alpacaLiveMarketStream.js:1121:              .heartbeatTimeoutMs
+src/data/providers/alpacaLiveMarketStream.js:1134:              heartbeatTimeoutMs:
+src/data/providers/alpacaLiveMarketStream.js:1136:                  .heartbeatTimeoutMs,
+src/data/providers/alpacaLiveMarketStream.js:1329:      heartbeatTimeoutMs:
+src/data/providers/alpacaLiveMarketStream.js:1330:        this.heartbeatTimeoutMs,
+src/data/providers/usMacroDataProvider.js:352:      30_000,
+
+============================================================
+17. TARGETED BACKEND TESTS
+============================================================
+Running 13 existing targeted tests...
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.10 [39m[90m/Users/no1austin/Desktop/Msc /MscSE-Day-4/trading-bot/server[39m
+
+ [32m✓[39m src/tests/institutionalManagerRegistry.test.js[2m > [22mInstitutional Manager Registry[2m > [22mreturns normalized enabled managers with CIKs[32m 5[2mms[22m[39m
+ [32m✓[39m src/tests/institutionalManagerRegistry.test.js[2m > [22mInstitutional Manager Registry[2m > [22msupports a manager limit[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/institutionalManagerRegistry.test.js[2m > [22mInstitutional Manager Registry[2m > [22mdoes not encode stock ownership claims[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/marketMeasurementProvider.volume.test.js[2m > [22mMarket Measurement Provider — multi-horizon volume[2m > [22mderives 1m, 5m, 15m, 30m and 60m from the same candles[32m 4[2mms[22m[39m
+ [32m✓[39m src/tests/marketMeasurementProvider.volume.test.js[2m > [22mMarket Measurement Provider — multi-horizon volume[2m > [22mkeeps the legacy relativeVolume field while exposing horizon RVOL[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/marketMeasurementProvider.volume.test.js[2m > [22mMarket Measurement Provider — multi-horizon volume[2m > [22mclassifies elevated rising price/volume as buying pressure[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/tradeScoringInstitutional.integration.test.js[2m > [22mTrade Scoring Institutional — New Configuration[2m > [22minstitutional allocation is 7.5[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/tradeScoringInstitutional.integration.test.js[2m > [22mTrade Scoring Institutional — New Configuration[2m > [22mthe eight directional weights total exactly 100[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/tradeScoringInstitutional.integration.test.js[2m > [22mTrade Scoring Institutional — Independent Allocation[2m > [22mcompany/fundamental remains 30 and institutional remains 7.5[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/tradeScoringInstitutional.integration.test.js[2m > [22mTrade Scoring Institutional — Independent Allocation[2m > [22mperfect institutional support cannot contribute more than 7.5 points[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/tradeScoringInstitutional.integration.test.js[2m > [22mTrade Scoring Institutional — Direction[2m > [22minstitutional accumulation supports LONG more than SHORT[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/tradeScoringInstitutional.integration.test.js[2m > [22mTrade Scoring Institutional — Direction[2m > [22minstitutional distribution supports SHORT more than LONG[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/tradeScoringInstitutional.integration.test.js[2m > [22mTrade Scoring Institutional — Missing Evidence[2m > [22mmissing institutional evidence is unavailable, not bearish[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/tradeScoringInstitutional.integration.test.js[2m > [22mTrade Scoring Institutional — Missing Evidence[2m > [22momitted institutional input is represented as unavailable evidence[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/tradeScoringInstitutional.integration.test.js[2m > [22mTrade Scoring Institutional — Safety[2m > [22mperfect institutional evidence cannot bypass event freeze[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/tradeScoringInstitutional.integration.test.js[2m > [22mTrade Scoring Institutional — Safety[2m > [22minstitutional scoring does not create execution authority[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/tradeScoringInstitutional.integration.test.js[2m > [22mTrade Scoring Institutional — Safety[2m > [22minstitutional evidence cannot increase directional score above 100[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/tradeScoringInstitutional.integration.test.js[2m > [22mTrade Scoring Institutional — Safety[2m > [22mliquidity, risk/reward and consensus are not directional components[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/tradeScoringHistory.integration.test.js[2m > [22mTrade Scoring History — Preferred Source[2m > [22muses COMPLETE bot trade-history outcome instead of legacy historical analogue[32m 2[2mms[22m[39m
+ [32m✓[39m src/tests/tradeScoringHistory.integration.test.js[2m > [22mTrade Scoring History — Fallback[2m > [22mfalls back to legacy historical analogue when bot-history evidence is insufficient[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/tradeScoringHistory.integration.test.js[2m > [22mTrade Scoring History — Fallback[2m > [22mleaves historical slot unavailable when neither source has usable evidence[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/tradeScoringHistory.integration.test.js[2m > [22mTrade Scoring History — Negative Evidence[2m > [22mnegative LONG history gives more historical points to SHORT[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/tradeScoringHistory.integration.test.js[2m > [22mTrade Scoring History — Safety Boundary[2m > [22mperfect bot history cannot bypass an event freeze[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/tradeScoringHistory.integration.test.js[2m > [22mTrade Scoring History — Safety Boundary[2m > [22mhistory outcome does not add a second historical weight[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/alpacaUniverseWarmer.volume.test.js[2m > [22mAlpaca Universe Warmer — 1 minute batch contract[2m > [22muses one provider invocation for many symbols[32m 3[2mms[22m[39m
+ [32m✓[39m src/tests/alpacaUniverseWarmer.volume.test.js[2m > [22mAlpaca Universe Warmer — 1 minute batch contract[2m > [22mstill accepts an explicit timeframe override[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/alpacaUniverseWarmer.test.js[2m > [22mAlpaca Universe Warmer — Empty Input[2m > [22mreturns safe empty result when no assets are supplied[32m 5[2mms[22m[39m
+ [32m✓[39m src/tests/alpacaUniverseWarmer.test.js[2m > [22mAlpaca Universe Warmer — Batch Contract[2m > [22mnormalizes symbols and removes duplicates[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/alpacaUniverseWarmer.test.js[2m > [22mAlpaca Universe Warmer — Batch Contract[2m > [22msupports symbols-only input[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/alpacaUniverseWarmer.test.js[2m > [22mAlpaca Universe Warmer — Batch Contract[2m > [22muses one provider invocation for many missing symbols[32m 2[2mms[22m[39m
+ [32m✓[39m src/tests/alpacaUniverseWarmer.test.js[2m > [22mAlpaca Universe Warmer — Cache First[2m > [22mdoes not call Alpaca when MarketDataHub already has sufficient history[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/alpacaUniverseWarmer.test.js[2m > [22mAlpaca Universe Warmer — Cache First[2m > [22mrequests only symbols that need provider history[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/alpacaUniverseWarmer.test.js[2m > [22mAlpaca Universe Warmer — Scanner Readiness[2m > [22mcan load a symbol while leaving it not ready below 50 bars[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/alpacaUniverseWarmer.test.js[2m > [22mAlpaca Universe Warmer — Failure Isolation[2m > [22mpreserves successful symbols when one symbol fails[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/alpacaUniverseWarmer.test.js[2m > [22mAlpaca Universe Warmer — Failure Isolation[2m > [22mfails closed when every symbol is unusable[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/alpacaUniverseWarmer.test.js[2m > [22mAlpaca Universe Warmer — Provider Forwarding[2m > [22mforwards timeframe, feed, window, page size and scaled global bar cap[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/alpacaUniverseWarmer.test.js[2m > [22mAlpaca Universe Warmer — Historical Window[2m > [22mfails safely when endTimestamp is invalid[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/alpacaUniverseWarmer.test.js[2m > [22mAlpaca Universe Warmer — Batch Metadata[2m > [22mpreserves the caller batch index[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/universeMarketDataService.test.js[2m > [22mUniverse Market Data Service — Empty Input[2m > [22mreturns a safe EMPTY result[32m 3[2mms[22m[39m
+ [32m✓[39m src/tests/universeMarketDataService.test.js[2m > [22mUniverse Market Data Service — Asset Normalization[2m > [22mnormalizes symbols and removes duplicate assets[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/universeMarketDataService.test.js[2m > [22mUniverse Market Data Service — Single Warm + Local Batching[2m > [22mwarms the selected universe once while splitting scanner processing into configured batches[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/universeMarketDataService.test.js[2m > [22mUniverse Market Data Service — Delayed Submission[2m > [22mscans every batch with deep-research submission disabled[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/universeMarketDataService.test.js[2m > [22mUniverse Market Data Service — Global Ranking[2m > [22mranks a higher-scoring candidate from a later batch above an earlier weaker candidate[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/universeMarketDataService.test.js[2m > [22mUniverse Market Data Service — Global Selection[2m > [22mselects only the top candidates from the entire market pass[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/universeMarketDataService.test.js[2m > [22mUniverse Market Data Service — Submission Order[2m > [22msubmits strongest candidates first after global ranking[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/universeMarketDataService.test.js[2m > [22mUniverse Market Data Service — Scanner Only Mode[2m > [22mdoes not submit candidates when submission is disabled[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/universeMarketDataService.test.js[2m > [22mUniverse Market Data Service — Candidate Deduplication[2m > [22mkeeps only the strongest result when duplicate symbols appear across batches[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/universeMarketDataService.test.js[2m > [22mUniverse Market Data Service — Deterministic Ranking[2m > [22muses symbol ordering when scanner scores are equal[32m 6[2mms[22m[39m
+ [32m✓[39m src/tests/universeMarketDataService.test.js[2m > [22mUniverse Market Data Service — Partial Data[2m > [22mcontinues when only some assets produce usable measurements[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/universeMarketDataService.test.js[2m > [22mUniverse Market Data Service — Batch Failure Isolation[2m > [22mdoes not destroy the whole market pass when one batch warmer fails[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/universeMarketDataService.test.js[2m > [22mUniverse Market Data Service — Submission Failure[2m > [22mcontinues submitting later candidates when one coordinator submission throws[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/tradeScoringEngine.test.js[2m > [22mTrade Scoring Engine — 100 Point Directional Architecture[2m > [22mdirectional weights total exactly 100[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/tradeScoringEngine.test.js[2m > [22mTrade Scoring Engine — 100 Point Directional Architecture[2m > [22muses the agreed 30/30 directional allocation[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/tradeScoringEngine.test.js[2m > [22mTrade Scoring Engine — 100 Point Directional Architecture[2m > [22mcontains only the eight directional engines in the score[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/tradeScoringEngine.test.js[2m > [22mTrade Scoring Engine — 100 Point Directional Architecture[2m > [22mfundamental/company keeps its full 30 points when institutional evidence exists[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/tradeScoringEngine.test.js[2m > [22mTrade Scoring Engine — 100 Point Directional Architecture[2m > [22mperfect available evidence produces 100 directional conviction[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/tradeScoringEngine.test.js[2m > [22mTrade Scoring Engine — 100 Point Directional Architecture[2m > [22mmissing institutional evidence lowers coverage instead of becoming bearish evidence[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/tradeScoringEngine.test.js[2m > [22mTrade Scoring Engine — 100 Point Directional Architecture[2m > [22mdirectional conviction is normalized over available evidence[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/tradeScoringEngine.test.js[2m > [22mTrade Scoring Engine — 100 Point Directional Architecture[2m > [22mdirectional score can never exceed 100[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/institutionalPositionEngine.test.js[2m > [22mInstitutional Position Engine[2m > [22mdetects broad accumulation[32m 2[2mms[22m[39m
+ [32m✓[39m src/tests/institutionalPositionEngine.test.js[2m > [22mInstitutional Position Engine[2m > [22mdetects distribution[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/institutionalPositionEngine.test.js[2m > [22mInstitutional Position Engine[2m > [22mhigh ownership alone is not bullish[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/institutionalPositionEngine.test.js[2m > [22mInstitutional Position Engine[2m > [22mfuture filing cannot leak backward[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/securityResolver.test.js[2m > [22mVerified Security Resolver[2m > [22mmatches only an exact verified CUSIP[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/securityResolver.test.js[2m > [22mVerified Security Resolver[2m > [22mfails closed when identity is not verified[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/securityResolver.test.js[2m > [22mVerified Security Resolver[2m > [22mcaches verified identity lookup per symbol[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/secInstitutionalFilingsProvider.test.js[2m > [22mSEC Institutional Filings Provider[2m > [22mnormalizes 13F filing metadata[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/secInstitutionalFilingsProvider.test.js[2m > [22mSEC Institutional Filings Provider[2m > [22mnormalizes 13G separately[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/selfLearningScoringLoop.integration.test.js[2m > [22mSelf Learning Scoring Loop — Real Engines[2m > [22mthree high-coverage similar losses become COMPLETE historical intelligence and change scoring safely[32m 8[2mms[22m[39m
+[90mstdout[2m | src/tests/continuousMarketScanner.test.js[2m > [22m[2mContinuous Market Scanner — Start[2m > [22m[2mruns an immediate discovery cycle by default
+[22m[39m[AEMA_SCANNER_STARTING] {
+  startedAt: [32m'2026-09-12T15:04:29.880Z'[39m,
+  intervalMs: [33m60000[39m,
+  runImmediately: [33mtrue[39m,
+  discoveryOptions: {
+    maximumUniverseSymbols: [1mnull[22m,
+    maximumCandidates: [33m20[39m,
+    batchSize: [33m100[39m,
+    batchConcurrency: [33m1[39m,
+    maximumCandidatesPerBatch: [33m20[39m,
+    submitForDeepResearch: [33mtrue[39m,
+    waitForDeepResearch: [33mfalse[39m,
+    marketRegime: [32m'NEUTRAL'[39m
+  }
+}
+[AEMA_SCANNER_CYCLE_START] {
+  cycle: [33m1[39m,
+  startedAt: [32m'2026-09-12T15:04:29.880Z'[39m,
+  options: {
+    maximumUniverseSymbols: [1mnull[22m,
+    maximumCandidates: [33m20[39m,
+    batchSize: [33m100[39m,
+    batchConcurrency: [33m1[39m,
+    maximumCandidatesPerBatch: [33m20[39m,
+    submitForDeepResearch: [33mtrue[39m,
+    waitForDeepResearch: [33mfalse[39m,
+    marketRegime: [32m'NEUTRAL'[39m
+  }
+}
+
+[90mstdout[2m | src/tests/continuousMarketScanner.test.js[2m > [22m[2mContinuous Market Scanner — Start[2m > [22m[2mruns an immediate discovery cycle by default
+[22m[39m[AEMA_SCANNER_CYCLE_RESULT] {
+  cycle: [33m1[39m,
+  completedAt: [32m'2026-09-12T15:04:29.880Z'[39m,
+  status: [32m'COMPLETE'[39m,
+  approved: [33mtrue[39m,
+  universe: [33m0[39m,
+  warmed: [33m0[39m,
+  measured: [33m0[39m,
+  researchable: [33m0[39m,
+  qualified: [33m5[39m,
+  selected: [33m0[39m,
+  submitted: [33m3[39m,
+  registryCandidates: [33m0[39m,
+  queuePending: [33m0[39m,
+  queueRunning: [33m0[39m,
+  warnings: [33m0[39m,
+  errors: [33m0[39m
+}
+
+[90mstdout[2m | src/tests/continuousMarketScanner.test.js[2m > [22m[2mContinuous Market Scanner — Start[2m > [22m[2mruns an immediate discovery cycle by default
+[22m[39m[AEMA_SCANNER_NEXT_CYCLE] { nextCycleAt: [32m'2026-09-12T15:05:29.880Z'[39m, intervalMs: [33m60000[39m }
+[AEMA_SCANNER_STARTED] {
+  status: [32m'RUNNING'[39m,
+  cycleCount: [33m1[39m,
+  nextCycleAt: [32m'2026-09-12T15:05:29.880Z'[39m
+}
+
+[90mstdout[2m | src/tests/continuousMarketScanner.test.js[2m > [22m[2mContinuous Market Scanner — Start[2m > [22m[2mruns an immediate discovery cycle by default
+[22m[39m[AEMA_SCANNER_STOPPED] {
+  stoppedAt: [32m'2026-09-12T15:04:29.880Z'[39m,
+  cycleCount: [33m1[39m,
+  skippedCycles: [33m0[39m
+}
+
+[90mstdout[2m | src/tests/continuousMarketScanner.test.js[2m > [22m[2mContinuous Market Scanner — Start[2m > [22m[2mcan start without an immediate cycle
+[22m[39m[AEMA_SCANNER_STARTING] {
+  startedAt: [32m'2026-09-12T15:04:29.880Z'[39m,
+  intervalMs: [33m60000[39m,
+  runImmediately: [33mfalse[39m,
+  discoveryOptions: {
+    maximumUniverseSymbols: [1mnull[22m,
+    maximumCandidates: [33m20[39m,
+    batchSize: [33m100[39m,
+    batchConcurrency: [33m1[39m,
+    maximumCandidatesPerBatch: [33m20[39m,
+    submitForDeepResearch: [33mtrue[39m,
+    waitForDeepResearch: [33mfalse[39m,
+    marketRegime: [32m'NEUTRAL'[39m
+  }
+}
+[AEMA_SCANNER_NEXT_CYCLE] { nextCycleAt: [32m'2026-09-12T15:05:29.880Z'[39m, intervalMs: [33m60000[39m }
+[AEMA_SCANNER_STARTED] {
+  status: [32m'RUNNING'[39m,
+  cycleCount: [33m0[39m,
+  nextCycleAt: [32m'2026-09-12T15:05:29.880Z'[39m
+}
+
+[90mstdout[2m | src/tests/continuousMarketScanner.test.js[2m > [22m[2mContinuous Market Scanner — Start[2m > [22m[2mcan start without an immediate cycle
+[22m[39m[AEMA_SCANNER_STOPPED] {
+  stoppedAt: [32m'2026-09-12T15:04:29.880Z'[39m,
+  cycleCount: [33m0[39m,
+  skippedCycles: [33m0[39m
+}
+
+[90mstdout[2m | src/tests/continuousMarketScanner.test.js[2m > [22m[2mContinuous Market Scanner — Start[2m > [22m[2mis idempotent when start is called twice
+[22m[39m[AEMA_SCANNER_STARTING] {
+  startedAt: [32m'2026-09-12T15:04:29.880Z'[39m,
+  intervalMs: [33m60000[39m,
+  runImmediately: [33mtrue[39m,
+  discoveryOptions: {
+    maximumUniverseSymbols: [1mnull[22m,
+    maximumCandidates: [33m20[39m,
+    batchSize: [33m100[39m,
+    batchConcurrency: [33m1[39m,
+    maximumCandidatesPerBatch: [33m20[39m,
+    submitForDeepResearch: [33mtrue[39m,
+    waitForDeepResearch: [33mfalse[39m,
+    marketRegime: [32m'NEUTRAL'[39m
+  }
+}
+[AEMA_SCANNER_CYCLE_START] {
+  cycle: [33m1[39m,
+  startedAt: [32m'2026-09-12T15:04:29.880Z'[39m,
+  options: {
+    maximumUniverseSymbols: [1mnull[22m,
+    maximumCandidates: [33m20[39m,
+    batchSize: [33m100[39m,
+    batchConcurrency: [33m1[39m,
+    maximumCandidatesPerBatch: [33m20[39m,
+    submitForDeepResearch: [33mtrue[39m,
+    waitForDeepResearch: [33mfalse[39m,
+    marketRegime: [32m'NEUTRAL'[39m
+  }
+}
+
+[90mstdout[2m | src/tests/continuousMarketScanner.test.js[2m > [22m[2mContinuous Market Scanner — Start[2m > [22m[2mis idempotent when start is called twice
+[22m[39m[AEMA_SCANNER_CYCLE_RESULT] {
+  cycle: [33m1[39m,
+  completedAt: [32m'2026-09-12T15:04:29.880Z'[39m,
+  status: [32m'COMPLETE'[39m,
+  approved: [33mtrue[39m,
+  universe: [33m0[39m,
+  warmed: [33m0[39m,
+  measured: [33m0[39m,
+  researchable: [33m0[39m,
+  qualified: [33m5[39m,
+  selected: [33m0[39m,
+  submitted: [33m3[39m,
+  registryCandidates: [33m0[39m,
+  queuePending: [33m0[39m,
+  queueRunning: [33m0[39m,
+  warnings: [33m0[39m,
+  errors: [33m0[39m
+}
+
+[90mstdout[2m | src/tests/continuousMarketScanner.test.js[2m > [22m[2mContinuous Market Scanner — Start[2m > [22m[2mis idempotent when start is called twice
+[22m[39m[AEMA_SCANNER_NEXT_CYCLE] { nextCycleAt: [32m'2026-09-12T15:05:29.880Z'[39m, intervalMs: [33m60000[39m }
+[AEMA_SCANNER_STARTED] {
+  status: [32m'RUNNING'[39m,
+  cycleCount: [33m1[39m,
+  nextCycleAt: [32m'2026-09-12T15:05:29.880Z'[39m
+}
+
+[90mstdout[2m | src/tests/continuousMarketScanner.test.js[2m > [22m[2mContinuous Market Scanner — Start[2m > [22m[2mis idempotent when start is called twice
+[22m[39m[AEMA_SCANNER_STOPPED] {
+  stoppedAt: [32m'2026-09-12T15:04:29.880Z'[39m,
+  cycleCount: [33m1[39m,
+  skippedCycles: [33m0[39m
+}
+
+[90mstdout[2m | src/tests/continuousMarketScanner.test.js[2m > [22m[2mContinuous Market Scanner — Scheduling[2m > [22m[2mruns another cycle after the configured interval
+[22m[39m[AEMA_SCANNER_STARTING] {
+  startedAt: [32m'2026-09-12T15:04:29.880Z'[39m,
+  intervalMs: [33m60000[39m,
+  runImmediately: [33mtrue[39m,
+  discoveryOptions: {
+    maximumUniverseSymbols: [1mnull[22m,
+    maximumCandidates: [33m20[39m,
+    batchSize: [33m100[39m,
+    batchConcurrency: [33m1[39m,
+    maximumCandidatesPerBatch: [33m20[39m,
+    submitForDeepResearch: [33mtrue[39m,
+    waitForDeepResearch: [33mfalse[39m,
+    marketRegime: [32m'NEUTRAL'[39m
+  }
+}
+[AEMA_SCANNER_CYCLE_START] {
+  cycle: [33m1[39m,
+  startedAt: [32m'2026-09-12T15:04:29.880Z'[39m,
+  options: {
+    maximumUniverseSymbols: [1mnull[22m,
+    maximumCandidates: [33m20[39m,
+    batchSize: [33m100[39m,
+    batchConcurrency: [33m1[39m,
+    maximumCandidatesPerBatch: [33m20[39m,
+    submitForDeepResearch: [33mtrue[39m,
+    waitForDeepResearch: [33mfalse[39m,
+    marketRegime: [32m'NEUTRAL'[39m
+  }
+}
+
+[90mstdout[2m | src/tests/continuousMarketScanner.test.js[2m > [22m[2mContinuous Market Scanner — Scheduling[2m > [22m[2mruns another cycle after the configured interval
+[22m[39m[AEMA_SCANNER_CYCLE_RESULT] {
+  cycle: [33m1[39m,
+  completedAt: [32m'2026-09-12T15:04:29.880Z'[39m,
+  status: [32m'COMPLETE'[39m,
+  approved: [33mtrue[39m,
+  universe: [33m0[39m,
+  warmed: [33m0[39m,
+  measured: [33m0[39m,
+  researchable: [33m0[39m,
+  qualified: [33m5[39m,
+  selected: [33m0[39m,
+  submitted: [33m3[39m,
+  registryCandidates: [33m0[39m,
+  queuePending: [33m0[39m,
+  queueRunning: [33m0[39m,
+  warnings: [33m0[39m,
+  errors: [33m0[39m
+}
+
+[90mstdout[2m | src/tests/continuousMarketScanner.test.js[2m > [22m[2mContinuous Market Scanner — Scheduling[2m > [22m[2mruns another cycle after the configured interval
+[22m[39m[AEMA_SCANNER_NEXT_CYCLE] { nextCycleAt: [32m'2026-09-12T15:05:29.880Z'[39m, intervalMs: [33m60000[39m }
+[AEMA_SCANNER_STARTED] {
+  status: [32m'RUNNING'[39m,
+  cycleCount: [33m1[39m,
+  nextCycleAt: [32m'2026-09-12T15:05:29.880Z'[39m
+}
+
+[90mstdout[2m | src/tests/continuousMarketScanner.test.js[2m > [22m[2mContinuous Market Scanner — Scheduling[2m > [22m[2mruns another cycle after the configured interval
+[22m[39m[AEMA_SCANNER_CYCLE_START] {
+  cycle: [33m2[39m,
+  startedAt: [32m'2026-09-12T15:05:29.880Z'[39m,
+  options: {
+    maximumUniverseSymbols: [1mnull[22m,
+    maximumCandidates: [33m20[39m,
+    batchSize: [33m100[39m,
+    batchConcurrency: [33m1[39m,
+    maximumCandidatesPerBatch: [33m20[39m,
+    submitForDeepResearch: [33mtrue[39m,
+    waitForDeepResearch: [33mfalse[39m,
+    marketRegime: [32m'NEUTRAL'[39m
+  }
+}
+
+[90mstdout[2m | src/tests/continuousMarketScanner.test.js[2m > [22m[2mContinuous Market Scanner — Scheduling[2m > [22m[2mruns another cycle after the configured interval
+[22m[39m[AEMA_SCANNER_CYCLE_RESULT] {
+  cycle: [33m2[39m,
+  completedAt: [32m'2026-09-12T15:05:29.880Z'[39m,
+  status: [32m'COMPLETE'[39m,
+  approved: [33mtrue[39m,
+  universe: [33m0[39m,
+  warmed: [33m0[39m,
+  measured: [33m0[39m,
+  researchable: [33m0[39m,
+  qualified: [33m5[39m,
+  selected: [33m0[39m,
+  submitted: [33m3[39m,
+  registryCandidates: [33m0[39m,
+  queuePending: [33m0[39m,
+  queueRunning: [33m0[39m,
+  warnings: [33m0[39m,
+  errors: [33m0[39m
+}
+
+[90mstdout[2m | src/tests/continuousMarketScanner.test.js[2m > [22m[2mContinuous Market Scanner — Scheduling[2m > [22m[2mruns another cycle after the configured interval
+[22m[39m[AEMA_SCANNER_NEXT_CYCLE] { nextCycleAt: [32m'2026-09-12T15:06:29.880Z'[39m, intervalMs: [33m60000[39m }
+
+[90mstdout[2m | src/tests/continuousMarketScanner.test.js[2m > [22m[2mContinuous Market Scanner — Scheduling[2m > [22m[2mruns another cycle after the configured interval
+[22m[39m[AEMA_SCANNER_STOPPED] {
+  stoppedAt: [32m'2026-09-12T15:05:29.880Z'[39m,
+  cycleCount: [33m2[39m,
+  skippedCycles: [33m0[39m
+}
+
+[90mstdout[2m | src/tests/continuousMarketScanner.test.js[2m > [22m[2mContinuous Market Scanner — Scheduling[2m > [22m[2mcontinues scheduling subsequent cycles
+[22m[39m[AEMA_SCANNER_STARTING] {
+  startedAt: [32m'2026-09-12T15:05:29.880Z'[39m,
+  intervalMs: [33m10000[39m,
+  runImmediately: [33mtrue[39m,
+  discoveryOptions: {
+    maximumUniverseSymbols: [1mnull[22m,
+    maximumCandidates: [33m20[39m,
+    batchSize: [33m100[39m,
+    batchConcurrency: [33m1[39m,
+    maximumCandidatesPerBatch: [33m20[39m,
+    submitForDeepResearch: [33mtrue[39m,
+    waitForDeepResearch: [33mfalse[39m,
+    marketRegime: [32m'NEUTRAL'[39m
+  }
+}
+[AEMA_SCANNER_CYCLE_START] {
+  cycle: [33m1[39m,
+  startedAt: [32m'2026-09-12T15:05:29.880Z'[39m,
+  options: {
+    maximumUniverseSymbols: [1mnull[22m,
+    maximumCandidates: [33m20[39m,
+    batchSize: [33m100[39m,
+    batchConcurrency: [33m1[39m,
+    maximumCandidatesPerBatch: [33m20[39m,
+    submitForDeepResearch: [33mtrue[39m,
+    waitForDeepResearch: [33mfalse[39m,
+    marketRegime: [32m'NEUTRAL'[39m
+  }
+}
+
+[90mstdout[2m | src/tests/continuousMarketScanner.test.js[2m > [22m[2mContinuous Market Scanner — Scheduling[2m > [22m[2mcontinues scheduling subsequent cycles
+[22m[39m[AEMA_SCANNER_CYCLE_RESULT] {
+  cycle: [33m1[39m,
+  completedAt: [32m'2026-09-12T15:05:29.880Z'[39m,
+  status: [32m'COMPLETE'[39m,
+  approved: [33mtrue[39m,
+  universe: [33m0[39m,
+  warmed: [33m0[39m,
+  measured: [33m0[39m,
+  researchable: [33m0[39m,
+  qualified: [33m5[39m,
+  selected: [33m0[39m,
+  submitted: [33m3[39m,
+  registryCandidates: [33m0[39m,
+  queuePending: [33m0[39m,
+  queueRunning: [33m0[39m,
+  warnings: [33m0[39m,
+  errors: [33m0[39m
+}
+
+[90mstdout[2m | src/tests/continuousMarketScanner.test.js[2m > [22m[2mContinuous Market Scanner — Scheduling[2m > [22m[2mcontinues scheduling subsequent cycles
+[22m[39m[AEMA_SCANNER_NEXT_CYCLE] { nextCycleAt: [32m'2026-09-12T15:05:39.880Z'[39m, intervalMs: [33m10000[39m }
+[AEMA_SCANNER_STARTED] {
+  status: [32m'RUNNING'[39m,
+  cycleCount: [33m1[39m,
+  nextCycleAt: [32m'2026-09-12T15:05:39.880Z'[39m
+}
+
+[90mstdout[2m | src/tests/continuousMarketScanner.test.js[2m > [22m[2mContinuous Market Scanner — Scheduling[2m > [22m[2mcontinues scheduling subsequent cycles
+[22m[39m[AEMA_SCANNER_CYCLE_START] {
+  cycle: [33m2[39m,
+  startedAt: [32m'2026-09-12T15:05:39.880Z'[39m,
+  options: {
+    maximumUniverseSymbols: [1mnull[22m,
+    maximumCandidates: [33m20[39m,
+    batchSize: [33m100[39m,
+    batchConcurrency: [33m1[39m,
+    maximumCandidatesPerBatch: [33m20[39m,
+    submitForDeepResearch: [33mtrue[39m,
+    waitForDeepResearch: [33mfalse[39m,
+    marketRegime: [32m'NEUTRAL'[39m
+  }
+}
+
+[90mstdout[2m | src/tests/continuousMarketScanner.test.js[2m > [22m[2mContinuous Market Scanner — Scheduling[2m > [22m[2mcontinues scheduling subsequent cycles
+[22m[39m[AEMA_SCANNER_CYCLE_RESULT] {
+  cycle: [33m2[39m,
+  completedAt: [32m'2026-09-12T15:05:39.880Z'[39m,
+  status: [32m'COMPLETE'[39m,
+  approved: [33mtrue[39m,
+  universe: [33m0[39m,
+  warmed: [33m0[39m,
+  measured: [33m0[39m,
+  researchable: [33m0[39m,
+  qualified: [33m5[39m,
+  selected: [33m0[39m,
+  submitted: [33m3[39m,
+  registryCandidates: [33m0[39m,
+  queuePending: [33m0[39m,
+  queueRunning: [33m0[39m,
+  warnings: [33m0[39m,
+  errors: [33m0[39m
+}
+
+[90mstdout[2m | src/tests/continuousMarketScanner.test.js[2m > [22m[2mContinuous Market Scanner — Scheduling[2m > [22m[2mcontinues scheduling subsequent cycles
+[22m[39m[AEMA_SCANNER_NEXT_CYCLE] { nextCycleAt: [32m'2026-09-12T15:05:49.880Z'[39m, intervalMs: [33m10000[39m }
+
+[90mstdout[2m | src/tests/continuousMarketScanner.test.js[2m > [22m[2mContinuous Market Scanner — Scheduling[2m > [22m[2mcontinues scheduling subsequent cycles
+[22m[39m[AEMA_SCANNER_CYCLE_START] {
+  cycle: [33m3[39m,
+  startedAt: [32m'2026-09-12T15:05:49.880Z'[39m,
+  options: {
+    maximumUniverseSymbols: [1mnull[22m,
+    maximumCandidates: [33m20[39m,
+    batchSize: [33m100[39m,
+    batchConcurrency: [33m1[39m,
+    maximumCandidatesPerBatch: [33m20[39m,
+    submitForDeepResearch: [33mtrue[39m,
+    waitForDeepResearch: [33mfalse[39m,
+    marketRegime: [32m'NEUTRAL'[39m
+  }
+}
+
+[90mstdout[2m | src/tests/continuousMarketScanner.test.js[2m > [22m[2mContinuous Market Scanner — Scheduling[2m > [22m[2mcontinues scheduling subsequent cycles
+[22m[39m[AEMA_SCANNER_CYCLE_RESULT] {
+  cycle: [33m3[39m,
+  completedAt: [32m'2026-09-12T15:05:49.880Z'[39m,
+  status: [32m'COMPLETE'[39m,
+  approved: [33mtrue[39m,
+  universe: [33m0[39m,
+  warmed: [33m0[39m,
+  measured: [33m0[39m,
+  researchable: [33m0[39m,
+  qualified: [33m5[39m,
+  selected: [33m0[39m,
+  submitted: [33m3[39m,
+  registryCandidates: [33m0[39m,
+  queuePending: [33m0[39m,
+  queueRunning: [33m0[39m,
+  warnings: [33m0[39m,
+  errors: [33m0[39m
+}
+
+[90mstdout[2m | src/tests/continuousMarketScanner.test.js[2m > [22m[2mContinuous Market Scanner — Scheduling[2m > [22m[2mcontinues scheduling subsequent cycles
+[22m[39m[AEMA_SCANNER_NEXT_CYCLE] { nextCycleAt: [32m'2026-09-12T15:05:59.880Z'[39m, intervalMs: [33m10000[39m }
+
+[90mstdout[2m | src/tests/continuousMarketScanner.test.js[2m > [22m[2mContinuous Market Scanner — Scheduling[2m > [22m[2mcontinues scheduling subsequent cycles
+[22m[39m[AEMA_SCANNER_CYCLE_START] {
+  cycle: [33m4[39m,
+  startedAt: [32m'2026-09-12T15:05:59.880Z'[39m,
+  options: {
+    maximumUniverseSymbols: [1mnull[22m,
+    maximumCandidates: [33m20[39m,
+    batchSize: [33m100[39m,
+    batchConcurrency: [33m1[39m,
+    maximumCandidatesPerBatch: [33m20[39m,
+    submitForDeepResearch: [33mtrue[39m,
+    waitForDeepResearch: [33mfalse[39m,
+    marketRegime: [32m'NEUTRAL'[39m
+  }
+}
+
+[90mstdout[2m | src/tests/continuousMarketScanner.test.js[2m > [22m[2mContinuous Market Scanner — Scheduling[2m > [22m[2mcontinues scheduling subsequent cycles
+[22m[39m[AEMA_SCANNER_CYCLE_RESULT] {
+  cycle: [33m4[39m,
+  completedAt: [32m'2026-09-12T15:05:59.880Z'[39m,
+  status: [32m'COMPLETE'[39m,
+  approved: [33mtrue[39m,
+  universe: [33m0[39m,
+  warmed: [33m0[39m,
+  measured: [33m0[39m,
+  researchable: [33m0[39m,
+  qualified: [33m5[39m,
+  selected: [33m0[39m,
+  submitted: [33m3[39m,
+  registryCandidates: [33m0[39m,
+  queuePending: [33m0[39m,
+  queueRunning: [33m0[39m,
+  warnings: [33m0[39m,
+  errors: [33m0[39m
+}
+
+[90mstdout[2m | src/tests/continuousMarketScanner.test.js[2m > [22m[2mContinuous Market Scanner — Scheduling[2m > [22m[2mcontinues scheduling subsequent cycles
+[22m[39m[AEMA_SCANNER_NEXT_CYCLE] { nextCycleAt: [32m'2026-09-12T15:06:09.880Z'[39m, intervalMs: [33m10000[39m }
+
+[90mstdout[2m | src/tests/continuousMarketScanner.test.js[2m > [22m[2mContinuous Market Scanner — Scheduling[2m > [22m[2mcontinues scheduling subsequent cycles
+[22m[39m[AEMA_SCANNER_STOPPED] {
+  stoppedAt: [32m'2026-09-12T15:05:59.880Z'[39m,
+  cycleCount: [33m4[39m,
+  skippedCycles: [33m0[39m
+}
+
+[90mstdout[2m | src/tests/continuousMarketScanner.test.js[2m > [22m[2mContinuous Market Scanner — Overlap Protection[2m > [22m[2mdoes not allow two discovery cycles to run simultaneously
+[22m[39m[AEMA_SCANNER_STARTING] {
+  startedAt: [32m'2026-09-12T15:05:59.880Z'[39m,
+  intervalMs: [33m300000[39m,
+  runImmediately: [33mfalse[39m,
+  discoveryOptions: {
+    maximumUniverseSymbols: [1mnull[22m,
+    maximumCandidates: [33m20[39m,
+    batchSize: [33m100[39m,
+    batchConcurrency: [33m1[39m,
+    maximumCandidatesPerBatch: [33m20[39m,
+    submitForDeepResearch: [33mtrue[39m,
+    waitForDeepResearch: [33mfalse[39m,
+    marketRegime: [32m'NEUTRAL'[39m
+  }
+}
+[AEMA_SCANNER_NEXT_CYCLE] { nextCycleAt: [32m'2026-09-12T15:10:59.880Z'[39m, intervalMs: [33m300000[39m }
+[AEMA_SCANNER_STARTED] {
+  status: [32m'RUNNING'[39m,
+  cycleCount: [33m0[39m,
+  nextCycleAt: [32m'2026-09-12T15:10:59.880Z'[39m
+}
+
+[90mstdout[2m | src/tests/continuousMarketScanner.test.js[2m > [22m[2mContinuous Market Scanner — Overlap Protection[2m > [22m[2mdoes not allow two discovery cycles to run simultaneously
+[22m[39m[AEMA_SCANNER_CYCLE_START] {
+  cycle: [33m1[39m,
+  startedAt: [32m'2026-09-12T15:05:59.880Z'[39m,
+  options: {
+    maximumUniverseSymbols: [1mnull[22m,
+    maximumCandidates: [33m20[39m,
+    batchSize: [33m100[39m,
+    batchConcurrency: [33m1[39m,
+    maximumCandidatesPerBatch: [33m20[39m,
+    submitForDeepResearch: [33mtrue[39m,
+    waitForDeepResearch: [33mfalse[39m,
+    marketRegime: [32m'NEUTRAL'[39m
+  }
+}
+
+[90mstdout[2m | src/tests/continuousMarketScanner.test.js[2m > [22m[2mContinuous Market Scanner — Overlap Protection[2m > [22m[2mdoes not allow two discovery cycles to run simultaneously
+[22m[39m[AEMA_SCANNER_CYCLE_RESULT] {
+  cycle: [33m1[39m,
+  completedAt: [32m'2026-09-12T15:05:59.880Z'[39m,
+  status: [32m'COMPLETE'[39m,
+  approved: [33mtrue[39m,
+  universe: [33m0[39m,
+  warmed: [33m0[39m,
+  measured: [33m0[39m,
+  researchable: [33m0[39m,
+  qualified: [33m5[39m,
+  selected: [33m0[39m,
+  submitted: [33m3[39m,
+  registryCandidates: [33m0[39m,
+  queuePending: [33m0[39m,
+  queueRunning: [33m0[39m,
+  warnings: [33m0[39m,
+  errors: [33m0[39m
+}
+
+[90mstdout[2m | src/tests/continuousMarketScanner.test.js[2m > [22m[2mContinuous Market Scanner — Overlap Protection[2m > [22m[2mdoes not allow two discovery cycles to run simultaneously
+[22m[39m[AEMA_SCANNER_STOPPED] {
+  stoppedAt: [32m'2026-09-12T15:05:59.880Z'[39m,
+  cycleCount: [33m1[39m,
+  skippedCycles: [33m1[39m
+}
+
+[90mstdout[2m | src/tests/continuousMarketScanner.test.js[2m > [22m[2mContinuous Market Scanner — Stop[2m > [22m[2mstops cleanly and cancels future scheduled cycles
+[22m[39m[AEMA_SCANNER_STARTING] {
+  startedAt: [32m'2026-09-12T15:05:59.880Z'[39m,
+  intervalMs: [33m10000[39m,
+  runImmediately: [33mtrue[39m,
+  discoveryOptions: {
+    maximumUniverseSymbols: [1mnull[22m,
+    maximumCandidates: [33m20[39m,
+    batchSize: [33m100[39m,
+    batchConcurrency: [33m1[39m,
+    maximumCandidatesPerBatch: [33m20[39m,
+    submitForDeepResearch: [33mtrue[39m,
+    waitForDeepResearch: [33mfalse[39m,
+    marketRegime: [32m'NEUTRAL'[39m
+  }
+}
+[AEMA_SCANNER_CYCLE_START] {
+  cycle: [33m1[39m,
+  startedAt: [32m'2026-09-12T15:05:59.880Z'[39m,
+  options: {
+    maximumUniverseSymbols: [1mnull[22m,
+    maximumCandidates: [33m20[39m,
+    batchSize: [33m100[39m,
+    batchConcurrency: [33m1[39m,
+    maximumCandidatesPerBatch: [33m20[39m,
+    submitForDeepResearch: [33mtrue[39m,
+    waitForDeepResearch: [33mfalse[39m,
+    marketRegime: [32m'NEUTRAL'[39m
+  }
+}
+
+[90mstdout[2m | src/tests/continuousMarketScanner.test.js[2m > [22m[2mContinuous Market Scanner — Stop[2m > [22m[2mstops cleanly and cancels future scheduled cycles
+[22m[39m[AEMA_SCANNER_CYCLE_RESULT] {
+  cycle: [33m1[39m,
+  completedAt: [32m'2026-09-12T15:05:59.880Z'[39m,
+  status: [32m'COMPLETE'[39m,
+  approved: [33mtrue[39m,
+  universe: [33m0[39m,
+  warmed: [33m0[39m,
+  measured: [33m0[39m,
+  researchable: [33m0[39m,
+  qualified: [33m5[39m,
+  selected: [33m0[39m,
+  submitted: [33m3[39m,
+  registryCandidates: [33m0[39m,
+  queuePending: [33m0[39m,
+  queueRunning: [33m0[39m,
+  warnings: [33m0[39m,
+  errors: [33m0[39m
+}
+
+[90mstdout[2m | src/tests/continuousMarketScanner.test.js[2m > [22m[2mContinuous Market Scanner — Stop[2m > [22m[2mstops cleanly and cancels future scheduled cycles
+[22m[39m[AEMA_SCANNER_NEXT_CYCLE] { nextCycleAt: [32m'2026-09-12T15:06:09.880Z'[39m, intervalMs: [33m10000[39m }
+[AEMA_SCANNER_STARTED] {
+  status: [32m'RUNNING'[39m,
+  cycleCount: [33m1[39m,
+  nextCycleAt: [32m'2026-09-12T15:06:09.880Z'[39m
+}
+
+[90mstdout[2m | src/tests/continuousMarketScanner.test.js[2m > [22m[2mContinuous Market Scanner — Stop[2m > [22m[2mstops cleanly and cancels future scheduled cycles
+[22m[39m[AEMA_SCANNER_STOPPED] {
+  stoppedAt: [32m'2026-09-12T15:05:59.880Z'[39m,
+  cycleCount: [33m1[39m,
+  skippedCycles: [33m0[39m
+}
+
+[90mstdout[2m | src/tests/continuousMarketScanner.test.js[2m > [22m[2mContinuous Market Scanner — Stop[2m > [22m[2mcan wait for an active discovery cycle before stopping
+[22m[39m[AEMA_SCANNER_STARTING] {
+  startedAt: [32m'2026-09-12T15:06:29.880Z'[39m,
+  intervalMs: [33m300000[39m,
+  runImmediately: [33mfalse[39m,
+  discoveryOptions: {
+    maximumUniverseSymbols: [1mnull[22m,
+    maximumCandidates: [33m20[39m,
+    batchSize: [33m100[39m,
+    batchConcurrency: [33m1[39m,
+    maximumCandidatesPerBatch: [33m20[39m,
+    submitForDeepResearch: [33mtrue[39m,
+    waitForDeepResearch: [33mfalse[39m,
+    marketRegime: [32m'NEUTRAL'[39m
+  }
+}
+[AEMA_SCANNER_NEXT_CYCLE] { nextCycleAt: [32m'2026-09-12T15:11:29.880Z'[39m, intervalMs: [33m300000[39m }
+[AEMA_SCANNER_STARTED] {
+  status: [32m'RUNNING'[39m,
+  cycleCount: [33m0[39m,
+  nextCycleAt: [32m'2026-09-12T15:11:29.880Z'[39m
+}
+
+[90mstdout[2m | src/tests/continuousMarketScanner.test.js[2m > [22m[2mContinuous Market Scanner — Stop[2m > [22m[2mcan wait for an active discovery cycle before stopping
+[22m[39m[AEMA_SCANNER_CYCLE_START] {
+  cycle: [33m1[39m,
+  startedAt: [32m'2026-09-12T15:06:29.880Z'[39m,
+  options: {
+    maximumUniverseSymbols: [1mnull[22m,
+    maximumCandidates: [33m20[39m,
+    batchSize: [33m100[39m,
+    batchConcurrency: [33m1[39m,
+    maximumCandidatesPerBatch: [33m20[39m,
+    submitForDeepResearch: [33mtrue[39m,
+    waitForDeepResearch: [33mfalse[39m,
+    marketRegime: [32m'NEUTRAL'[39m
+  }
+}
+
+[90mstdout[2m | src/tests/continuousMarketScanner.test.js[2m > [22m[2mContinuous Market Scanner — Stop[2m > [22m[2mcan wait for an active discovery cycle before stopping
+[22m[39m[AEMA_SCANNER_CYCLE_RESULT] {
+  cycle: [33m1[39m,
+  completedAt: [32m'2026-09-12T15:06:29.880Z'[39m,
+  status: [32m'COMPLETE'[39m,
+  approved: [33mtrue[39m,
+  universe: [33m0[39m,
+  warmed: [33m0[39m,
+  measured: [33m0[39m,
+  researchable: [33m0[39m,
+  qualified: [33m5[39m,
+  selected: [33m0[39m,
+  submitted: [33m3[39m,
+  registryCandidates: [33m0[39m,
+  queuePending: [33m0[39m,
+  queueRunning: [33m0[39m,
+  warnings: [33m0[39m,
+  errors: [33m0[39m
+}
+[AEMA_SCANNER_STOPPED] {
+  stoppedAt: [32m'2026-09-12T15:06:29.880Z'[39m,
+  cycleCount: [33m1[39m,
+  skippedCycles: [33m0[39m
+}
+
+[90mstdout[2m | src/tests/continuousMarketScanner.test.js[2m > [22m[2mContinuous Market Scanner — Failure Recovery[2m > [22m[2mcaptures discovery errors without permanently stopping the scanner
+[22m[39m[AEMA_SCANNER_STARTING] {
+  startedAt: [32m'2026-09-12T15:06:29.880Z'[39m,
+  intervalMs: [33m10000[39m,
+  runImmediately: [33mtrue[39m,
+  discoveryOptions: {
+    maximumUniverseSymbols: [1mnull[22m,
+    maximumCandidates: [33m20[39m,
+    batchSize: [33m100[39m,
+    batchConcurrency: [33m1[39m,
+    maximumCandidatesPerBatch: [33m20[39m,
+    submitForDeepResearch: [33mtrue[39m,
+    waitForDeepResearch: [33mfalse[39m,
+    marketRegime: [32m'NEUTRAL'[39m
+  }
+}
+[AEMA_SCANNER_CYCLE_START] {
+  cycle: [33m1[39m,
+  startedAt: [32m'2026-09-12T15:06:29.880Z'[39m,
+  options: {
+    maximumUniverseSymbols: [1mnull[22m,
+    maximumCandidates: [33m20[39m,
+    batchSize: [33m100[39m,
+    batchConcurrency: [33m1[39m,
+    maximumCandidatesPerBatch: [33m20[39m,
+    submitForDeepResearch: [33mtrue[39m,
+    waitForDeepResearch: [33mfalse[39m,
+    marketRegime: [32m'NEUTRAL'[39m
+  }
+}
+
+[90mstderr[2m | src/tests/continuousMarketScanner.test.js[2m > [22m[2mContinuous Market Scanner — Failure Recovery[2m > [22m[2mcaptures discovery errors without permanently stopping the scanner
+[22m[39m[AEMA_SCANNER_CYCLE_ERROR] {
+  cycle: [33m1[39m,
+  completedAt: [32m'2026-09-12T15:06:29.880Z'[39m,
+  error: [32m'Synthetic discovery failure'[39m
+}
+
+[90mstdout[2m | src/tests/continuousMarketScanner.test.js[2m > [22m[2mContinuous Market Scanner — Failure Recovery[2m > [22m[2mcaptures discovery errors without permanently stopping the scanner
+[22m[39m[AEMA_SCANNER_NEXT_CYCLE] { nextCycleAt: [32m'2026-09-12T15:06:39.880Z'[39m, intervalMs: [33m10000[39m }
+[AEMA_SCANNER_STARTED] {
+  status: [32m'RUNNING'[39m,
+  cycleCount: [33m0[39m,
+  nextCycleAt: [32m'2026-09-12T15:06:39.880Z'[39m
+}
+
+[90mstdout[2m | src/tests/continuousMarketScanner.test.js[2m > [22m[2mContinuous Market Scanner — Failure Recovery[2m > [22m[2mcaptures discovery errors without permanently stopping the scanner
+[22m[39m[AEMA_SCANNER_CYCLE_START] {
+  cycle: [33m1[39m,
+  startedAt: [32m'2026-09-12T15:06:39.880Z'[39m,
+  options: {
+    maximumUniverseSymbols: [1mnull[22m,
+    maximumCandidates: [33m20[39m,
+    batchSize: [33m100[39m,
+    batchConcurrency: [33m1[39m,
+    maximumCandidatesPerBatch: [33m20[39m,
+    submitForDeepResearch: [33mtrue[39m,
+    waitForDeepResearch: [33mfalse[39m,
+    marketRegime: [32m'NEUTRAL'[39m
+  }
+}
+
+[90mstdout[2m | src/tests/continuousMarketScanner.test.js[2m > [22m[2mContinuous Market Scanner — Failure Recovery[2m > [22m[2mcaptures discovery errors without permanently stopping the scanner
+[22m[39m[AEMA_SCANNER_CYCLE_RESULT] {
+  cycle: [33m1[39m,
+  completedAt: [32m'2026-09-12T15:06:39.880Z'[39m,
+  status: [32m'COMPLETE'[39m,
+  approved: [33mtrue[39m,
+  universe: [33m0[39m,
+  warmed: [33m0[39m,
+  measured: [33m0[39m,
+  researchable: [33m0[39m,
+  qualified: [33m5[39m,
+  selected: [33m0[39m,
+  submitted: [33m3[39m,
+  registryCandidates: [33m0[39m,
+  queuePending: [33m0[39m,
+  queueRunning: [33m0[39m,
+  warnings: [33m0[39m,
+  errors: [33m0[39m
+}
+
+[90mstdout[2m | src/tests/continuousMarketScanner.test.js[2m > [22m[2mContinuous Market Scanner — Failure Recovery[2m > [22m[2mcaptures discovery errors without permanently stopping the scanner
+[22m[39m[AEMA_SCANNER_NEXT_CYCLE] { nextCycleAt: [32m'2026-09-12T15:06:49.880Z'[39m, intervalMs: [33m10000[39m }
+
+[90mstdout[2m | src/tests/continuousMarketScanner.test.js[2m > [22m[2mContinuous Market Scanner — Failure Recovery[2m > [22m[2mcaptures discovery errors without permanently stopping the scanner
+[22m[39m[AEMA_SCANNER_STOPPED] {
+  stoppedAt: [32m'2026-09-12T15:06:39.880Z'[39m,
+  cycleCount: [33m1[39m,
+  skippedCycles: [33m0[39m
+}
+
+[90mstdout[2m | src/tests/continuousMarketScanner.test.js[2m > [22m[2mContinuous Market Scanner — Manual Cycle[2m > [22m[2mcan force a diagnostic cycle while the scanner is stopped
+[22m[39m[AEMA_SCANNER_CYCLE_START] {
+  cycle: [33m1[39m,
+  startedAt: [32m'2026-09-12T15:06:39.880Z'[39m,
+  options: {
+    maximumUniverseSymbols: [1mnull[22m,
+    maximumCandidates: [33m20[39m,
+    batchSize: [33m100[39m,
+    batchConcurrency: [33m1[39m,
+    maximumCandidatesPerBatch: [33m20[39m,
+    submitForDeepResearch: [33mtrue[39m,
+    waitForDeepResearch: [33mfalse[39m,
+    marketRegime: [32m'NEUTRAL'[39m
+  }
+}
+
+[90mstdout[2m | src/tests/continuousMarketScanner.test.js[2m > [22m[2mContinuous Market Scanner — Manual Cycle[2m > [22m[2mcan force a diagnostic cycle while the scanner is stopped
+[22m[39m[AEMA_SCANNER_CYCLE_RESULT] {
+  cycle: [33m1[39m,
+  completedAt: [32m'2026-09-12T15:06:39.880Z'[39m,
+  status: [32m'COMPLETE'[39m,
+  approved: [33mtrue[39m,
+  universe: [33m0[39m,
+  warmed: [33m0[39m,
+  measured: [33m0[39m,
+  researchable: [33m0[39m,
+  qualified: [33m5[39m,
+  selected: [33m0[39m,
+  submitted: [33m3[39m,
+  registryCandidates: [33m0[39m,
+  queuePending: [33m0[39m,
+  queueRunning: [33m0[39m,
+  warnings: [33m0[39m,
+  errors: [33m0[39m
+}
+
+[90mstdout[2m | src/tests/continuousMarketScanner.test.js[2m > [22m[2mContinuous Market Scanner — Discovery Configuration[2m > [22m[2mforwards discovery options to every cycle
+[22m[39m[AEMA_SCANNER_STARTING] {
+  startedAt: [32m'2026-09-12T15:06:39.880Z'[39m,
+  intervalMs: [33m300000[39m,
+  runImmediately: [33mfalse[39m,
+  discoveryOptions: {
+    maximumUniverseSymbols: [1mnull[22m,
+    maximumCandidates: [33m10[39m,
+    batchSize: [33m50[39m,
+    batchConcurrency: [33m1[39m,
+    maximumCandidatesPerBatch: [33m20[39m,
+    submitForDeepResearch: [33mtrue[39m,
+    waitForDeepResearch: [33mfalse[39m,
+    marketRegime: [32m'BULLISH'[39m
+  }
+}
+[AEMA_SCANNER_NEXT_CYCLE] { nextCycleAt: [32m'2026-09-12T15:11:39.880Z'[39m, intervalMs: [33m300000[39m }
+[AEMA_SCANNER_STARTED] {
+  status: [32m'RUNNING'[39m,
+  cycleCount: [33m0[39m,
+  nextCycleAt: [32m'2026-09-12T15:11:39.880Z'[39m
+}
+
+[90mstdout[2m | src/tests/continuousMarketScanner.test.js[2m > [22m[2mContinuous Market Scanner — Discovery Configuration[2m > [22m[2mforwards discovery options to every cycle
+[22m[39m[AEMA_SCANNER_CYCLE_START] {
+  cycle: [33m1[39m,
+  startedAt: [32m'2026-09-12T15:06:39.880Z'[39m,
+  options: {
+    maximumUniverseSymbols: [1mnull[22m,
+    maximumCandidates: [33m10[39m,
+    batchSize: [33m50[39m,
+    batchConcurrency: [33m1[39m,
+    maximumCandidatesPerBatch: [33m20[39m,
+    submitForDeepResearch: [33mtrue[39m,
+    waitForDeepResearch: [33mfalse[39m,
+    marketRegime: [32m'BULLISH'[39m
+  }
+}
+
+[90mstdout[2m | src/tests/continuousMarketScanner.test.js[2m > [22m[2mContinuous Market Scanner — Discovery Configuration[2m > [22m[2mforwards discovery options to every cycle
+[22m[39m[AEMA_SCANNER_CYCLE_RESULT] {
+  cycle: [33m1[39m,
+  completedAt: [32m'2026-09-12T15:06:39.880Z'[39m,
+  status: [32m'COMPLETE'[39m,
+  approved: [33mtrue[39m,
+  universe: [33m0[39m,
+  warmed: [33m0[39m,
+  measured: [33m0[39m,
+  researchable: [33m0[39m,
+  qualified: [33m5[39m,
+  selected: [33m0[39m,
+  submitted: [33m3[39m,
+  registryCandidates: [33m0[39m,
+  queuePending: [33m0[39m,
+  queueRunning: [33m0[39m,
+  warnings: [33m0[39m,
+  errors: [33m0[39m
+}
+
+[90mstdout[2m | src/tests/continuousMarketScanner.test.js[2m > [22m[2mContinuous Market Scanner — Discovery Configuration[2m > [22m[2mforwards discovery options to every cycle
+[22m[39m[AEMA_SCANNER_STOPPED] {
+  stoppedAt: [32m'2026-09-12T15:06:39.880Z'[39m,
+  cycleCount: [33m1[39m,
+  skippedCycles: [33m0[39m
+}
+
+[90mstdout[2m | src/tests/continuousMarketScanner.test.js[2m > [22m[2mContinuous Market Scanner — Discovery Configuration[2m > [22m[2mcan update discovery options while running
+[22m[39m[AEMA_SCANNER_STARTING] {
+  startedAt: [32m'2026-09-12T15:06:39.880Z'[39m,
+  intervalMs: [33m300000[39m,
+  runImmediately: [33mfalse[39m,
+  discoveryOptions: {
+    maximumUniverseSymbols: [1mnull[22m,
+    maximumCandidates: [33m20[39m,
+    batchSize: [33m100[39m,
+    batchConcurrency: [33m1[39m,
+    maximumCandidatesPerBatch: [33m20[39m,
+    submitForDeepResearch: [33mtrue[39m,
+    waitForDeepResearch: [33mfalse[39m,
+    marketRegime: [32m'NEUTRAL'[39m
+  }
+}
+[AEMA_SCANNER_NEXT_CYCLE] { nextCycleAt: [32m'2026-09-12T15:11:39.880Z'[39m, intervalMs: [33m300000[39m }
+[AEMA_SCANNER_STARTED] {
+  status: [32m'RUNNING'[39m,
+  cycleCount: [33m0[39m,
+  nextCycleAt: [32m'2026-09-12T15:11:39.880Z'[39m
+}
+
+[90mstdout[2m | src/tests/continuousMarketScanner.test.js[2m > [22m[2mContinuous Market Scanner — Discovery Configuration[2m > [22m[2mcan update discovery options while running
+[22m[39m[AEMA_SCANNER_CYCLE_START] {
+  cycle: [33m1[39m,
+  startedAt: [32m'2026-09-12T15:06:39.880Z'[39m,
+  options: {
+    maximumUniverseSymbols: [1mnull[22m,
+    maximumCandidates: [33m5[39m,
+    batchSize: [33m100[39m,
+    batchConcurrency: [33m1[39m,
+    maximumCandidatesPerBatch: [33m20[39m,
+    submitForDeepResearch: [33mtrue[39m,
+    waitForDeepResearch: [33mfalse[39m,
+    marketRegime: [32m'BEARISH'[39m
+  }
+}
+
+[90mstdout[2m | src/tests/continuousMarketScanner.test.js[2m > [22m[2mContinuous Market Scanner — Discovery Configuration[2m > [22m[2mcan update discovery options while running
+[22m[39m[AEMA_SCANNER_CYCLE_RESULT] {
+  cycle: [33m1[39m,
+  completedAt: [32m'2026-09-12T15:06:39.880Z'[39m,
+  status: [32m'COMPLETE'[39m,
+  approved: [33mtrue[39m,
+  universe: [33m0[39m,
+  warmed: [33m0[39m,
+  measured: [33m0[39m,
+  researchable: [33m0[39m,
+  qualified: [33m5[39m,
+  selected: [33m0[39m,
+  submitted: [33m3[39m,
+  registryCandidates: [33m0[39m,
+  queuePending: [33m0[39m,
+  queueRunning: [33m0[39m,
+  warnings: [33m0[39m,
+  errors: [33m0[39m
+}
+
+[90mstdout[2m | src/tests/continuousMarketScanner.test.js[2m > [22m[2mContinuous Market Scanner — Discovery Configuration[2m > [22m[2mcan update discovery options while running
+[22m[39m[AEMA_SCANNER_STOPPED] {
+  stoppedAt: [32m'2026-09-12T15:06:39.880Z'[39m,
+  cycleCount: [33m1[39m,
+  skippedCycles: [33m0[39m
+}
+
+[90mstdout[2m | src/tests/continuousMarketScanner.test.js[2m > [22m[2mContinuous Market Scanner — Interval Configuration[2m > [22m[2mcan update the scan interval
+[22m[39m[AEMA_SCANNER_STARTING] {
+  startedAt: [32m'2026-09-12T15:06:39.880Z'[39m,
+  intervalMs: [33m60000[39m,
+  runImmediately: [33mfalse[39m,
+  discoveryOptions: {
+    maximumUniverseSymbols: [1mnull[22m,
+    maximumCandidates: [33m20[39m,
+    batchSize: [33m100[39m,
+    batchConcurrency: [33m1[39m,
+    maximumCandidatesPerBatch: [33m20[39m,
+    submitForDeepResearch: [33mtrue[39m,
+    waitForDeepResearch: [33mfalse[39m,
+    marketRegime: [32m'NEUTRAL'[39m
+  }
+}
+[AEMA_SCANNER_NEXT_CYCLE] { nextCycleAt: [32m'2026-09-12T15:07:39.880Z'[39m, intervalMs: [33m60000[39m }
+[AEMA_SCANNER_STARTED] {
+  status: [32m'RUNNING'[39m,
+  cycleCount: [33m0[39m,
+  nextCycleAt: [32m'2026-09-12T15:07:39.880Z'[39m
+}
+
+[90mstdout[2m | src/tests/continuousMarketScanner.test.js[2m > [22m[2mContinuous Market Scanner — Interval Configuration[2m > [22m[2mcan update the scan interval
+[22m[39m[AEMA_SCANNER_NEXT_CYCLE] { nextCycleAt: [32m'2026-09-12T15:07:09.880Z'[39m, intervalMs: [33m30000[39m }
+[AEMA_SCANNER_STOPPED] {
+  stoppedAt: [32m'2026-09-12T15:06:39.880Z'[39m,
+  cycleCount: [33m0[39m,
+  skippedCycles: [33m0[39m
+}
+
+[90mstdout[2m | src/tests/continuousMarketScanner.test.js[2m > [22m[2mContinuous Market Scanner — State[2m > [22m[2mreports useful website/API state
+[22m[39m[AEMA_SCANNER_STARTING] {
+  startedAt: [32m'2026-09-12T15:06:39.880Z'[39m,
+  intervalMs: [33m60000[39m,
+  runImmediately: [33mtrue[39m,
+  discoveryOptions: {
+    maximumUniverseSymbols: [1mnull[22m,
+    maximumCandidates: [33m20[39m,
+    batchSize: [33m100[39m,
+    batchConcurrency: [33m1[39m,
+    maximumCandidatesPerBatch: [33m20[39m,
+    submitForDeepResearch: [33mtrue[39m,
+    waitForDeepResearch: [33mfalse[39m,
+    marketRegime: [32m'NEUTRAL'[39m
+  }
+}
+[AEMA_SCANNER_CYCLE_START] {
+  cycle: [33m1[39m,
+  startedAt: [32m'2026-09-12T15:06:39.880Z'[39m,
+  options: {
+    maximumUniverseSymbols: [1mnull[22m,
+    maximumCandidates: [33m20[39m,
+    batchSize: [33m100[39m,
+    batchConcurrency: [33m1[39m,
+    maximumCandidatesPerBatch: [33m20[39m,
+    submitForDeepResearch: [33mtrue[39m,
+    waitForDeepResearch: [33mfalse[39m,
+    marketRegime: [32m'NEUTRAL'[39m
+  }
+}
+
+[90mstdout[2m | src/tests/continuousMarketScanner.test.js[2m > [22m[2mContinuous Market Scanner — State[2m > [22m[2mreports useful website/API state
+[22m[39m[AEMA_SCANNER_CYCLE_RESULT] {
+  cycle: [33m1[39m,
+  completedAt: [32m'2026-09-12T15:06:39.880Z'[39m,
+  status: [32m'COMPLETE'[39m,
+  approved: [33mtrue[39m,
+  universe: [33m0[39m,
+  warmed: [33m0[39m,
+  measured: [33m0[39m,
+  researchable: [33m0[39m,
+  qualified: [33m10[39m,
+  selected: [33m0[39m,
+  submitted: [33m5[39m,
+  registryCandidates: [33m0[39m,
+  queuePending: [33m0[39m,
+  queueRunning: [33m0[39m,
+  warnings: [33m0[39m,
+  errors: [33m0[39m
+}
+
+[90mstdout[2m | src/tests/continuousMarketScanner.test.js[2m > [22m[2mContinuous Market Scanner — State[2m > [22m[2mreports useful website/API state
+[22m[39m[AEMA_SCANNER_NEXT_CYCLE] { nextCycleAt: [32m'2026-09-12T15:07:39.880Z'[39m, intervalMs: [33m60000[39m }
+[AEMA_SCANNER_STARTED] {
+  status: [32m'RUNNING'[39m,
+  cycleCount: [33m1[39m,
+  nextCycleAt: [32m'2026-09-12T15:07:39.880Z'[39m
+}
+
+[90mstdout[2m | src/tests/continuousMarketScanner.test.js[2m > [22m[2mContinuous Market Scanner — State[2m > [22m[2mreports useful website/API state
+[22m[39m[AEMA_SCANNER_STOPPED] {
+  stoppedAt: [32m'2026-09-12T15:06:39.880Z'[39m,
+  cycleCount: [33m1[39m,
+  skippedCycles: [33m0[39m
+}
+
+ [32m✓[39m src/tests/continuousMarketScanner.test.js[2m > [22mContinuous Market Scanner — Basic Contract[2m > [22mstarts in STOPPED state[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/continuousMarketScanner.test.js[2m > [22mContinuous Market Scanner — Basic Contract[2m > [22mrejects non-function discovery dependency[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/continuousMarketScanner.test.js[2m > [22mContinuous Market Scanner — Start[2m > [22mruns an immediate discovery cycle by default[32m 2[2mms[22m[39m
+ [32m✓[39m src/tests/continuousMarketScanner.test.js[2m > [22mContinuous Market Scanner — Start[2m > [22mcan start without an immediate cycle[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/continuousMarketScanner.test.js[2m > [22mContinuous Market Scanner — Start[2m > [22mis idempotent when start is called twice[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/continuousMarketScanner.test.js[2m > [22mContinuous Market Scanner — Scheduling[2m > [22mruns another cycle after the configured interval[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/continuousMarketScanner.test.js[2m > [22mContinuous Market Scanner — Scheduling[2m > [22mcontinues scheduling subsequent cycles[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/continuousMarketScanner.test.js[2m > [22mContinuous Market Scanner — Overlap Protection[2m > [22mdoes not allow two discovery cycles to run simultaneously[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/continuousMarketScanner.test.js[2m > [22mContinuous Market Scanner — Stop[2m > [22mstops cleanly and cancels future scheduled cycles[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/continuousMarketScanner.test.js[2m > [22mContinuous Market Scanner — Stop[2m > [22mcan wait for an active discovery cycle before stopping[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/continuousMarketScanner.test.js[2m > [22mContinuous Market Scanner — Failure Recovery[2m > [22mcaptures discovery errors without permanently stopping the scanner[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/continuousMarketScanner.test.js[2m > [22mContinuous Market Scanner — Manual Cycle[2m > [22mcan force a diagnostic cycle while the scanner is stopped[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/continuousMarketScanner.test.js[2m > [22mContinuous Market Scanner — Manual Cycle[2m > [22mdoes not run a normal manual cycle while stopped[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/continuousMarketScanner.test.js[2m > [22mContinuous Market Scanner — Discovery Configuration[2m > [22mforwards discovery options to every cycle[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/continuousMarketScanner.test.js[2m > [22mContinuous Market Scanner — Discovery Configuration[2m > [22mcan update discovery options while running[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/continuousMarketScanner.test.js[2m > [22mContinuous Market Scanner — Interval Configuration[2m > [22mcan update the scan interval[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/continuousMarketScanner.test.js[2m > [22mContinuous Market Scanner — State[2m > [22mreports useful website/API state[32m 0[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m13 passed[39m[22m[90m (13)[39m
+[2m      Tests [22m [1m[32m86 passed[39m[22m[90m (86)[39m
+[2m   Start at [22m 11:04:29
+[2m   Duration [22m 433ms[2m (transform 813ms, setup 0ms, import 1.17s, tests 79ms, environment 1ms)[22m
+
+✅ PASS: Targeted backend tests passed
+
+============================================================
+18. CLIENT BUILD
+============================================================
+
+> client@0.0.0 build
+> vite build
+
+vite v8.2.2 building client environment for production...
+transforming...
+✓ 1856 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.45 kB │ gzip:   0.29 kB
+dist/assets/index-C3GgWttX.css  131.08 kB │ gzip:  25.30 kB
+dist/assets/index-BIh5RCoj.js   571.14 kB │ gzip: 171.19 kB
+
+✓ built in 180ms
+[plugin builtin:vite-reporter] 
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✅ PASS: Client production build passed
+
+============================================================
+19. FRONTEND API CONFIGURATION
+============================================================
+src/services/scannerApi.js:26:  API_BASE_URL,
+src/services/scannerApi.js:90:  API_BASE_URL,
+src/services/scannerApi.js:230:  API_BASE_URL,
+src/services/api.js:20: * - Both VITE_API_BASE_URL and legacy VITE_API_URL are supported.
+src/services/api.js:23:const RAW_API_BASE_URL =
+src/services/api.js:25:    .VITE_API_BASE_URL ??
+src/services/api.js:27:    .VITE_API_URL ??
+src/services/api.js:28:  "http://localhost:8000";
+src/services/api.js:30:export const API_BASE_URL =
+src/services/api.js:32:    RAW_API_BASE_URL,
+src/services/api.js:177:      `${API_BASE_URL}${path}`,
+src/services/api.js:430:        `Unable to connect to the trading server at ${API_BASE_URL}.`,
+src/services/api.js:1308:  API_BASE_URL,
+.env:1:VITE_API_BASE_URL=http://localhost:8000
+
+============================================================
+20. HIGH-RISK SOURCE PATTERNS
+============================================================
+--- Explicit TODO / FIXME / HACK ---
+src/research/webIntelligenceProvider.js:803:        "hacked",
+src/research/adverseIntelligenceProvider.js:685:        "hacked",
+src/research/adverseIntelligenceProvider.js:686:        "hack",
+src/crypto/research/cryptoFinalIntelligenceContext.js:53:  if(/hack|exploit|delist|lawsuit|security breach/.test(risk))sc-=25;else if(/unlock/.test(risk))sc-=15;
+src/tests/tradeHistoryRepository.test.js:1419:          "HACKED";
+
+--- Empty catches ---
+
+--- Hard-coded localhost references in backend ---
+src/app.js:336:        `Server: http://localhost:${PORT}`,
+
+============================================================
+21. DIAGNOSTIC SUMMARY
+============================================================
+PASS: 12
+WARN: 1
+FAIL: 2
+
+Key areas inspected:
+  - backend syntax
+  - relative imports
+  - duplicated engines
+  - institutional evidence wiring
+  - CUSIP/security resolver
+  - Alpaca market data
+  - volume/liquidity propagation
+  - scanner lifecycle
+  - scanner auto-start
+  - environment configuration
+  - API availability
+  - scoring architecture
+  - direction resolution
+  - historical/provider timeouts
+  - targeted backend tests
+  - frontend production build
+  - frontend API configuration
+
+Completed: Sat Sep 12 11:04:30 EDT 2026

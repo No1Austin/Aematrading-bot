@@ -297,6 +297,64 @@ function validateRequest({
   };
 }
 
+
+function validateBatchRequest({
+  symbols,
+  timeframe,
+  start,
+  end,
+}) {
+  const normalizedSymbols = [
+    ...new Set(
+      (Array.isArray(symbols) ? symbols : [])
+        .map(normalizeSymbol)
+        .filter(Boolean),
+    ),
+  ];
+
+  const errors = [];
+
+  if (normalizedSymbols.length === 0) {
+    errors.push("At least one valid symbol is required.");
+  }
+
+  if (!Object.values(ALPACA_TIMEFRAME).includes(timeframe)) {
+    errors.push(`Unsupported timeframe: ${timeframe}.`);
+  }
+
+  const startDate = normalizeDate(start);
+  const endDate = normalizeDate(end);
+
+  if (!startDate) errors.push("Valid start date is required.");
+  if (!endDate) errors.push("Valid end date is required.");
+
+  if (
+    startDate &&
+    endDate &&
+    new Date(startDate) >= new Date(endDate)
+  ) {
+    errors.push("Start date must be earlier than end date.");
+  }
+
+  return {
+    valid: errors.length === 0,
+    errors,
+    symbols: normalizedSymbols,
+    start: startDate,
+    end: endDate,
+  };
+}
+
+function errorDetails(error) {
+  return {
+    httpStatus: error?.response?.status ?? null,
+    retryAfter: error?.response?.headers?.["retry-after"] ?? null,
+    message:
+      error?.response?.data?.message ??
+      (error instanceof Error ? error.message : String(error)),
+  };
+}
+
 /**
  * ============================================================
  * NORMALIZE ALPACA BAR
@@ -477,6 +535,261 @@ async function fetchBarsPage({
     );
 
   return response.data;
+}
+
+
+/**
+ * ============================================================
+ * FETCH ONE MULTI-SYMBOL PAGE
+ * ============================================================
+ *
+ * Uses Alpaca's multi-symbol stock bars endpoint so scanner
+ * warmup does not require one HTTP request per symbol.
+ */
+async function fetchBarsBatchPage({
+  symbols,
+  timeframe,
+  start,
+  end,
+  feed,
+  limit,
+  pageToken = null,
+}) {
+  const client = createClient();
+
+  const params = {
+    symbols: symbols.join(","),
+    timeframe,
+    start,
+    end,
+    limit,
+    adjustment: "raw",
+    feed,
+  };
+
+  if (pageToken) {
+    params.page_token = pageToken;
+  }
+
+  const response = await client.get(
+    "/v2/stocks/bars",
+    { params },
+  );
+
+  return response.data;
+}
+
+/**
+ * ============================================================
+ * FETCH MULTI-SYMBOL HISTORICAL BARS
+ * ============================================================
+ *
+ * Fail-safe properties:
+ * - validates the whole request before network I/O
+ * - deduplicates symbols
+ * - paginates until Alpaca is exhausted
+ * - enforces a global safety cap
+ * - normalizes and deduplicates every symbol independently
+ * - preserves symbols for which Alpaca returned no bars
+ * - never fabricates missing candles
+ */
+export async function getHistoricalBarsBatch({
+  symbols = [],
+  timeframe = ALPACA_TIMEFRAME.FIVE_MINUTES,
+  start,
+  end,
+  feed = ALPACA_FEED.IEX,
+  pageSize = 10_000,
+  maximumBars = 250_000,
+} = {}) {
+  const validation = validateBatchRequest({
+    symbols,
+    timeframe,
+    start,
+    end,
+  });
+
+  const emptyBarsBySymbol = Object.fromEntries(
+    validation.symbols.map(symbol => [symbol, []]),
+  );
+
+  if (!validation.valid) {
+    return {
+      approved: false,
+      provider: "ALPACA",
+      mode: "BATCH",
+      symbols: validation.symbols,
+      timeframe,
+      feed,
+      barsBySymbol: emptyBarsBySymbol,
+      barCountBySymbol: Object.fromEntries(
+        validation.symbols.map(symbol => [symbol, 0]),
+      ),
+      totalBarCount: 0,
+      pageCount: 0,
+      errors: validation.errors,
+      warnings: [],
+    };
+  }
+
+  try {
+    const limit = Math.min(
+      positiveInteger(pageSize, 10_000),
+      10_000,
+    );
+    const maxBars = positiveInteger(maximumBars, 250_000);
+
+    const barsBySymbol = Object.fromEntries(
+      validation.symbols.map(symbol => [symbol, []]),
+    );
+
+    let totalBarCount = 0;
+    let pageCount = 0;
+    let pageToken = null;
+    let reachedSafetyLimit = false;
+
+    do {
+      const response = await fetchBarsBatchPage({
+        symbols: validation.symbols,
+        timeframe,
+        start: validation.start,
+        end: validation.end,
+        feed,
+        limit,
+        pageToken,
+      });
+
+      pageCount += 1;
+
+      const responseBars =
+        response?.bars &&
+        typeof response.bars === "object" &&
+        !Array.isArray(response.bars)
+          ? response.bars
+          : {};
+
+      for (const requestedSymbol of validation.symbols) {
+        const rawBars = Array.isArray(responseBars?.[requestedSymbol])
+          ? responseBars[requestedSymbol]
+          : [];
+
+        for (const rawBar of rawBars) {
+          const normalized = normalizeAlpacaBar({
+            symbol: requestedSymbol,
+            bar: rawBar,
+          });
+
+          if (!normalized) continue;
+
+          barsBySymbol[requestedSymbol].push(normalized);
+          totalBarCount += 1;
+
+          if (totalBarCount >= maxBars) {
+            reachedSafetyLimit = true;
+            break;
+          }
+        }
+
+        if (reachedSafetyLimit) break;
+      }
+
+      if (reachedSafetyLimit) break;
+
+      pageToken = response?.next_page_token ?? null;
+    } while (pageToken);
+
+    let uniqueTotal = 0;
+
+    for (const symbol of validation.symbols) {
+      const rows = barsBySymbol[symbol];
+
+      rows.sort(
+        (a, b) =>
+          new Date(a.timestamp).getTime() -
+          new Date(b.timestamp).getTime(),
+      );
+
+      barsBySymbol[symbol] = [
+        ...new Map(
+          rows.map(bar => [bar.timestamp, bar]),
+        ).values(),
+      ];
+
+      uniqueTotal += barsBySymbol[symbol].length;
+    }
+
+    const barCountBySymbol = Object.fromEntries(
+      validation.symbols.map(symbol => [
+        symbol,
+        barsBySymbol[symbol].length,
+      ]),
+    );
+
+    const symbolsWithBars = validation.symbols.filter(
+      symbol => barCountBySymbol[symbol] > 0,
+    );
+    const symbolsWithoutBars = validation.symbols.filter(
+      symbol => barCountBySymbol[symbol] === 0,
+    );
+
+    const warnings = [];
+
+    if (reachedSafetyLimit) {
+      warnings.push(
+        `Historical batch download reached the configured ${maxBars}-bar safety limit.`,
+      );
+    }
+
+    if (symbolsWithoutBars.length > 0) {
+      warnings.push(
+        `Alpaca returned no historical bars for ${symbolsWithoutBars.length} requested symbol(s).`,
+      );
+    }
+
+    return {
+      approved: symbolsWithBars.length > 0,
+      provider: "ALPACA",
+      mode: "BATCH",
+      symbols: validation.symbols,
+      timeframe,
+      feed,
+      start: validation.start,
+      end: validation.end,
+      pageCount,
+      barsBySymbol,
+      barCountBySymbol,
+      totalBarCount: uniqueTotal,
+      symbolsWithBars,
+      symbolsWithoutBars,
+      warnings,
+      errors: [],
+      fetchedAt: new Date().toISOString(),
+    };
+  } catch (error) {
+    const details = errorDetails(error);
+
+    return {
+      approved: false,
+      provider: "ALPACA",
+      mode: "BATCH",
+      symbols: validation.symbols,
+      timeframe,
+      feed,
+      barsBySymbol: emptyBarsBySymbol,
+      barCountBySymbol: Object.fromEntries(
+        validation.symbols.map(symbol => [symbol, 0]),
+      ),
+      totalBarCount: 0,
+      pageCount: 0,
+      httpStatus: details.httpStatus,
+      retryAfter: details.retryAfter,
+      errors: [details.message],
+      warnings: [
+        "Batch historical market data was not loaded into the trading engines.",
+      ],
+      fetchedAt: new Date().toISOString(),
+    };
+  }
 }
 
 /**
@@ -723,6 +1036,13 @@ export async function getHistoricalBars({
         ?.status ??
       null;
 
+    const retryAfter =
+      error
+        ?.response
+        ?.headers
+        ?.["retry-after"] ??
+      null;
+
     const apiMessage =
       error
         ?.response
@@ -749,6 +1069,8 @@ export async function getHistoricalBars({
 
       httpStatus:
         status,
+
+      retryAfter,
 
       errors: [
         apiMessage ??
@@ -885,6 +1207,109 @@ export async function loadHistoricalBarsIntoHub({
   };
 }
 
+
+/**
+ * ============================================================
+ * FETCH MULTI-SYMBOL BARS + LOAD INTO MARKET DATA HUB
+ * ============================================================
+ *
+ * Each symbol is ingested independently. One Hub rejection
+ * does not erase successful symbols.
+ */
+export async function loadHistoricalBarsBatchIntoHub({
+  symbols = [],
+  timeframe = ALPACA_TIMEFRAME.FIVE_MINUTES,
+  start,
+  end,
+  feed = ALPACA_FEED.IEX,
+  pageSize = 10_000,
+  maximumBars = 250_000,
+} = {}) {
+  const result = await getHistoricalBarsBatch({
+    symbols,
+    timeframe,
+    start,
+    end,
+    feed,
+    pageSize,
+    maximumBars,
+  });
+
+  if (result.approved !== true) {
+    return {
+      ...result,
+      loadedIntoHub: false,
+      loadedSymbols: [],
+      failedSymbols: [...(result.symbols ?? [])],
+      hubResults: {},
+    };
+  }
+
+  const hubResults = {};
+  const loadedSymbols = [];
+  const failedSymbols = [];
+  const warnings = [...(result.warnings ?? [])];
+  const errors = [...(result.errors ?? [])];
+
+  for (const symbol of result.symbols) {
+    const bars = result.barsBySymbol?.[symbol] ?? [];
+
+    if (bars.length === 0) {
+      failedSymbols.push(symbol);
+      continue;
+    }
+
+    try {
+      const hubResult = await ingestHistoricalBars({
+        symbol,
+        bars,
+        source: "ALPACA",
+      });
+
+      hubResults[symbol] = hubResult;
+
+      if (hubResult?.approved === true) {
+        loadedSymbols.push(symbol);
+      } else {
+        failedSymbols.push(symbol);
+        warnings.push(
+          `${symbol}: bars were downloaded but Market Data Hub rejected them.`,
+        );
+
+        if (Array.isArray(hubResult?.errors)) {
+          errors.push(
+            ...hubResult.errors.map(message => `${symbol}: ${message}`),
+          );
+        }
+      }
+    } catch (error) {
+      failedSymbols.push(symbol);
+      hubResults[symbol] = {
+        approved: false,
+        errors: [
+          error instanceof Error ? error.message : String(error),
+        ],
+      };
+      errors.push(
+        `${symbol}: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+      );
+    }
+  }
+
+  return {
+    ...result,
+    approved: loadedSymbols.length > 0,
+    loadedIntoHub: loadedSymbols.length > 0,
+    loadedSymbols,
+    failedSymbols,
+    hubResults,
+    warnings,
+    errors,
+  };
+}
+
 /**
  * ============================================================
  * GET WARMUP HISTORY
@@ -964,8 +1389,8 @@ export async function loadEngineWarmupHistory({
 
 export default {
   getHistoricalBars,
-
+  getHistoricalBarsBatch,
   loadHistoricalBarsIntoHub,
-
+  loadHistoricalBarsBatchIntoHub,
   loadEngineWarmupHistory,
 };

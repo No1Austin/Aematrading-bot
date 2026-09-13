@@ -1,0 +1,2 @@
+import{complete}from"./cryptoEngineUtils.js";
+export default async function run(c){const m=c?.measurements??{},d=String(c?.preferredDirection??"LONG").toUpperCase(),r=String(m?.marketRegime??"NEUTRAL").toUpperCase();let s=50;if(d==="LONG"&&["BULLISH","RISK_ON"].includes(r))s=90;else if(d==="SHORT"&&["BEARISH","RISK_OFF"].includes(r))s=90;else if(r!=="NEUTRAL")s=25;return complete("CRYPTO_MARKET_REGIME",s,d,{marketRegime:r});}
