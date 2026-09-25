@@ -8,7 +8,6 @@ import createCryptoRuntimeRouter
 
 import {
   cryptoRuntimeApiService,
-  cryptoScannerService,
   startCryptoRuntimeServices,
   stopCryptoRuntimeServices,
 } from "./crypto/runtime/cryptoRuntimeContainer.js";
@@ -36,21 +35,35 @@ import historyRoutes from
 import researchRoutes from
   "./routes/researchRoutes.js";
 
+import cryptoResearchRoutes from "./crypto/routes/cryptoResearchRoutes.js";
+
+import createCexDiscoveryRoutes
+  from "./crypto/bot/api/cexDiscoveryRoutes.js";
+
+
+  import createBotPrivateRoutes
+  from "./crypto/bot/api/botPrivateRoutes.js";
+
+
+import {
+  startCexDiscoveryRuntime,
+  stopCexDiscoveryRuntime,
+} from "./crypto/bot/runtime/cexDiscoveryRuntime.js";
+
 import continuousMarketScanner from
   "./scanner/continuousMarketScanner.js";
-import createCryptoScannerRoutes
-  from "./routes/cryptoScannerRoutes.js";
+
+
+  import cryptoNewsRoutes
+  from "./routes/cryptoNewsRoutes.js";
+
+
+
   const cryptoRuntimeRoutes =
   createCryptoRuntimeRouter({
     runtimeApiService:
       cryptoRuntimeApiService,
-  });
-
-
-const cryptoScannerRoutes =
-  createCryptoScannerRoutes({
-    scannerService:
-      cryptoScannerService,
+    
   });
 
 /**
@@ -58,6 +71,109 @@ const cryptoScannerRoutes =
  * APPLICATION
  * ============================================================
  */
+import cryptoMarketRoutes from "./routes/cryptoMarketRoutes.js";
+import cryptoDiscoveryRoutes from "./routes/cryptoDiscoveryRoutes.js";
+import createCryptoScannerRoutes from "./routes/cryptoScannerRoutes.js";
+import createCryptoScannerService from "./crypto/scanner/cryptoScannerService.js";
+import {
+  runCryptoScannerMomentum,
+  runCryptoScannerLiquidity,
+  runCryptoScannerOnChain,
+  runCryptoScannerNarrative,
+  runCryptoScannerNews,
+  runCryptoScannerRisk,
+} from "./crypto/scanner/cryptoScannerEngineAdapters.js";
+import { getCryptoUniverse } from "./crypto/universe/cryptoUniverseProvider.js";
+
+
+function extractCryptoUniverseAssets(value) {
+  if (Array.isArray(value)) return value;
+
+  const candidates = [
+    value?.assets,
+    value?.universe,
+    value?.tokens,
+    value?.data,
+    value?.results,
+    value?.candidates,
+  ];
+
+  return candidates.find(Array.isArray) ?? [];
+}
+
+async function resolveCryptoScannerAsset({ query }) {
+  const universeResult = await getCryptoUniverse({ refresh: false });
+  const assets = extractCryptoUniverseAssets(universeResult);
+  const rawQuery = String(query ?? "").trim();
+  const normalizedQuery = rawQuery.toUpperCase().replace(/[-/_\s]/g, "");
+
+  const asset = assets.find((row) => {
+    const candidates = [
+      row?.symbol,
+      row?.ticker,
+      row?.assetSymbol,
+      row?.assetId,
+      row?.id,
+      row?.name,
+      ...(Array.isArray(row?.venues?.cex)
+        ? row.venues.cex.flatMap((venue) => [
+            venue?.productId,
+            venue?.altname,
+            venue?.wsname,
+          ])
+        : []),
+    ]
+      .filter(Boolean)
+      .map((value) =>
+        String(value).trim().toUpperCase().replace(/[-/_\s]/g, ""),
+      );
+
+    return candidates.includes(normalizedQuery);
+  });
+
+  if (!asset) {
+    return {
+      approved: false,
+      status: "CRYPTO_ASSET_NOT_FOUND",
+      blocker: "ASSET_NOT_FOUND",
+      query: rawQuery,
+      asset: null,
+      source: "CRYPTO_UNIVERSE",
+    };
+  }
+
+  return {
+    approved: true,
+    status: "CRYPTO_ASSET_RESOLVED",
+    query: rawQuery,
+    asset,
+    source: "CRYPTO_UNIVERSE",
+  };
+}
+
+const cryptoScannerService = createCryptoScannerService({
+  engines: {
+    momentum: runCryptoScannerMomentum,
+    liquidity: runCryptoScannerLiquidity,
+    onChain: runCryptoScannerOnChain,
+    narrative: runCryptoScannerNarrative,
+    news: runCryptoScannerNews,
+    risk: runCryptoScannerRisk,
+  },
+  resolveAsset: resolveCryptoScannerAsset,
+});
+
+const cryptoScannerRoutes = createCryptoScannerRoutes({
+  scannerService: cryptoScannerService,
+});
+
+
+const botPrivateRoutes =
+  createBotPrivateRoutes();
+
+
+const cexDiscoveryRoutes =
+  createCexDiscoveryRoutes();
 
 const app = express();
 
@@ -229,7 +345,13 @@ app.disable(
 );
 
 app.use(
-  cors(),
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "http://127.0.0.1:5173",
+    ],
+    credentials: true,
+  }),
 );
 
 app.use(
@@ -478,25 +600,66 @@ app.use(
  */
 
 app.use(
-  "/api/crypto",
-  cryptoRuntimeRoutes,
-);
-
-/**
- * Crypto scanner
- *
- * GET  /api/crypto/scanner/status
- * POST /api/crypto/scanner/scan
- *
- * Research only.
- * No execution authority.
- */
-
-app.use(
   "/api/crypto/scanner",
   cryptoScannerRoutes,
 );
 
+app.use(
+  "/api/crypto",
+  cryptoMarketRoutes,
+);
+
+app.use(
+  "/api/crypto",
+  cryptoDiscoveryRoutes,
+);
+
+app.use(
+  "/api/crypto",
+  cryptoRuntimeRoutes,
+);
+
+
+app.use(
+  "/api/crypto/news",
+  cryptoNewsRoutes,
+);
+
+
+app.use(
+  "/api/crypto/research",
+  cryptoResearchRoutes,
+);
+
+/**
+ * Independent CEX Discovery
+ *
+ * Public research-facing discovery telemetry.
+ * Runs independently from the private /bot trading application.
+ *
+ * GET /api/crypto/bot-discovery/state
+ */
+app.use(
+  "/api/crypto/bot-discovery",
+  cexDiscoveryRoutes,
+);
+
+
+/**
+ * ============================================================
+ * PRIVATE AEMA BOT
+ * ============================================================
+ *
+ * POST /api/crypto/bot/auth/login
+ * POST /api/crypto/bot/auth/logout
+ * GET  /api/crypto/bot/auth/status
+ * GET  /api/crypto/bot/dashboard
+ */
+
+app.use(
+  "/api/crypto/bot",
+  botPrivateRoutes,
+);
 /**
  * ============================================================
  * 404
@@ -782,6 +945,14 @@ const server =
       );
 
       console.log(
+        "Crypto News API: /api/crypto/news",
+      );
+
+      console.log(
+        "CEX Discovery API: /api/crypto/bot-discovery",
+      );
+
+      console.log(
         "====================================\n",
       );
 
@@ -796,6 +967,21 @@ const server =
       void startRuntimeServices();
 
       void startCryptoRuntimeServices();
+
+      void startCexDiscoveryRuntime()
+        .then(() => {
+          console.log(
+            "[CEX_DISCOVERY_RUNTIME_STARTED]",
+          );
+        })
+        .catch(error => {
+          console.error(
+            "[CEX_DISCOVERY_RUNTIME_START_FAILED]",
+            error instanceof Error
+              ? error.message
+              : error,
+          );
+        });
     },
   );
 
@@ -910,7 +1096,28 @@ async function shutdown(
 
     /**
      * --------------------------------------------------------
-     * 3. STOP ACCEPTING NEW HTTP CONNECTIONS
+     * 3. STOP CEX DISCOVERY RUNTIME
+     * --------------------------------------------------------
+     */
+
+    try {
+      await stopCexDiscoveryRuntime();
+
+      console.log(
+        "CEX Discovery runtime stopped.",
+      );
+    } catch (error) {
+      console.error(
+        "[CEX_DISCOVERY_SHUTDOWN_ERROR]",
+        error instanceof Error
+          ? error.message
+          : error,
+      );
+    }
+
+    /**
+     * --------------------------------------------------------
+     * 4. STOP ACCEPTING NEW HTTP CONNECTIONS
      * --------------------------------------------------------
      */
 
@@ -979,6 +1186,8 @@ process.on(
     );
   },
 );
+
+
 
 /**
  * ============================================================

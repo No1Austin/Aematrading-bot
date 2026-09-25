@@ -19,6 +19,9 @@ import {
   useState,
 } from "react";
 
+
+import CryptoNewsFeed from "../components/CryptoNewsFeed.jsx";
+
 import CryptoSidebar from
   "../components/CryptoSidebar.jsx";
 
@@ -228,9 +231,7 @@ export default function CryptoDashboard() {
     setLastUpdated,
   ] =
     useState(null);
-
-
-  const [
+const [
     theme,
     setTheme,
   ] =
@@ -287,16 +288,12 @@ export default function CryptoDashboard() {
           setError(
             null,
           );
-
           const result =
             await getCryptoWorkspaceSnapshot({
-              tradeLimit:
-                10,
+              tradeLimit: 10,
             });
 
-          setSnapshot(
-            result,
-          );
+          setSnapshot(result);
 
           setLastUpdated(
             new Date(),
@@ -403,9 +400,7 @@ export default function CryptoDashboard() {
     recovery
       ?.state ??
     "UNKNOWN";
-
-
-  const metrics =
+const metrics =
     useMemo(
       () => [
         {
@@ -686,6 +681,9 @@ export default function CryptoDashboard() {
   </button>
 </div>
         </section>
+
+
+        <CryptoNewsFeed />
 
 
         {error ? (

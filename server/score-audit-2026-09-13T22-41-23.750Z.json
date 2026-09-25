@@ -1,0 +1,388 @@
+{
+  "generatedAt": "2026-09-13T22:41:23.751Z",
+  "config": {
+    "sampleSize": 10,
+    "concurrency": 1
+  },
+  "summary": {
+    "requested": 10,
+    "completed": 3,
+    "failed": 7,
+    "average": 61.76,
+    "minimum": 55.1,
+    "maximum": 72.85,
+    "p25": 56.22,
+    "median": 57.34,
+    "p75": 65.1,
+    "p90": 69.75,
+    "score50Plus": 3,
+    "score60Plus": 1,
+    "score65Plus": 1,
+    "score70Plus": 1,
+    "score75Plus": 0,
+    "score80Plus": 0,
+    "score85Plus": 0,
+    "actualTradeEligible": 0
+  },
+  "engineStats": [
+    {
+      "engine": "technical",
+      "maximum": 30,
+      "averagePoints": 23,
+      "averageSupportPercent": 76.67,
+      "fallbackCount": 0,
+      "fallbackPercent": 0
+    },
+    {
+      "engine": "company",
+      "maximum": 30,
+      "averagePoints": 17.37,
+      "averageSupportPercent": 57.9,
+      "fallbackCount": 0,
+      "fallbackPercent": 0
+    },
+    {
+      "engine": "macro",
+      "maximum": 10,
+      "averagePoints": 6.223,
+      "averageSupportPercent": 62.21,
+      "fallbackCount": 0,
+      "fallbackPercent": 0
+    },
+    {
+      "engine": "events",
+      "maximum": 10,
+      "averagePoints": 5,
+      "averageSupportPercent": 50,
+      "fallbackCount": 0,
+      "fallbackPercent": 0
+    },
+    {
+      "engine": "institutional",
+      "maximum": 7.5,
+      "averagePoints": 3.75,
+      "averageSupportPercent": 50,
+      "fallbackCount": 0,
+      "fallbackPercent": 0
+    },
+    {
+      "engine": "historical",
+      "maximum": 5,
+      "averagePoints": 2.5,
+      "averageSupportPercent": 50,
+      "fallbackCount": 0,
+      "fallbackPercent": 0
+    },
+    {
+      "engine": "social",
+      "maximum": 5,
+      "averagePoints": 2.5,
+      "averageSupportPercent": 50,
+      "fallbackCount": 0,
+      "fallbackPercent": 0
+    },
+    {
+      "engine": "country",
+      "maximum": 2.5,
+      "averagePoints": 1.42,
+      "averageSupportPercent": 56.81,
+      "fallbackCount": 0,
+      "fallbackPercent": 0
+    }
+  ],
+  "results": [
+    {
+      "symbol": "VIS",
+      "ok": false,
+      "httpStatus": 422,
+      "durationMs": 171,
+      "error": "Historical provider refresh did not become ready and MarketDataHub does not contain sufficient cached history."
+    },
+    {
+      "symbol": "SNAG",
+      "ok": false,
+      "httpStatus": 422,
+      "durationMs": 47,
+      "error": "Historical provider refresh did not become ready and MarketDataHub does not contain sufficient cached history."
+    },
+    {
+      "symbol": "SMOX",
+      "ok": false,
+      "httpStatus": 422,
+      "durationMs": 46,
+      "error": "Historical provider refresh did not become ready and MarketDataHub does not contain sufficient cached history."
+    },
+    {
+      "symbol": "IPVVU",
+      "ok": false,
+      "httpStatus": 422,
+      "durationMs": 68,
+      "error": "Historical provider refresh did not become ready and MarketDataHub does not contain sufficient cached history."
+    },
+    {
+      "symbol": "BKKT",
+      "ok": true,
+      "httpStatus": 200,
+      "durationMs": 19385,
+      "analysisStatus": "ANALYSIS_ONLY",
+      "preferredSide": "SHORT",
+      "preferredScore": 72.85,
+      "longScore": 29.66,
+      "shortScore": 72.85,
+      "scoreDifference": 43.19,
+      "tradeEligible": false,
+      "decision": "NO_TRADE",
+      "riskStatus": "BLOCKED",
+      "minimumRequiredScore": 80,
+      "evidenceCoveragePercent": 100,
+      "missingRequired": [],
+      "technical": {
+        "points": 27.5,
+        "maximum": 30,
+        "support": 0.9167,
+        "available": true,
+        "status": null,
+        "neutralFallbackApplied": false
+      },
+      "company": {
+        "points": 23.75,
+        "maximum": 30,
+        "support": 0.7917,
+        "available": true,
+        "status": "PARTIAL",
+        "neutralFallbackApplied": false
+      },
+      "macro": {
+        "points": 6.43,
+        "maximum": 10,
+        "support": 0.6425,
+        "available": true,
+        "status": "COMPLETE",
+        "neutralFallbackApplied": false
+      },
+      "events": {
+        "points": 5,
+        "maximum": 10,
+        "support": 0.5,
+        "available": true,
+        "status": "COMPLETE",
+        "neutralFallbackApplied": false
+      },
+      "institutional": {
+        "points": 3.75,
+        "maximum": 7.5,
+        "support": 0.5,
+        "available": true,
+        "status": "STALE_DATA",
+        "neutralFallbackApplied": false
+      },
+      "historical": {
+        "points": 2.5,
+        "maximum": 5,
+        "support": 0.5,
+        "available": true,
+        "status": "INSUFFICIENT_ANALOGUES",
+        "neutralFallbackApplied": false
+      },
+      "social": {
+        "points": 2.5,
+        "maximum": 5,
+        "support": 0.5,
+        "available": true,
+        "status": "INSUFFICIENT_DATA",
+        "neutralFallbackApplied": false
+      },
+      "country": {
+        "points": 1.42,
+        "maximum": 2.5,
+        "support": 0.5681,
+        "available": true,
+        "status": "COMPLETE",
+        "neutralFallbackApplied": false
+      }
+    },
+    {
+      "symbol": "MSTX",
+      "ok": true,
+      "httpStatus": 200,
+      "durationMs": 17985,
+      "analysisStatus": "ANALYSIS_ONLY",
+      "preferredSide": "SHORT",
+      "preferredScore": 55.1,
+      "longScore": 44.41,
+      "shortScore": 55.1,
+      "scoreDifference": 10.690000000000005,
+      "tradeEligible": false,
+      "decision": "NO_TRADE",
+      "riskStatus": "BLOCKED",
+      "minimumRequiredScore": 80,
+      "evidenceCoveragePercent": 70,
+      "missingRequired": [],
+      "technical": {
+        "points": 18.5,
+        "maximum": 30,
+        "support": 0.6167,
+        "available": true,
+        "status": null,
+        "neutralFallbackApplied": false
+      },
+      "company": {
+        "points": 15,
+        "maximum": 30,
+        "support": 0.5,
+        "available": false,
+        "status": "INSUFFICIENT_DATA",
+        "neutralFallbackApplied": false
+      },
+      "macro": {
+        "points": 6.43,
+        "maximum": 10,
+        "support": 0.6425,
+        "available": true,
+        "status": "COMPLETE",
+        "neutralFallbackApplied": false
+      },
+      "events": {
+        "points": 5,
+        "maximum": 10,
+        "support": 0.5,
+        "available": true,
+        "status": "COMPLETE",
+        "neutralFallbackApplied": false
+      },
+      "institutional": {
+        "points": 3.75,
+        "maximum": 7.5,
+        "support": 0.5,
+        "available": true,
+        "status": "STALE_DATA",
+        "neutralFallbackApplied": false
+      },
+      "historical": {
+        "points": 2.5,
+        "maximum": 5,
+        "support": 0.5,
+        "available": true,
+        "status": "INSUFFICIENT_ANALOGUES",
+        "neutralFallbackApplied": false
+      },
+      "social": {
+        "points": 2.5,
+        "maximum": 5,
+        "support": 0.5,
+        "available": true,
+        "status": "INSUFFICIENT_DATA",
+        "neutralFallbackApplied": false
+      },
+      "country": {
+        "points": 1.42,
+        "maximum": 2.5,
+        "support": 0.5681,
+        "available": true,
+        "status": "COMPLETE",
+        "neutralFallbackApplied": false
+      }
+    },
+    {
+      "symbol": "HOVNP",
+      "ok": false,
+      "httpStatus": 422,
+      "durationMs": 148,
+      "error": "Historical provider refresh did not become ready and MarketDataHub does not contain sufficient cached history."
+    },
+    {
+      "symbol": "CLAR",
+      "ok": true,
+      "httpStatus": 200,
+      "durationMs": 18822,
+      "analysisStatus": "ANALYSIS_ONLY",
+      "preferredSide": "SHORT",
+      "preferredScore": 57.34,
+      "longScore": 38.16,
+      "shortScore": 57.34,
+      "scoreDifference": 19.180000000000007,
+      "tradeEligible": false,
+      "decision": "NO_TRADE",
+      "riskStatus": "BLOCKED",
+      "minimumRequiredScore": 80,
+      "evidenceCoveragePercent": 100,
+      "missingRequired": [],
+      "technical": {
+        "points": 23,
+        "maximum": 30,
+        "support": 0.7667,
+        "available": true,
+        "status": null,
+        "neutralFallbackApplied": false
+      },
+      "company": {
+        "points": 13.36,
+        "maximum": 30,
+        "support": 0.4454,
+        "available": true,
+        "status": "PARTIAL",
+        "neutralFallbackApplied": false
+      },
+      "macro": {
+        "points": 5.81,
+        "maximum": 10,
+        "support": 0.5813,
+        "available": true,
+        "status": "COMPLETE",
+        "neutralFallbackApplied": false
+      },
+      "events": {
+        "points": 5,
+        "maximum": 10,
+        "support": 0.5,
+        "available": true,
+        "status": "COMPLETE",
+        "neutralFallbackApplied": false
+      },
+      "institutional": {
+        "points": 3.75,
+        "maximum": 7.5,
+        "support": 0.5,
+        "available": true,
+        "status": "STALE_DATA",
+        "neutralFallbackApplied": false
+      },
+      "historical": {
+        "points": 2.5,
+        "maximum": 5,
+        "support": 0.5,
+        "available": true,
+        "status": "INSUFFICIENT_ANALOGUES",
+        "neutralFallbackApplied": false
+      },
+      "social": {
+        "points": 2.5,
+        "maximum": 5,
+        "support": 0.5,
+        "available": true,
+        "status": "INSUFFICIENT_DATA",
+        "neutralFallbackApplied": false
+      },
+      "country": {
+        "points": 1.42,
+        "maximum": 2.5,
+        "support": 0.5681,
+        "available": true,
+        "status": "COMPLETE",
+        "neutralFallbackApplied": false
+      }
+    },
+    {
+      "symbol": "DHC",
+      "ok": false,
+      "durationMs": 2286,
+      "error": "fetch failed"
+    },
+    {
+      "symbol": "FTC",
+      "ok": false,
+      "durationMs": 2,
+      "error": "fetch failed"
+    }
+  ]
+}

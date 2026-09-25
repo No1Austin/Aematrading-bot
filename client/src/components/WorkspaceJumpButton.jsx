@@ -8,25 +8,21 @@ import {
   Link,
 } from "react-router-dom";
 
-
 export default function WorkspaceJumpButton({
   target = "crypto",
 }) {
   const crypto =
     target === "crypto";
 
-
   const destination =
     crypto
       ? "/crypto"
-      : "/";
-
+      : "/dashboard";
 
   const Icon =
     crypto
       ? Bitcoin
       : BarChart3;
-
 
   return (
     <Link
@@ -43,18 +39,11 @@ export default function WorkspaceJumpButton({
           : "Return to Stock Dashboard"
       }
     >
-      <span
-        className="workspace-jump-button__icon"
-      >
-        <Icon
-          size={19}
-          strokeWidth={2}
-        />
+      <span className="workspace-jump-button__icon">
+        <Icon size={19} strokeWidth={2} />
       </span>
 
-      <span
-        className="workspace-jump-button__copy"
-      >
+      <span className="workspace-jump-button__copy">
         <small>
           {crypto
             ? "Switch workspace"
@@ -68,12 +57,8 @@ export default function WorkspaceJumpButton({
         </strong>
       </span>
 
-      <span
-        className="workspace-jump-button__arrow"
-      >
-        <ArrowUpRight
-          size={17}
-        />
+      <span className="workspace-jump-button__arrow">
+        <ArrowUpRight size={17} />
       </span>
     </Link>
   );

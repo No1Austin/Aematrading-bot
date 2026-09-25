@@ -530,12 +530,23 @@ async function fetchDefiLlama() {
             : []
         ).map(llamaRow),
 
+      /*
+       * Phase 6.42:
+       * Bind freshness to these exact DefiLlama rows. This timestamp
+       * travels with the fundamental snapshot and is never replaced by
+       * an unrelated process-global provider fetch.
+       */
+      fetchedAt:
+        new Date()
+          .toISOString(),
+
       error: null,
     };
   } catch (error) {
     return {
       ok: false,
       rows: [],
+      fetchedAt: null,
       error:
         error?.message ??
         String(error),
@@ -549,6 +560,7 @@ function buildValue({
   providerStatus,
   freshness,
   previousFetchedAt = null,
+  defiLlamaFetchedAt = null,
 }) {
   const now =
     new Date()
@@ -577,6 +589,14 @@ function buildValue({
 
       defiLlamaProtocols:
         llamaRows.length,
+
+      /*
+       * Phase 6.42 snapshot-bound OnChain freshness authority.
+       * This timestamp describes the DefiLlama rows stored in THIS
+       * snapshot, including preserved stale rows when applicable.
+       */
+      defiLlamaFetchedAt:
+        defiLlamaFetchedAt,
 
       coinGecko:
         providerStatus
@@ -713,6 +733,11 @@ export async function buildCryptoFundamentalSnapshot({
             freshness:
               "LIVE",
 
+            defiLlamaFetchedAt:
+              llamaResult
+                .fetchedAt ??
+              null,
+
             providerStatus: {
               coinGecko: {
                 ok: true,
@@ -798,6 +823,16 @@ export async function buildCryptoFundamentalSnapshot({
                   null
                 : null,
 
+            defiLlamaFetchedAt:
+              llamaUsable
+                ? llamaResult
+                    .fetchedAt ??
+                  null
+                : previous
+                    ?.providers
+                    ?.defiLlamaFetchedAt ??
+                  null,
+
             providerStatus: {
               coinGecko: {
                 ok:
@@ -862,6 +897,9 @@ export async function buildCryptoFundamentalSnapshot({
           llamaRows: [],
           freshness:
             "UNAVAILABLE",
+
+          defiLlamaFetchedAt:
+            null,
 
           providerStatus: {
             coinGecko: {

@@ -1,0 +1,548 @@
+{
+  "generatedAt": "2026-09-20T16:50:08.237Z",
+  "symbol": "BTC",
+  "http": {
+    "elapsedMs": 10477.0985,
+    "summary": {
+      "status": "CRYPTO_SCAN_COMPLETE",
+      "available": null,
+      "score": null,
+      "confidence": null,
+      "coverage": null,
+      "direction": null,
+      "evidenceCount": null,
+      "warning": "APPLICABLE_ON_CHAIN_EVIDENCE_REQUIRED",
+      "error": null
+    }
+  },
+  "candidate": {
+    "assetId": "bitcoin",
+    "coinGeckoId": "bitcoin",
+    "symbol": "BTC",
+    "name": "Bitcoin",
+    "candidateType": "CEX"
+  },
+  "providers": {
+    "fundamentalEvidence": {
+      "elapsedMs": 383.31816699999945,
+      "summary": {
+        "status": "READY",
+        "available": null,
+        "score": null,
+        "confidence": null,
+        "coverage": null,
+        "direction": null,
+        "evidenceCount": null,
+        "warning": null,
+        "error": null
+      },
+      "availableCount": 14
+    },
+    "gpt": {
+      "elapsedMs": 0.26775000000088767,
+      "summary": {
+        "status": "ERROR",
+        "error": "OPENAI_API_KEY_REQUIRED"
+      }
+    }
+  },
+  "engines": {
+    "technical": {
+      "elapsedMs": 1.5308339999992313,
+      "summary": {
+        "status": "READY",
+        "available": true,
+        "score": 50.31,
+        "confidence": 76.25,
+        "coverage": 75,
+        "direction": "NEUTRAL",
+        "evidenceCount": 19,
+        "warning": null,
+        "error": null
+      }
+    },
+    "fundamental": {
+      "elapsedMs": 0.9058330000007118,
+      "summary": {
+        "status": null,
+        "available": null,
+        "score": null,
+        "confidence": null,
+        "coverage": null,
+        "direction": null,
+        "evidenceCount": null,
+        "warning": null,
+        "error": null
+      }
+    },
+    "marketStructure": {
+      "elapsedMs": 0.8316670000003796,
+      "summary": {
+        "status": "READY",
+        "available": true,
+        "score": 46,
+        "confidence": 0,
+        "coverage": 0,
+        "direction": "LONG",
+        "evidenceCount": 3,
+        "warning": null,
+        "error": null
+      }
+    },
+    "liquidity": {
+      "elapsedMs": 0.7520829999994021,
+      "summary": {
+        "status": "READY",
+        "available": true,
+        "score": 87.75,
+        "confidence": 80,
+        "coverage": 0,
+        "direction": "LONG",
+        "evidenceCount": 4,
+        "warning": null,
+        "error": null
+      }
+    },
+    "onChain": {
+      "elapsedMs": 0.6414590000003955,
+      "summary": {
+        "status": "EVIDENCE_UNAVAILABLE",
+        "available": false,
+        "score": 50,
+        "confidence": 0,
+        "coverage": 0,
+        "direction": "NEUTRAL",
+        "evidenceCount": 0,
+        "warning": "APPLICABLE_ON_CHAIN_EVIDENCE_REQUIRED",
+        "error": null
+      }
+    },
+    "narrative": {
+      "elapsedMs": 0.5387080000000424,
+      "summary": {
+        "status": "EVIDENCE_UNAVAILABLE",
+        "available": false,
+        "score": 50,
+        "confidence": 0,
+        "coverage": 0,
+        "direction": "NEUTRAL",
+        "evidenceCount": 0,
+        "warning": "OPENAI_API_KEY_REQUIRED",
+        "error": null
+      }
+    },
+    "news": {
+      "elapsedMs": 0.39533299999857263,
+      "summary": {
+        "status": "EVIDENCE_UNAVAILABLE",
+        "available": false,
+        "score": 50,
+        "confidence": 0,
+        "coverage": 0,
+        "direction": "NEUTRAL",
+        "evidenceCount": 0,
+        "warning": "OPENAI_API_KEY_REQUIRED",
+        "error": null
+      }
+    },
+    "events": {
+      "elapsedMs": 0.3455840000005992,
+      "summary": {
+        "status": "EVIDENCE_UNAVAILABLE",
+        "available": false,
+        "score": 50,
+        "confidence": 0,
+        "coverage": 0,
+        "direction": "NEUTRAL",
+        "evidenceCount": 0,
+        "warning": "OPENAI_API_KEY_REQUIRED",
+        "error": null
+      }
+    },
+    "momentum": {
+      "elapsedMs": 0.292250000000422,
+      "summary": {
+        "status": "READY",
+        "available": true,
+        "score": 48.801500000000004,
+        "confidence": 49.5625,
+        "coverage": null,
+        "direction": null,
+        "evidenceCount": 22,
+        "warning": null,
+        "error": null
+      }
+    },
+    "risk": {
+      "elapsedMs": 0.4191659999996773,
+      "summary": {
+        "status": "READY",
+        "available": true,
+        "score": 75.82,
+        "confidence": 57.142857142857146,
+        "coverage": 35,
+        "direction": "LONG",
+        "evidenceCount": 14,
+        "warning": null,
+        "error": null
+      }
+    }
+  },
+  "canonical": {
+    "researchScore": 69.10759285714286,
+    "researchConfidence": 71.20667835633148,
+    "researchCoverage": 19.403846153846157,
+    "technical": {
+      "status": "READY",
+      "available": true,
+      "score": 50.31,
+      "confidence": 76.25,
+      "coverage": 75,
+      "direction": "NEUTRAL",
+      "evidenceCount": 19,
+      "warning": null,
+      "error": null
+    },
+    "fundamental": {
+      "status": "READY",
+      "available": true,
+      "score": 87.90518571428572,
+      "confidence": 54.02855223379242,
+      "coverage": 22.019230769230774,
+      "direction": "LONG",
+      "evidenceCount": 4,
+      "warning": null,
+      "error": null
+    },
+    "supporting": {
+      "status": "EVIDENCE_UNAVAILABLE",
+      "available": false,
+      "score": 0,
+      "confidence": 0,
+      "coverage": 0,
+      "direction": null,
+      "evidenceCount": null,
+      "warning": null,
+      "error": null
+    },
+    "qualification2": {
+      "engine": "CRYPTO_QUALIFICATION_2",
+      "version": "6.25",
+      "status": "NO_TRADE",
+      "qualified": false,
+      "decision": "NO_TRADE",
+      "proposedDirection": "NEUTRAL",
+      "discoveryPreferredDirection": "NEUTRAL",
+      "discoveryDirectionAuthority": false,
+      "directionalSelectionReason": "NO_DIRECTIONAL_CASE_QUALIFIED",
+      "directionalCases": {
+        "long": {
+          "side": "LONG",
+          "qualified": false,
+          "technicalSupport": 50.31342142857143,
+          "fundamentalSupport": 93.33814420168065,
+          "supportingSupport": null,
+          "mandatoryDirectional": 71.83,
+          "directionalEdge": 43.65,
+          "failures": [
+            {
+              "code": "TECHNICAL_DIRECTION_NOT_CONFIRMED",
+              "detail": {
+                "direction": "LONG",
+                "strength": 50.31342142857143,
+                "required": 52
+              }
+            }
+          ],
+          "warnings": []
+        },
+        "short": {
+          "side": "SHORT",
+          "qualified": false,
+          "technicalSupport": 49.68657857142857,
+          "fundamentalSupport": 6.661855798319328,
+          "supportingSupport": null,
+          "mandatoryDirectional": 28.17,
+          "directionalEdge": 43.65,
+          "failures": [
+            {
+              "code": "TECHNICAL_DIRECTION_NOT_CONFIRMED",
+              "detail": {
+                "direction": "SHORT",
+                "strength": 49.68657857142857,
+                "required": 52
+              }
+            },
+            {
+              "code": "FUNDAMENTAL_DIRECTION_NOT_CONFIRMED",
+              "detail": {
+                "direction": "SHORT",
+                "strength": 6.661855798319328,
+                "required": 52
+              }
+            }
+          ],
+          "warnings": []
+        }
+      },
+      "mandatoryPillars": {
+        "technical": {
+          "available": true,
+          "score": 50.31,
+          "coverage": 0.75,
+          "confidence": 76.25,
+          "direction": "NEUTRAL",
+          "longSupport": 50.31342142857143,
+          "shortSupport": 49.68657857142857,
+          "directionalSupport": null
+        },
+        "fundamental": {
+          "available": true,
+          "score": 87.90518571428572,
+          "coverage": 0.22019230769230774,
+          "confidence": 54.02855223379242,
+          "direction": "LONG",
+          "longSupport": 93.33814420168065,
+          "shortSupport": 6.661855798319328,
+          "directionalSupport": null
+        }
+      },
+      "supporting": {
+        "available": true,
+        "score": null,
+        "coverage": 0,
+        "confidence": 0,
+        "direction": "NEUTRAL",
+        "longSupport": null,
+        "shortSupport": null,
+        "directionalSupport": null,
+        "authority": "CONTEXT_ONLY"
+      },
+      "directionalEdge": null,
+      "coverageContract": {
+        "phase": "6.25",
+        "normalizedScale": "0_TO_1",
+        "acceptedInputScales": [
+          "0_TO_1",
+          "0_TO_100"
+        ],
+        "thresholds": {
+          "technical": 0.5,
+          "fundamental": 0.5,
+          "supporting": 0.25
+        },
+        "actual": {
+          "technical": 0.75,
+          "fundamental": 0.22019230769230774,
+          "supporting": 0
+        },
+        "mandatory": {
+          "technical": true,
+          "fundamental": true,
+          "supporting": false
+        },
+        "supportingAuthority": "CONTEXT_ONLY",
+        "discoveryDirectionAuthority": false
+      },
+      "failures": [
+        {
+          "code": "FUNDAMENTAL_COVERAGE_INSUFFICIENT",
+          "detail": {
+            "actual": 0.22019230769230774,
+            "required": 0.5
+          }
+        }
+      ],
+      "warnings": [
+        {
+          "code": "SUPPORTING_COVERAGE_LOW",
+          "detail": {
+            "actual": 0,
+            "required": 0.25
+          }
+        }
+      ],
+      "nextStage": "NONE",
+      "researchOnly": true,
+      "qualificationAuthority": true,
+      "executionAuthority": false,
+      "liveExecution": false,
+      "paperExecutionAuthority": false
+    }
+  },
+  "ranking": [
+    {
+      "name": "Fundamental Evidence",
+      "elapsedMs": 383.31816699999945,
+      "summary": {
+        "status": "READY",
+        "available": null,
+        "score": null,
+        "confidence": null,
+        "coverage": null,
+        "direction": null,
+        "evidenceCount": null,
+        "warning": null,
+        "error": null
+      }
+    },
+    {
+      "name": "technical",
+      "elapsedMs": 1.5308339999992313,
+      "summary": {
+        "status": "READY",
+        "available": true,
+        "score": 50.31,
+        "confidence": 76.25,
+        "coverage": 75,
+        "direction": "NEUTRAL",
+        "evidenceCount": 19,
+        "warning": null,
+        "error": null
+      }
+    },
+    {
+      "name": "fundamental",
+      "elapsedMs": 0.9058330000007118,
+      "summary": {
+        "status": null,
+        "available": null,
+        "score": null,
+        "confidence": null,
+        "coverage": null,
+        "direction": null,
+        "evidenceCount": null,
+        "warning": null,
+        "error": null
+      }
+    },
+    {
+      "name": "marketStructure",
+      "elapsedMs": 0.8316670000003796,
+      "summary": {
+        "status": "READY",
+        "available": true,
+        "score": 46,
+        "confidence": 0,
+        "coverage": 0,
+        "direction": "LONG",
+        "evidenceCount": 3,
+        "warning": null,
+        "error": null
+      }
+    },
+    {
+      "name": "liquidity",
+      "elapsedMs": 0.7520829999994021,
+      "summary": {
+        "status": "READY",
+        "available": true,
+        "score": 87.75,
+        "confidence": 80,
+        "coverage": 0,
+        "direction": "LONG",
+        "evidenceCount": 4,
+        "warning": null,
+        "error": null
+      }
+    },
+    {
+      "name": "onChain",
+      "elapsedMs": 0.6414590000003955,
+      "summary": {
+        "status": "EVIDENCE_UNAVAILABLE",
+        "available": false,
+        "score": 50,
+        "confidence": 0,
+        "coverage": 0,
+        "direction": "NEUTRAL",
+        "evidenceCount": 0,
+        "warning": "APPLICABLE_ON_CHAIN_EVIDENCE_REQUIRED",
+        "error": null
+      }
+    },
+    {
+      "name": "narrative",
+      "elapsedMs": 0.5387080000000424,
+      "summary": {
+        "status": "EVIDENCE_UNAVAILABLE",
+        "available": false,
+        "score": 50,
+        "confidence": 0,
+        "coverage": 0,
+        "direction": "NEUTRAL",
+        "evidenceCount": 0,
+        "warning": "OPENAI_API_KEY_REQUIRED",
+        "error": null
+      }
+    },
+    {
+      "name": "risk",
+      "elapsedMs": 0.4191659999996773,
+      "summary": {
+        "status": "READY",
+        "available": true,
+        "score": 75.82,
+        "confidence": 57.142857142857146,
+        "coverage": 35,
+        "direction": "LONG",
+        "evidenceCount": 14,
+        "warning": null,
+        "error": null
+      }
+    },
+    {
+      "name": "news",
+      "elapsedMs": 0.39533299999857263,
+      "summary": {
+        "status": "EVIDENCE_UNAVAILABLE",
+        "available": false,
+        "score": 50,
+        "confidence": 0,
+        "coverage": 0,
+        "direction": "NEUTRAL",
+        "evidenceCount": 0,
+        "warning": "OPENAI_API_KEY_REQUIRED",
+        "error": null
+      }
+    },
+    {
+      "name": "events",
+      "elapsedMs": 0.3455840000005992,
+      "summary": {
+        "status": "EVIDENCE_UNAVAILABLE",
+        "available": false,
+        "score": 50,
+        "confidence": 0,
+        "coverage": 0,
+        "direction": "NEUTRAL",
+        "evidenceCount": 0,
+        "warning": "OPENAI_API_KEY_REQUIRED",
+        "error": null
+      }
+    },
+    {
+      "name": "momentum",
+      "elapsedMs": 0.292250000000422,
+      "summary": {
+        "status": "READY",
+        "available": true,
+        "score": 48.801500000000004,
+        "confidence": 49.5625,
+        "coverage": null,
+        "direction": null,
+        "evidenceCount": 22,
+        "warning": null,
+        "error": null
+      }
+    },
+    {
+      "name": "GPT Intelligence",
+      "elapsedMs": 0.26775000000088767,
+      "summary": {
+        "status": "ERROR",
+        "error": "OPENAI_API_KEY_REQUIRED"
+      }
+    }
+  ]
+}

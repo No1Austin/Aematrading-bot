@@ -1,7 +1,15 @@
 /**
  * ============================================================
- * AEMA CRYPTO DISCOVERY CYCLE — PHASE 2.4
+ * AEMA CRYPTO DISCOVERY CYCLE — PHASE 2.4 / EXECUTABLE WIRING
  * ============================================================
+ *
+ * Discovery remains responsible for universe -> measurements -> scanner.
+ *
+ * IMPORTANT:
+ * - this module does NOT manufacture execution/risk evidence
+ * - executable evidence is supplied by direct contexts or providers
+ * - missing evidence remains missing and downstream gates fail closed
+ * - no paper/live execution authority is granted here
  */
 
 import {
@@ -45,8 +53,51 @@ export async function runCryptoDiscoveryCycle({
       .discovery
       .maximumCandidates,
 
-  includeDexDiscovery =
-    true,
+  includeDexDiscovery = true,
+
+  /**
+   * Final-revalidation refresh authority.
+   * If absent, final revalidation remains fail-closed.
+   */
+  refreshCandidateAsset = null,
+
+  /**
+   * Existing paper-runtime authorities.
+   * These are only forwarded. This discovery cycle never grants authority.
+   */
+  paperLedger = null,
+  paperRuntime = null,
+  runtimeSupervisor = null,
+  paperExecutionGateOptions = {},
+
+  /**
+   * Executable opportunity configuration.
+   * Existing callers may supply the complete coordinator contract here.
+   */
+  executableOpportunityOptions = {},
+
+  /**
+   * Direct executable evidence.
+   * Providers are preferred when evidence is symbol-specific/fresh.
+   */
+  executableMarket = {},
+  executableAccount = {},
+  executableExecutionContext = {},
+  executableEntryRiskContext = {},
+
+  /**
+   * Per-candidate evidence providers.
+   *
+   * Their names intentionally match the coordinator contract:
+   * marketProvider
+   * accountProvider
+   * executionContextProvider
+   * entryRiskContextProvider
+   */
+  executableMarketProvider = null,
+  executableAccountProvider = null,
+  executableExecutionContextProvider = null,
+  executableEntryRiskContextProvider = null,
 } = {}) {
   const startedAt =
     new Date()
@@ -107,10 +158,35 @@ export async function runCryptoDiscoveryCycle({
           enrichedMeasurements,
 
         maximumCandidates,
+
+        refreshCandidateAsset,
+
+        paperLedger,
+        paperRuntime,
+        runtimeSupervisor,
+        paperExecutionGateOptions,
+
+        executableOpportunityOptions,
+
+        executableMarket,
+        executableAccount,
+        executableExecutionContext,
+        executableEntryRiskContext,
+
+        executableMarketProvider,
+        executableAccountProvider,
+        executableExecutionContextProvider,
+        executableEntryRiskContextProvider,
       });
 
     const selectedCandidates =
-      scanner.candidates.map(
+      (
+        Array.isArray(
+          scanner?.candidates,
+        )
+          ? scanner.candidates
+          : []
+      ).map(
         candidate => ({
           ...candidate,
 
@@ -212,6 +288,16 @@ export async function runCryptoDiscoveryCycle({
 
         botEligibleNow:
           scanner.botEligibleNow,
+
+        executableOpportunityCoordination:
+          scanner
+            ?.executableOpportunityCoordination ??
+          null,
+
+        paperExecutionAuthorityGate:
+          scanner
+            ?.paperExecutionAuthorityGate ??
+          null,
       },
 
       selectedCandidates,
@@ -227,6 +313,45 @@ export async function runCryptoDiscoveryCycle({
 
       highInterestCandidates:
         scanner.highInterestCandidates,
+
+      /**
+       * Preserve the post-revalidation/executable diagnostics so the
+       * continuous runtime can show exactly why a trade did/did not progress.
+       */
+      finalRevalidatedCandidates:
+        scanner
+          ?.finalRevalidatedCandidates ??
+        [],
+
+      executableOpportunityEvaluations:
+        scanner
+          ?.executableOpportunityEvaluations ??
+        [],
+
+      executableSelectedOpportunities:
+        scanner
+          ?.executableSelectedOpportunities ??
+        [],
+
+      executableSelectedCandidates:
+        scanner
+          ?.executableSelectedCandidates ??
+        [],
+
+      paperExecutionEvaluations:
+        scanner
+          ?.paperExecutionEvaluations ??
+        [],
+
+      paperAuthorizedCandidates:
+        scanner
+          ?.paperAuthorizedCandidates ??
+        [],
+
+      paperBlockedCandidates:
+        scanner
+          ?.paperBlockedCandidates ??
+        [],
 
       registry: {
         stats:
@@ -256,6 +381,47 @@ export async function runCryptoDiscoveryCycle({
 
       errors:
         universe.errors,
+
+      evidenceWiring: {
+        refreshCandidateAssetConfigured:
+          typeof refreshCandidateAsset ===
+          "function",
+
+        marketProviderConfigured:
+          typeof executableMarketProvider ===
+          "function",
+
+        accountProviderConfigured:
+          typeof executableAccountProvider ===
+          "function",
+
+        executionContextProviderConfigured:
+          typeof executableExecutionContextProvider ===
+          "function",
+
+        entryRiskContextProviderConfigured:
+          typeof executableEntryRiskContextProvider ===
+          "function",
+
+        paperRuntimeAuthoritiesConfigured:
+          Boolean(
+            paperLedger &&
+            paperRuntime &&
+            runtimeSupervisor,
+          ),
+
+        failClosed:
+          true,
+
+        syntheticEvidence:
+          false,
+      },
+
+      executionAuthority:
+        false,
+
+      liveExecution:
+        false,
 
       startedAt,
 
@@ -340,6 +506,27 @@ export async function runCryptoDiscoveryCycle({
       highInterestCandidates:
         [],
 
+      finalRevalidatedCandidates:
+        [],
+
+      executableOpportunityEvaluations:
+        [],
+
+      executableSelectedOpportunities:
+        [],
+
+      executableSelectedCandidates:
+        [],
+
+      paperExecutionEvaluations:
+        [],
+
+      paperAuthorizedCandidates:
+        [],
+
+      paperBlockedCandidates:
+        [],
+
       registry: {
         stats:
           {},
@@ -362,6 +549,20 @@ export async function runCryptoDiscoveryCycle({
           ? error.message
           : String(error),
       ],
+
+      evidenceWiring: {
+        failClosed:
+          true,
+
+        syntheticEvidence:
+          false,
+      },
+
+      executionAuthority:
+        false,
+
+      liveExecution:
+        false,
 
       startedAt,
 

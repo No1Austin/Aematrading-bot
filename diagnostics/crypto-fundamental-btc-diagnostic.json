@@ -1,0 +1,1733 @@
+{
+  "generatedAt": "2026-09-20T15:58:06.828Z",
+  "root": "/Users/no1austin/Desktop/Msc /MscSE-Day-4/trading-bot",
+  "query": "BTC",
+  "apiBase": "http://localhost:8000",
+  "files": {
+    "app": {
+      "path": "/Users/no1austin/Desktop/Msc /MscSE-Day-4/trading-bot/server/src/app.js",
+      "exists": true
+    },
+    "universe": {
+      "path": "/Users/no1austin/Desktop/Msc /MscSE-Day-4/trading-bot/server/src/crypto/universe/cryptoUniverseProvider.js",
+      "exists": true
+    },
+    "coinGecko": {
+      "path": "/Users/no1austin/Desktop/Msc /MscSE-Day-4/trading-bot/server/src/crypto/data/providers/coinGeckoFundamentalProvider.js",
+      "exists": true
+    },
+    "defiLlama": {
+      "path": "/Users/no1austin/Desktop/Msc /MscSE-Day-4/trading-bot/server/src/crypto/data/providers/defiLlamaFundamentalProvider.js",
+      "exists": true
+    },
+    "evidence": {
+      "path": "/Users/no1austin/Desktop/Msc /MscSE-Day-4/trading-bot/server/src/crypto/data/providers/cryptoFundamentalEvidenceProvider.js",
+      "exists": true
+    },
+    "adapter": {
+      "path": "/Users/no1austin/Desktop/Msc /MscSE-Day-4/trading-bot/server/src/crypto/scanner/cryptoScannerEngineAdapters.js",
+      "exists": true
+    }
+  },
+  "http": {
+    "scannerEngines": {
+      "ok": true,
+      "status": 200,
+      "elapsedMs": 36616,
+      "error": null
+    }
+  },
+  "candidate": {
+    "assetId": "bitcoin",
+    "symbol": "BTC",
+    "name": "Bitcoin",
+    "priceUsd": 80759,
+    "marketCapUsd": 1621780178458,
+    "marketCapRank": 1,
+    "fdvUsd": 1621783004290,
+    "volume24hUsd": 23315976500,
+    "high24hUsd": 81862,
+    "low24hUsd": 80155,
+    "change1hPercent": 0.2,
+    "change24hPercent": -1.0957,
+    "change7dPercent": 5,
+    "circulatingSupply": 20086940,
+    "totalSupply": 20086993,
+    "maxSupply": 21000000,
+    "lastUpdated": "2026-09-20T15:39:10.000Z",
+    "source": "COINGECKO",
+    "tradable": true,
+    "venues": {
+      "venueCount": 11,
+      "cexCount": 11,
+      "dexCount": 0,
+      "exchanges": [
+        "COINBASE",
+        "KRAKEN"
+      ],
+      "cex": [
+        {
+          "exchange": "COINBASE",
+          "venueType": "CEX",
+          "productId": "BTC-USD",
+          "base": "BTC",
+          "quote": "USD",
+          "price": 80796.67,
+          "volume24h": 3065.68241628,
+          "priceChange24hPercent": -1.2717046240472,
+          "tradable": true,
+          "raw": {
+            "product_id": "BTC-USD",
+            "price": "80796.67",
+            "price_percentage_change_24h": "-1.2717046240472",
+            "volume_24h": "3065.68241628",
+            "volume_percentage_change_24h": "-55.40132713803173",
+            "base_increment": "0.00000001",
+            "quote_increment": "0.01",
+            "quote_min_size": "1",
+            "quote_max_size": "150000000",
+            "base_min_size": "0.00000001",
+            "base_max_size": "3400",
+            "base_name": "Bitcoin",
+            "quote_name": "US Dollar",
+            "watched": false,
+            "is_disabled": false,
+            "new": false,
+            "status": "online",
+            "cancel_only": false,
+            "limit_only": false,
+            "post_only": false,
+            "trading_disabled": false,
+            "auction_mode": false,
+            "product_type": "SPOT",
+            "quote_currency_id": "USD",
+            "base_currency_id": "BTC",
+            "fcm_trading_session_details": null,
+            "mid_market_price": "",
+            "alias": "",
+            "alias_to": [
+              "BTC-USDC"
+            ],
+            "base_display_symbol": "BTC",
+            "quote_display_symbol": "USD",
+            "view_only": false,
+            "price_increment": "0.01",
+            "display_name": "BTC-USD",
+            "product_venue": "CBE",
+            "approximate_quote_24h_volume": "247696930.51",
+            "new_at": "2023-01-01T00:00:00Z",
+            "market_cap": "",
+            "base_cbrn": "",
+            "quote_cbrn": "",
+            "product_cbrn": "",
+            "icon_color": "",
+            "icon_url": "",
+            "display_name_overwrite": "",
+            "is_alpha_testing": false,
+            "about_description": "",
+            "best_bid_price": "",
+            "best_ask_price": "",
+            "high_24h": "81925",
+            "low_24h": "80085",
+            "hidden_from_discovery": false
+          }
+        },
+        {
+          "exchange": "COINBASE",
+          "venueType": "CEX",
+          "productId": "BTC-USDC",
+          "base": "BTC",
+          "quote": "USDC",
+          "price": 80796.67,
+          "volume24h": 3065.68241628,
+          "priceChange24hPercent": -1.2717046240472,
+          "tradable": true,
+          "raw": {
+            "product_id": "BTC-USDC",
+            "price": "80796.67",
+            "price_percentage_change_24h": "-1.2717046240472",
+            "volume_24h": "3065.68241628",
+            "volume_percentage_change_24h": "-55.40132713803173",
+            "base_increment": "0.00000001",
+            "quote_increment": "0.01",
+            "quote_min_size": "1",
+            "quote_max_size": "150000000",
+            "base_min_size": "0.00000001",
+            "base_max_size": "3400",
+            "base_name": "Bitcoin",
+            "quote_name": "USDC",
+            "watched": false,
+            "is_disabled": false,
+            "new": false,
+            "status": "online",
+            "cancel_only": false,
+            "limit_only": false,
+            "post_only": false,
+            "trading_disabled": false,
+            "auction_mode": false,
+            "product_type": "SPOT",
+            "quote_currency_id": "USDC",
+            "base_currency_id": "BTC",
+            "fcm_trading_session_details": null,
+            "mid_market_price": "",
+            "alias": "BTC-USD",
+            "alias_to": [],
+            "base_display_symbol": "BTC",
+            "quote_display_symbol": "USD",
+            "view_only": false,
+            "price_increment": "0.01",
+            "display_name": "BTC-USDC",
+            "product_venue": "CBE",
+            "approximate_quote_24h_volume": "247696930.51",
+            "new_at": "2023-01-01T00:00:00Z",
+            "market_cap": "",
+            "base_cbrn": "",
+            "quote_cbrn": "",
+            "product_cbrn": "",
+            "icon_color": "",
+            "icon_url": "",
+            "display_name_overwrite": "",
+            "is_alpha_testing": false,
+            "about_description": "",
+            "best_bid_price": "",
+            "best_ask_price": "",
+            "high_24h": "81925",
+            "low_24h": "80085",
+            "hidden_from_discovery": false
+          }
+        },
+        {
+          "exchange": "COINBASE",
+          "venueType": "CEX",
+          "productId": "BTC-EUR",
+          "base": "BTC",
+          "quote": "EUR",
+          "price": 70309.75,
+          "volume24h": 136.40599262,
+          "priceChange24hPercent": -1.2289461044718,
+          "tradable": true,
+          "raw": {
+            "product_id": "BTC-EUR",
+            "price": "70309.75",
+            "price_percentage_change_24h": "-1.2289461044718",
+            "volume_24h": "136.40599262",
+            "volume_percentage_change_24h": "-37.57618304460787",
+            "base_increment": "0.00000001",
+            "quote_increment": "0.01",
+            "quote_min_size": "1",
+            "quote_max_size": "10000000",
+            "base_min_size": "0.00000001",
+            "base_max_size": "400",
+            "base_name": "Bitcoin",
+            "quote_name": "Euro",
+            "watched": false,
+            "is_disabled": false,
+            "new": false,
+            "status": "online",
+            "cancel_only": false,
+            "limit_only": false,
+            "post_only": false,
+            "trading_disabled": false,
+            "auction_mode": false,
+            "product_type": "SPOT",
+            "quote_currency_id": "EUR",
+            "base_currency_id": "BTC",
+            "fcm_trading_session_details": null,
+            "mid_market_price": "",
+            "alias": "",
+            "alias_to": [],
+            "base_display_symbol": "BTC",
+            "quote_display_symbol": "EUR",
+            "view_only": false,
+            "price_increment": "0.01",
+            "display_name": "BTC-EUR",
+            "product_venue": "CBE",
+            "approximate_quote_24h_volume": "9590671.24",
+            "new_at": "2023-01-01T00:00:00Z",
+            "market_cap": "",
+            "base_cbrn": "",
+            "quote_cbrn": "",
+            "product_cbrn": "",
+            "icon_color": "",
+            "icon_url": "",
+            "display_name_overwrite": "",
+            "is_alpha_testing": false,
+            "about_description": "",
+            "best_bid_price": "",
+            "best_ask_price": "",
+            "high_24h": "71275.94",
+            "low_24h": "69696.96",
+            "hidden_from_discovery": false
+          }
+        },
+        {
+          "exchange": "COINBASE",
+          "venueType": "CEX",
+          "productId": "BTC-GBP",
+          "base": "BTC",
+          "quote": "GBP",
+          "price": 60347.43,
+          "volume24h": 50.40669258,
+          "priceChange24hPercent": -1.24679795265339,
+          "tradable": true,
+          "raw": {
+            "product_id": "BTC-GBP",
+            "price": "60347.43",
+            "price_percentage_change_24h": "-1.24679795265339",
+            "volume_24h": "50.40669258",
+            "volume_percentage_change_24h": "-10.92561073765286",
+            "base_increment": "0.00000001",
+            "quote_increment": "0.01",
+            "quote_min_size": "1",
+            "quote_max_size": "10000000",
+            "base_min_size": "0.00000001",
+            "base_max_size": "200",
+            "base_name": "Bitcoin",
+            "quote_name": "British Pound",
+            "watched": false,
+            "is_disabled": false,
+            "new": false,
+            "status": "online",
+            "cancel_only": false,
+            "limit_only": false,
+            "post_only": false,
+            "trading_disabled": false,
+            "auction_mode": false,
+            "product_type": "SPOT",
+            "quote_currency_id": "GBP",
+            "base_currency_id": "BTC",
+            "fcm_trading_session_details": null,
+            "mid_market_price": "",
+            "alias": "",
+            "alias_to": [],
+            "base_display_symbol": "BTC",
+            "quote_display_symbol": "GBP",
+            "view_only": false,
+            "price_increment": "0.01",
+            "display_name": "BTC-GBP",
+            "product_venue": "CBE",
+            "approximate_quote_24h_volume": "3041914.35",
+            "new_at": "2023-01-01T00:00:00Z",
+            "market_cap": "",
+            "base_cbrn": "",
+            "quote_cbrn": "",
+            "product_cbrn": "",
+            "icon_color": "",
+            "icon_url": "",
+            "display_name_overwrite": "",
+            "is_alpha_testing": false,
+            "about_description": "",
+            "best_bid_price": "",
+            "best_ask_price": "",
+            "high_24h": "61180.39",
+            "low_24h": "59837.63",
+            "hidden_from_discovery": false
+          }
+        },
+        {
+          "exchange": "COINBASE",
+          "venueType": "CEX",
+          "productId": "BTC-USDT",
+          "base": "BTC",
+          "quote": "USDT",
+          "price": 80824.49,
+          "volume24h": 21.59493447,
+          "priceChange24hPercent": -1.31246398782702,
+          "tradable": true,
+          "raw": {
+            "product_id": "BTC-USDT",
+            "price": "80824.49",
+            "price_percentage_change_24h": "-1.31246398782702",
+            "volume_24h": "21.59493447",
+            "volume_percentage_change_24h": "-28.5080464029085",
+            "base_increment": "0.00000001",
+            "quote_increment": "0.01",
+            "quote_min_size": "1",
+            "quote_max_size": "10000000",
+            "base_min_size": "0.00000001",
+            "base_max_size": "400",
+            "base_name": "Bitcoin",
+            "quote_name": "Tether",
+            "watched": false,
+            "is_disabled": false,
+            "new": false,
+            "status": "online",
+            "cancel_only": false,
+            "limit_only": false,
+            "post_only": false,
+            "trading_disabled": false,
+            "auction_mode": false,
+            "product_type": "SPOT",
+            "quote_currency_id": "USDT",
+            "base_currency_id": "BTC",
+            "fcm_trading_session_details": null,
+            "mid_market_price": "",
+            "alias": "",
+            "alias_to": [],
+            "base_display_symbol": "BTC",
+            "quote_display_symbol": "USDT",
+            "view_only": false,
+            "price_increment": "0.01",
+            "display_name": "BTC-USDT",
+            "product_venue": "CBE",
+            "approximate_quote_24h_volume": "1745399.57",
+            "new_at": "2023-01-01T00:00:00Z",
+            "market_cap": "",
+            "base_cbrn": "",
+            "quote_cbrn": "",
+            "product_cbrn": "",
+            "icon_color": "",
+            "icon_url": "",
+            "display_name_overwrite": "",
+            "is_alpha_testing": false,
+            "about_description": "",
+            "best_bid_price": "",
+            "best_ask_price": "",
+            "high_24h": "81936.37",
+            "low_24h": "80137.65",
+            "hidden_from_discovery": false
+          }
+        },
+        {
+          "exchange": "COINBASE",
+          "venueType": "CEX",
+          "productId": "BTC-INR",
+          "base": "BTC",
+          "quote": "INR",
+          "price": 8071764,
+          "volume24h": 0.03518825,
+          "priceChange24hPercent": 0.48130858572656,
+          "tradable": true,
+          "raw": {
+            "product_id": "BTC-INR",
+            "price": "8071764",
+            "price_percentage_change_24h": "0.48130858572656",
+            "volume_24h": "0.03518825",
+            "volume_percentage_change_24h": "-70.89988417263653",
+            "base_increment": "0.00000001",
+            "quote_increment": "1",
+            "quote_min_size": "1",
+            "quote_max_size": "1000000001",
+            "base_min_size": "0.00000001",
+            "base_max_size": "123.4049981122120414",
+            "base_name": "Bitcoin",
+            "quote_name": "Indian Rupee",
+            "watched": false,
+            "is_disabled": false,
+            "new": false,
+            "status": "online",
+            "cancel_only": false,
+            "limit_only": true,
+            "post_only": false,
+            "trading_disabled": false,
+            "auction_mode": false,
+            "product_type": "SPOT",
+            "quote_currency_id": "INR",
+            "base_currency_id": "BTC",
+            "fcm_trading_session_details": null,
+            "mid_market_price": "",
+            "alias": "",
+            "alias_to": [],
+            "base_display_symbol": "BTC",
+            "quote_display_symbol": "INR",
+            "view_only": false,
+            "price_increment": "1",
+            "display_name": "BTC-INR",
+            "product_venue": "CBE",
+            "approximate_quote_24h_volume": "284031",
+            "new_at": "2026-05-14T15:22:00.064Z",
+            "market_cap": "",
+            "base_cbrn": "",
+            "quote_cbrn": "",
+            "product_cbrn": "",
+            "icon_color": "",
+            "icon_url": "",
+            "display_name_overwrite": "",
+            "is_alpha_testing": false,
+            "about_description": "",
+            "best_bid_price": "",
+            "best_ask_price": "",
+            "high_24h": "8137874",
+            "low_24h": "7890655",
+            "hidden_from_discovery": false
+          }
+        },
+        {
+          "exchange": "KRAKEN",
+          "venueType": "CEX",
+          "productId": "XBTUSDC",
+          "altname": "XBTUSDC",
+          "wsname": "XBT/USDC",
+          "base": "BTC",
+          "baseSymbol": "BTC",
+          "quote": "USDC",
+          "quoteSymbol": "USDC",
+          "tradable": true,
+          "status": "online",
+          "orderMinimum": 0.00005,
+          "costMinimum": 0.5,
+          "priceDecimals": 2,
+          "lotDecimals": 8,
+          "source": "KRAKEN",
+          "raw": {
+            "altname": "XBTUSDC",
+            "wsname": "XBT/USDC",
+            "aclass_base": "currency",
+            "base": "XXBT",
+            "aclass_quote": "currency",
+            "quote": "USDC",
+            "lot": "unit",
+            "cost_decimals": 5,
+            "pair_decimals": 2,
+            "lot_decimals": 8,
+            "lot_multiplier": 1,
+            "leverage_buy": [
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10
+            ],
+            "leverage_sell": [
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10
+            ],
+            "fees": [],
+            "fees_maker": [],
+            "fee_volume_currency": "ZUSD",
+            "margin_call": 80,
+            "margin_stop": 40,
+            "ordermin": "0.00005",
+            "costmin": "0.5",
+            "tick_size": "0.01",
+            "status": "online",
+            "execution_venue": "international",
+            "long_position_limit": 40,
+            "short_position_limit": 40
+          }
+        },
+        {
+          "exchange": "KRAKEN",
+          "venueType": "CEX",
+          "productId": "XBTUSDT",
+          "altname": "XBTUSDT",
+          "wsname": "XBT/USDT",
+          "base": "BTC",
+          "baseSymbol": "BTC",
+          "quote": "USDT",
+          "quoteSymbol": "USDT",
+          "tradable": true,
+          "status": "online",
+          "orderMinimum": 0.00005,
+          "costMinimum": 0.5,
+          "priceDecimals": 1,
+          "lotDecimals": 8,
+          "source": "KRAKEN",
+          "raw": {
+            "altname": "XBTUSDT",
+            "wsname": "XBT/USDT",
+            "aclass_base": "currency",
+            "base": "XXBT",
+            "aclass_quote": "currency",
+            "quote": "USDT",
+            "lot": "unit",
+            "cost_decimals": 5,
+            "pair_decimals": 1,
+            "lot_decimals": 8,
+            "lot_multiplier": 1,
+            "leverage_buy": [
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10
+            ],
+            "leverage_sell": [
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10
+            ],
+            "fees": [],
+            "fees_maker": [],
+            "fee_volume_currency": "ZUSD",
+            "margin_call": 80,
+            "margin_stop": 40,
+            "ordermin": "0.00005",
+            "costmin": "0.5",
+            "tick_size": "0.1",
+            "status": "online",
+            "execution_venue": "international",
+            "long_position_limit": 80,
+            "short_position_limit": 80
+          }
+        },
+        {
+          "exchange": "KRAKEN",
+          "venueType": "CEX",
+          "productId": "XXBTZCAD",
+          "altname": "XBTCAD",
+          "wsname": "XBT/CAD",
+          "base": "BTC",
+          "baseSymbol": "BTC",
+          "quote": "CAD",
+          "quoteSymbol": "CAD",
+          "tradable": true,
+          "status": "online",
+          "orderMinimum": 0.00005,
+          "costMinimum": 1,
+          "priceDecimals": 1,
+          "lotDecimals": 8,
+          "source": "KRAKEN",
+          "raw": {
+            "altname": "XBTCAD",
+            "wsname": "XBT/CAD",
+            "aclass_base": "currency",
+            "base": "XXBT",
+            "aclass_quote": "currency",
+            "quote": "ZCAD",
+            "lot": "unit",
+            "cost_decimals": 5,
+            "pair_decimals": 1,
+            "lot_decimals": 8,
+            "lot_multiplier": 1,
+            "leverage_buy": [
+              2,
+              3,
+              4,
+              5
+            ],
+            "leverage_sell": [
+              2,
+              3,
+              4,
+              5
+            ],
+            "fees": [],
+            "fees_maker": [],
+            "fee_volume_currency": "ZUSD",
+            "margin_call": 80,
+            "margin_stop": 40,
+            "ordermin": "0.00005",
+            "costmin": "1",
+            "tick_size": "0.1",
+            "status": "online",
+            "execution_venue": "international",
+            "long_position_limit": 6,
+            "short_position_limit": 7
+          }
+        },
+        {
+          "exchange": "KRAKEN",
+          "venueType": "CEX",
+          "productId": "XXBTZEUR",
+          "altname": "XBTEUR",
+          "wsname": "XBT/EUR",
+          "base": "BTC",
+          "baseSymbol": "BTC",
+          "quote": "EUR",
+          "quoteSymbol": "EUR",
+          "tradable": true,
+          "status": "online",
+          "orderMinimum": 0.00005,
+          "costMinimum": 0.45,
+          "priceDecimals": 1,
+          "lotDecimals": 8,
+          "source": "KRAKEN",
+          "raw": {
+            "altname": "XBTEUR",
+            "wsname": "XBT/EUR",
+            "aclass_base": "currency",
+            "base": "XXBT",
+            "aclass_quote": "currency",
+            "quote": "ZEUR",
+            "lot": "unit",
+            "cost_decimals": 5,
+            "pair_decimals": 1,
+            "lot_decimals": 8,
+            "lot_multiplier": 1,
+            "leverage_buy": [
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10
+            ],
+            "leverage_sell": [
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10
+            ],
+            "fees": [],
+            "fees_maker": [],
+            "fee_volume_currency": "ZUSD",
+            "margin_call": 80,
+            "margin_stop": 40,
+            "ordermin": "0.00005",
+            "costmin": "0.45",
+            "tick_size": "0.1",
+            "status": "online",
+            "execution_venue": "international",
+            "long_position_limit": 130,
+            "short_position_limit": 100
+          }
+        },
+        {
+          "exchange": "KRAKEN",
+          "venueType": "CEX",
+          "productId": "XXBTZUSD",
+          "altname": "XBTUSD",
+          "wsname": "XBT/USD",
+          "base": "BTC",
+          "baseSymbol": "BTC",
+          "quote": "USD",
+          "quoteSymbol": "USD",
+          "tradable": true,
+          "status": "online",
+          "orderMinimum": 0.00005,
+          "costMinimum": 0.5,
+          "priceDecimals": 1,
+          "lotDecimals": 8,
+          "source": "KRAKEN",
+          "raw": {
+            "altname": "XBTUSD",
+            "wsname": "XBT/USD",
+            "aclass_base": "currency",
+            "base": "XXBT",
+            "aclass_quote": "currency",
+            "quote": "ZUSD",
+            "lot": "unit",
+            "cost_decimals": 5,
+            "pair_decimals": 1,
+            "lot_decimals": 8,
+            "lot_multiplier": 1,
+            "leverage_buy": [
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10
+            ],
+            "leverage_sell": [
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10
+            ],
+            "fees": [],
+            "fees_maker": [],
+            "fee_volume_currency": "ZUSD",
+            "margin_call": 80,
+            "margin_stop": 40,
+            "ordermin": "0.00005",
+            "costmin": "0.5",
+            "tick_size": "0.1",
+            "status": "online",
+            "execution_venue": "international",
+            "long_position_limit": 350,
+            "short_position_limit": 250
+          }
+        }
+      ],
+      "dex": [],
+      "dexLiquidityUsd": 0,
+      "dexVolume24hUsd": 0,
+      "primaryVenue": "COINBASE"
+    },
+    "discoveredAt": "2026-09-20T15:42:07.150Z",
+    "coinGeckoId": "bitcoin",
+    "candidateType": "CEX"
+  },
+  "providers": {
+    "coinGecko": {
+      "approved": true,
+      "status": "COMPLETE",
+      "reason": null,
+      "provider": "COINGECKO",
+      "id": "bitcoin",
+      "symbol": "btc",
+      "name": "Bitcoin",
+      "marketCapUsd": 1624798140956,
+      "fdvUsd": 1624800972046,
+      "volume24hUsd": 23041576147,
+      "circulatingSupply": 20086940,
+      "totalSupply": 20087021,
+      "maxSupply": 21000000,
+      "tvlUsd": null
+    },
+    "defiLlama": {
+      "approved": true,
+      "status": "COMPLETE",
+      "reason": null,
+      "provider": "DEFILLAMA",
+      "id": "2786",
+      "symbol": "BTC",
+      "name": "Bitcoin",
+      "marketCapUsd": 1620413623375.6963,
+      "fdvUsd": null,
+      "volume24hUsd": null,
+      "circulatingSupply": null,
+      "totalSupply": null,
+      "maxSupply": null,
+      "tvlUsd": 0
+    }
+  },
+  "normalizedEvidence": {
+    "approved": true,
+    "status": "READY",
+    "version": "6.7",
+    "identity": {
+      "assetId": "bitcoin",
+      "symbol": "BTC",
+      "name": "Bitcoin",
+      "contractAddress": null,
+      "network": null,
+      "candidateType": "CEX"
+    },
+    "summary": {
+      "perArea": {
+        "networkProtocolUsage": {
+          "available": 0,
+          "unavailable": 11,
+          "total": 11
+        },
+        "tokenEconomics": {
+          "available": 4,
+          "unavailable": 7,
+          "total": 11
+        },
+        "liquidityMarketQuality": {
+          "available": 6,
+          "unavailable": 5,
+          "total": 11
+        },
+        "adoptionEcosystem": {
+          "available": 0,
+          "unavailable": 11,
+          "total": 11
+        },
+        "valuation": {
+          "available": 3,
+          "unavailable": 6,
+          "total": 9
+        },
+        "projectDevelopmentQuality": {
+          "available": 1,
+          "unavailable": 8,
+          "total": 9
+        },
+        "securityDecentralization": {
+          "available": 0,
+          "unavailable": 7,
+          "total": 7
+        }
+      },
+      "availableCount": 14,
+      "total": 69,
+      "rawCoverage": 0.2028985507246377
+    },
+    "providers": {
+      "fundamentalSnapshot": null,
+      "coinGeckoDetails": {
+        "approved": true,
+        "status": "COMPLETE",
+        "reason": null
+      },
+      "defiLlamaProtocol": {
+        "approved": true,
+        "status": "COMPLETE",
+        "reason": null
+      },
+      "finalIntelligence": {
+        "binanceFutures": {
+          "ok": true,
+          "error": null,
+          "tickers": 773,
+          "premiums": 908
+        },
+        "lunarCrush": {
+          "ok": false,
+          "enabled": false,
+          "reason": "LUNARCRUSH_API_KEY_MISSING",
+          "error": null,
+          "coins": 0
+        },
+        "coinMarketCal": {
+          "ok": false,
+          "enabled": false,
+          "reason": "COINMARKETCAL_API_KEY_MISSING",
+          "error": null,
+          "events": 0
+        }
+      }
+    },
+    "areaCounts": {
+      "networkProtocolUsage": {
+        "available": 0,
+        "unavailable": 11,
+        "total": 11
+      },
+      "tokenEconomics": {
+        "available": 4,
+        "unavailable": 7,
+        "total": 11
+      },
+      "liquidityMarketQuality": {
+        "available": 6,
+        "unavailable": 5,
+        "total": 11
+      },
+      "adoptionEcosystem": {
+        "available": 0,
+        "unavailable": 11,
+        "total": 11
+      },
+      "valuation": {
+        "available": 3,
+        "unavailable": 6,
+        "total": 9
+      },
+      "projectDevelopmentQuality": {
+        "available": 1,
+        "unavailable": 8,
+        "total": 9
+      },
+      "securityDecentralization": {
+        "available": 0,
+        "unavailable": 7,
+        "total": 7
+      }
+    },
+    "areas": {
+      "networkProtocolUsage": {
+        "activeAddresses": {
+          "available": false,
+          "value": null,
+          "source": null,
+          "reason": "ACTIVE_ADDRESS_PROVIDER_NOT_CONFIGURED"
+        },
+        "activeUsers": {
+          "available": false,
+          "value": null,
+          "source": null,
+          "reason": "ACTIVE_USER_PROVIDER_NOT_CONFIGURED"
+        },
+        "transactions": {
+          "available": false,
+          "value": null,
+          "source": null,
+          "reason": "TRANSACTION_COUNT_PROVIDER_NOT_CONFIGURED"
+        },
+        "transactionGrowth": {
+          "available": false,
+          "value": null,
+          "source": null,
+          "reason": "TRANSACTION_GROWTH_PROVIDER_NOT_CONFIGURED"
+        },
+        "fees": {
+          "available": false,
+          "value": null,
+          "source": "DEFILLAMA",
+          "reason": "DEFILLAMA_FEES_NOT_IN_CURRENT_PROVIDER"
+        },
+        "revenue": {
+          "available": false,
+          "value": null,
+          "source": "DEFILLAMA",
+          "reason": "DEFILLAMA_REVENUE_NOT_IN_CURRENT_PROVIDER"
+        },
+        "tvlUsd": {
+          "available": false,
+          "value": null,
+          "source": "DEFILLAMA",
+          "reason": "VALUE_UNAVAILABLE"
+        },
+        "tvlChange1dPercent": {
+          "available": false,
+          "value": null,
+          "source": "DEFILLAMA",
+          "reason": "VALUE_UNAVAILABLE"
+        },
+        "tvlChange7dPercent": {
+          "available": false,
+          "value": null,
+          "source": "DEFILLAMA",
+          "reason": "VALUE_UNAVAILABLE"
+        },
+        "chains": {
+          "available": false,
+          "value": null,
+          "source": "DEFILLAMA",
+          "reason": "VALUE_UNAVAILABLE"
+        },
+        "utilization": {
+          "available": false,
+          "value": null,
+          "source": null,
+          "reason": "UTILIZATION_PROVIDER_NOT_CONFIGURED"
+        }
+      },
+      "tokenEconomics": {
+        "circulatingSupply": {
+          "available": true,
+          "value": 20086940,
+          "source": "COINGECKO",
+          "reason": null
+        },
+        "totalSupply": {
+          "available": true,
+          "value": 20087021,
+          "source": "COINGECKO",
+          "reason": null
+        },
+        "maxSupply": {
+          "available": true,
+          "value": 21000000,
+          "source": "COINGECKO",
+          "reason": null
+        },
+        "circulatingSupplyRatioPercent": {
+          "available": true,
+          "value": 95.65209523809524,
+          "source": "DERIVED_COINGECKO",
+          "reason": null
+        },
+        "inflationRate": {
+          "available": false,
+          "value": null,
+          "source": null,
+          "reason": "INFLATION_PROVIDER_NOT_CONFIGURED"
+        },
+        "emissions": {
+          "available": false,
+          "value": null,
+          "source": null,
+          "reason": "EMISSION_SCHEDULE_PROVIDER_NOT_CONFIGURED"
+        },
+        "unlocks": {
+          "available": false,
+          "value": null,
+          "source": null,
+          "reason": "TOKEN_UNLOCK_PROVIDER_NOT_CONFIGURED"
+        },
+        "burns": {
+          "available": false,
+          "value": null,
+          "source": null,
+          "reason": "BURN_DATA_PROVIDER_NOT_CONFIGURED"
+        },
+        "staking": {
+          "available": false,
+          "value": null,
+          "source": null,
+          "reason": "STAKING_ECONOMICS_PROVIDER_NOT_CONFIGURED"
+        },
+        "tokenUtility": {
+          "available": false,
+          "value": null,
+          "source": null,
+          "reason": "TOKEN_UTILITY_EVIDENCE_NOT_CONFIGURED"
+        },
+        "holderConcentration": {
+          "available": false,
+          "value": null,
+          "source": null,
+          "reason": "HOLDER_CONCENTRATION_PROVIDER_NOT_CONFIGURED"
+        }
+      },
+      "liquidityMarketQuality": {
+        "volume24hUsd": {
+          "available": true,
+          "value": 23315976500,
+          "source": "MARKET_MEASUREMENT",
+          "reason": null
+        },
+        "liquidityUsd": {
+          "available": false,
+          "value": null,
+          "source": "MARKET_MEASUREMENT",
+          "reason": "EXPLICIT_LIQUIDITY_NOT_AVAILABLE"
+        },
+        "venueCount": {
+          "available": true,
+          "value": 11,
+          "source": "VENUE_RESOLVER",
+          "reason": null
+        },
+        "cexCount": {
+          "available": true,
+          "value": 11,
+          "source": "VENUE_RESOLVER",
+          "reason": null
+        },
+        "dexCount": {
+          "available": true,
+          "value": 0,
+          "source": "VENUE_RESOLVER",
+          "reason": null
+        },
+        "volumeToMarketCap": {
+          "available": true,
+          "value": 0.014376779794021773,
+          "source": "DERIVED_MARKET_DATA",
+          "reason": null
+        },
+        "futuresTradeCount": {
+          "available": true,
+          "value": 1925978,
+          "source": "BINANCE_FUTURES",
+          "reason": null
+        },
+        "spread": {
+          "available": false,
+          "value": null,
+          "source": null,
+          "reason": "ORDER_BOOK_SPREAD_NOT_IN_CURRENT_PROVIDER"
+        },
+        "orderBookDepth": {
+          "available": false,
+          "value": null,
+          "source": null,
+          "reason": "ORDER_BOOK_DEPTH_NOT_IN_CURRENT_PROVIDER"
+        },
+        "suspiciousVolume": {
+          "available": false,
+          "value": null,
+          "source": null,
+          "reason": "WASH_TRADING_DETECTION_NOT_CONFIGURED"
+        },
+        "uniqueTraders": {
+          "available": false,
+          "value": null,
+          "source": null,
+          "reason": "UNIQUE_TRADER_PROVIDER_NOT_CONFIGURED"
+        }
+      },
+      "adoptionEcosystem": {
+        "developerActivity": {
+          "available": false,
+          "value": null,
+          "source": null,
+          "reason": "DEVELOPER_ACTIVITY_PROVIDER_NOT_CONFIGURED"
+        },
+        "integrations": {
+          "available": false,
+          "value": null,
+          "source": null,
+          "reason": "INTEGRATION_PROVIDER_NOT_CONFIGURED"
+        },
+        "applications": {
+          "available": false,
+          "value": null,
+          "source": null,
+          "reason": "APPLICATION_ECOSYSTEM_PROVIDER_NOT_CONFIGURED"
+        },
+        "stablecoinActivity": {
+          "available": false,
+          "value": null,
+          "source": null,
+          "reason": "STABLECOIN_ACTIVITY_PROVIDER_NOT_CONFIGURED"
+        },
+        "ecosystemGrowth": {
+          "available": false,
+          "value": null,
+          "source": null,
+          "reason": "ECOSYSTEM_GROWTH_PROVIDER_NOT_CONFIGURED"
+        },
+        "chainReach": {
+          "available": false,
+          "value": null,
+          "source": "DEFILLAMA",
+          "reason": "VALUE_UNAVAILABLE"
+        },
+        "socialGalaxyScore": {
+          "available": false,
+          "value": null,
+          "source": "LUNARCRUSH",
+          "reason": "VALUE_UNAVAILABLE"
+        },
+        "socialAltRank": {
+          "available": false,
+          "value": null,
+          "source": "LUNARCRUSH",
+          "reason": "VALUE_UNAVAILABLE"
+        },
+        "socialVolume": {
+          "available": false,
+          "value": null,
+          "source": "LUNARCRUSH",
+          "reason": "VALUE_UNAVAILABLE"
+        },
+        "socialInteractions": {
+          "available": false,
+          "value": null,
+          "source": "LUNARCRUSH",
+          "reason": "VALUE_UNAVAILABLE"
+        },
+        "socialDominance": {
+          "available": false,
+          "value": null,
+          "source": "LUNARCRUSH",
+          "reason": "VALUE_UNAVAILABLE"
+        }
+      },
+      "valuation": {
+        "marketCapUsd": {
+          "available": true,
+          "value": 1624798140956,
+          "source": "COINGECKO",
+          "reason": null
+        },
+        "fdvUsd": {
+          "available": true,
+          "value": 1624800972046,
+          "source": "COINGECKO",
+          "reason": null
+        },
+        "tvlUsd": {
+          "available": false,
+          "value": null,
+          "source": "DEFILLAMA",
+          "reason": "VALUE_UNAVAILABLE"
+        },
+        "fdvToMarketCap": {
+          "available": true,
+          "value": 1.0000017424256766,
+          "source": "DERIVED_COINGECKO",
+          "reason": null
+        },
+        "marketCapToTvl": {
+          "available": false,
+          "value": null,
+          "source": "DERIVED_COINGECKO_DEFILLAMA",
+          "reason": "VALUE_UNAVAILABLE"
+        },
+        "fdvToRevenue": {
+          "available": false,
+          "value": null,
+          "source": null,
+          "reason": "REVENUE_EVIDENCE_NOT_AVAILABLE"
+        },
+        "marketCapToRevenue": {
+          "available": false,
+          "value": null,
+          "source": null,
+          "reason": "REVENUE_EVIDENCE_NOT_AVAILABLE"
+        },
+        "feesToValuation": {
+          "available": false,
+          "value": null,
+          "source": null,
+          "reason": "FEE_EVIDENCE_NOT_AVAILABLE"
+        },
+        "peerComparison": {
+          "available": false,
+          "value": null,
+          "source": null,
+          "reason": "PEER_VALUATION_MODEL_NOT_CONFIGURED"
+        }
+      },
+      "projectDevelopmentQuality": {
+        "protocolCategory": {
+          "available": true,
+          "value": "Canonical Bridge",
+          "source": "DEFILLAMA",
+          "reason": null
+        },
+        "protocolUrl": {
+          "available": false,
+          "value": null,
+          "source": "DEFILLAMA",
+          "reason": "VALUE_UNAVAILABLE"
+        },
+        "upcomingEvents": {
+          "available": false,
+          "value": null,
+          "source": "COINMARKETCAL",
+          "reason": "NO_MATCHED_EVENT_EVIDENCE"
+        },
+        "developerActivity": {
+          "available": false,
+          "value": null,
+          "source": null,
+          "reason": "DEVELOPER_ACTIVITY_PROVIDER_NOT_CONFIGURED"
+        },
+        "releases": {
+          "available": false,
+          "value": null,
+          "source": null,
+          "reason": "RELEASE_PROVIDER_NOT_CONFIGURED"
+        },
+        "audits": {
+          "available": false,
+          "value": null,
+          "source": null,
+          "reason": "AUDIT_PROVIDER_NOT_CONFIGURED"
+        },
+        "governance": {
+          "available": false,
+          "value": null,
+          "source": null,
+          "reason": "GOVERNANCE_QUALITY_PROVIDER_NOT_CONFIGURED"
+        },
+        "documentation": {
+          "available": false,
+          "value": null,
+          "source": null,
+          "reason": "DOCUMENTATION_QUALITY_PROVIDER_NOT_CONFIGURED"
+        },
+        "protocolMaturity": {
+          "available": false,
+          "value": null,
+          "source": null,
+          "reason": "PROTOCOL_MATURITY_MODEL_NOT_CONFIGURED"
+        }
+      },
+      "securityDecentralization": {
+        "exploitHistory": {
+          "available": false,
+          "value": null,
+          "source": null,
+          "reason": "EXPLOIT_HISTORY_PROVIDER_NOT_CONFIGURED"
+        },
+        "validatorConcentration": {
+          "available": false,
+          "value": null,
+          "source": null,
+          "reason": "VALIDATOR_CONCENTRATION_PROVIDER_NOT_CONFIGURED"
+        },
+        "adminKeyRisk": {
+          "available": false,
+          "value": null,
+          "source": null,
+          "reason": "ADMIN_KEY_PROVIDER_NOT_CONFIGURED"
+        },
+        "bridgeDependencies": {
+          "available": false,
+          "value": null,
+          "source": null,
+          "reason": "BRIDGE_DEPENDENCY_PROVIDER_NOT_CONFIGURED"
+        },
+        "oracleDependencies": {
+          "available": false,
+          "value": null,
+          "source": null,
+          "reason": "ORACLE_DEPENDENCY_PROVIDER_NOT_CONFIGURED"
+        },
+        "contractRisk": {
+          "available": false,
+          "value": null,
+          "source": null,
+          "reason": "CONTRACT_RISK_PROVIDER_NOT_CONFIGURED"
+        },
+        "governanceConcentration": {
+          "available": false,
+          "value": null,
+          "source": null,
+          "reason": "GOVERNANCE_CONCENTRATION_PROVIDER_NOT_CONFIGURED"
+        }
+      }
+    }
+  },
+  "scannerFundamental": {
+    "status": "READY",
+    "score": 80.35708571428572,
+    "confidence": 49.29265752473529,
+    "coverage": 29.39285714285715,
+    "direction": "LONG",
+    "pillarsType": "object",
+    "evidenceType": "array",
+    "evidenceLength": 1,
+    "evidencePreview": [
+      {
+        "source": "CRYPTO_FUNDAMENTAL",
+        "available": true,
+        "engine": "CRYPTO_FUNDAMENTAL",
+        "direction": "LONG",
+        "details": {
+          "bullish": [
+            "Circulating supply ratio 95.7%",
+            "Low FDV/market-cap dilution gap 1.00x"
+          ],
+          "bearish": [],
+          "unavailable": [
+            {
+              "pillar": "networkProtocolUsage",
+              "key": "activeAddresses",
+              "reason": "ACTIVE_ADDRESS_PROVIDER_NOT_CONFIGURED",
+              "source": null
+            },
+            {
+              "pillar": "networkProtocolUsage",
+              "key": "activeUsers",
+              "reason": "ACTIVE_USER_PROVIDER_NOT_CONFIGURED",
+              "source": null
+            },
+            {
+              "pillar": "networkProtocolUsage",
+              "key": "transactions",
+              "reason": "TRANSACTION_COUNT_PROVIDER_NOT_CONFIGURED",
+              "source": null
+            },
+            {
+              "pillar": "networkProtocolUsage",
+              "key": "transactionGrowth",
+              "reason": "TRANSACTION_GROWTH_PROVIDER_NOT_CONFIGURED",
+              "source": null
+            },
+            {
+              "pillar": "networkProtocolUsage",
+              "key": "fees",
+              "reason": "DEFILLAMA_FEES_NOT_IN_CURRENT_PROVIDER",
+              "source": "DEFILLAMA"
+            },
+            {
+              "pillar": "networkProtocolUsage",
+              "key": "revenue",
+              "reason": "DEFILLAMA_REVENUE_NOT_IN_CURRENT_PROVIDER",
+              "source": "DEFILLAMA"
+            },
+            {
+              "pillar": "networkProtocolUsage",
+              "key": "chains",
+              "reason": "VALUE_UNAVAILABLE",
+              "source": "DEFILLAMA"
+            },
+            {
+              "pillar": "networkProtocolUsage",
+              "key": "utilization",
+              "reason": "UTILIZATION_PROVIDER_NOT_CONFIGURED",
+              "source": null
+            },
+            {
+              "pillar": "tokenEconomics",
+              "key": "inflationRate",
+              "reason": "INFLATION_PROVIDER_NOT_CONFIGURED",
+              "source": null
+            },
+            {
+              "pillar": "tokenEconomics",
+              "key": "emissions",
+              "reason": "EMISSION_SCHEDULE_PROVIDER_NOT_CONFIGURED",
+              "source": null
+            },
+            {
+              "pillar": "tokenEconomics",
+              "key": "unlocks",
+              "reason": "TOKEN_UNLOCK_PROVIDER_NOT_CONFIGURED",
+              "source": null
+            },
+            {
+              "pillar": "tokenEconomics",
+              "key": "burns",
+              "reason": "BURN_DATA_PROVIDER_NOT_CONFIGURED",
+              "source": null
+            },
+            {
+              "pillar": "tokenEconomics",
+              "key": "staking",
+              "reason": "STAKING_ECONOMICS_PROVIDER_NOT_CONFIGURED",
+              "source": null
+            },
+            {
+              "pillar": "tokenEconomics",
+              "key": "tokenUtility",
+              "reason": "TOKEN_UTILITY_EVIDENCE_NOT_CONFIGURED",
+              "source": null
+            },
+            {
+              "pillar": "tokenEconomics",
+              "key": "holderConcentration",
+              "reason": "HOLDER_CONCENTRATION_PROVIDER_NOT_CONFIGURED",
+              "source": null
+            },
+            {
+              "pillar": "liquidityMarketQuality",
+              "key": "liquidityUsd",
+              "reason": "EXPLICIT_LIQUIDITY_NOT_AVAILABLE",
+              "source": "MARKET_MEASUREMENT"
+            },
+            {
+              "pillar": "liquidityMarketQuality",
+              "key": "spread",
+              "reason": "ORDER_BOOK_SPREAD_NOT_IN_CURRENT_PROVIDER",
+              "source": null
+            },
+            {
+              "pillar": "liquidityMarketQuality",
+              "key": "orderBookDepth",
+              "reason": "ORDER_BOOK_DEPTH_NOT_IN_CURRENT_PROVIDER",
+              "source": null
+            },
+            {
+              "pillar": "liquidityMarketQuality",
+              "key": "suspiciousVolume",
+              "reason": "WASH_TRADING_DETECTION_NOT_CONFIGURED",
+              "source": null
+            },
+            {
+              "pillar": "liquidityMarketQuality",
+              "key": "uniqueTraders",
+              "reason": "UNIQUE_TRADER_PROVIDER_NOT_CONFIGURED",
+              "source": null
+            },
+            {
+              "pillar": "adoptionEcosystem",
+              "key": "developerActivity",
+              "reason": "DEVELOPER_ACTIVITY_PROVIDER_NOT_CONFIGURED",
+              "source": null
+            },
+            {
+              "pillar": "adoptionEcosystem",
+              "key": "integrations",
+              "reason": "INTEGRATION_PROVIDER_NOT_CONFIGURED",
+              "source": null
+            },
+            {
+              "pillar": "adoptionEcosystem",
+              "key": "applications",
+              "reason": "APPLICATION_ECOSYSTEM_PROVIDER_NOT_CONFIGURED",
+              "source": null
+            },
+            {
+              "pillar": "adoptionEcosystem",
+              "key": "stablecoinActivity",
+              "reason": "STABLECOIN_ACTIVITY_PROVIDER_NOT_CONFIGURED",
+              "source": null
+            },
+            {
+              "pillar": "adoptionEcosystem",
+              "key": "ecosystemGrowth",
+              "reason": "ECOSYSTEM_GROWTH_PROVIDER_NOT_CONFIGURED",
+              "source": null
+            },
+            {
+              "pillar": "adoptionEcosystem",
+              "key": "chainReach",
+              "reason": "VALUE_UNAVAILABLE",
+              "source": "DEFILLAMA"
+            },
+            {
+              "pillar": "adoptionEcosystem",
+              "key": "socialGalaxyScore",
+              "reason": "VALUE_UNAVAILABLE",
+              "source": "LUNARCRUSH"
+            },
+            {
+              "pillar": "adoptionEcosystem",
+              "key": "socialAltRank",
+              "reason": "VALUE_UNAVAILABLE",
+              "source": "LUNARCRUSH"
+            },
+            {
+              "pillar": "adoptionEcosystem",
+              "key": "socialVolume",
+              "reason": "VALUE_UNAVAILABLE",
+              "source": "LUNARCRUSH"
+            },
+            {
+              "pillar": "adoptionEcosystem",
+              "key": "socialInteractions",
+              "reason": "VALUE_UNAVAILABLE",
+              "source": "LUNARCRUSH"
+            },
+            {
+              "pillar": "adoptionEcosystem",
+              "key": "socialDominance",
+              "reason": "VALUE_UNAVAILABLE",
+              "source": "LUNARCRUSH"
+            },
+            {
+              "pillar": "valuation",
+              "key": "marketCapToTvl",
+              "reason": "VALUE_UNAVAILABLE",
+              "source": "DERIVED_COINGECKO_DEFILLAMA"
+            },
+            {
+              "pillar": "valuation",
+              "key": "fdvToRevenue",
+              "reason": "REVENUE_EVIDENCE_NOT_AVAILABLE",
+              "source": null
+            },
+            {
+              "pillar": "valuation",
+              "key": "marketCapToRevenue",
+              "reason": "REVENUE_EVIDENCE_NOT_AVAILABLE",
+              "source": null
+            },
+            {
+              "pillar": "valuation",
+              "key": "feesToValuation",
+              "reason": "FEE_EVIDENCE_NOT_AVAILABLE",
+              "source": null
+            },
+            {
+              "pillar": "valuation",
+              "key": "peerComparison",
+              "reason": "PEER_VALUATION_MODEL_NOT_CONFIGURED",
+              "source": null
+            },
+            {
+              "pillar": "projectDevelopmentQuality",
+              "key": "upcomingEvents",
+              "reason": "NO_MATCHED_EVENT_EVIDENCE",
+              "source": "COINMARKETCAL"
+            },
+            {
+              "pillar": "projectDevelopmentQuality",
+              "key": "developerActivity",
+              "reason": "DEVELOPER_ACTIVITY_PROVIDER_NOT_CONFIGURED",
+              "source": null
+            },
+            {
+              "pillar": "projectDevelopmentQuality",
+              "key": "releases",
+              "reason": "RELEASE_PROVIDER_NOT_CONFIGURED",
+              "source": null
+            },
+            {
+              "pillar": "projectDevelopmentQuality",
+              "key": "audits",
+              "reason": "AUDIT_PROVIDER_NOT_CONFIGURED",
+              "source": null
+            },
+            {
+              "pillar": "projectDevelopmentQuality",
+              "key": "governance",
+              "reason": "GOVERNANCE_QUALITY_PROVIDER_NOT_CONFIGURED",
+              "source": null
+            },
+            {
+              "pillar": "projectDevelopmentQuality",
+              "key": "documentation",
+              "reason": "DOCUMENTATION_QUALITY_PROVIDER_NOT_CONFIGURED",
+              "source": null
+            },
+            {
+              "pillar": "projectDevelopmentQuality",
+              "key": "protocolMaturity",
+              "reason": "PROTOCOL_MATURITY_MODEL_NOT_CONFIGURED",
+              "source": null
+            },
+            {
+              "pillar": "securityDecentralization",
+              "key": "exploitHistory",
+              "reason": "EXPLOIT_HISTORY_PROVIDER_NOT_CONFIGURED",
+              "source": null
+            },
+            {
+              "pillar": "securityDecentralization",
+              "key": "validatorConcentration",
+              "reason": "VALIDATOR_CONCENTRATION_PROVIDER_NOT_CONFIGURED",
+              "source": null
+            },
+            {
+              "pillar": "securityDecentralization",
+              "key": "adminKeyRisk",
+              "reason": "ADMIN_KEY_PROVIDER_NOT_CONFIGURED",
+              "source": null
+            },
+            {
+              "pillar": "securityDecentralization",
+              "key": "bridgeDependencies",
+              "reason": "BRIDGE_DEPENDENCY_PROVIDER_NOT_CONFIGURED",
+              "source": null
+            },
+            {
+              "pillar": "securityDecentralization",
+              "key": "oracleDependencies",
+              "reason": "ORACLE_DEPENDENCY_PROVIDER_NOT_CONFIGURED",
+              "source": null
+            },
+            {
+              "pillar": "securityDecentralization",
+              "key": "contractRisk",
+              "reason": "CONTRACT_RISK_PROVIDER_NOT_CONFIGURED",
+              "source": null
+            },
+            {
+              "pillar": "securityDecentralization",
+              "key": "governanceConcentration",
+              "reason": "GOVERNANCE_CONCENTRATION_PROVIDER_NOT_CONFIGURED",
+              "source": null
+            }
+          ],
+          "identity": {
+            "assetId": "bitcoin",
+            "symbol": "BTC",
+            "name": "Bitcoin",
+            "contractAddress": null,
+            "network": null,
+            "candidateType": "CEX"
+          },
+          "attribution": {
+            "fundamental": {
+              "candidateType": "CEX",
+              "assetId": "bitcoin",
+              "symbol": "btc",
+              "marketMatchType": "ASSET_ID",
+              "protocolMatchType": "GECKO_ID",
+              "exactIdentity": true
+            },
+            "finalIntelligenceMatches": {
+              "binance": "CEX_SYMBOL_PAIR",
+              "lunar": "NONE",
+              "events": "NONE"
+            }
+          },
+          "freshness": {
+            "fundamental": "LIVE",
+            "fundamentalSnapshotAt": "2026-09-20T15:58:10.163Z",
+            "finalIntelligenceAt": "2026-09-20T15:58:08.111Z"
+          }
+        }
+      }
+    ]
+  },
+  "diagnosis": [
+    "PASS: CoinGecko direct provider returned evidence.",
+    "PASS: DefiLlama direct provider returned protocol evidence.",
+    "PASS: normalized Fundamental Evidence contains 14 available evidence items.",
+    "PASS: evidence reaches the scanner Fundamental engine. Inspect individual pillar scoring only if values still look wrong."
+  ],
+  "errors": []
+}

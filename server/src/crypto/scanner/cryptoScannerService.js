@@ -2,7 +2,7 @@
  * ============================================================
  * AEMA CRYPTO
  * CRYPTO TOKEN SCANNER SERVICE
- * Phase 5.32
+ * Phase 6.11 — scanner GPT 45s timeout propagation
  * ============================================================
  *
  * Purpose:
@@ -18,6 +18,13 @@
  * - no execution authority
  * - no live execution
  */
+
+import runCryptoValuationEngine
+  from "../analysis/cryptoValuationEngine.js";
+
+import {
+  researchCryptoCandidate,
+} from "./cryptoScanner.js";
 
 const DEFAULT_NEUTRAL_SCORE = 50;
 
@@ -44,6 +51,84 @@ const ENGINE_KEYS =
 function nowIso() {
   return new Date()
     .toISOString();
+}
+
+
+function elapsedMs(startedAt) {
+  return Math.max(0, Date.now() - startedAt);
+}
+
+async function runValuationWithBudget(context, metadata) {
+  /*
+   * Valuation has 0% canonical weight. It must never hold the canonical
+   * Technical/Fundamental/Supporting response open for a slow provider.
+   */
+  const timeoutMs =
+    Math.max(
+      500,
+      Number(
+        process.env.CRYPTO_VALUATION_TIMEOUT_MS ??
+        2500,
+      ) || 2500,
+    );
+
+  let timeoutId = null;
+
+  try {
+    const timeoutPromise =
+      new Promise((_, reject) => {
+        timeoutId =
+          setTimeout(
+            () =>
+              reject(
+                new Error(
+                  "VALUATION_TIMEOUT",
+                ),
+              ),
+            timeoutMs,
+          );
+      });
+
+    return await Promise.race([
+      runCryptoValuationEngine({
+        ...context,
+        metadata: clone(metadata),
+      }),
+      timeoutPromise,
+    ]);
+  } catch (error) {
+    return {
+      approved: true,
+      status: "EVIDENCE_UNAVAILABLE",
+      score: DEFAULT_NEUTRAL_SCORE,
+      confidence: 0,
+      canonicalWeight: 0,
+      affectsCanonicalScore: false,
+      availability: {
+        available: false,
+        source: "CRYPTO_VALUATION",
+        reason:
+          error instanceof Error
+            ? error.message
+            : "VALUATION_UNAVAILABLE",
+        evidenceCount: 0,
+      },
+      evidence: [],
+      warnings: [
+        error instanceof Error
+          ? error.message
+          : "VALUATION_UNAVAILABLE",
+      ],
+      errors: [],
+      researchOnly: true,
+      executionAuthority: false,
+      liveExecution: false,
+    };
+  } finally {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+  }
 }
 
 
@@ -533,15 +618,34 @@ function aggregateScores({
         )
       : DEFAULT_NEUTRAL_SCORE;
 
+  const canonicalScore =
+    clampScore(
+      evidenceAdjustedScore,
+    );
+
   return {
+    /*
+     * Canonical research score:
+     * unavailable engines have zero analytical influence and
+     * available engine weights are re-normalized.
+     */
     overallScore:
+      canonicalScore,
+
+    /*
+     * Compatibility alias retained for existing consumers.
+     */
+    evidenceAdjustedScore:
+      canonicalScore,
+
+    /*
+     * Presentation-only score preserves neutral midpoint 50
+     * for unavailable engines. Never use this for bias,
+     * qualification, execution, or research conclusions.
+     */
+    presentationScore:
       clampScore(
         weightedScore,
-      ),
-
-    evidenceAdjustedScore:
-      clampScore(
-        evidenceAdjustedScore,
       ),
 
     availableEngineCount:
@@ -658,23 +762,100 @@ export function createCryptoScannerService({
     let asset =
       null;
 
+    let assetResolution =
+      null;
+
     let market =
       null;
+
+
+    /**
+     * ========================================================
+     * ASSET RESOLUTION
+     * ========================================================
+     *
+     * Resolvers may return either:
+     *
+     * 1. A raw asset object
+     *
+     * OR
+     *
+     * 2. A resolver envelope:
+     *
+     * {
+     *   approved,
+     *   status,
+     *   asset,
+     *   source,
+     *   ...
+     * }
+     *
+     * Scanner engines must receive the actual asset object,
+     * not the resolver envelope.
+     */
 
     if (
       typeof resolveAsset ===
       "function"
     ) {
       try {
-        asset =
+        const resolved =
           await resolveAsset({
             query,
           });
-      } catch {
+
+
+        assetResolution =
+          resolved;
+
+
+        asset =
+          resolved
+            ?.asset ??
+          resolved ??
+          null;
+
+
+        if (
+          resolved &&
+          typeof resolved ===
+            "object" &&
+          resolved
+            ?.approved ===
+            false
+        ) {
+          asset =
+            null;
+        }
+      } catch (
+        error
+      ) {
         asset =
           null;
+
+        assetResolution = {
+          approved:
+            false,
+
+          status:
+            "CRYPTO_SCANNER_ASSET_RESOLUTION_FAILED",
+
+          error:
+            error instanceof Error
+              ? error.message
+              : String(
+                  error,
+                ),
+        };
       }
     }
+
+
+    /**
+     * ========================================================
+     * MARKET CONTEXT
+     * ========================================================
+     */
 
     if (
       typeof resolveMarketContext ===
@@ -692,6 +873,13 @@ export function createCryptoScannerService({
       }
     }
 
+
+    /**
+     * ========================================================
+     * SYMBOL / MARKET TYPE / VENUE
+     * ========================================================
+     */
+
     const symbol =
       normalizeSymbol(
         asset
@@ -703,6 +891,80 @@ export function createCryptoScannerService({
         ),
       );
 
+
+    const cexCount =
+      Number(
+        asset
+          ?.venues
+          ?.cexCount,
+      ) ||
+      0;
+
+
+    const dexCount =
+      Number(
+        asset
+          ?.venues
+          ?.dexCount,
+      ) ||
+      0;
+
+
+    let inferredMarketType =
+      "UNKNOWN";
+
+
+    if (
+      cexCount > 0 &&
+      dexCount > 0
+    ) {
+      inferredMarketType =
+        "CEX_DEX";
+    } else if (
+      cexCount > 0
+    ) {
+      inferredMarketType =
+        "CEX";
+    } else if (
+      dexCount > 0
+    ) {
+      inferredMarketType =
+        "DEX";
+    } else if (
+      isContractLike(
+        query,
+      )
+    ) {
+      inferredMarketType =
+        "DEX";
+    }
+
+
+    const marketType =
+      market
+        ?.type ??
+      asset
+        ?.marketType ??
+      inferredMarketType;
+
+
+    const venue =
+      market
+        ?.venue ??
+      asset
+        ?.venue ??
+      asset
+        ?.venues
+        ?.primaryVenue ??
+      null;
+
+
+    /**
+     * ========================================================
+     * ENGINE CONTEXT
+     * ========================================================
+     */
+
     return {
       query,
 
@@ -713,36 +975,51 @@ export function createCryptoScannerService({
           asset,
         ),
 
+      assetResolution:
+        assetResolution
+          ? {
+              approved:
+                assetResolution
+                  ?.approved,
+
+              status:
+                assetResolution
+                  ?.status,
+
+              source:
+                assetResolution
+                  ?.source,
+
+              refreshed:
+                assetResolution
+                  ?.refreshed,
+
+              universeStatus:
+                assetResolution
+                  ?.universeStatus,
+            }
+          : null,
+
       market:
         clone(
           market,
         ),
 
-      marketType:
-        market
-          ?.type ??
-        asset
-          ?.marketType ??
-        (
-          isContractLike(
-            query,
-          )
-            ? "DEX"
-            : "UNKNOWN"
-        ),
+      marketType,
 
-      venue:
-        market
-          ?.venue ??
-        asset
-          ?.venue ??
-        null,
+      venue,
+
+      venues:
+        clone(
+          asset
+            ?.venues ??
+          {},
+        ),
 
       requestedAt:
         nowIso(),
     };
   }
-
 
   async function scan({
     query,
@@ -774,41 +1051,145 @@ export function createCryptoScannerService({
       };
     }
 
+    const scanStartedAt = Date.now();
+
+    const resolveStartedAt = Date.now();
     const context =
       await resolveContext({
         query:
           normalizedQuery,
       });
+    const resolveContextMs = elapsedMs(resolveStartedAt);
 
-    const entries =
-      await Promise.all(
-        ENGINE_KEYS.map(
-          async key => [
-            key,
-            await safelyRunEngine({
-              key,
+    /**
+     * ========================================================
+     * CANONICAL DEEP RESEARCH
+     * ========================================================
+     *
+     * One research authority feeds both the automatic discovery scanner and
+     * the manual Engines endpoint. This does NOT invoke discovery selection,
+     * final revalidation, paper authority, or execution.
+     */
+    let deepResearch = null;
+    const deepResearchStartedAt = Date.now();
 
-              engine:
-                engines
-                  ?.[key],
+    try {
+      const resolvedAsset =
+        context?.asset && typeof context.asset === "object"
+          ? context.asset
+          : {};
 
-              context: {
-                ...context,
+      deepResearch =
+        await researchCryptoCandidate({
+          /*
+           * Fundamental/market providers expect canonical identity and
+           * market fields at the candidate root. Flatten the resolved asset
+           * into the research candidate while retaining the nested asset.
+           */
+          ...resolvedAsset,
+          ...context,
 
-                metadata:
-                  clone(
-                    metadata,
-                  ),
-              },
-            }),
-          ],
-        ),
+          asset:
+            context?.asset ??
+            resolvedAsset,
+
+          assetId:
+            context?.assetId ??
+            resolvedAsset?.assetId ??
+            resolvedAsset?.id ??
+            resolvedAsset?.coinGeckoId ??
+            null,
+
+          coinGeckoId:
+            context?.coinGeckoId ??
+            resolvedAsset?.coinGeckoId ??
+            resolvedAsset?.assetId ??
+            resolvedAsset?.id ??
+            null,
+
+          symbol:
+            context?.symbol ??
+            resolvedAsset?.symbol ??
+            null,
+
+          name:
+            context?.name ??
+            resolvedAsset?.name ??
+            null,
+
+          candidateType:
+            context?.candidateType ??
+            resolvedAsset?.candidateType ??
+            resolvedAsset?.type ??
+            (
+              resolvedAsset?.tradable === true ||
+              Number(resolvedAsset?.venues?.cexCount ?? 0) > 0
+                ? "CEX"
+                : "UNKNOWN"
+            ),
+
+          /*
+           * Do not manufacture a measurements contract from the raw asset.
+           * If a genuine normalized measurement contract already exists,
+           * preserve it. Otherwise the adapters are allowed to build it.
+           */
+          ...(context?.measurements
+            ? {
+                measurements:
+                  context.measurements,
+              }
+            : {}),
+
+          metadata: {
+            ...clone(metadata),
+            gptIntelligenceTimeoutMs:
+              Math.max(
+                1000,
+                Number(
+                  process.env.CRYPTO_GPT_SCANNER_TIMEOUT_MS ??
+                  45000,
+                ) || 45000,
+              ),
+          },
+
+          researchOnly: true,
+          executionAuthority: false,
+          liveExecution: false,
+        });
+    } catch (error) {
+      deepResearch = {
+        researchStatus: "RESEARCH_ERROR",
+        researchError:
+          error instanceof Error
+            ? error.message
+            : String(error),
+        pillars: {},
+        engines: {},
+        researchOnly: true,
+        executionAuthority: false,
+        liveExecution: false,
+      };
+    }
+
+    const deepResearchMs = elapsedMs(deepResearchStartedAt);
+
+    const engineResults = {
+      ...(deepResearch?.engines ?? {}),
+    };
+
+    /*
+     * Valuation is optional research depth (0% canonical weight).
+     * Keep it out of the critical path beyond a small bounded budget.
+     */
+    const valuationStartedAt = Date.now();
+    const valuation =
+      await runValuationWithBudget(
+        context,
+        metadata,
       );
+    const valuationMs = elapsedMs(valuationStartedAt);
 
-    const engineResults =
-      Object.fromEntries(
-        entries,
-      );
+    engineResults.valuation = valuation;
 
     const aggregate =
       aggregateScores({
@@ -912,6 +1293,10 @@ export function createCryptoScannerService({
         aggregate
           .evidenceAdjustedScore,
 
+      presentationScore:
+        aggregate
+          .presentationScore,
+
       bias:
         classifyBias(
           overallScore,
@@ -932,8 +1317,48 @@ export function createCryptoScannerService({
             .toFixed(2),
         ),
 
-      engines:
-        engineResults,
+      // Canonical Deep Research contract used by CryptoEngines.jsx.
+      researchScore:
+        deepResearch?.researchScore ?? null,
+
+      researchConfidence:
+        deepResearch?.researchConfidence ?? 0,
+
+      researchCoverage:
+        deepResearch?.researchCoverage ?? 0,
+
+      researchAvailableWeight:
+        deepResearch?.researchAvailableWeight ?? 0,
+
+      researchRepresentedEvidenceWeight:
+        deepResearch?.researchRepresentedEvidenceWeight ?? 0,
+
+      researchWeights:
+        deepResearch?.researchWeights ?? {
+          technical: 0.20,
+          fundamental: 0.20,
+          supporting: 0.60,
+        },
+
+      pillars:
+        deepResearch?.pillars ?? {},
+
+      qualification2:
+        deepResearch?.qualification2 ?? null,
+
+      qualification2Readiness:
+        deepResearch?.qualification2Readiness ?? null,
+
+      // Expose canonical pillars alongside diagnostics for frontend detail cards.
+      engines: {
+        technical:
+          deepResearch?.pillars?.technical ?? null,
+        fundamental:
+          deepResearch?.pillars?.fundamental ?? null,
+        supporting:
+          deepResearch?.pillars?.supporting ?? null,
+        ...engineResults,
+      },
 
       weights,
 
@@ -996,6 +1421,28 @@ export function createCryptoScannerService({
             [],
         ),
 
+      researchArchitecture:
+        deepResearch?.researchArchitecture ??
+        "TECHNICAL_20_FUNDAMENTAL_20_SUPPORTING_60",
+
+      canonicalDeepResearchArchitecture:
+        "TECHNICAL_20_FUNDAMENTAL_20_SUPPORTING_60",
+
+      performance: {
+        resolveContextMs,
+        deepResearchMs,
+        valuationMs,
+        totalMs: elapsedMs(scanStartedAt),
+        valuationBudgetMs:
+          Math.max(
+            500,
+            Number(
+              process.env.CRYPTO_VALUATION_TIMEOUT_MS ??
+              2500,
+            ) || 2500,
+          ),
+      },
+
       paperExecution:
         true,
 
@@ -1032,6 +1479,15 @@ export function createCryptoScannerService({
               ],
           }),
         ),
+
+      researchDepthEngines: [
+        {
+          key: "valuation",
+          configured: true,
+          canonicalWeight: 0,
+          affectsCanonicalScore: false,
+        },
+      ],
 
       neutralUnavailableScore:
         DEFAULT_NEUTRAL_SCORE,

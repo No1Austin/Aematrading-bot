@@ -592,6 +592,139 @@ function normalizeDecision(
 }
 
 
+
+function getFinalRevalidationDirection(
+  candidate,
+) {
+  return upper(
+    candidate
+      ?.finalRevalidation
+      ?.decision,
+    "NEUTRAL",
+  );
+}
+
+
+function buildDirectionAgreement({
+  candidate,
+  decision,
+  entryGate = null,
+} = {}) {
+  const finalDirection =
+    getFinalRevalidationDirection(
+      candidate,
+    );
+
+  const intelligenceDirection =
+    upper(
+      decision
+        ?.preferredDirection ??
+      decision?.direction,
+      "NEUTRAL",
+    );
+
+  const entryDirection =
+    upper(
+      entryGate?.direction,
+      intelligenceDirection,
+    );
+
+  const validFinalDirection =
+    finalDirection === "LONG" ||
+    finalDirection === "SHORT";
+
+  const validIntelligenceDirection =
+    intelligenceDirection === "LONG" ||
+    intelligenceDirection === "SHORT";
+
+  const validEntryDirection =
+    entryDirection === "LONG" ||
+    entryDirection === "SHORT";
+
+  const approved =
+    validFinalDirection &&
+    validIntelligenceDirection &&
+    validEntryDirection &&
+    finalDirection ===
+      intelligenceDirection &&
+    intelligenceDirection ===
+      entryDirection;
+
+  return {
+    approved,
+
+    finalRevalidationDirection:
+      finalDirection,
+
+    tradingIntelligenceDirection:
+      intelligenceDirection,
+
+    entryGateDirection:
+      entryDirection,
+
+    reason:
+      approved
+        ? "DIRECTION_AGREEMENT_CONFIRMED"
+        : "DIRECTION_REVALIDATION_INTELLIGENCE_CONFLICT",
+
+    noExecutionAuthority:
+      true,
+
+    liveExecution:
+      false,
+  };
+}
+
+
+function buildDirectionConflictEntryGate({
+  decision,
+  directionAgreement,
+} = {}) {
+  return {
+    approved:
+      false,
+
+    state:
+      "NO_TRADE_CONFLICT",
+
+    direction:
+      directionAgreement
+        ?.tradingIntelligenceDirection ??
+      decision?.preferredDirection ??
+      "NEUTRAL",
+
+    entryQuality:
+      null,
+
+    exposureMultiplier:
+      0,
+
+    metrics:
+      {},
+
+    reasons:
+      [],
+
+    warnings:
+      [],
+
+    blockers: [
+      directionAgreement
+        ?.reason ??
+      "DIRECTION_REVALIDATION_INTELLIGENCE_CONFLICT",
+    ],
+
+    directionAgreement,
+
+    noExecutionAuthority:
+      true,
+
+    liveExecution:
+      false,
+  };
+}
+
+
 /**
  * ============================================================
  * ENTRY PATH
@@ -610,23 +743,59 @@ async function runEntryPath({
   futuresRiskPolicy,
   riskContext,
 }) {
-  const entryGate =
-    qualifyCryptoTradeEntry({
+  const preEntryDirectionAgreement =
+    buildDirectionAgreement({
+      candidate,
       decision,
-
-      execution:
-        executionContext,
-
-      risk:
-        entryRiskContext,
-
-      ...(entryPolicy
-        ? {
-            policy:
-              entryPolicy,
-          }
-        : {}),
+      entryGate: {
+        direction:
+          decision?.preferredDirection,
+      },
     });
+
+  const entryGate =
+    preEntryDirectionAgreement
+      ?.approved === true
+      ? qualifyCryptoTradeEntry({
+          decision,
+
+          execution:
+            executionContext,
+
+          risk:
+            entryRiskContext,
+
+          ...(entryPolicy
+            ? {
+                policy:
+                  entryPolicy,
+              }
+            : {}),
+        })
+      : buildDirectionConflictEntryGate({
+          decision,
+          directionAgreement:
+            preEntryDirectionAgreement,
+        });
+
+  const directionAgreement =
+    buildDirectionAgreement({
+      candidate,
+      decision,
+      entryGate,
+    });
+
+  const resolvedEntryGate =
+    directionAgreement?.approved === true
+      ? {
+          ...entryGate,
+
+          directionAgreement,
+        }
+      : buildDirectionConflictEntryGate({
+          decision,
+          directionAgreement,
+        });
 
   const entryPrice =
     finite(
@@ -649,18 +818,22 @@ async function runEntryPath({
     );
 
   const riskPlan =
-    buildCryptoFuturesRiskPlan(
+    (
+      directionAgreement?.approved === true &&
+      resolvedEntryGate?.approved === true
+    )
+      ? buildCryptoFuturesRiskPlan(
       {
         ...riskContext,
 
         direction:
-          entryGate
+          resolvedEntryGate
             ?.direction ??
           decision
             ?.preferredDirection,
 
         entryQualification:
-          entryGate,
+          resolvedEntryGate,
 
         entryPrice,
 
@@ -694,7 +867,32 @@ async function runEntryPath({
 
       futuresRiskPolicy ??
       {},
-    );
+    )
+      : {
+          approved:
+            false,
+
+          status:
+            directionAgreement?.approved === true
+              ? "ENTRY_QUALIFICATION_REQUIRED"
+              : "DIRECTION_CONFLICT",
+
+          reason:
+            directionAgreement?.approved === true
+              ? "ENTRY_GATE_NOT_APPROVED"
+              : directionAgreement?.reason,
+
+          direction:
+            resolvedEntryGate?.direction ??
+            decision?.preferredDirection ??
+            "NEUTRAL",
+
+          noExecutionAuthority:
+            true,
+
+          liveExecution:
+            false,
+        };
 
   const lifecycle =
     await coordinateCryptoPositionLifecycle({
@@ -721,7 +919,8 @@ async function runEntryPath({
 
       decision,
 
-      entryGate,
+      entryGate:
+        resolvedEntryGate,
     });
 
   return {
@@ -732,7 +931,10 @@ async function runEntryPath({
 
     decision,
 
-    entryGate,
+    entryGate:
+      resolvedEntryGate,
+
+    directionAgreement,
 
     liveMonitor:
       null,
@@ -747,10 +949,38 @@ async function runEntryPath({
     action:
       lifecycle?.action ??
       (
-        entryGate?.approved
+        (
+          resolvedEntryGate?.approved === true &&
+          riskPlan?.approved === true &&
+          directionAgreement?.approved === true
+        )
           ? "OPEN_POSITION"
           : "WAIT"
       ),
+
+    evidenceContract: {
+      executionEvidenceRequired: [
+        "spreadPercent",
+        "liquidityScore",
+      ],
+
+      entryRiskEvidenceRequired: [
+        "riskReward",
+        "stopDistancePercent",
+      ],
+
+      entryPriceAvailable:
+        entryPrice !== null,
+
+      accountEquityAvailable:
+        accountEquity !== null,
+
+      failClosed:
+        true,
+
+      missingEvidenceReceivesNeutralScore:
+        false,
+    },
 
     noExecutionAuthority:
       true,

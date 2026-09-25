@@ -130,6 +130,22 @@ export const DEFAULT_CRYPTO_ENTRY_POLICY =
       65,
 
     /**
+     * Futures entry evidence is fail-closed.
+     * Missing execution/risk evidence must never receive a neutral score.
+     */
+    requireSpreadEvidence:
+      true,
+
+    requireLiquidityEvidence:
+      true,
+
+    requireRiskRewardEvidence:
+      true,
+
+    requireStopDistanceEvidence:
+      true,
+
+    /**
      * Volatility.
      *
      * These values assume an input normalized 0–100.
@@ -624,6 +640,58 @@ export function qualifyCryptoTradeEntry({
    */
 
   if (
+    policy.requireSpreadEvidence === true &&
+    exec.spreadPercent === null
+  ) {
+    blockers.push(
+      "SPREAD_EVIDENCE_REQUIRED",
+    );
+  }
+
+  if (
+    policy.requireLiquidityEvidence === true &&
+    exec.liquidityScore === null
+  ) {
+    blockers.push(
+      "LIQUIDITY_EVIDENCE_REQUIRED",
+    );
+  }
+
+  if (
+    blockers.some(
+      blocker =>
+        [
+          "SPREAD_EVIDENCE_REQUIRED",
+          "LIQUIDITY_EVIDENCE_REQUIRED",
+        ].includes(
+          blocker,
+        ),
+    )
+  ) {
+    return {
+      approved: false,
+
+      state:
+        CRYPTO_ENTRY_STATE
+          .INSUFFICIENT_DATA,
+
+      direction,
+
+      exposureMultiplier:
+        0,
+
+      reasons,
+
+      warnings,
+
+      blockers,
+
+      noExecutionAuthority:
+        true,
+    };
+  }
+
+  if (
     exec.venueHealthy ===
     false
   ) {
@@ -704,6 +772,48 @@ export function qualifyCryptoTradeEntry({
    * RISK / REWARD
    * ----------------------------------------------------------
    */
+
+  if (
+    policy.requireRiskRewardEvidence === true &&
+    tradeRisk.riskReward === null
+  ) {
+    blockers.push(
+      "RISK_REWARD_EVIDENCE_REQUIRED",
+    );
+  }
+
+  if (
+    policy.requireStopDistanceEvidence === true &&
+    tradeRisk.stopDistancePercent === null
+  ) {
+    blockers.push(
+      "STOP_DISTANCE_EVIDENCE_REQUIRED",
+    );
+  }
+
+  if (blockers.length > 0) {
+    return {
+      approved: false,
+
+      state:
+        CRYPTO_ENTRY_STATE
+          .INSUFFICIENT_DATA,
+
+      direction,
+
+      exposureMultiplier:
+        0,
+
+      reasons,
+
+      warnings,
+
+      blockers,
+
+      noExecutionAuthority:
+        true,
+    };
+  }
 
   if (
     tradeRisk.riskReward !==
@@ -1003,9 +1113,8 @@ export function qualifyCryptoTradeEntry({
     );
 
   const riskRewardQuality =
-    tradeRisk.riskReward ===
-    null
-      ? 0.7
+    tradeRisk.riskReward === null
+      ? 0
       : clamp(
           tradeRisk.riskReward /
             2.5,
@@ -1014,9 +1123,8 @@ export function qualifyCryptoTradeEntry({
         );
 
   const liquidityQuality =
-    exec.liquidityScore ===
-    null
-      ? 0.7
+    exec.liquidityScore === null
+      ? 0
       : clamp(
           exec.liquidityScore /
             100,

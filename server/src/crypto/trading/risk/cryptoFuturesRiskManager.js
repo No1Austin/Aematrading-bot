@@ -210,6 +210,25 @@ export const DEFAULT_CRYPTO_FUTURES_RISK_POLICY =
 
     maximumNotionalToEquity:
       2.5,
+
+    /**
+     * ENTRY PLAN EVIDENCE
+     *
+     * New futures entries must be based on real stop evidence.
+     * We do not manufacture a preferred stop when ATR/structure is absent.
+     */
+    requireApprovedEntryQualification:
+      true,
+
+    requireStopEvidence:
+      true,
+
+    /**
+     * Liquidation price may be unavailable before an order exists.
+     * When supplied, it is validated strictly below.
+     */
+    requireKnownLiquidationPrice:
+      false,
   });
 
 function getVolatilityState(
@@ -397,13 +416,10 @@ function calculateStopDistance({
       );
   }
 
-  if (
-    stopPercent === null
-  ) {
-    stopPercent =
-      policy
-        .preferredStopPercent;
-  }
+  /**
+   * Do not manufacture a stop when volatility evidence is absent.
+   * Structural invalidation below may still provide a real stop.
+   */
 
   /**
    * Structural invalidation may require
@@ -428,12 +444,35 @@ function calculateStopDistance({
       100;
 
     if (
+      stopPercent === null ||
       structuralDistance >
-      stopPercent
+        stopPercent
     ) {
       stopPercent =
         structuralDistance;
     }
+  }
+
+  if (
+    stopPercent === null ||
+    stopPercent <= 0
+  ) {
+    return {
+      available:
+        false,
+
+      source:
+        "NONE",
+
+      stopPercent:
+        null,
+
+      stopDistance:
+        null,
+
+      stopPrice:
+        null,
+    };
   }
 
   stopPercent =
@@ -458,6 +497,24 @@ function calculateStopDistance({
         distance;
 
   return {
+    available:
+      true,
+
+    source:
+      structural !== null &&
+      structural > 0
+        ? (
+            atrPct !== null &&
+            atrPct > 0
+          ) ||
+          (
+            atrValue !== null &&
+            atrValue > 0
+          )
+          ? "ATR_AND_STRUCTURE"
+          : "STRUCTURE"
+        : "ATR",
+
     stopPercent:
       round(
         stopPercent,
@@ -853,13 +910,43 @@ export function buildCryptoFuturesRiskPlan(
       context.accountEquity,
     );
 
+  const inputBlockers = [];
+
+  if (!direction) {
+    inputBlockers.push(
+      "DIRECTION_REQUIRED",
+    );
+  }
+
   if (
-    !direction ||
     entryPrice === null ||
-    entryPrice <= 0 ||
+    entryPrice <= 0
+  ) {
+    inputBlockers.push(
+      "ENTRY_PRICE_REQUIRED",
+    );
+  }
+
+  if (
     accountEquity === null ||
     accountEquity <= 0
   ) {
+    inputBlockers.push(
+      "ACCOUNT_EQUITY_REQUIRED",
+    );
+  }
+
+  if (
+    policy.requireApprovedEntryQualification === true &&
+    context?.entryQualification?.approved !== true &&
+    !context?.liveMonitor
+  ) {
+    inputBlockers.push(
+      "APPROVED_ENTRY_QUALIFICATION_REQUIRED",
+    );
+  }
+
+  if (inputBlockers.length > 0) {
     return {
       approved:
         false,
@@ -874,9 +961,17 @@ export function buildCryptoFuturesRiskPlan(
       canExecute:
         false,
 
-      blockers: [
-        "INVALID_RISK_INPUT",
-      ],
+      blockers:
+        inputBlockers,
+
+      warnings:
+        [],
+
+      noExecutionAuthority:
+        true,
+
+      liveExecution:
+        false,
     };
   }
 
@@ -957,6 +1052,67 @@ export function buildCryptoFuturesRiskPlan(
 
       policy,
     });
+
+  if (
+    policy.requireStopEvidence === true &&
+    stop?.available !== true
+  ) {
+    return {
+      approved:
+        false,
+
+      status:
+        "INSUFFICIENT_DATA",
+
+      riskState,
+
+      direction,
+
+      entryPrice:
+        round(
+          entryPrice,
+        ),
+
+      accountEquity:
+        round(
+          accountEquity,
+          2,
+        ),
+
+      canExecute:
+        false,
+
+      blockers: [
+        "STOP_EVIDENCE_REQUIRED",
+      ],
+
+      warnings:
+        [],
+
+      evidence: {
+        atr:
+          finite(context.atr),
+
+        atrPercent:
+          finite(context.atrPercent),
+
+        structuralStopPrice:
+          finite(
+            context.structuralStopPrice,
+          ),
+
+        stopSource:
+          stop?.source ??
+          "NONE",
+      },
+
+      noExecutionAuthority:
+        true,
+
+      liveExecution:
+        false,
+    };
+  }
 
   const leverage =
     calculateLeverage({
@@ -1046,6 +1202,15 @@ export function buildCryptoFuturesRiskPlan(
   }
 
   if (
+    policy.requireKnownLiquidationPrice === true &&
+    liquidation.known !== true
+  ) {
+    blockers.push(
+      "LIQUIDATION_PRICE_EVIDENCE_REQUIRED",
+    );
+  }
+
+  if (
     liquidation.known &&
     liquidation.safe ===
       false
@@ -1081,6 +1246,19 @@ export function buildCryptoFuturesRiskPlan(
   ) {
     warnings.push(
       "EXTREME_VOLATILITY",
+    );
+  }
+
+  if (
+    !Number.isFinite(
+      Number(
+        sizing.positionSizeUsd,
+      ),
+    ) ||
+    sizing.positionSizeUsd <= 0
+  ) {
+    blockers.push(
+      "POSITION_SIZE_NOT_EXECUTABLE",
     );
   }
 
@@ -1183,6 +1361,50 @@ export function buildCryptoFuturesRiskPlan(
     warnings,
 
     blockers,
+
+    evidence: {
+      stopEvidenceAvailable:
+        stop?.available === true,
+
+      stopSource:
+        stop?.source ??
+        "NONE",
+
+      atr:
+        finite(
+          context.atr,
+        ),
+
+      atrPercent:
+        finite(
+          context.atrPercent,
+        ),
+
+      structuralStopPrice:
+        finite(
+          context.structuralStopPrice,
+        ),
+
+      liquidationPriceKnown:
+        liquidation?.known === true,
+
+      entryQualificationApproved:
+        context
+          ?.entryQualification
+          ?.approved === true,
+
+      failClosed:
+        true,
+
+      syntheticStopFallback:
+        false,
+    },
+
+    noExecutionAuthority:
+      true,
+
+    liveExecution:
+      false,
 
     /**
      * Architectural invariant.

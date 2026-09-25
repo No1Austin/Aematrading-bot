@@ -1,5 +1,11 @@
 /* client/src/components/Sidebar.css */
 
+.aema-sidebar-mobile-bar,
+.aema-sidebar-backdrop,
+.aema-sidebar-close-button {
+  display: none;
+}
+
 
 /* =========================================================
    AEMA SIDEBAR
@@ -1148,4 +1154,111 @@
     height: 34px;
   }
 
+}
+
+/* Mobile uses an off-canvas drawer; keeping it out of document flow prevents
+   the sidebar/header from squeezing the application into a narrow column. */
+@media (max-width: 760px) {
+  .aema-sidebar-mobile-bar {
+    position: fixed;
+    z-index: 990;
+    inset: 0 0 auto;
+    min-height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: max(10px, env(safe-area-inset-top)) 14px 10px;
+    box-sizing: border-box;
+    color: var(--text-primary, #f7f9fc);
+    background: rgba(7, 24, 47, 0.96);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+
+  .aema-sidebar-mobile-brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .aema-sidebar-mobile-brand .aema-brand-mark { width: 38px; height: 38px; flex-basis: 38px; }
+  .aema-sidebar-mobile-brand .aema-brand-copy { display: block; }
+
+  .aema-sidebar-menu-button,
+  .aema-sidebar-close-button {
+    width: 40px;
+    height: 40px;
+    flex: 0 0 40px;
+    display: grid;
+    place-items: center;
+    padding: 0;
+    color: #f7f9fc;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 11px;
+    cursor: pointer;
+  }
+
+  .aema-sidebar-close-button { margin-left: auto; }
+  .aema-sidebar-menu-button:focus-visible,
+  .aema-sidebar-close-button:focus-visible { outline: 3px solid rgba(255, 134, 20, 0.32); outline-offset: 2px; }
+
+  .aema-sidebar-backdrop {
+    position: fixed;
+    z-index: 1040;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    padding: 0;
+    visibility: hidden;
+    opacity: 0;
+    background: rgba(1, 7, 18, 0.72);
+    border: 0;
+    backdrop-filter: blur(4px);
+    pointer-events: none;
+    transition: opacity 220ms ease, visibility 220ms ease;
+  }
+
+  .aema-sidebar-backdrop.visible { visibility: visible; opacity: 1; pointer-events: auto; }
+
+  .aema-sidebar {
+    --sidebar-width: min(88vw, 330px);
+    z-index: 1050;
+    width: var(--sidebar-width);
+    min-width: var(--sidebar-width);
+    visibility: hidden;
+    transform: translateX(-104%);
+    transition: transform 240ms cubic-bezier(0.22, 1, 0.36, 1), visibility 240ms ease;
+    box-shadow: 22px 0 70px rgba(0, 0, 0, 0.36);
+  }
+
+  .aema-sidebar.mobile-open { visibility: visible; transform: translateX(0); }
+  .aema-sidebar-content { padding: max(16px, env(safe-area-inset-top)) 14px max(14px, env(safe-area-inset-bottom)); }
+  .aema-sidebar-brand { justify-content: flex-start; padding: 0 0 15px; }
+  .aema-sidebar-brand .aema-brand-copy,
+  .aema-workspace-copy,
+  .aema-workspace-arrow,
+  .aema-nav-content,
+  .aema-nav-chevron,
+  .aema-nav-active-indicator,
+  .aema-system-mini-copy,
+  .aema-sidebar-version { display: initial; }
+  .aema-workspace-options { grid-template-columns: 1fr; }
+  .aema-workspace-button { justify-content: flex-start; padding: 10px 11px; }
+  .aema-workspace-status { margin-left: auto; }
+  .aema-nav-item { justify-content: flex-start; min-height: 48px; padding: 7px 9px; }
+  .aema-nav-active-indicator { display: block; }
+  .aema-nav-content { display: flex; }
+  .aema-nav-chevron { display: block; }
+  .aema-system-mini { justify-content: flex-start; }
+  .aema-system-mini-copy { display: block; }
+  .aema-sidebar-version { display: flex; }
+}
+
+@media (max-width: 380px) {
+  .aema-sidebar { --sidebar-width: 92vw; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aema-sidebar,
+  .aema-sidebar-backdrop { transition: none; }
 }

@@ -1,0 +1,11 @@
+symbol,ok,preferredSide,preferredScore,longScore,shortScore,scoreDifference,evidenceCoveragePercent,tradeEligible,decision,riskStatus,technical,company,macro,events,institutional,historical,social,country,error
+VIS,false,,,,,,,false,,,,,,,,,,,Historical provider refresh did not become ready and MarketDataHub does not contain sufficient cached history.
+SNAG,false,,,,,,,false,,,,,,,,,,,Historical provider refresh did not become ready and MarketDataHub does not contain sufficient cached history.
+SMOX,false,,,,,,,false,,,,,,,,,,,Historical provider refresh did not become ready and MarketDataHub does not contain sufficient cached history.
+IPVVU,false,,,,,,,false,,,,,,,,,,,Historical provider refresh did not become ready and MarketDataHub does not contain sufficient cached history.
+BKKT,true,SHORT,72.85,29.66,72.85,43.19,100,false,NO_TRADE,BLOCKED,27.5,23.75,6.43,5,3.75,2.5,2.5,1.42,
+MSTX,true,SHORT,55.1,44.41,55.1,10.690000000000005,70,false,NO_TRADE,BLOCKED,18.5,15,6.43,5,3.75,2.5,2.5,1.42,
+HOVNP,false,,,,,,,false,,,,,,,,,,,Historical provider refresh did not become ready and MarketDataHub does not contain sufficient cached history.
+CLAR,true,SHORT,57.34,38.16,57.34,19.180000000000007,100,false,NO_TRADE,BLOCKED,23,13.36,5.81,5,3.75,2.5,2.5,1.42,
+DHC,false,,,,,,,false,,,,,,,,,,,fetch failed
+FTC,false,,,,,,,false,,,,,,,,,,,fetch failed

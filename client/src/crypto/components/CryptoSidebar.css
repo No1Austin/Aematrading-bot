@@ -613,10 +613,21 @@
 
 
 /* =========================================================
+   MOBILE CONTROLS
+   ========================================================= */
+
+.crypto-sidebar-mobile-bar,
+.crypto-sidebar-backdrop,
+.crypto-sidebar-close-button {
+  display: none;
+}
+
+
+/* =========================================================
    RESPONSIVE
    ========================================================= */
 
-@media (max-height: 820px) {
+@media (max-height: 820px) and (min-width: 761px) {
   .crypto-sidebar {
     padding-top: 10px;
   }
@@ -636,7 +647,7 @@
 }
 
 
-@media (max-width: 1100px) {
+@media (max-width: 1100px) and (min-width: 761px) {
   .crypto-shell {
     --sidebar-width: 220px;
   }
@@ -648,29 +659,59 @@
 
 
 @media (max-width: 760px) {
-  .crypto-sidebar {
-    position: relative;
+  .crypto-sidebar-mobile-bar {
+    position: fixed;
+    z-index: 990;
+    top: 0;
+    right: 0;
+    left: 0;
 
     width: 100%;
-    min-width: 0;
-    height: auto;
+    min-height: 62px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 14px;
 
     padding:
       max(10px, env(safe-area-inset-top))
-      10px
-      8px;
+      14px
+      10px;
 
-    border-right: 0;
+    box-sizing: border-box;
+
+    color: var(--text-primary);
+    background:
+      color-mix(
+        in srgb,
+        var(--surface) 94%,
+        transparent
+      );
+
     border-bottom:
       1px solid
       var(--border);
+
+    box-shadow:
+      0 10px 30px
+      rgba(0, 0, 0, 0.16);
+
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
   }
 
-  .crypto-sidebar-brand {
-    padding-bottom: 9px;
-    margin-bottom: 9px;
+  .crypto-sidebar-mobile-brand {
+    min-width: 0;
+
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
   }
 
+  .crypto-sidebar-mobile-brand
   .crypto-sidebar-brand-mark {
     width: 34px;
     height: 34px;
@@ -678,88 +719,363 @@
     flex-basis: 34px;
   }
 
+  .crypto-sidebar-menu-button,
+  .crypto-sidebar-close-button {
+    width: 40px;
+    height: 40px;
+
+    flex:
+      0
+      0
+      40px;
+
+    display: grid;
+    place-items: center;
+
+    padding: 0;
+
+    color: var(--text-primary);
+    background: var(--surface-soft);
+
+    border:
+      1px solid
+      var(--border);
+
+    border-radius: 10px;
+
+    cursor: pointer;
+
+    transition:
+      color 150ms ease,
+      background-color 150ms ease,
+      border-color 150ms ease,
+      transform 150ms ease;
+  }
+
+  .crypto-sidebar-menu-button:hover,
+  .crypto-sidebar-close-button:hover {
+    color: #181a20;
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .crypto-sidebar-menu-button:active,
+  .crypto-sidebar-close-button:active {
+    transform: scale(0.96);
+  }
+
+  .crypto-sidebar-menu-button:focus-visible,
+  .crypto-sidebar-close-button:focus-visible {
+    outline:
+      3px solid
+      color-mix(
+        in srgb,
+        var(--accent) 32%,
+        transparent
+      );
+
+    outline-offset: 2px;
+  }
+
+  .crypto-sidebar-backdrop {
+    position: fixed;
+    z-index: 1040;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    padding: 0;
+
+    visibility: hidden;
+    opacity: 0;
+
+    background: rgba(3, 7, 12, 0.7);
+
+    border: 0;
+
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+
+    transition:
+      opacity 220ms ease,
+      visibility 220ms ease;
+
+    pointer-events: none;
+  }
+
+  .crypto-sidebar-backdrop.visible {
+    visibility: visible;
+    opacity: 1;
+
+    pointer-events: auto;
+  }
+
+  .crypto-sidebar {
+    position: fixed;
+    z-index: 1050;
+    top: 0;
+    bottom: 0;
+    left: 0;
+
+    width: min(88vw, 330px);
+    min-width: min(88vw, 330px);
+    height: 100dvh;
+
+    padding:
+      max(16px, env(safe-area-inset-top))
+      14px
+      max(14px, env(safe-area-inset-bottom));
+
+    visibility: hidden;
+
+    transform: translateX(-104%);
+
+    background: var(--surface);
+
+    border-right:
+      1px solid
+      var(--border);
+
+    border-bottom: 0;
+
+    box-shadow:
+      22px 0 70px
+      rgba(0, 0, 0, 0.34);
+
+    transition:
+      transform 240ms cubic-bezier(0.22, 1, 0.36, 1),
+      visibility 240ms ease;
+
+    overscroll-behavior: contain;
+  }
+
+  .crypto-sidebar.mobile-open {
+    visibility: visible;
+
+    transform: translateX(0);
+  }
+
+  .crypto-sidebar-brand {
+    gap: 10px;
+
+    padding:
+      0
+      0
+      15px;
+
+    margin-bottom: 16px;
+  }
+
+  .crypto-sidebar-brand-mark {
+    width: 38px;
+    height: 38px;
+
+    flex-basis: 38px;
+  }
+
+  .crypto-sidebar-close-button {
+    margin-left: auto;
+  }
+
   .crypto-sidebar-workspaces {
-    margin-bottom: 9px;
+    margin-bottom: 20px;
   }
 
   .crypto-sidebar-workspace {
-    min-height: 48px;
+    min-height: 62px;
+
+    padding: 9px;
   }
 
-  .crypto-sidebar-navigation
-  .crypto-sidebar-section-label {
-    display: none;
+  .crypto-sidebar-workspace-copy span {
+    display: block;
   }
 
   .crypto-sidebar-nav {
-    flex-direction: row;
+    flex-direction: column;
 
-    gap: 4px;
+    gap: 3px;
 
-    overflow-x: auto;
-
-    scrollbar-width: none;
-  }
-
-  .crypto-sidebar-nav::-webkit-scrollbar {
-    display: none;
+    overflow: visible;
   }
 
   .crypto-sidebar-nav-item {
-    min-width: 67px;
-    min-height: 48px;
+    min-width: 0;
+    min-height: 44px;
 
     flex:
       0
       0
       auto;
 
-    flex-direction: column;
-    justify-content: center;
+    flex-direction: row;
+    justify-content: flex-start;
 
-    gap: 3px;
+    gap: 10px;
 
     padding:
-      5px
-      7px;
+      6px
+      9px;
   }
 
   .crypto-sidebar-nav-item.active::before {
-    left: 50%;
-    top: auto;
-    bottom: 0;
+    left: 0;
+    top: 10px;
+    bottom: 10px;
 
-    width: 20px;
-    height: 2px;
+    width: 2px;
+    height: auto;
 
-    transform:
-      translateX(-50%);
+    transform: none;
   }
 
   .crypto-sidebar-nav-icon {
-    width: 26px;
-    height: 26px;
+    width: 29px;
+    height: 29px;
 
-    flex-basis: 26px;
+    flex-basis: 29px;
   }
 
   .crypto-sidebar-nav-label {
-    max-width: 62px;
+    max-width: none;
 
-    font-size: 7px;
+    font-size: 11px;
 
-    text-align: center;
+    text-align: left;
   }
 
   .crypto-sidebar-bottom {
-    display: none;
+    display: block;
+  }
+
+  .crypto-sidebar-status {
+    padding: 10px;
+  }
+
+  .crypto-runtime-badge {
+    display: inline-flex;
+
+    padding:
+      3px
+      5px;
+
+    color: var(--green);
+    background:
+      color-mix(
+        in srgb,
+        var(--green) 10%,
+        transparent
+      );
+
+    border-radius: 5px;
+
+    font-size: 6px;
+    font-weight: 800;
+  }
+}
+
+
+@media (max-width: 380px) {
+  .crypto-sidebar {
+    width: 92vw;
+    min-width: 92vw;
+  }
+
+  .crypto-sidebar-workspace-grid {
+    grid-template-columns: 1fr;
   }
 }
 
 
 @media (prefers-reduced-motion: reduce) {
   .crypto-sidebar-workspace,
-  .crypto-sidebar-nav-item {
+  .crypto-sidebar-nav-item,
+  .crypto-sidebar,
+  .crypto-sidebar-backdrop,
+  .crypto-sidebar-menu-button,
+  .crypto-sidebar-close-button {
     transition: none;
+  }
+}
+
+
+/* =========================================================
+   REFINED DESKTOP FINISH
+   ========================================================= */
+
+@media (min-width: 761px) {
+  .crypto-sidebar {
+    padding: 16px 12px 12px;
+  }
+
+  .crypto-sidebar-brand {
+    margin-bottom: 14px;
+    padding: 1px 6px 15px;
+  }
+
+  .crypto-sidebar-brand-mark {
+    width: 34px;
+    height: 34px;
+    flex-basis: 34px;
+    border-radius: 9px;
+  }
+
+  .crypto-sidebar-workspaces {
+    margin-bottom: 18px;
+  }
+
+  .crypto-sidebar-workspace {
+    min-height: 54px;
+    border-radius: 9px;
+  }
+
+  .crypto-sidebar-navigation {
+    flex: 1 1 auto;
+  }
+
+  .crypto-sidebar-nav {
+    gap: 3px;
+  }
+
+  .crypto-sidebar-nav-item {
+    min-height: 40px;
+    padding: 5px 7px;
+    border-radius: 8px;
+  }
+
+  .crypto-sidebar-nav-item.active {
+    border-color:
+      color-mix(
+        in srgb,
+        var(--accent) 18%,
+        var(--border)
+      );
+  }
+
+  .crypto-sidebar-nav-item.active::before {
+    top: 8px;
+    bottom: 8px;
+    width: 2px;
+  }
+
+  .crypto-sidebar-nav-icon {
+    width: 27px;
+    height: 27px;
+    flex-basis: 27px;
+  }
+
+  .crypto-sidebar-nav-label {
+    font-size: 10.5px;
+  }
+
+  .crypto-sidebar-divider {
+    margin-top: 10px;
+  }
+
+  .crypto-sidebar-status {
+    padding: 8px 9px;
   }
 }

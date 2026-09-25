@@ -2,10 +2,8 @@
 
 import {
   Activity,
-  BarChart3,
   CandlestickChart,
   ChevronRight,
-  Clock3,
   Droplets,
   Gauge,
   Globe2,
@@ -16,7 +14,6 @@ import {
   RefreshCw,
   Search,
   ShieldCheck,
-  Sparkles,
   Sun,
   Waves,
 } from "lucide-react";
@@ -25,8 +22,13 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
+
+import {
+  scanCryptoToken,
+} from "../services/cryptoApi.js";
 
 import CryptoSidebar from
   "../components/CryptoSidebar.jsx";
@@ -35,6 +37,16 @@ import WorkspaceJumpButton from
   "../../components/WorkspaceJumpButton.jsx";
 
 import "./CryptoScanner.css";
+
+
+const CRYPTO_SCAN_STORAGE_KEY =
+  "aema-crypto-last-scan";
+
+const CRYPTO_SCAN_QUERY_STORAGE_KEY =
+  "aema-crypto-last-scan-query";
+
+const CRYPTO_SCAN_TIMEFRAME_STORAGE_KEY =
+  "aema-crypto-last-scan-timeframe";
 
 
 const ENGINE_DEFINITIONS = [
@@ -221,6 +233,394 @@ function readEngineScore(
 }
 
 
+function readStoredJson(
+  key,
+) {
+  try {
+    const raw =
+      window.localStorage.getItem(
+        key,
+      );
+
+    return raw
+      ? JSON.parse(
+          raw,
+        )
+      : null;
+  } catch {
+    return null;
+  }
+}
+
+
+function normalizeBaseSymbol(
+  value,
+) {
+  const upper =
+    String(
+      value ??
+      "",
+    )
+      .trim()
+      .toUpperCase()
+      .replace(
+        /[^A-Z0-9]/g,
+        "",
+      );
+
+  if (!upper) {
+    return "";
+  }
+
+  const knownQuotes = [
+    "USDT",
+    "USDC",
+    "USD",
+    "CAD",
+    "EUR",
+    "GBP",
+    "BTC",
+    "ETH",
+  ];
+
+  for (
+    const quote
+    of knownQuotes
+  ) {
+    if (
+      upper.endsWith(
+        quote,
+      ) &&
+      upper.length >
+        quote.length
+    ) {
+      return upper.slice(
+        0,
+        -quote.length,
+      );
+    }
+  }
+
+  return upper;
+}
+
+
+function buildTradingViewSymbol(
+  result,
+  fallbackQuery,
+) {
+  const rawSymbol =
+    result
+      ?.symbol ??
+    result
+      ?.asset
+      ?.symbol ??
+    fallbackQuery;
+
+  const baseSymbol =
+    normalizeBaseSymbol(
+      rawSymbol,
+    );
+
+  if (!baseSymbol) {
+    return null;
+  }
+
+  const primaryVenue =
+    String(
+      result
+        ?.venue ??
+      result
+        ?.asset
+        ?.venues
+        ?.primaryVenue ??
+      "",
+    )
+      .trim()
+      .toUpperCase();
+
+  if (
+    primaryVenue ===
+    "COINBASE"
+  ) {
+    return `COINBASE:${baseSymbol}USD`;
+  }
+
+  if (
+    primaryVenue ===
+    "KRAKEN"
+  ) {
+    return `KRAKEN:${baseSymbol}USD`;
+  }
+
+  if (
+    primaryVenue ===
+    "BINANCE"
+  ) {
+    return `BINANCE:${baseSymbol}USDT`;
+  }
+
+  return `BINANCE:${baseSymbol}USDT`;
+}
+
+
+function timeframeToTradingViewInterval(
+  timeframe,
+) {
+  switch (
+    timeframe
+  ) {
+    case "5M":
+      return "5";
+
+    case "15M":
+      return "15";
+
+    case "4H":
+      return "240";
+
+    case "1D":
+      return "D";
+
+    case "1H":
+    default:
+      return "60";
+  }
+}
+
+
+function TradingViewCryptoChart({
+  result,
+  query,
+  timeframe,
+  theme,
+}) {
+  const containerRef =
+    useRef(null);
+
+  const tradingViewSymbol =
+    useMemo(
+      () =>
+        buildTradingViewSymbol(
+          result,
+          query,
+        ),
+      [
+        result,
+        query,
+      ],
+    );
+
+  const interval =
+    timeframeToTradingViewInterval(
+      timeframe,
+    );
+
+
+  useEffect(
+    () => {
+      const container =
+        containerRef.current;
+
+      if (
+        !container ||
+        !tradingViewSymbol
+      ) {
+        return undefined;
+      }
+
+      container.replaceChildren();
+
+      /*
+       * Keep the TradingView script attached to its own mount node.
+       * If React cleans up while the async script is still loading,
+       * the script retains a valid parent and cannot call querySelector
+       * on null after it finishes downloading.
+       */
+      const mountRoot =
+        document.createElement(
+          "div",
+        );
+
+      mountRoot.className =
+        "tradingview-widget-container";
+
+      mountRoot.style.height =
+        "100%";
+
+      mountRoot.style.width =
+        "100%";
+
+      const widgetRoot =
+        document.createElement(
+          "div",
+        );
+
+      widgetRoot.className =
+        "tradingview-widget-container__widget";
+
+      widgetRoot.style.height =
+        "100%";
+
+      widgetRoot.style.width =
+        "100%";
+
+      mountRoot.appendChild(
+        widgetRoot,
+      );
+
+      const script =
+        document.createElement(
+          "script",
+        );
+
+      script.src =
+        "https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js";
+
+      script.type =
+        "text/javascript";
+
+      script.async =
+        true;
+
+      script.text =
+        JSON.stringify({
+          autosize:
+            true,
+
+          symbol:
+            tradingViewSymbol,
+
+          interval,
+
+          timezone:
+            "Etc/UTC",
+
+          theme:
+            theme === "light"
+              ? "light"
+              : "dark",
+
+          style:
+            "1",
+
+          locale:
+            "en",
+
+          allow_symbol_change:
+            false,
+
+          calendar:
+            false,
+
+          support_host:
+            "https://www.tradingview.com",
+
+          // Keep TradingView's native drawing/analysis toolbar visible.
+          hide_side_toolbar:
+            false,
+
+          // Keep the date-range/navigation controls.
+          withdateranges:
+            true,
+
+          // Keep the native snapshot control available.
+          save_image:
+            true,
+
+          // Keep the right-side information panels available.
+          details:
+            true,
+
+          hotlist:
+            true,
+
+          // Publishing remains disabled; this is a research workspace.
+          enable_publishing:
+            false,
+        });
+
+      mountRoot.appendChild(
+        script,
+      );
+
+      container.appendChild(
+        mountRoot,
+      );
+
+      return () => {
+        if (
+          mountRoot.parentNode ===
+          container
+        ) {
+          container.removeChild(
+            mountRoot,
+          );
+        }
+      };
+    },
+    [
+      tradingViewSymbol,
+      interval,
+      theme,
+    ],
+  );
+
+
+  if (
+    !result ||
+    !tradingViewSymbol
+  ) {
+    return (
+      <div
+        className="crypto-scanner-chart-placeholder"
+      >
+        <CandlestickChart
+          size={26}
+        />
+
+        <strong>
+          Select an asset to begin
+        </strong>
+
+        <span>
+          Run a token scan to load its
+          interactive market chart.
+        </span>
+      </div>
+    );
+  }
+
+
+  return (
+    <div
+      className="crypto-scanner-live-chart"
+      style={{
+        width:
+          "100%",
+
+        height:
+          "100%",
+      }}
+    >
+      <div
+        ref={
+          containerRef
+        }
+        className="tradingview-widget-container"
+        style={{
+          width:
+            "100%",
+
+          height:
+            "100%",
+        }}
+      />
+    </div>
+  );
+}
+
+
 export default function CryptoScanner() {
   const [
     theme,
@@ -246,11 +646,18 @@ export default function CryptoScanner() {
         : "light";
     });
 
+
   const [
     query,
     setQuery,
   ] =
-    useState("");
+    useState(() =>
+      window.localStorage.getItem(
+        CRYPTO_SCAN_QUERY_STORAGE_KEY,
+      ) ??
+      "",
+    );
+
 
   const [
     scanning,
@@ -258,23 +665,35 @@ export default function CryptoScanner() {
   ] =
     useState(false);
 
+
   const [
     error,
     setError,
   ] =
     useState(null);
 
+
   const [
     result,
     setResult,
   ] =
-    useState(null);
+    useState(() =>
+      readStoredJson(
+        CRYPTO_SCAN_STORAGE_KEY,
+      ),
+    );
+
 
   const [
     timeframe,
     setTimeframe,
   ] =
-    useState("1H");
+    useState(() =>
+      window.localStorage.getItem(
+        CRYPTO_SCAN_TIMEFRAME_STORAGE_KEY,
+      ) ??
+      "1H",
+    );
 
 
   useEffect(
@@ -290,6 +709,19 @@ export default function CryptoScanner() {
   );
 
 
+  useEffect(
+    () => {
+      window.localStorage.setItem(
+        CRYPTO_SCAN_TIMEFRAME_STORAGE_KEY,
+        timeframe,
+      );
+    },
+    [
+      timeframe,
+    ],
+  );
+
+
   const scanToken =
     useCallback(
       async event => {
@@ -300,9 +732,7 @@ export default function CryptoScanner() {
           query
             .trim();
 
-        if (
-          !symbol
-        ) {
+        if (!symbol) {
           setError(
             "Enter a token symbol, pair or contract address.",
           );
@@ -319,57 +749,29 @@ export default function CryptoScanner() {
             null,
           );
 
-          const response =
-            await fetch(
-              "/api/crypto/scanner/scan",
-              {
-                method:
-                  "POST",
-
-                headers: {
-                  "Content-Type":
-                    "application/json",
-                },
-
-                body:
-                  JSON.stringify({
-                    query:
-                      symbol,
-                  }),
-              },
-            );
-
           const body =
-            await response
-              .json()
-              .catch(
-                () => ({}),
-              );
-
-          if (
-            !response.ok ||
-            body
-              ?.approved === false
-          ) {
-            throw new Error(
-              body
-                ?.error ??
-              body
-                ?.message ??
-              body
-                ?.blocker ??
-              `Scanner request failed (${response.status}).`,
+            await scanCryptoToken(
+              symbol,
             );
-          }
 
           setResult(
             body,
           );
-        } catch (requestError) {
-          setResult(
-            null,
+
+          window.localStorage.setItem(
+            CRYPTO_SCAN_STORAGE_KEY,
+            JSON.stringify(
+              body,
+            ),
           );
 
+          window.localStorage.setItem(
+            CRYPTO_SCAN_QUERY_STORAGE_KEY,
+            symbol,
+          );
+        } catch (
+          requestError
+        ) {
           setError(
             requestError
               ?.message ??
@@ -404,17 +806,6 @@ export default function CryptoScanner() {
     );
 
 
-  const normalizedSymbol =
-    result
-      ?.symbol ??
-    result
-      ?.asset
-      ?.symbol ??
-    query
-      .trim()
-      .toUpperCase();
-
-
   const engineRows =
     useMemo(
       () =>
@@ -434,6 +825,16 @@ export default function CryptoScanner() {
         result,
       ],
     );
+
+
+  const lastScanTime =
+    result
+      ?.timestamp
+      ? new Date(
+          result.timestamp,
+        )
+          .toLocaleTimeString()
+      : "—";
 
 
   return (
@@ -498,9 +899,13 @@ export default function CryptoScanner() {
               }
             >
               {theme === "dark" ? (
-                <Sun size={17} />
+                <Sun
+                  size={17}
+                />
               ) : (
-                <Moon size={17} />
+                <Moon
+                  size={17}
+                />
               )}
             </button>
           </div>
@@ -602,64 +1007,6 @@ export default function CryptoScanner() {
           className="crypto-scanner-overview"
         >
           <article
-            className="crypto-scanner-score-card"
-          >
-            <div
-              className="crypto-scanner-card-heading"
-            >
-              <div>
-                <span>
-                  Research Score
-                </span>
-
-                <h2>
-                  {normalizedSymbol ||
-                    "No asset selected"}
-                </h2>
-              </div>
-
-              <Sparkles
-                size={19}
-              />
-            </div>
-
-            <div
-              className={`crypto-scanner-score ${overallTone}`}
-            >
-              <strong>
-                {overallScore == null
-                  ? "—"
-                  : Math.round(
-                      overallScore,
-                    )}
-              </strong>
-
-              <span>
-                /100
-              </span>
-            </div>
-
-            <div
-              className="crypto-scanner-score-footer"
-            >
-              <span>
-                Signal
-              </span>
-
-              <strong
-                className={
-                  overallTone
-                }
-              >
-                {scoreLabel(
-                  overallScore,
-                )}
-              </strong>
-            </div>
-          </article>
-
-
-          <article
             className="crypto-scanner-chart-panel"
           >
             <div
@@ -675,9 +1022,55 @@ export default function CryptoScanner() {
                 </h2>
               </div>
 
-              <CandlestickChart
-                size={19}
-              />
+              <div
+                className="crypto-scanner-chart-summary"
+              >
+                <div
+                  className="crypto-scanner-chart-score"
+                >
+                  <span>
+                    Research Score
+                  </span>
+
+                  <strong
+                    className={
+                      overallTone
+                    }
+                  >
+                    {overallScore == null
+                      ? "—"
+                      : Math.round(
+                          overallScore,
+                        )}
+
+                    <small>
+                      /100
+                    </small>
+                  </strong>
+                </div>
+
+                <div
+                  className="crypto-scanner-chart-signal"
+                >
+                  <span>
+                    Signal
+                  </span>
+
+                  <strong
+                    className={
+                      overallTone
+                    }
+                  >
+                    {scoreLabel(
+                      overallScore,
+                    )}
+                  </strong>
+                </div>
+
+                <CandlestickChart
+                  size={19}
+                />
+              </div>
             </div>
 
             <div
@@ -719,35 +1112,33 @@ export default function CryptoScanner() {
 
               <button
                 type="button"
+                title="Use the chart toolbar to add indicators"
               >
                 Indicators
               </button>
 
               <button
                 type="button"
+                title="Use the chart drawing toolbar"
               >
                 Draw
               </button>
             </div>
 
-            <div
-              className="crypto-scanner-chart-placeholder"
-            >
-              <BarChart3
-                size={26}
-              />
-
-              <strong>
-                {result
-                  ? `${normalizedSymbol} chart`
-                  : "Select an asset to begin"}
-              </strong>
-
-              <span>
-                The interactive candlestick chart
-                and drawing tools will mount here.
-              </span>
-            </div>
+            <TradingViewCryptoChart
+              result={
+                result
+              }
+              query={
+                query
+              }
+              timeframe={
+                timeframe
+              }
+              theme={
+                theme
+              }
+            />
           </article>
         </section>
 
@@ -885,6 +1276,10 @@ export default function CryptoScanner() {
                   result
                     ?.market
                     ?.venue ??
+                  result
+                    ?.asset
+                    ?.venues
+                    ?.primaryVenue ??
                   "—"}
                 </strong>
               </div>
@@ -896,11 +1291,31 @@ export default function CryptoScanner() {
 
                 <strong>
                   {result
-                    ?.marketType ??
+                    ?.marketType &&
                   result
-                    ?.market
-                    ?.type ??
-                  "—"}
+                    .marketType !==
+                    "UNKNOWN"
+                    ? result
+                        .marketType
+                    : (
+                        (
+                          result
+                            ?.asset
+                            ?.venues
+                            ?.dexCount ??
+                          0
+                        ) > 0
+                          ? "DEX / MULTI-VENUE"
+                          : (
+                              result
+                                ?.asset
+                                ?.venues
+                                ?.cexCount ??
+                              0
+                            ) > 0
+                            ? "CEX"
+                            : "—"
+                      )}
                 </strong>
               </div>
 
@@ -923,10 +1338,7 @@ export default function CryptoScanner() {
                 </span>
 
                 <strong>
-                  {result
-                    ? new Date()
-                        .toLocaleTimeString()
-                    : "—"}
+                  {lastScanTime}
                 </strong>
               </div>
             </div>
@@ -978,8 +1390,12 @@ export default function CryptoScanner() {
                 <strong>
                   {result
                     ?.availability
-                    ?.completeness ??
-                  "—"}
+                    ?.completeness !=
+                  null
+                    ? `${result
+                        .availability
+                        .completeness}%`
+                    : "—"}
                 </strong>
               </div>
 

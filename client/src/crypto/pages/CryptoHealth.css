@@ -1,0 +1,121 @@
+/* client/src/crypto/pages/CryptoHealth.css */
+
+.crypto-health-page{
+  flex:1; min-width:0; min-height:100vh;
+  padding:28px clamp(20px,3vw,44px) 42px;
+  color:var(--text-primary); background:var(--page-bg);
+}
+.ch-header{display:flex;justify-content:space-between;gap:24px;align-items:flex-start;margin-bottom:18px}
+.ch-kicker{display:flex;align-items:center;gap:6px;color:var(--accent-strong);font-size:9px;font-weight:800;letter-spacing:.12em}
+.ch-header h1{margin:6px 0 0;font-size:34px;letter-spacing:-.035em}
+.ch-header p{max-width:700px;margin:7px 0 0;color:var(--text-muted);font-size:12px;line-height:1.55}
+.ch-actions{display:flex;gap:7px}
+.ch-icon-button,.ch-refresh{height:38px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text-secondary);cursor:pointer}
+.ch-icon-button{width:38px;display:grid;place-items:center}
+.ch-refresh{display:flex;align-items:center;gap:7px;padding:0 12px;font-size:10px;font-weight:700}
+.ch-icon-button:hover,.ch-refresh:hover{background:var(--surface-hover);color:var(--text-primary)}
+
+.ch-heartbeat{position:relative;overflow:hidden;padding:18px 20px 12px;margin-bottom:12px;background:var(--surface);border:1px solid var(--border);border-radius:12px}
+.ch-heartbeat.healthy{box-shadow:inset 3px 0 0 var(--green)}
+.ch-heartbeat.warning{box-shadow:inset 3px 0 0 #d9a20b}
+.ch-heartbeat.danger{box-shadow:inset 3px 0 0 var(--red)}
+.ch-heartbeat-head,.ch-heartbeat-foot{display:flex;justify-content:space-between;align-items:center;gap:15px}
+.ch-heartbeat-head span{display:block;color:var(--text-muted);font-size:8px;font-weight:800;letter-spacing:.13em}
+.ch-heartbeat-head strong{display:block;margin-top:4px;font-size:17px}
+.ch-heart-icon{width:40px;height:40px;display:grid;place-items:center;border-radius:50%;color:var(--green);background:color-mix(in srgb,var(--green) 10%,transparent)}
+.ch-heartbeat.warning .ch-heart-icon{color:#d9a20b}
+.ch-heartbeat.danger .ch-heart-icon{color:var(--red)}
+.ch-heartbeat.beating .ch-heart-icon{animation:ch-pulse 1.1s ease-in-out infinite}
+.ch-ecg{height:78px;margin:7px 0}
+.ch-ecg svg{width:100%;height:100%;overflow:visible}
+.ch-ecg-gridline{stroke:var(--border);stroke-width:1}
+.ch-ecg-path{fill:none;stroke:var(--green);stroke-width:2;vector-effect:non-scaling-stroke}
+.ch-heartbeat.warning .ch-ecg-path{stroke:#d9a20b}
+.ch-heartbeat.danger .ch-ecg-path{stroke:var(--red)}
+.ch-heartbeat.beating .ch-ecg-path{stroke-dasharray:1200;stroke-dashoffset:1200;animation:ch-draw 2.4s linear infinite}
+.ch-heartbeat-foot{color:var(--text-muted);font-size:9px}
+.ch-heartbeat-foot span{display:flex;align-items:center;gap:6px}
+.ch-live-dot{width:6px;height:6px;border-radius:50%;background:var(--green)}
+.ch-heartbeat.danger .ch-live-dot{background:var(--red)}
+@keyframes ch-pulse{0%,100%{transform:scale(1)}45%{transform:scale(1.16)}}
+@keyframes ch-draw{to{stroke-dashoffset:0}}
+
+.ch-summary-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:12px;overflow:hidden;background:var(--surface);border:1px solid var(--border);border-radius:10px}
+.ch-summary-grid>div{min-height:66px;padding:12px 14px;display:flex;flex-direction:column;justify-content:center;gap:6px}
+.ch-summary-grid>div+div{border-left:1px solid var(--border)}
+.ch-summary-grid span{color:var(--text-muted);font-size:8px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.ch-summary-grid strong{font-size:11px}
+
+.ch-section,.ch-panel{margin-bottom:12px;padding:17px;background:var(--surface);border:1px solid var(--border);border-radius:10px}
+.ch-section-head{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:14px}
+.ch-section-head span{display:block;color:var(--text-muted);font-size:8px;font-weight:750;letter-spacing:.1em}
+.ch-section-head h2{margin:3px 0 0;font-size:15px}
+
+.ch-health-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.ch-health-card{display:grid;grid-template-columns:34px minmax(0,1fr) auto;align-items:center;gap:9px;padding:11px;background:var(--surface-soft);border:1px solid var(--border);border-radius:8px}
+.ch-health-icon{width:34px;height:34px;display:grid;place-items:center;border-radius:8px;background:var(--icon-bg);color:var(--text-muted)}
+.ch-health-icon.healthy{color:var(--green);background:color-mix(in srgb,var(--green) 9%,transparent)}
+.ch-health-icon.warning{color:#d9a20b}
+.ch-health-icon.danger{color:var(--red)}
+.ch-health-copy{min-width:0}
+.ch-health-copy span,.ch-health-copy strong,.ch-health-copy small{display:block}
+.ch-health-copy span{color:var(--text-muted);font-size:8px}
+.ch-health-copy strong{margin-top:2px;font-size:10px}
+.ch-health-copy small{margin-top:2px;overflow:hidden;color:var(--text-muted);font-size:7.5px;text-overflow:ellipsis;white-space:nowrap}
+
+.ch-status{display:inline-flex;align-items:center;gap:5px;width:max-content;color:var(--text-muted);font-size:7px;font-weight:800;letter-spacing:.04em}
+.ch-status i{width:6px;height:6px;border-radius:50%;background:var(--text-muted)}
+.ch-status.healthy{color:var(--green)}.ch-status.healthy i{background:var(--green)}
+.ch-status.warning{color:#d9a20b}.ch-status.warning i{background:#d9a20b}
+.ch-status.danger{color:var(--red)}.ch-status.danger i{background:var(--red)}
+
+.ch-two-column{display:grid;grid-template-columns:1.15fr .85fr;gap:12px}
+.ch-panel{margin-bottom:0}
+.ch-pipeline{display:flex;flex-direction:column}
+.ch-pipeline-row{position:relative;display:grid;grid-template-columns:28px minmax(0,1fr) auto;align-items:center;gap:9px;min-height:48px}
+.ch-pipeline-row:not(:last-child)::after{content:"";position:absolute;left:13px;top:37px;bottom:-10px;width:1px;background:var(--border)}
+.ch-pipeline-node{width:28px;height:28px;display:grid;place-items:center;border:1px solid var(--border);border-radius:50%;font-size:8px;font-weight:800}
+.ch-pipeline-node.healthy{color:var(--green);border-color:color-mix(in srgb,var(--green) 35%,var(--border))}
+.ch-pipeline-node.warning{color:#d9a20b}.ch-pipeline-node.danger{color:var(--red)}
+.ch-pipeline-row strong,.ch-pipeline-row span{display:block}
+.ch-pipeline-row strong{font-size:10px}.ch-pipeline-row>div>span{margin-top:2px;color:var(--text-muted);font-size:7px}
+
+.ch-risk-list{display:flex;flex-direction:column}
+.ch-risk-list>div{display:flex;justify-content:space-between;gap:15px;padding:10px 0;border-bottom:1px solid var(--border)}
+.ch-risk-list>div:last-child{border-bottom:0}
+.ch-risk-list span{color:var(--text-muted);font-size:9px}
+.ch-risk-list strong{font-size:9px;text-align:right}
+.ch-danger-text{color:var(--red)!important}
+
+.ch-engine-grid,.ch-explain-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.ch-engine-card,.ch-explain-grid article{padding:12px;background:var(--surface-soft);border:1px solid var(--border);border-radius:8px}
+.ch-engine-card>div{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.ch-engine-card strong,.ch-explain-grid strong{font-size:10px}
+.ch-engine-card p,.ch-explain-grid p{margin:8px 0 0;color:var(--text-muted);font-size:8.5px;line-height:1.55}
+.ch-engine-card small{display:block;margin-top:7px;color:#d9a20b;font-size:7.5px}
+
+.ch-incidents{display:flex;flex-direction:column;gap:7px}
+.ch-incident{display:grid;grid-template-columns:32px minmax(0,1fr) auto;gap:10px;align-items:start;padding:11px;background:color-mix(in srgb,var(--red) 4%,var(--surface-soft));border:1px solid color-mix(in srgb,var(--red) 16%,var(--border));border-radius:8px}
+.ch-incident-icon{width:32px;height:32px;display:grid;place-items:center;color:var(--red)}
+.ch-incident span,.ch-incident strong{display:block}
+.ch-incident span{color:var(--red);font-size:7px;font-weight:800}.ch-incident strong{margin-top:2px;font-size:10px}
+.ch-incident p{margin:4px 0 0;color:var(--text-muted);font-size:8.5px}.ch-incident time{color:var(--text-muted);font-size:7px}
+.ch-no-incidents{display:flex;align-items:center;gap:10px;padding:13px;color:var(--green);background:color-mix(in srgb,var(--green) 5%,var(--surface-soft));border:1px solid color-mix(in srgb,var(--green) 15%,var(--border));border-radius:8px}
+.ch-no-incidents strong,.ch-no-incidents span{display:block}.ch-no-incidents strong{font-size:10px}.ch-no-incidents span{margin-top:3px;color:var(--text-muted);font-size:8px}
+
+.ch-footer{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-top:3px;color:var(--text-faint);font-size:7.5px}
+.spin{animation:ch-spin .8s linear infinite}@keyframes ch-spin{to{transform:rotate(360deg)}}
+
+@media(max-width:1050px){
+  .ch-health-grid,.ch-engine-grid,.ch-explain-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .ch-two-column{grid-template-columns:1fr}
+}
+@media(max-width:760px){
+  .crypto-health-page{padding:82px 13px 30px}
+  .ch-header{flex-direction:column}.ch-actions{width:100%;justify-content:flex-end}
+  .ch-summary-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .ch-summary-grid>div:nth-child(3){border-left:0;border-top:1px solid var(--border)}
+  .ch-summary-grid>div:nth-child(4){border-top:1px solid var(--border)}
+  .ch-health-grid,.ch-engine-grid,.ch-explain-grid{grid-template-columns:1fr}
+  .ch-heartbeat{padding:15px}.ch-ecg{height:62px}
+}

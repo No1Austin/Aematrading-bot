@@ -1,319 +1,121 @@
 /**
  * ============================================================
- * CRYPTO MEASUREMENT PROVIDER
+ * CRYPTO MEASUREMENT PROVIDER — Phase 6.13
  * ============================================================
+ *
+ * Missing liquidity remains null. A source timestamp is preserved so
+ * final revalidation can verify freshness without inventing it.
  */
 
-function finite(
-  value,
-) {
-  const number =
-    Number(value);
-
-  return Number.isFinite(number)
-    ? number
-    : null;
+function finite(value) {
+  if (value === null || value === undefined || value === "") return null;
+  const number = Number(value);
+  return Number.isFinite(number) ? number : null;
 }
 
-function sumDexMetric(
-  venues,
-  key,
-) {
-  const dex =
-    Array.isArray(
-      venues?.dex,
-    )
-      ? venues.dex
-      : [];
+function sourceTimestamp(asset) {
+  const candidates = [
+    asset?.measuredAt,
+    asset?.lastUpdated,
+    asset?.updatedAt,
+    asset?.timestamp,
+    asset?.marketDataUpdatedAt,
+    asset?.sourceUpdatedAt,
+  ];
 
-  const values =
-    dex
-      .map(
-        venue =>
-          finite(
-            venue?.[key],
-          ),
-      )
-      .filter(
-        value =>
-          value !==
-          null,
-      );
-
-  if (
-    values.length ===
-    0
-  ) {
-    return null;
+  for (const value of candidates) {
+    if (!value) continue;
+    const ms = Date.parse(value);
+    if (Number.isFinite(ms)) return new Date(ms).toISOString();
   }
 
-  return values.reduce(
-    (
-      total,
-      value,
-    ) =>
-      total +
-      value,
-    0,
-  );
+  return null;
 }
 
-export function buildCryptoMeasurement(
-  asset,
-) {
-  const venues =
-    asset?.venues ??
-    {};
+function sumDexMetric(venues, key) {
+  const dex = Array.isArray(venues?.dex) ? venues.dex : [];
+  const values = dex.map(venue => finite(venue?.[key])).filter(value => value !== null);
+  return values.length ? values.reduce((total, value) => total + value, 0) : null;
+}
 
-  const liquidityUsd =
-    finite(
-      venues
-        ?.dexLiquidityUsd,
-    ) ??
-    0;
+export function buildCryptoMeasurement(asset) {
+  const venues = asset?.venues ?? {};
 
-  const dexVolume =
-    finite(
-      venues
-        ?.dexVolume24hUsd,
-    );
+  // IMPORTANT: unavailable liquidity is not zero.
+  const liquidityUsd = finite(venues?.dexLiquidityUsd);
+  const dexVolume = finite(venues?.dexVolume24hUsd);
 
-  const volume24hUsd =
-    Math.max(
-      finite(
-        asset
-          ?.volume24hUsd,
-      ) ??
-        0,
+  const sourceVolume = finite(asset?.volume24hUsd);
+  const availableVolumes = [sourceVolume, dexVolume].filter(v => v !== null);
+  const volume24hUsd = availableVolumes.length ? Math.max(...availableVolumes) : null;
 
-      dexVolume ??
-        0,
-    );
-
-  const priceUsd =
-    finite(
-      asset?.priceUsd,
-    );
-
-  const high24h =
-    finite(
-      asset
-        ?.high24hUsd,
-    );
-
-  const low24h =
-    finite(
-      asset
-        ?.low24hUsd,
-    );
+  const priceUsd = finite(asset?.priceUsd);
+  const high24h = finite(asset?.high24hUsd);
+  const low24h = finite(asset?.low24hUsd);
 
   const intradayRangePercent =
-    priceUsd &&
-    priceUsd >
-      0 &&
-    high24h !==
-      null &&
-    low24h !==
-      null
-      ? (
-          (
-            high24h -
-            low24h
-          ) /
-          priceUsd
-        ) *
-        100
+    priceUsd !== null && priceUsd > 0 && high24h !== null && low24h !== null
+      ? ((high24h - low24h) / priceUsd) * 100
       : null;
 
   return {
-    assetId:
-      asset?.assetId ??
-      null,
+    assetId: asset?.assetId ?? null,
+    contractAddress: asset?.contractAddress ?? null,
+    network: asset?.network ?? null,
+    symbol: asset?.symbol ?? null,
+    name: asset?.name ?? null,
+    source: asset?.source ?? null,
 
-    contractAddress:
-      asset
-        ?.contractAddress ??
-      null,
-
-    network:
-      asset?.network ??
-      null,
-
-    symbol:
-      asset?.symbol ??
-      null,
-
-    name:
-      asset?.name ??
-      null,
-
-    source:
-      asset?.source ??
-      null,
+    measuredAt: sourceTimestamp(asset),
 
     tradable:
-      asset?.tradable ===
-      true,
+      typeof asset?.tradable === "boolean"
+        ? asset.tradable
+        : null,
 
     priceUsd,
-
-    marketCapUsd:
-      finite(
-        asset
-          ?.marketCapUsd,
-      ),
-
-    fdvUsd:
-      finite(
-        asset?.fdvUsd,
-      ),
-
+    marketCapUsd: finite(asset?.marketCapUsd),
+    fdvUsd: finite(asset?.fdvUsd),
     volume24hUsd,
-
-    volume6hUsd:
-      finite(
-        asset
-          ?.volume6hUsd,
-      ),
-
-    volume1hUsd:
-      finite(
-        asset
-          ?.volume1hUsd,
-      ),
-
+    volume6hUsd: finite(asset?.volume6hUsd),
+    volume1hUsd: finite(asset?.volume1hUsd),
     liquidityUsd,
 
-    change1hPercent:
-      finite(
-        asset
-          ?.change1hPercent,
-      ),
+    spreadPct:
+      finite(asset?.spreadPct) ??
+      finite(venues?.spreadPct),
 
-    change4hPercent:
-      finite(
-        asset
-          ?.change4hPercent,
-      ),
+    change1hPercent: finite(asset?.change1hPercent),
+    change4hPercent: finite(asset?.change4hPercent),
+    change6hPercent: finite(asset?.change6hPercent),
+    change24hPercent: finite(asset?.change24hPercent),
+    change7dPercent: finite(asset?.change7dPercent),
+    intradayRangePercent: finite(intradayRangePercent),
 
-    change6hPercent:
-      finite(
-        asset
-          ?.change6hPercent,
-      ),
+    venueCount: finite(venues?.venueCount) ?? 0,
+    cexCount: finite(venues?.cexCount) ?? 0,
+    dexCount: finite(venues?.dexCount) ?? 0,
+    primaryVenue: venues?.primaryVenue ?? null,
+    exchanges: Array.isArray(venues?.exchanges) ? venues.exchanges : [],
+    pairCreatedAt: finite(asset?.pairCreatedAt),
 
-    change24hPercent:
-      finite(
-        asset
-          ?.change24hPercent,
-      ),
-
-    change7dPercent:
-      finite(
-        asset
-          ?.change7dPercent,
-      ),
-
-    intradayRangePercent:
-      finite(
-        intradayRangePercent,
-      ),
-
-    venueCount:
-      finite(
-        venues
-          ?.venueCount,
-      ) ??
-      0,
-
-    cexCount:
-      finite(
-        venues
-          ?.cexCount,
-      ) ??
-      0,
-
-    dexCount:
-      finite(
-        venues
-          ?.dexCount,
-      ) ??
-      0,
-
-    primaryVenue:
-      venues
-        ?.primaryVenue ??
-      null,
-
-    exchanges:
-      Array.isArray(
-        venues
-          ?.exchanges,
-      )
-        ? venues.exchanges
-        : [],
-
-    pairCreatedAt:
-      finite(
-        asset
-          ?.pairCreatedAt,
-      ),
-
-    buys24h:
-      sumDexMetric(
-        venues,
-        "buys24h",
-      ),
-
-    sells24h:
-      sumDexMetric(
-        venues,
-        "sells24h",
-      ),
-
-    transactions24h:
-      sumDexMetric(
-        venues,
-        "transactions24h",
-      ),
+    buys24h: sumDexMetric(venues, "buys24h"),
+    sells24h: sumDexMetric(venues, "sells24h"),
+    transactions24h: sumDexMetric(venues, "transactions24h"),
 
     integrity: {
-      score:
-        finite(
-          asset
-            ?.integrity
-            ?.score,
-        ),
-
-      criticalFlags:
-        Array.isArray(
-          asset
-            ?.integrity
-            ?.criticalFlags,
-        )
-          ? asset
-              .integrity
-              .criticalFlags
-          : [],
+      score: finite(asset?.integrity?.score),
+      criticalFlags: Array.isArray(asset?.integrity?.criticalFlags)
+        ? asset.integrity.criticalFlags
+        : [],
     },
 
-    marketRegime:
-      asset
-        ?.marketRegime ??
-      "NEUTRAL",
+    marketRegime: asset?.marketRegime ?? "NEUTRAL",
   };
 }
 
-export function buildCryptoMeasurements({
-  assets = [],
-} = {}) {
-  return Array.isArray(
-    assets,
-  )
-    ? assets.map(
-        buildCryptoMeasurement,
-      )
-    : [];
+export function buildCryptoMeasurements({ assets = [] } = {}) {
+  return Array.isArray(assets) ? assets.map(buildCryptoMeasurement) : [];
 }
 
 export default {
