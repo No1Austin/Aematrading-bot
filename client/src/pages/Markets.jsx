@@ -67,6 +67,11 @@ function numberOrNull(
     : null;
 }
 
+function formatScore(value, digits = 1) {
+  const number = numberOrNull(value);
+  return number === null ? "—" : number.toFixed(digits);
+}
+
 function formatPrice(
   value,
 ) {
@@ -1525,12 +1530,7 @@ function CandidateTable({
                   <td>
                     <div className="market-score-cell">
                       <strong>
-                        {candidate.score ===
-                        null
-                          ? "—"
-                          : candidate.score.toFixed(
-                              1,
-                            )}
+                        {formatScore(candidate.score)}
                       </strong>
 
                       <span>
@@ -1681,12 +1681,7 @@ function CandidateTable({
                   </span>
 
                   <strong>
-                    {candidate.score ===
-                    null
-                      ? "—"
-                      : candidate.score.toFixed(
-                          1,
-                        )}
+                    {formatScore(candidate.score)}
                   </strong>
                 </div>
 
@@ -1696,12 +1691,7 @@ function CandidateTable({
                   </span>
 
                   <strong>
-                    {candidate.directionEdge ===
-                    null
-                      ? "—"
-                      : candidate.directionEdge.toFixed(
-                          1,
-                        )}
+                    {formatScore(candidate.directionEdge)}
                   </strong>
                 </div>
 
@@ -1819,12 +1809,7 @@ function QualifiedPanel({
 
                     <span>
                       Discovery{" "}
-                      {candidate.score ===
-                      null
-                        ? "—"
-                        : candidate.score.toFixed(
-                            1,
-                          )}
+                      {formatScore(candidate.score)}
                     </span>
                   </div>
 
@@ -1852,12 +1837,7 @@ function QualifiedPanel({
                     </span>
 
                     <strong>
-                      {engineScore ===
-                      null
-                        ? "—"
-                        : engineScore.toFixed(
-                            1,
-                          )}
+                      {formatScore(engineScore)}
                     </strong>
                   </div>
                 </div>
@@ -2042,12 +2022,7 @@ function EngineEvaluationPanel({
           </span>
 
           <strong>
-            {preferredScore ===
-            null
-              ? "—"
-              : `${preferredScore.toFixed(
-                  1,
-                )}/100`}
+            {numberOrNull(preferredScore) === null ? "—" : `${formatScore(preferredScore)}/100`}
           </strong>
         </div>
 
