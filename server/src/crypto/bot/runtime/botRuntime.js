@@ -3,6 +3,7 @@ import PHASE7 from "../config/botPhase7Config.js";
 import manageBotOpenPositions from "../positions/botPositionManager.js";
 import {runBotTradingCycle} from "../orchestration/botTradingCycle.js";
 import {getBotPaperAccount} from "../account/botPaperLedger.js";
+import {assertInternalPaperMode} from "../config/botExecutionMode.js";
 
 let timer=null,busy=false,cycle=0;
 export function isBotRuntimeBusy(){return busy;}
@@ -31,27 +32,35 @@ function printRefill(r){
     console.log(`AUTO-REFILL → ${r.status}`);
 }
 export function startBotPositionRuntime(options={}){
+  assertInternalPaperMode();
   if(timer) return {started:false,reason:"ALREADY_RUNNING"};
   const intervalMs=Number(options.intervalMs||PHASE5.consistency.intervalMs);
   const tick=async()=>{
     if(busy)return; busy=true;
     try{
+      assertInternalPaperMode();
       const managed=await manageBotOpenPositions(options);
       if(PHASE7.runtime.printEveryCycle) printManagement(managed);
       let account=getBotPaperAccount();
       // Fill empty portfolio slots. Each trading cycle can open at most one position.
       while(!account.controls?.paused && PHASE7.portfolio.refillEmptySlotsFromRuntime &&
             account.openPositions<PHASE7.portfolio.maximumOpenPositions){
+        assertInternalPaperMode();
         const trade=await runBotTradingCycle(options);
         printRefill(trade);
         if(trade.status!=="PAPER_POSITION_OPEN") break;
         account=getBotPaperAccount();
       }
-    }catch(e){console.error("[BOT POSITION RUNTIME]",e?.stack||e)}
-    finally{busy=false}
+    }catch(e){
+      console.error("[BOT POSITION RUNTIME]",e?.stack||e);
+      if(e?.message?.startsWith("ALPACA_EXECUTION_NOT_ENABLED") || e?.message==="INVALID_BOT_EXECUTION_MODE"){
+        stopBotPositionRuntime();
+        console.error("[BOT POSITION RUNTIME] Stopped: execution mode is not INTERNAL_PAPER.");
+      }
+    }finally{busy=false;}
   };
   timer=setInterval(tick,intervalMs); tick();
   return {started:true,intervalMs,maximumOpenPositions:PHASE7.portfolio.maximumOpenPositions,
     paperOnly:true,liveExecution:false};
 }
-export function stopBotPositionRuntime(){if(timer)clearInterval(timer);timer=null;return {stopped:true}}
+export function stopBotPositionRuntime(){if(timer)clearInterval(timer);timer=null;return {stopped:true};}

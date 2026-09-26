@@ -19,6 +19,8 @@ import Research from "./pages/Research.jsx";
 import Engines from "./pages/Engines.jsx";
 import Positions from "./pages/Positions.jsx";
 import History from "./pages/History.jsx";
+import Referrals from "./pages/Referrals.jsx";
+import Wallet from "./pages/Wallet.jsx";
 export default function App() {
   return <BrowserRouter><Routes>
     <Route path="/" element={<LandingPage/>}/>
@@ -36,6 +38,8 @@ export default function App() {
       <Route path="/engines" element={<Engines/>}/>
       <Route path="/positions" element={<Positions/>}/>
       <Route path="/history" element={<History/>}/>
+      <Route path="/referrals" element={<Referrals/>}/>
+      <Route path="/wallet" element={<Wallet/>}/>
       <Route path="/crypto" element={<CryptoDashboard/>}/>
       <Route path="/crypto/markets" element={<CryptoMarkets/>}/>
       <Route path="/crypto/discovery" element={<CryptoDiscovery/>}/>

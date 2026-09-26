@@ -2047,3 +2047,23 @@
 .dashboard-page .gauge-zone--sell { stroke:#C37D82; }
 .dashboard-page a:focus-visible,
 .dashboard-page button:focus-visible { outline-color:#35D76A; }
+
+
+/* Dashboard referral wallet placement */
+
+.dashboard-wallet-section {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  margin: 20px 0 24px;
+}
+
+.dashboard-wallet-section .dashboard-wallet {
+  max-width: 100%;
+}
+
+@media (max-width: 768px) {
+  .dashboard-wallet-section {
+    margin: 16px 0 20px;
+  }
+}

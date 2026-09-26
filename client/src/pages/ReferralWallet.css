@@ -1,0 +1,187 @@
+
+.aema-rw-page {
+  background: #0b0f0d;
+  min-height: 100vh;
+  color: #f2f6f3;
+  padding-top: 95px !important;
+}
+
+.aema-rw-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #56dd91;
+  font-size: 11px;
+  letter-spacing: .16em;
+  font-weight: 800;
+}
+
+.aema-rw-page h1 {
+  font-size: clamp(31px, 4vw, 48px);
+  letter-spacing: -.045em;
+  margin: 12px 0;
+}
+
+.aema-rw-subtitle {
+  color: #9ba9a0;
+  font-size: 15px;
+  margin: 0 0 32px;
+}
+
+.aema-rw-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr)
+                         minmax(260px, 1fr);
+  gap: 18px;
+}
+
+.aema-rw-card {
+  border: 1px solid #29332c;
+  background: linear-gradient(
+    135deg, #151b17, #101512
+  );
+  border-radius: 16px;
+  padding: 27px;
+  min-width: 0;
+}
+
+.aema-rw-card h2 {
+  font-size: 20px;
+  letter-spacing: -.025em;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 16px 0 9px;
+}
+
+.aema-rw-card p {
+  color: #a5b1a9;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.aema-rw-icon {
+  display: grid;
+  place-items: center;
+  width: 49px;
+  height: 49px;
+  border-radius: 13px;
+  background: #133021;
+  color: #58e399;
+}
+
+.aema-rw-copy {
+  margin-top: 26px;
+  display: flex;
+  gap: 9px;
+  border: 1px solid #344038;
+  border-radius: 10px;
+  padding: 7px;
+  align-items: center;
+}
+
+.aema-rw-copy span {
+  color: #9fa9a2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  padding-left: 10px;
+  font-size: 13px;
+}
+
+.aema-rw-copy button {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  border: 0;
+  border-radius: 8px;
+  padding: 12px 15px;
+  background: #4fdd8d;
+  color: #08130d;
+  font-weight: 800;
+}
+
+.aema-rw-copy button:disabled {
+  background: #25372c;
+  color: #859c8d;
+  cursor: not-allowed;
+}
+
+.aema-rw-notice {
+  margin-top: 22px;
+  font-size: 12px;
+  color: #aab9af;
+  background: #1b2820;
+  border: 1px solid #2a4032;
+  padding: 12px;
+  border-radius: 9px;
+}
+
+.aema-rw-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: #64e79b;
+  font-weight: 700;
+  text-decoration: none;
+  margin-top: 25px;
+}
+
+.aema-rw-wide {
+  margin-top: 18px;
+}
+
+.aema-rw-empty {
+  padding: 42px 15px;
+  text-align: center;
+  color: #8e9b92;
+  border: 1px dashed #344238;
+  border-radius: 10px;
+  font-size: 14px;
+}
+
+.aema-rw-balance {
+  font-size: 44px !important;
+  color: #5be697 !important;
+  font-weight: 800;
+  letter-spacing: -.05em;
+}
+
+.aema-rw-balance.small {
+  font-size: 29px !important;
+}
+
+.aema-rw-footer {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 9px;
+  color: #88978d;
+  margin-top: 22px;
+  font-size: 12px;
+}
+
+.aema-rw-footer a {
+  color: #58e394;
+}
+
+@media (max-width: 850px) {
+  .aema-rw-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .aema-rw-page {
+    padding-top: 90px !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .aema-rw-card {
+    padding: 20px;
+  }
+
+  .aema-rw-page {
+    padding-top: 100px !important;
+  }
+}

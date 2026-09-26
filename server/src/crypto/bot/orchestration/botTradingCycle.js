@@ -14,12 +14,12 @@ import executeBotPaperOrder from "../execution/botPaperOrderExecutor.js";
 import applyTradeLearning from "../learning/botTradeLearningEngine.js";
 import PHASE7 from "../config/botPhase7Config.js";
 import recordBotShadowCycle from "../diagnostics/botShadowRecorder.js";
+import {assertInternalPaperMode} from "../config/botExecutionMode.js";
 
 export async function runBotTradingCycle(options={}){
+  assertInternalPaperMode();
   const startedAt=new Date().toISOString();
-  console.log("[BOT_TRADING_CYCLE_STARTED]", {
-  startedAt,
-});
+  console.log("[BOT_TRADING_CYCLE_STARTED]", {startedAt});
   const initialAccount=getBotPaperAccount();
   const portfolioCfg={...PHASE7.portfolio,...options.portfolio};
   if(initialAccount.controls?.paused) return {status:"BOT_PAUSED",accountBefore:initialAccount,accountAfter:initialAccount,paperOnly:true,liveExecution:false};
@@ -49,7 +49,6 @@ export async function runBotTradingCycle(options={}){
   const research=await researchBotTop20(top20,options.research);
   const directional=research.researched.map(row=>determineBotDirection(row,options.direction));
   const researchRanking=rankBotResearchCandidates(directional,options.ranking);
-
   const setups=[], setupFailures=[];
   for(const candidate of researchRanking.top10){
     try{
@@ -61,15 +60,12 @@ export async function runBotTradingCycle(options={}){
   }
   const executionRanking=rankBotExecutionSetups(setups,options.executionRanking);
   const learningRanking=applyTradeLearning(executionRanking.executable,options.learning);
-
   const accountBefore=getBotPaperAccount();
   const orderAttempts=[];
   let selected=null, execution=null;
-
-  // Descend the execution ranking. A last-second failure on #1 does not kill
-  // the cycle if #2, #3 ... can still produce a valid paper order.
   for(const candidate of learningRanking.ranked){
     try{
+      assertInternalPaperMode();
       const currentAccount=getBotPaperAccount();
       if(currentAccount.controls?.paused) break;
       if(currentAccount.openPositions>=portfolioCfg.maximumOpenPositions){
@@ -97,27 +93,25 @@ export async function runBotTradingCycle(options={}){
         continue;
       }
       if(getBotPaperAccount().controls?.paused) break;
+      assertInternalPaperMode();
       execution=executeBotPaperOrder(checked);
       selected=checked;
       orderAttempts.push({symbol:candidate.symbol,executionRank:candidate.executionRank,
         stage:"PAPER_EXECUTION",approved:true,blockers:[]});
       break;
     }catch(error){
+      if(error?.message?.startsWith("ALPACA_EXECUTION_NOT_ENABLED") || error?.message==="INVALID_BOT_EXECUTION_MODE") throw error;
       orderAttempts.push({symbol:candidate.symbol,executionRank:candidate.executionRank,
         stage:"ERROR",approved:false,blockers:[error?.message||String(error)]});
     }
   }
   const accountAfter=getBotPaperAccount();
   console.log("[BOT_SHADOW_RECORDING]", {
-  startedAt,
-  evaluated: executionRanking.evaluated?.length ?? 0,
-  attempts: orderAttempts.length,
-});
-  // Shadow records never feed into selection, risk, revalidation, or execution.
+    startedAt,evaluated:executionRanking.evaluated?.length??0,attempts:orderAttempts.length,
+  });
   recordBotShadowCycle({startedAt,candidates:executionRanking.evaluated,orderAttempts,selected,
     status:execution?"PAPER_POSITION_OPEN":"NO_ORDER",
     counts:{setupsBuilt:setups.length,executable:executionRanking.executable.length}});
-
   return {
     system:"AEMA_INDEPENDENT_CRYPTO_BOT",phase:"PHASE_7",
     status:execution?"PAPER_POSITION_OPEN":(executionRanking.best?"NO_PAPER_ORDER_FILLED":"NO_EXECUTABLE_SETUP"),
@@ -132,21 +126,12 @@ export async function runBotTradingCycle(options={}){
     preLearningExecutionCandidates:executionRanking.executable,
     learningBest:learningRanking.best,
     blockedSetups:setups.filter(x=>!x.setup?.approved).map(x=>({
-      symbol:x.symbol,
-      direction:x.setup?.direction,
-      blockers:x.setup?.blockers||[],
-      freshness:x.setup?.freshness||null,
-      entry:x.setup?.entry??null,
-      stop:x.setup?.stop??null,
-      target:x.setup?.target??null,
-      riskReward:x.setup?.riskReward??null,
+      symbol:x.symbol,direction:x.setup?.direction,blockers:x.setup?.blockers||[],
+      freshness:x.setup?.freshness||null,entry:x.setup?.entry??null,
+      stop:x.setup?.stop??null,target:x.setup?.target??null,riskReward:x.setup?.riskReward??null,
     })),
-    bestAvailableOrder:learningRanking.best,
-    selectedOrderCandidate:selected,
-    orderAttempts,
-    paperExecution:execution,
-    accountBefore,
-    accountAfter,
+    bestAvailableOrder:learningRanking.best,selectedOrderCandidate:selected,orderAttempts,
+    paperExecution:execution,accountBefore,accountAfter,
     researchFailures:research.failed,setupFailures,
     nextStage:execution?"POSITION_MANAGEMENT":"NO_ORDER_POSSIBLE",
     portfolio:{maximumOpenPositions:portfolioCfg.maximumOpenPositions,
