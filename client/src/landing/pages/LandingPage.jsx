@@ -67,7 +67,7 @@ function MiniTerminal() {
       <div className="lp-terminal-top">
         <div className="lp-terminal-dots"><i /><i /><i /></div>
         <span>AEMA / RESEARCH ENGINE</span>
-        <span className="lp-live"><i /> LIVE</span>
+        <span className="lp-live">ILLUSTRATIVE</span>
       </div>
 
       <div className="lp-terminal-body">
@@ -110,7 +110,7 @@ function MiniTerminal() {
         </div>
 
         <div className="lp-terminal-footer">
-          <span><i /> Evidence available</span>
+          <span>Example research display</span>
           <strong>BULLISH RESEARCH BIAS</strong>
         </div>
       </div>
@@ -185,7 +185,7 @@ export default function LandingPage() {
 
             <div className="lp-trust-row">
               <span><Check size={14} /> No card clutter</span>
-              <span><Check size={14} /> Cancel anytime</span>
+              <span><Check size={14} /> Cancel anytime — no long-term commitment</span>
               <span><Check size={14} /> Research-first platform</span>
             </div>
           </div>
@@ -197,7 +197,7 @@ export default function LandingPage() {
             <div className="lp-float-card lp-float-one">
               <Radar size={17} />
               <span>Scanner</span>
-              <strong>20 candidates</strong>
+              <strong>Illustrative</strong>
             </div>
             <div className="lp-float-card lp-float-two">
               <Newspaper size={17} />
@@ -300,16 +300,16 @@ export default function LandingPage() {
           <div className="lp-price-card">
             <span className="lp-price-badge">7 DAYS FREE</span>
             <div className="lp-price">
-              <strong>$50</strong><span>USD / month</span>
+              <strong>$20</strong><span>USD / month</span>
             </div>
-            <p>Full AEMA research workspace access.</p>
+            <p>Full AEMA research workspace access. Cancel anytime.</p>
             <div className="lp-price-features">
               <span><Check /> Stock research workspace</span>
               <span><Check /> Crypto research workspace</span>
               <span><Check /> Scanner & discovery</span>
               <span><Check /> Research engines & evidence</span>
               <span><Check /> Live intelligence feeds</span>
-              <span><Check /> Cancel anytime</span>
+              <span><Check /> Cancel anytime — no long-term commitment</span>
             </div>
             <Link className="lp-primary lp-price-button" to="/register">
               Start free trial <ArrowRight size={17} />

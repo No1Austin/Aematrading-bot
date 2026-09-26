@@ -13,9 +13,13 @@ import revalidateBotOrder from "../revalidation/botFinalRevalidationEngine.js";
 import executeBotPaperOrder from "../execution/botPaperOrderExecutor.js";
 import applyTradeLearning from "../learning/botTradeLearningEngine.js";
 import PHASE7 from "../config/botPhase7Config.js";
+import recordBotShadowCycle from "../diagnostics/botShadowRecorder.js";
 
 export async function runBotTradingCycle(options={}){
   const startedAt=new Date().toISOString();
+  console.log("[BOT_TRADING_CYCLE_STARTED]", {
+  startedAt,
+});
   const initialAccount=getBotPaperAccount();
   const portfolioCfg={...PHASE7.portfolio,...options.portfolio};
   if(initialAccount.controls?.paused) return {status:"BOT_PAUSED",accountBefore:initialAccount,accountAfter:initialAccount,paperOnly:true,liveExecution:false};
@@ -104,6 +108,15 @@ export async function runBotTradingCycle(options={}){
     }
   }
   const accountAfter=getBotPaperAccount();
+  console.log("[BOT_SHADOW_RECORDING]", {
+  startedAt,
+  evaluated: executionRanking.evaluated?.length ?? 0,
+  attempts: orderAttempts.length,
+});
+  // Shadow records never feed into selection, risk, revalidation, or execution.
+  recordBotShadowCycle({startedAt,candidates:executionRanking.evaluated,orderAttempts,selected,
+    status:execution?"PAPER_POSITION_OPEN":"NO_ORDER",
+    counts:{setupsBuilt:setups.length,executable:executionRanking.executable.length}});
 
   return {
     system:"AEMA_INDEPENDENT_CRYPTO_BOT",phase:"PHASE_7",

@@ -1,0 +1,208 @@
+{
+  "source_note": "Uploaded snapshot; exploratory, not forward-tested. Existing trades only; rejected setups and future opportunity costs unknown.",
+  "memory": {
+    "n": 26,
+    "wins": 13,
+    "losses": 13,
+    "win_rate": 50.0,
+    "net_usd": -205.33,
+    "avg_win": 47.1,
+    "avg_loss": -62.89,
+    "profit_factor": 0.75
+  },
+  "ledger": {
+    "reported_realized": -306.36,
+    "closed_positions_sum": -326.65,
+    "open_positions_partial_sum": -25.03,
+    "closed_count": 26
+  },
+  "reconciliation": {
+    "matched_ids": 25,
+    "only_memory": [
+      {
+        "id": "BOT-POS-1790345441229-162",
+        "symbol": "ENAUSDT"
+      }
+    ],
+    "only_ledger": [
+      {
+        "id": "BOT-POS-1790214214700-3",
+        "symbol": "龙虾USDT"
+      }
+    ],
+    "pnl_disagreements": [
+      {
+        "id": "BOT-POS-1790221274463-22",
+        "symbol": "NILUSDT",
+        "memory": 59.31,
+        "ledger": 38.81,
+        "partial": 20.5
+      },
+      {
+        "id": "BOT-POS-1790218872591-19",
+        "symbol": "TAKEUSDT",
+        "memory": 39.02,
+        "ledger": 14.21,
+        "partial": 24.81
+      }
+    ]
+  },
+  "by_direction": {
+    "LONG": {
+      "n": 18,
+      "wins": 10,
+      "losses": 8,
+      "win_rate": 55.6,
+      "net_usd": 69.71,
+      "avg_win": 48.64,
+      "avg_loss": -52.08,
+      "profit_factor": 1.17
+    },
+    "SHORT": {
+      "n": 8,
+      "wins": 3,
+      "losses": 5,
+      "win_rate": 37.5,
+      "net_usd": -275.04,
+      "avg_win": 41.97,
+      "avg_loss": -80.19,
+      "profit_factor": 0.31
+    }
+  },
+  "by_exit": {
+    "DIRECTION_FLIPPED": {
+      "n": 2,
+      "wins": 2,
+      "losses": 0,
+      "win_rate": 100.0,
+      "net_usd": 61.88,
+      "avg_win": 30.94,
+      "avg_loss": null,
+      "profit_factor": null
+    },
+    "MANUAL_CLOSE": {
+      "n": 1,
+      "wins": 1,
+      "losses": 0,
+      "win_rate": 100.0,
+      "net_usd": 71.58,
+      "avg_win": 71.58,
+      "avg_loss": null,
+      "profit_factor": null
+    },
+    "STOP_HIT": {
+      "n": 9,
+      "wins": 0,
+      "losses": 9,
+      "win_rate": 0.0,
+      "net_usd": -669.52,
+      "avg_win": null,
+      "avg_loss": -74.39,
+      "profit_factor": 0.0
+    },
+    "TRAILING_STOP_HIT": {
+      "n": 14,
+      "wins": 10,
+      "losses": 4,
+      "win_rate": 71.4,
+      "net_usd": 330.73,
+      "avg_win": 47.88,
+      "avg_loss": -37.02,
+      "profit_factor": 3.23
+    }
+  },
+  "engine_directional_entry_scores": {
+    "technical": {
+      "WIN": {
+        "count": 13,
+        "mean": 71.34
+      },
+      "LOSS": {
+        "count": 12,
+        "mean": 58.08
+      }
+    },
+    "fundamental": {
+      "WIN": {
+        "count": 13,
+        "mean": 68.85
+      },
+      "LOSS": {
+        "count": 12,
+        "mean": 70.48
+      }
+    },
+    "marketStructure": {
+      "WIN": {
+        "count": 13,
+        "mean": 91.1
+      },
+      "LOSS": {
+        "count": 12,
+        "mean": 73.12
+      }
+    },
+    "liquidity": {
+      "WIN": {
+        "count": 13,
+        "mean": 50.26
+      },
+      "LOSS": {
+        "count": 12,
+        "mean": 56.36
+      }
+    }
+  },
+  "exploratory_executed_trade_subsets": {
+    "technical_and_structure_both_favor_direction": {
+      "n": 22,
+      "wins": 12,
+      "losses": 10,
+      "win_rate": 54.5,
+      "net_usd": -315.07,
+      "avg_win": 31.75,
+      "avg_loss": -69.61,
+      "profit_factor": 0.55
+    },
+    "technical_and_structure_both_at_least_60": {
+      "n": 12,
+      "wins": 9,
+      "losses": 3,
+      "win_rate": 75.0,
+      "net_usd": 63.01,
+      "avg_win": 35.52,
+      "avg_loss": -85.55,
+      "profit_factor": 1.25
+    },
+    "technical_and_structure_both_at_least_65": {
+      "n": 9,
+      "wins": 6,
+      "losses": 3,
+      "win_rate": 66.7,
+      "net_usd": -139.28,
+      "avg_win": 19.56,
+      "avg_loss": -85.55,
+      "profit_factor": 0.46
+    },
+    "direction_separation_at_least_20": {
+      "n": 22,
+      "wins": 13,
+      "losses": 9,
+      "win_rate": 59.1,
+      "net_usd": -0.25,
+      "avg_win": 47.1,
+      "avg_loss": -68.06,
+      "profit_factor": 1.0
+    },
+    "bullish_only": {
+      "n": 18,
+      "wins": 10,
+      "losses": 8,
+      "win_rate": 55.6,
+      "net_usd": 69.71,
+      "avg_win": 48.64,
+      "avg_loss": -52.08,
+      "profit_factor": 1.17
+    }
+  }
+}

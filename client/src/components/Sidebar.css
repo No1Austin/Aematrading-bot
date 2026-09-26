@@ -3,7 +3,7 @@
 .aema-sidebar-mobile-bar,
 .aema-sidebar-backdrop,
 .aema-sidebar-close-button {
-  display: none;
+  display:none;
 }
 
 
@@ -14,57 +14,54 @@
 ========================================================= */
 
 .aema-sidebar {
-  --sidebar-width: 272px;
+  --sidebar-width:272px;
 
-  --navy-950: #061225;
-  --navy-900: #081a33;
-  --navy-850: #0a2140;
-  --navy-800: #0d2a50;
-  --navy-700: #133a68;
+  --navy-950:#0B100D;
+  --navy-900:#0B100D;
+  --navy-850:#0B100D;
+  --navy-800:#0B100D;
+  --navy-700:#4AE87D;
 
-  --orange-500: #ff8614;
-  --orange-400: #ff9f32;
-  --orange-300: #ffb55d;
+  --orange-500:#4AE87D;
+  --orange-400:#4AE87D;
+  --orange-300:#4AE87D;
 
-  --text-primary: #f7f9fc;
-  --text-secondary: #aebbd0;
-  --text-muted: #71819a;
+  --text-primary:#F1F5F1;
+  --text-secondary:#859188;
+  --text-muted:#859188;
 
-  --border-soft: rgba(255, 255, 255, 0.075);
-  --border-medium: rgba(255, 255, 255, 0.11);
+  --border-soft:rgba(255, 255, 255, 0.075);
+  --border-medium:rgba(255, 255, 255, 0.11);
 
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
+  position:fixed;
+  top:0;
+  left:0;
+  bottom:0;
 
-  width: var(--sidebar-width);
-  min-width: var(--sidebar-width);
-  height: 100dvh;
+  width:var(--sidebar-width);
+  min-width:var(--sidebar-width);
+  height:100dvh;
 
-  z-index: 1000;
+  z-index:1000;
 
-  overflow: hidden;
-  overscroll-behavior: contain;
-  flex-shrink: 0;
+  overflow:hidden;
+  overscroll-behavior:contain;
+  flex-shrink:0;
 
-  background:
-    linear-gradient(
+  background:linear-gradient(
       180deg,
-      #07182f 0%,
-      #081a33 42%,
-      #061326 100%
+      #0B100D 0%,
+      #0B100D 42%,
+      #0B100D 100%
     );
 
-  border-right:
-    1px solid
+  border-right:1px solid
     rgba(255, 255, 255, 0.07);
 
-  box-shadow:
-    16px 0 50px
-    rgba(1, 7, 18, 0.22);
+  box-shadow:16px 0 50px
+    rgba(12, 19, 15, 0.22);
 
-  color: var(--text-primary);
+  color:var(--text-primary);
 }
 
 
@@ -73,55 +70,53 @@
 ========================================================= */
 
 .aema-sidebar-background {
-  position: absolute;
-  inset: 0;
+  position:absolute;
+  inset:0;
 
-  pointer-events: none;
-  overflow: hidden;
+  pointer-events:none;
+  overflow:hidden;
 }
 
 
 .aema-sidebar-background::before {
-  content: "";
+  content:"";
 
-  position: absolute;
-  width: 320px;
-  height: 320px;
+  position:absolute;
+  width:320px;
+  height:320px;
 
-  top: -190px;
-  left: -100px;
+  top:-190px;
+  left:-100px;
 
-  border-radius: 50%;
+  border-radius:50%;
 
-  background:
-    radial-gradient(
+  background:radial-gradient(
       circle,
-      rgba(255, 134, 20, 0.2) 0%,
-      rgba(255, 134, 20, 0.05) 42%,
+      rgba(255,255,255,0.055) 0%,
+      rgba(255,255,255,0.050) 42%,
       transparent 72%
     );
 
-  filter: blur(4px);
+  filter:blur(4px);
 }
 
 
 .aema-sidebar-background::after {
-  content: "";
+  content:"";
 
-  position: absolute;
-  width: 350px;
-  height: 350px;
+  position:absolute;
+  width:350px;
+  height:350px;
 
-  bottom: -230px;
-  right: -200px;
+  bottom:-230px;
+  right:-200px;
 
-  border-radius: 50%;
+  border-radius:50%;
 
-  background:
-    radial-gradient(
+  background:radial-gradient(
       circle,
-      rgba(34, 104, 204, 0.18) 0%,
-      rgba(23, 66, 126, 0.06) 45%,
+      rgba(255,255,255,0.055) 0%,
+      rgba(255,255,255,0.055) 45%,
       transparent 72%
     );
 }
@@ -132,16 +127,15 @@
 ========================================================= */
 
 .aema-sidebar-content {
-  position: relative;
-  z-index: 2;
+  position:relative;
+  z-index:2;
 
-  display: flex;
-  flex-direction: column;
+  display:flex;
+  flex-direction:column;
 
-  height: 100%;
+  height:100%;
 
-  padding:
-    22px
+  padding:22px
     16px
     16px;
 }
@@ -152,121 +146,116 @@
 ========================================================= */
 
 .aema-sidebar-brand {
-  display: flex;
-  align-items: center;
+  display:flex;
+  align-items:center;
 
-  gap: 12px;
+  gap:12px;
 
-  padding:
-    2px
+  padding:2px
     7px
     20px;
 }
 
 
 .aema-brand-mark {
-  position: relative;
+  position:relative;
 
-  display: grid;
-  place-items: center;
+  display:grid;
+  place-items:center;
 
-  width: 42px;
-  height: 42px;
+  width:42px;
+  height:42px;
 
-  flex: 0 0 42px;
+  flex:0 0 42px;
 
-  border-radius: 13px;
+  border-radius:13px;
 
-  background:
-    linear-gradient(
+  background:linear-gradient(
       145deg,
-      rgba(255, 154, 45, 1),
-      rgba(255, 109, 0, 1)
+      rgba(255,255,255,0.055),
+      rgba(255,255,255,0.055)
     );
 
-  box-shadow:
-    0 8px 22px
-    rgba(255, 120, 10, 0.25),
+  box-shadow:0 8px 22px
+    rgba(255,255,255,0.120),
     inset 0 1px 0
     rgba(255, 255, 255, 0.32);
 }
 
 
 .aema-brand-mark::after {
-  content: "";
+  content:"";
 
-  position: absolute;
-  inset: -4px;
+  position:absolute;
+  inset:-4px;
 
-  border:
-    1px solid
-    rgba(255, 142, 30, 0.16);
+  border:1px solid
+    rgba(255,255,255,0.120);
 
-  border-radius: 16px;
+  border-radius:16px;
 }
 
 
 .aema-brand-mark-inner {
-  display: grid;
-  place-items: center;
+  display:grid;
+  place-items:center;
 
-  color: #ffffff;
+  color:#F1F5F1;
 }
 
 
 .aema-brand-copy {
-  min-width: 0;
+  min-width:0;
 
-  display: flex;
-  flex-direction: column;
+  display:flex;
+  flex-direction:column;
 
-  gap: 2px;
+  gap:2px;
 }
 
 
 .aema-brand-title-row {
-  display: flex;
-  align-items: center;
+  display:flex;
+  align-items:center;
 
-  gap: 7px;
+  gap:7px;
 }
 
 
 .aema-brand-copy strong {
-  font-size: 17px;
-  font-weight: 800;
+  font-size:17px;
+  font-weight:800;
 
-  line-height: 1.1;
+  line-height:1.1;
 
-  letter-spacing: 0.07em;
+  letter-spacing:0.07em;
 
-  color: #ffffff;
+  color:#F1F5F1;
 }
 
 
 .aema-brand-copy > span {
-  font-size: 10px;
-  font-weight: 600;
+  font-size:10px;
+  font-weight:600;
 
-  letter-spacing: 0.045em;
+  letter-spacing:0.045em;
 
-  color: var(--text-secondary);
+  color:var(--text-secondary);
 
-  white-space: nowrap;
+  white-space:nowrap;
 }
 
 
 .aema-brand-dot {
-  width: 5px;
-  height: 5px;
+  width:5px;
+  height:5px;
 
-  border-radius: 999px;
+  border-radius:999px;
 
-  background: var(--orange-500);
+  background:var(--orange-500);
 
-  box-shadow:
-    0 0 10px
-    rgba(255, 134, 20, 0.8);
+  box-shadow:0 0 10px
+    rgba(255,255,255,0.120);
 }
 
 
@@ -275,41 +264,39 @@
 ========================================================= */
 
 .aema-sidebar-section-header {
-  display: flex;
-  align-items: center;
+  display:flex;
+  align-items:center;
 
-  gap: 10px;
+  gap:10px;
 
-  padding:
-    0
+  padding:0
     8px;
 
-  margin-bottom: 9px;
+  margin-bottom:9px;
 }
 
 
 .aema-workspace-label,
 .aema-nav-section-label {
-  flex: none;
+  flex:none;
 
-  font-size: 9px;
-  font-weight: 800;
+  font-size:9px;
+  font-weight:800;
 
-  text-transform: uppercase;
+  text-transform:uppercase;
 
-  letter-spacing: 0.17em;
+  letter-spacing:0.17em;
 
-  color: #71839c;
+  color:#859188;
 }
 
 
 .aema-section-line {
-  height: 1px;
+  height:1px;
 
-  flex: 1;
+  flex:1;
 
-  background:
-    linear-gradient(
+  background:linear-gradient(
       90deg,
       rgba(255, 255, 255, 0.08),
       transparent
@@ -322,49 +309,44 @@
 ========================================================= */
 
 .aema-workspace-switcher {
-  margin-bottom: 24px;
+  margin-bottom:24px;
 }
 
 
 .aema-workspace-options {
-  display: grid;
-  grid-template-columns:
-    repeat(2, minmax(0, 1fr));
+  display:grid;
+  grid-template-columns:repeat(2, minmax(0, 1fr));
 
-  gap: 7px;
+  gap:7px;
 }
 
 
 .aema-workspace-button {
-  position: relative;
+  position:relative;
 
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
 
-  min-width: 0;
+  min-width:0;
 
-  gap: 8px;
+  gap:8px;
 
-  padding:
-    11px
+  padding:11px
     10px;
 
-  text-decoration: none;
+  text-decoration:none;
 
-  color: var(--text-secondary);
+  color:var(--text-secondary);
 
-  border:
-    1px solid
+  border:1px solid
     rgba(255, 255, 255, 0.065);
 
-  border-radius: 13px;
+  border-radius:13px;
 
-  background:
-    rgba(255, 255, 255, 0.035);
+  background:rgba(255, 255, 255, 0.035);
 
-  transition:
-    transform 160ms ease,
+  transition:transform 160ms ease,
     border-color 160ms ease,
     background 160ms ease,
     box-shadow 160ms ease;
@@ -372,131 +354,123 @@
 
 
 .aema-workspace-button:hover {
-  transform:
-    translateY(-1px);
+  transform:translateY(-1px);
 
-  border-color:
-    rgba(255, 255, 255, 0.13);
+  border-color:rgba(255, 255, 255, 0.13);
 
-  background:
-    rgba(255, 255, 255, 0.06);
+  background:rgba(255, 255, 255, 0.06);
 }
 
 
 .aema-workspace-button.active {
   border-color:
-    rgba(255, 139, 24, 0.28);
+    rgba(39, 199, 91, 0.28);
 
   background:
     linear-gradient(
       145deg,
-      rgba(255, 140, 26, 0.15),
-      rgba(255, 117, 0, 0.06)
+      rgba(39, 199, 91, 0.15),
+      rgba(39, 199, 91, 0.06)
     );
 
   box-shadow:
     inset 0 1px 0
     rgba(255, 255, 255, 0.05),
     0 10px 25px
-    rgba(0, 0, 0, 0.12);
+    rgba(12, 19, 15, 0.12);
 }
 
 
 .aema-workspace-icon {
-  width: 31px;
-  height: 31px;
+  width:31px;
+  height:31px;
 
-  display: grid;
-  place-items: center;
+  display:grid;
+  place-items:center;
 
-  border-radius: 9px;
+  border-radius:9px;
 
-  color: #8ea2bf;
+  color:#A8B6AB;
 
-  background:
-    rgba(255, 255, 255, 0.055);
+  background:rgba(255, 255, 255, 0.055);
 
-  transition:
-    color 160ms ease,
+  transition:color 160ms ease,
     background 160ms ease;
 }
 
 
 .aema-workspace-button.active
 .aema-workspace-icon {
-  color: #ffffff;
+  color: #F1F5F1;
 
   background:
     linear-gradient(
       145deg,
-      #ff9728,
-      #f26b00
+      #4AE87D,
+      #4AE87D
     );
 
   box-shadow:
     0 5px 15px
-    rgba(255, 116, 0, 0.23);
+    rgba(39, 199, 91, 0.23);
 }
 
 
 .aema-workspace-copy {
-  min-width: 0;
+  min-width:0;
 
-  display: flex;
-  flex-direction: column;
+  display:flex;
+  flex-direction:column;
 
-  gap: 2px;
+  gap:2px;
 }
 
 
 .aema-workspace-copy strong {
-  color: #f6f8fc;
+  color:#F1F5F1;
 
-  font-size: 12px;
-  font-weight: 700;
+  font-size:12px;
+  font-weight:700;
 }
 
 
 .aema-workspace-copy span {
-  color: #71829b;
+  color:#859188;
 
-  font-size: 8.5px;
-  font-weight: 500;
+  font-size:8.5px;
+  font-weight:500;
 
-  white-space: nowrap;
+  white-space:nowrap;
 }
 
 
 .aema-workspace-arrow {
-  display: none;
+  display:none;
 }
 
 
 .aema-workspace-status {
-  position: absolute;
+  position:absolute;
 
-  top: 8px;
-  right: 8px;
+  top:8px;
+  right:8px;
 
-  padding:
-    3px
+  padding:3px
     5px;
 
-  border-radius: 5px;
+  border-radius:5px;
 
-  font-size: 6px;
-  font-weight: 900;
+  font-size:6px;
+  font-weight:900;
 
-  letter-spacing: 0.1em;
+  letter-spacing:0.1em;
 
-  color: #ffb35f;
+  color:#A8B6AB;
 
-  background:
-    rgba(255, 139, 20, 0.1);
+  background:rgba(255,255,255,0.055);
 
-  border:
-    1px solid
-    rgba(255, 139, 20, 0.16);
+  border:1px solid
+    rgba(255,255,255,0.120);
 }
 
 
@@ -515,44 +489,42 @@
 
 
 .aema-nav-list {
-  display: flex;
-  flex-direction: column;
+  display:flex;
+  flex-direction:column;
 
-  gap: 3px;
+  gap:3px;
 }
 
 
 .aema-nav-item {
-  position: relative;
+  position:relative;
 
-  display: flex;
-  align-items: center;
+  display:flex;
+  align-items:center;
 
-  width: 100%;
-  min-height: 49px;
+  width:100%;
+  min-height:49px;
 
-  gap: 11px;
+  gap:11px;
 
-  padding:
-    7px
+  padding:7px
     10px;
 
-  border: 1px solid transparent;
+  border:1px solid transparent;
 
-  border-radius: 11px;
+  border-radius:11px;
 
-  text-decoration: none;
+  text-decoration:none;
 
-  color: #94a4bb;
+  color:#859188;
 
-  background: transparent;
+  background:transparent;
 
-  cursor: pointer;
+  cursor:pointer;
 
-  overflow: hidden;
+  overflow:hidden;
 
-  transition:
-    background 160ms ease,
+  transition:background 160ms ease,
     border-color 160ms ease,
     color 160ms ease,
     transform 160ms ease;
@@ -560,32 +532,29 @@
 
 
 .aema-nav-item:hover {
-  color: #ffffff;
+  color:#F1F5F1;
 
-  background:
-    rgba(255, 255, 255, 0.045);
+  background:rgba(255, 255, 255, 0.045);
 
-  border-color:
-    rgba(255, 255, 255, 0.045);
+  border-color:rgba(255, 255, 255, 0.045);
 
-  transform:
-    translateX(2px);
+  transform:translateX(2px);
 }
 
 
 .aema-nav-item.active {
-  color: #ffffff;
+  color: #F1F5F1;
 
   background:
     linear-gradient(
       90deg,
-      rgba(255, 133, 20, 0.16) 0%,
-      rgba(255, 133, 20, 0.075) 48%,
+      rgba(39, 199, 91, 0.16) 0%,
+      rgba(39, 199, 91, 0.075) 48%,
       rgba(255, 255, 255, 0.025) 100%
     );
 
   border-color:
-    rgba(255, 148, 47, 0.13);
+    rgba(39, 199, 91, 0.13);
 
   box-shadow:
     inset 0 1px 0
@@ -611,13 +580,13 @@
   background:
     linear-gradient(
       180deg,
-      #ffac4e,
-      #ff7000
+      #4AE87D,
+      #4AE87D
     );
 
   box-shadow:
     0 0 14px
-    rgba(255, 125, 0, 0.6);
+    rgba(39, 199, 91, 0.6);
 
   opacity: 0;
 
@@ -640,26 +609,23 @@
 
 
 .aema-nav-icon {
-  flex:
-    0
+  flex:0
     0
     33px;
 
-  width: 33px;
-  height: 33px;
+  width:33px;
+  height:33px;
 
-  display: grid;
-  place-items: center;
+  display:grid;
+  place-items:center;
 
-  border-radius: 9px;
+  border-radius:9px;
 
-  color: #8093ae;
+  color:#859188;
 
-  background:
-    rgba(255, 255, 255, 0.03);
+  background:rgba(255, 255, 255, 0.03);
 
-  transition:
-    color 160ms ease,
+  transition:color 160ms ease,
     background 160ms ease,
     transform 160ms ease;
 }
@@ -667,62 +633,60 @@
 
 .aema-nav-item:hover
 .aema-nav-icon {
-  color: #ffac51;
+  color:#A8B6AB;
 
-  background:
-    rgba(255, 133, 20, 0.085);
+  background:rgba(255,255,255,0.055);
 }
 
 
 .aema-nav-item.active
 .aema-nav-icon {
-  color: #ffffff;
+  color: #F1F5F1;
 
   background:
     linear-gradient(
       145deg,
-      rgba(255, 151, 40, 0.98),
-      rgba(241, 103, 0, 0.98)
+      rgba(39, 199, 91, 0.98),
+      rgba(39, 199, 91, 0.98)
     );
 
   box-shadow:
     0 5px 15px
-    rgba(255, 113, 0, 0.2);
+    rgba(39, 199, 91, 0.2);
 }
 
 
 .aema-nav-content {
-  min-width: 0;
+  min-width:0;
 
-  flex: 1;
+  flex:1;
 
-  display: flex;
-  flex-direction: column;
+  display:flex;
+  flex-direction:column;
 
-  gap: 1px;
+  gap:1px;
 }
 
 
 .aema-nav-label {
-  font-size: 12px;
-  font-weight: 650;
+  font-size:12px;
+  font-weight:650;
 
-  line-height: 1.25;
+  line-height:1.25;
 
-  color: inherit;
+  color:inherit;
 }
 
 
 .aema-nav-description {
-  font-size: 8.5px;
-  font-weight: 500;
+  font-size:8.5px;
+  font-weight:500;
 
-  color: #667995;
+  color:#859188;
 
-  line-height: 1.2;
+  line-height:1.2;
 
-  transition:
-    color 160ms ease;
+  transition:color 160ms ease;
 }
 
 
@@ -730,22 +694,20 @@
 .aema-nav-description,
 .aema-nav-item.active
 .aema-nav-description {
-  color: #899ab1;
+  color: #859188;
 }
 
 
 .aema-nav-chevron {
-  flex: none;
+  flex:none;
 
-  color: #50647f;
+  color:#859188;
 
-  opacity: 0;
+  opacity:0;
 
-  transform:
-    translateX(-3px);
+  transform:translateX(-3px);
 
-  transition:
-    opacity 160ms ease,
+  transition:opacity 160ms ease,
     transform 160ms ease,
     color 160ms ease;
 }
@@ -764,7 +726,7 @@
 
 .aema-nav-item.active
 .aema-nav-chevron {
-  color: #ff9a36;
+  color: #4AE87D;
 }
 
 
@@ -773,20 +735,18 @@
 ========================================================= */
 
 .aema-sidebar-bottom {
-  margin-top: auto;
+  margin-top:auto;
 }
 
 
 .aema-sidebar-divider {
-  height: 1px;
+  height:1px;
 
-  margin:
-    10px
+  margin:10px
     7px
     9px;
 
-  background:
-    linear-gradient(
+  background:linear-gradient(
       90deg,
       transparent,
       rgba(255, 255, 255, 0.09),
@@ -800,11 +760,11 @@
 ========================================================= */
 
 .aema-settings-button {
-  border: 1px solid transparent;
+  border:1px solid transparent;
 
-  font-family: inherit;
+  font-family:inherit;
 
-  text-align: left;
+  text-align:left;
 }
 
 
@@ -813,25 +773,22 @@
 ========================================================= */
 
 .aema-system-mini {
-  display: flex;
-  align-items: center;
+  display:flex;
+  align-items:center;
 
-  gap: 10px;
+  gap:10px;
 
-  margin-top: 9px;
+  margin-top:9px;
 
-  padding:
-    10px
+  padding:10px
     11px;
 
-  border:
-    1px solid
+  border:1px solid
     rgba(255, 255, 255, 0.055);
 
-  border-radius: 12px;
+  border-radius:12px;
 
-  background:
-    linear-gradient(
+  background:linear-gradient(
       145deg,
       rgba(255, 255, 255, 0.035),
       rgba(255, 255, 255, 0.015)
@@ -840,61 +797,58 @@
 
 
 .aema-system-mini-icon {
-  width: 31px;
-  height: 31px;
+  width:31px;
+  height:31px;
 
-  flex:
-    0
+  flex:0
     0
     31px;
 
-  display: grid;
-  place-items: center;
+  display:grid;
+  place-items:center;
 
-  border-radius: 9px;
+  border-radius:9px;
 
-  color: #ff9f35;
+  color:#A8B6AB;
 
-  background:
-    rgba(255, 134, 20, 0.08);
+  background:rgba(255,255,255,0.055);
 
-  border:
-    1px solid
-    rgba(255, 134, 20, 0.1);
+  border:1px solid
+    rgba(255,255,255,0.100);
 }
 
 
 .aema-system-mini-copy {
-  min-width: 0;
+  min-width:0;
 
-  display: flex;
-  flex-direction: column;
+  display:flex;
+  flex-direction:column;
 
-  gap: 2px;
+  gap:2px;
 }
 
 
 .aema-system-status-row {
-  display: flex;
-  align-items: center;
+  display:flex;
+  align-items:center;
 
-  gap: 6px;
+  gap:6px;
 }
 
 
 .aema-system-status-row strong {
-  color: #dce5f0;
+  color:#F1F5F1;
 
-  font-size: 10px;
-  font-weight: 700;
+  font-size:10px;
+  font-weight:700;
 }
 
 
 .aema-system-mini-copy > span {
-  color: #657994;
+  color:#859188;
 
-  font-size: 8.5px;
-  font-weight: 500;
+  font-size:8.5px;
+  font-weight:500;
 }
 
 
@@ -906,11 +860,11 @@
 
   border-radius: 50%;
 
-  background: #35d598;
+  background: #4AE87D;
 
   box-shadow:
     0 0 0 3px
-    rgba(53, 213, 152, 0.08);
+    rgba(39, 199, 91, 0.08);
 }
 
 
@@ -922,7 +876,7 @@
 
   border:
     1px solid
-    rgba(53, 213, 152, 0.2);
+    rgba(39, 199, 91, 0.2);
 
   border-radius: inherit;
 }
@@ -933,35 +887,32 @@
 ========================================================= */
 
 .aema-sidebar-version {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
 
-  padding:
-    10px
+  padding:10px
     8px
     1px;
 
-  color: #51647f;
+  color:#859188;
 
-  font-size: 8px;
-  font-weight: 600;
+  font-size:8px;
+  font-weight:600;
 
-  letter-spacing: 0.03em;
+  letter-spacing:0.03em;
 }
 
 
 .aema-version-tag {
-  padding:
-    2px
+  padding:2px
     5px;
 
-  border-radius: 4px;
+  border-radius:4px;
 
-  color: #73849a;
+  color:#859188;
 
-  background:
-    rgba(255, 255, 255, 0.035);
+  background:rgba(255, 255, 255, 0.035);
 }
 
 
@@ -970,12 +921,12 @@
 ========================================================= */
 
 .aema-sidebar {
-  scrollbar-width: none;
+  scrollbar-width:none;
 }
 
 
 .aema-sidebar::-webkit-scrollbar {
-  display: none;
+  display:none;
 }
 
 
@@ -986,34 +937,34 @@
 @media (max-height: 820px) {
 
   .aema-sidebar-content {
-    padding-top: 16px;
-    padding-bottom: 10px;
+    padding-top:16px;
+    padding-bottom:10px;
   }
 
 
   .aema-sidebar-brand {
-    padding-bottom: 15px;
+    padding-bottom:15px;
   }
 
 
   .aema-workspace-switcher {
-    margin-bottom: 17px;
+    margin-bottom:17px;
   }
 
 
   .aema-nav-item {
-    min-height: 44px;
+    min-height:44px;
   }
 
 
   .aema-nav-description {
-    display: none;
+    display:none;
   }
 
 
   .aema-system-mini {
-    padding-top: 8px;
-    padding-bottom: 8px;
+    padding-top:8px;
+    padding-bottom:8px;
   }
 
 }
@@ -1026,25 +977,24 @@
 @media (max-width: 900px) {
 
   .aema-sidebar {
-    --sidebar-width: 82px;
+    --sidebar-width:82px;
 
-    width: 82px;
-    min-width: 82px;
+    width:82px;
+    min-width:82px;
   }
 
 
   .aema-sidebar-content {
-    padding:
-      18px
+    padding:18px
       11px;
   }
 
 
   .aema-sidebar-brand {
-    justify-content: center;
+    justify-content:center;
 
-    padding-left: 0;
-    padding-right: 0;
+    padding-left:0;
+    padding-right:0;
   }
 
 
@@ -1063,52 +1013,49 @@
 
 
   .aema-workspace-options {
-    grid-template-columns: 1fr;
+    grid-template-columns:1fr;
 
-    gap: 7px;
+    gap:7px;
   }
 
 
   .aema-workspace-button {
-    align-items: center;
-    justify-content: center;
+    align-items:center;
+    justify-content:center;
 
-    padding: 9px;
+    padding:9px;
   }
 
 
   .aema-workspace-icon {
-    width: 36px;
-    height: 36px;
+    width:36px;
+    height:36px;
   }
 
 
   .aema-nav-item {
-    justify-content: center;
+    justify-content:center;
 
-    padding:
-      7px;
+    padding:7px;
 
-    min-height: 49px;
+    min-height:49px;
   }
 
 
   .aema-nav-icon {
-    flex:
-      0
+    flex:0
       0
       36px;
 
-    width: 36px;
-    height: 36px;
+    width:36px;
+    height:36px;
   }
 
 
   .aema-system-mini {
-    justify-content: center;
+    justify-content:center;
 
-    padding:
-      9px;
+    padding:9px;
   }
 
 }
@@ -1121,37 +1068,36 @@
 @media (max-width: 600px) {
 
   .aema-sidebar {
-    --sidebar-width: 70px;
+    --sidebar-width:70px;
 
-    width: 70px;
-    min-width: 70px;
+    width:70px;
+    min-width:70px;
   }
 
 
   .aema-sidebar-content {
-    padding:
-      14px
+    padding:14px
       8px;
   }
 
 
   .aema-brand-mark {
-    width: 38px;
-    height: 38px;
+    width:38px;
+    height:38px;
 
-    flex-basis: 38px;
+    flex-basis:38px;
   }
 
 
   .aema-nav-item {
-    min-height: 45px;
+    min-height:45px;
   }
 
 
   .aema-nav-icon,
   .aema-workspace-icon {
-    width: 34px;
-    height: 34px;
+    width:34px;
+    height:34px;
   }
 
 }
@@ -1160,80 +1106,80 @@
    the sidebar/header from squeezing the application into a narrow column. */
 @media (max-width: 760px) {
   .aema-sidebar-mobile-bar {
-    position: fixed;
-    z-index: 990;
-    inset: 0 0 auto;
-    min-height: 64px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    padding: max(10px, env(safe-area-inset-top)) 14px 10px;
-    box-sizing: border-box;
-    color: var(--text-primary, #f7f9fc);
-    background: rgba(7, 24, 47, 0.96);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
+    position:fixed;
+    z-index:990;
+    inset:0 0 auto;
+    min-height:64px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    padding:max(10px, env(safe-area-inset-top)) 14px 10px;
+    box-sizing:border-box;
+    color:var(--text-primary, #F1F5F1);
+    background:rgba(12, 19, 15, 0.96);
+    border-bottom:1px solid rgba(255, 255, 255, 0.08);
+    box-shadow:0 10px 30px rgba(12, 19, 15, 0.2);
+    backdrop-filter:blur(16px);
+    -webkit-backdrop-filter:blur(16px);
   }
 
-  .aema-sidebar-mobile-brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
-  .aema-sidebar-mobile-brand .aema-brand-mark { width: 38px; height: 38px; flex-basis: 38px; }
-  .aema-sidebar-mobile-brand .aema-brand-copy { display: block; }
+  .aema-sidebar-mobile-brand { display:flex; align-items:center; gap:10px; min-width:0; }
+  .aema-sidebar-mobile-brand .aema-brand-mark { width:38px; height:38px; flex-basis:38px; }
+  .aema-sidebar-mobile-brand .aema-brand-copy { display:block; }
 
   .aema-sidebar-menu-button,
   .aema-sidebar-close-button {
-    width: 40px;
-    height: 40px;
-    flex: 0 0 40px;
-    display: grid;
-    place-items: center;
-    padding: 0;
-    color: #f7f9fc;
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 11px;
-    cursor: pointer;
+    width:40px;
+    height:40px;
+    flex:0 0 40px;
+    display:grid;
+    place-items:center;
+    padding:0;
+    color:#F1F5F1;
+    background:rgba(255, 255, 255, 0.06);
+    border:1px solid rgba(255, 255, 255, 0.1);
+    border-radius:11px;
+    cursor:pointer;
   }
 
-  .aema-sidebar-close-button { margin-left: auto; }
+  .aema-sidebar-close-button { margin-left:auto; }
   .aema-sidebar-menu-button:focus-visible,
-  .aema-sidebar-close-button:focus-visible { outline: 3px solid rgba(255, 134, 20, 0.32); outline-offset: 2px; }
+  .aema-sidebar-close-button:focus-visible { outline: 3px solid rgba(39, 199, 91, 0.32); outline-offset: 2px; }
 
   .aema-sidebar-backdrop {
-    position: fixed;
-    z-index: 1040;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    display: block;
-    padding: 0;
-    visibility: hidden;
-    opacity: 0;
-    background: rgba(1, 7, 18, 0.72);
-    border: 0;
-    backdrop-filter: blur(4px);
-    pointer-events: none;
-    transition: opacity 220ms ease, visibility 220ms ease;
+    position:fixed;
+    z-index:1040;
+    inset:0;
+    width:100%;
+    height:100%;
+    display:block;
+    padding:0;
+    visibility:hidden;
+    opacity:0;
+    background:rgba(12, 19, 15, 0.72);
+    border:0;
+    backdrop-filter:blur(4px);
+    pointer-events:none;
+    transition:opacity 220ms ease, visibility 220ms ease;
   }
 
-  .aema-sidebar-backdrop.visible { visibility: visible; opacity: 1; pointer-events: auto; }
+  .aema-sidebar-backdrop.visible { visibility:visible; opacity:1; pointer-events:auto; }
 
   .aema-sidebar {
-    --sidebar-width: min(88vw, 330px);
-    z-index: 1050;
-    width: var(--sidebar-width);
-    min-width: var(--sidebar-width);
-    visibility: hidden;
-    transform: translateX(-104%);
-    transition: transform 240ms cubic-bezier(0.22, 1, 0.36, 1), visibility 240ms ease;
-    box-shadow: 22px 0 70px rgba(0, 0, 0, 0.36);
+    --sidebar-width:min(88vw, 330px);
+    z-index:1050;
+    width:var(--sidebar-width);
+    min-width:var(--sidebar-width);
+    visibility:hidden;
+    transform:translateX(-104%);
+    transition:transform 240ms cubic-bezier(0.22, 1, 0.36, 1), visibility 240ms ease;
+    box-shadow:22px 0 70px rgba(12, 19, 15, 0.36);
   }
 
-  .aema-sidebar.mobile-open { visibility: visible; transform: translateX(0); }
-  .aema-sidebar-content { padding: max(16px, env(safe-area-inset-top)) 14px max(14px, env(safe-area-inset-bottom)); }
-  .aema-sidebar-brand { justify-content: flex-start; padding: 0 0 15px; }
+  .aema-sidebar.mobile-open { visibility:visible; transform:translateX(0); }
+  .aema-sidebar-content { padding:max(16px, env(safe-area-inset-top)) 14px max(14px, env(safe-area-inset-bottom)); }
+  .aema-sidebar-brand { justify-content:flex-start; padding:0 0 15px; }
   .aema-sidebar-brand .aema-brand-copy,
   .aema-workspace-copy,
   .aema-workspace-arrow,
@@ -1242,23 +1188,28 @@
   .aema-nav-active-indicator,
   .aema-system-mini-copy,
   .aema-sidebar-version { display: initial; }
-  .aema-workspace-options { grid-template-columns: 1fr; }
-  .aema-workspace-button { justify-content: flex-start; padding: 10px 11px; }
-  .aema-workspace-status { margin-left: auto; }
-  .aema-nav-item { justify-content: flex-start; min-height: 48px; padding: 7px 9px; }
+  .aema-workspace-options { grid-template-columns:1fr; }
+  .aema-workspace-button { justify-content:flex-start; padding:10px 11px; }
+  .aema-workspace-status { margin-left:auto; }
+  .aema-nav-item { justify-content:flex-start; min-height:48px; padding:7px 9px; }
   .aema-nav-active-indicator { display: block; }
-  .aema-nav-content { display: flex; }
-  .aema-nav-chevron { display: block; }
-  .aema-system-mini { justify-content: flex-start; }
-  .aema-system-mini-copy { display: block; }
-  .aema-sidebar-version { display: flex; }
+  .aema-nav-content { display:flex; }
+  .aema-nav-chevron { display:block; }
+  .aema-system-mini { justify-content:flex-start; }
+  .aema-system-mini-copy { display:block; }
+  .aema-sidebar-version { display:flex; }
 }
 
 @media (max-width: 380px) {
-  .aema-sidebar { --sidebar-width: 92vw; }
+  .aema-sidebar { --sidebar-width:92vw; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .aema-sidebar,
-  .aema-sidebar-backdrop { transition: none; }
+  .aema-sidebar-backdrop { transition:none; }
 }
+
+.aema-sidebar {--navy-950:#0B100D;--navy-900:#0B100D;--navy-850:#0B100D;--navy-800:#0B100D;--navy-700:#111913;--orange-500:#4AE87D;--orange-400:#4AE87D;}
+
+/* Black-first navigation. Retain green for active links only. */
+.aema-sidebar{background:#090B0A;border-right:1px solid #242B25;}

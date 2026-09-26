@@ -45,6 +45,13 @@ import createCexDiscoveryRoutes
   from "./crypto/bot/api/botPrivateRoutes.js";
 
 
+
+  import {
+  startBotPositionRuntime,
+  stopBotPositionRuntime,
+} from "./crypto/bot/runtime/botRuntime.js";
+
+
 import {
   startCexDiscoveryRuntime,
   stopCexDiscoveryRuntime,
@@ -65,6 +72,8 @@ import continuousMarketScanner from
       cryptoRuntimeApiService,
     
   });
+
+
 
 /**
  * ============================================================
@@ -967,6 +976,13 @@ const server =
       void startRuntimeServices();
 
       void startCryptoRuntimeServices();
+      // Independent bot: optional automatic startup.
+// Disabled unless explicitly enabled in .env.
+if (process.env.AEMA_BOT_AUTO_START === "true") {
+  const result = startBotPositionRuntime();
+
+  console.log("[AEMA_BOT_RUNTIME]", result);
+}
 
       void startCexDiscoveryRuntime()
         .then(() => {

@@ -9,35 +9,34 @@
    ========================================================= */
 
 .scanner-advanced-chart {
-  --chart-bg: #07111f;
-  --chart-bg-soft: #091625;
-  --chart-surface: #0b192a;
-  --chart-border: #1b2e48;
-  --chart-text: #e7eef8;
-  --chart-text-soft: #8295af;
-  --chart-text-muted: #536981;
-  --chart-blue: #61a6ff;
-  --chart-green: #2ad6a2;
-  --chart-red: #f06470;
-  --chart-amber: #f1bd64;
-  --chart-purple: #a88cff;
+  --chart-bg:#0B100D;
+  --chart-bg-soft:#0B100D;
+  --chart-surface:#0B100D;
+  --chart-border:#0B100D;
+  --chart-text:#F1F5F1;
+  --chart-text-soft:#859188;
+  --chart-text-muted:#859188;
+  --chart-blue:#4AE87D;
+  --chart-green:#4AE87D;
+  --chart-red:#f06470;
+  --chart-amber:#4AE87D;
+  --chart-purple:#4AE87D;
 
-  position: relative;
-  width: 100%;
-  min-width: 0;
-  overflow: hidden;
+  position:relative;
+  width:100%;
+  min-width:0;
+  overflow:hidden;
 
-  background:
-    radial-gradient(
+  background:radial-gradient(
       circle at 80% -12%,
-      rgba(47, 102, 199, 0.09),
+      rgba(255,255,255,0.055),
       transparent 28%
     ),
-    linear-gradient(180deg, #081423, #07111f);
+    linear-gradient(180deg, #0B100D, #0B100D);
 
-  border: 1px solid var(--chart-border);
-  border-radius: 15px;
-  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.17);
+  border:1px solid var(--chart-border);
+  border-radius:15px;
+  box-shadow:0 18px 48px rgba(12, 19, 15, 0.17);
 }
 
 /* =========================================================
@@ -45,141 +44,140 @@
    ========================================================= */
 
 .scanner-chart-header {
-  min-width: 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 12px 13px 10px;
-  background: linear-gradient(
+  min-width:0;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  padding:12px 13px 10px;
+  background:linear-gradient(
     180deg,
-    rgba(11, 25, 43, 0.96),
-    rgba(8, 19, 33, 0.96)
+    rgba(12, 19, 15, 0.96),
+    rgba(12, 19, 15, 0.96)
   );
-  border-bottom: 1px solid rgba(34, 55, 84, 0.68);
+  border-bottom:1px solid rgba(17, 29, 22, 0.68);
 }
 
 .scanner-chart-identity {
-  min-width: 0;
-  flex: 1;
+  min-width:0;
+  flex:1;
 }
 
 .scanner-chart-title-row {
-  display: flex;
-  align-items: center;
-  gap: 6px;
+  display:flex;
+  align-items:center;
+  gap:6px;
 }
 
 .scanner-chart-kicker {
-  color: var(--chart-text-muted);
-  font-size: 7px;
-  font-weight: 800;
-  letter-spacing: 0.11em;
-  text-transform: uppercase;
+  color:var(--chart-text-muted);
+  font-size:7px;
+  font-weight:800;
+  letter-spacing:0.11em;
+  text-transform:uppercase;
 }
 
 .scanner-chart-live-dot {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: var(--chart-green);
-  box-shadow: 0 0 7px rgba(42, 214, 162, 0.6);
+  width:5px;
+  height:5px;
+  border-radius:50%;
+  background:var(--chart-green);
+  box-shadow:0 0 7px rgba(255,255,255,0.120);
 }
 
 .scanner-chart-symbol-row {
-  min-width: 0;
-  display: flex;
-  align-items: baseline;
-  flex-wrap: wrap;
-  gap: 5px 8px;
-  margin-top: 4px;
+  min-width:0;
+  display:flex;
+  align-items:baseline;
+  flex-wrap:wrap;
+  gap:5px 8px;
+  margin-top:4px;
 }
 
 .scanner-chart-symbol-row > strong {
-  color: #f3f7fd;
-  font-size: 16px;
-  font-weight: 780;
-  line-height: 1;
-  letter-spacing: -0.02em;
+  color:#F1F5F1;
+  font-size:16px;
+  font-weight:780;
+  line-height:1;
+  letter-spacing:-0.02em;
 }
 
 .scanner-chart-last-price {
-  color: #b7c6d9;
-  font-size: 11px;
-  font-weight: 650;
+  color:#F1F5F1;
+  font-size:11px;
+  font-weight:650;
 }
 
 .scanner-chart-change {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 8px;
-  font-weight: 700;
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  font-size:8px;
+  font-weight:700;
 }
 
 .scanner-chart-change.positive { color: var(--chart-green); }
-.scanner-chart-change.negative { color: var(--chart-red); }
-.scanner-chart-change.neutral { color: var(--chart-text-soft); }
+.scanner-chart-change.negative { color:var(--chart-red); }
+.scanner-chart-change.neutral { color:var(--chart-text-soft); }
 
 /* =========================================================
    03. TIMEFRAME SELECTOR
    ========================================================= */
 
 .scanner-timeframes {
-  display: flex;
-  align-items: center;
-  gap: 3px;
-  min-width: 0;
-  padding: 3px;
-  overflow-x: auto;
-  background: rgba(5, 14, 25, 0.66);
-  border: 1px solid rgba(39, 63, 95, 0.68);
-  border-radius: 8px;
-  scrollbar-width: none;
+  display:flex;
+  align-items:center;
+  gap:3px;
+  min-width:0;
+  padding:3px;
+  overflow-x:auto;
+  background:rgba(12, 19, 15, 0.66);
+  border:1px solid rgba(255,255,255,0.120);
+  border-radius:8px;
+  scrollbar-width:none;
 }
 
-.scanner-timeframes::-webkit-scrollbar { display: none; }
+.scanner-timeframes::-webkit-scrollbar { display:none; }
 
 .scanner-timeframes button {
-  min-width: 34px;
-  min-height: 28px;
-  flex: 0 0 auto;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 7px;
-  color: #657c9b;
-  background: transparent;
-  border: 1px solid transparent;
-  border-radius: 6px;
-  font-size: 8px;
-  font-weight: 700;
-  -webkit-tap-highlight-color: transparent;
-  transition:
-    color 140ms ease,
+  min-width:34px;
+  min-height:28px;
+  flex:0 0 auto;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:0 7px;
+  color:#A8B6AB;
+  background:transparent;
+  border:1px solid transparent;
+  border-radius:6px;
+  font-size:8px;
+  font-weight:700;
+  -webkit-tap-highlight-color:transparent;
+  transition:color 140ms ease,
     background-color 140ms ease,
     border-color 140ms ease;
 }
 
 .scanner-timeframes button:hover:not(:disabled) {
-  color: #d3deec;
-  background: rgba(28, 51, 82, 0.65);
+  color:#F1F5F1;
+  background:rgba(17, 29, 22, 0.65);
 }
 
 .scanner-timeframes button.active {
-  color: #9dc9ff;
+  color: #4AE87D;
   background: linear-gradient(
     180deg,
-    rgba(35, 84, 148, 0.72),
-    rgba(22, 56, 101, 0.72)
+    rgba(39, 199, 91, 0.72),
+    rgba(39, 199, 91, 0.72)
   );
-  border-color: rgba(75, 136, 215, 0.42);
+  border-color: rgba(39, 199, 91, 0.42);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
 .scanner-timeframes button:disabled {
-  opacity: 0.28;
-  cursor: not-allowed;
+  opacity:0.28;
+  cursor:not-allowed;
 }
 
 /* =========================================================
@@ -187,49 +185,49 @@
    ========================================================= */
 
 .scanner-chart-readout {
-  min-width: 0;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 7px 12px;
-  overflow-x: auto;
-  color: var(--chart-text-soft);
-  background: #081321;
-  border-bottom: 1px solid rgba(29, 48, 73, 0.78);
-  scrollbar-width: none;
+  min-width:0;
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding:7px 12px;
+  overflow-x:auto;
+  color:var(--chart-text-soft);
+  background:#0B100D;
+  border-bottom:1px solid rgba(17, 29, 22, 0.78);
+  scrollbar-width:none;
 }
 
-.scanner-chart-readout::-webkit-scrollbar { display: none; }
+.scanner-chart-readout::-webkit-scrollbar { display:none; }
 
 .scanner-chart-readout > div {
-  flex: 0 0 auto;
-  display: inline-flex;
-  align-items: baseline;
-  gap: 4px;
+  flex:0 0 auto;
+  display:inline-flex;
+  align-items:baseline;
+  gap:4px;
 }
 
 .scanner-chart-readout span {
-  color: #536a87;
-  font-size: 7px;
-  font-weight: 750;
-  letter-spacing: 0.045em;
+  color:#A8B6AB;
+  font-size:7px;
+  font-weight:750;
+  letter-spacing:0.045em;
 }
 
 .scanner-chart-readout strong {
-  color: #b4c4d9;
-  font-size: 8px;
-  font-weight: 650;
-  font-variant-numeric: tabular-nums;
+  color:#F1F5F1;
+  font-size:8px;
+  font-weight:650;
+  font-variant-numeric:tabular-nums;
 }
 
 .scanner-chart-timeframe-chip {
-  margin-left: auto;
-  flex: 0 0 auto;
-  padding: 3px 6px;
-  color: #7aa9ec !important;
-  background: rgba(53, 103, 181, 0.09);
-  border: 1px solid rgba(71, 127, 211, 0.14);
-  border-radius: 4px;
+  margin-left:auto;
+  flex:0 0 auto;
+  padding:3px 6px;
+  color:#A8B6AB !important;
+  background:rgba(255,255,255,0.055);
+  border:1px solid rgba(255,255,255,0.120);
+  border-radius:4px;
 }
 
 /* =========================================================
@@ -237,105 +235,104 @@
    ========================================================= */
 
 .scanner-chart-toolbar {
-  min-width: 0;
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  padding: 7px 9px;
-  background: linear-gradient(180deg, #091625, #081321);
-  border-bottom: 1px solid rgba(29, 48, 73, 0.82);
+  min-width:0;
+  display:flex;
+  align-items:center;
+  gap:7px;
+  padding:7px 9px;
+  background:linear-gradient(180deg, #0B100D, #0B100D);
+  border-bottom:1px solid rgba(17, 29, 22, 0.82);
 }
 
 .scanner-chart-toolbar-scroll {
-  min-width: 0;
-  flex: 1;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  overflow-x: auto;
-  scrollbar-width: none;
-  -webkit-overflow-scrolling: touch;
+  min-width:0;
+  flex:1;
+  display:flex;
+  align-items:center;
+  gap:4px;
+  overflow-x:auto;
+  scrollbar-width:none;
+  -webkit-overflow-scrolling:touch;
 }
 
-.scanner-chart-toolbar-scroll::-webkit-scrollbar { display: none; }
+.scanner-chart-toolbar-scroll::-webkit-scrollbar { display:none; }
 
 .scanner-chart-toolbar button {
-  min-height: 30px;
-  flex: 0 0 auto;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  padding: 0 8px;
-  color: #657b99;
-  background: transparent;
-  border: 1px solid transparent;
-  border-radius: 7px;
-  font-size: 7.5px;
-  font-weight: 650;
-  -webkit-tap-highlight-color: transparent;
-  transition:
-    color 140ms ease,
+  min-height:30px;
+  flex:0 0 auto;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+  padding:0 8px;
+  color:#A8B6AB;
+  background:transparent;
+  border:1px solid transparent;
+  border-radius:7px;
+  font-size:7.5px;
+  font-weight:650;
+  -webkit-tap-highlight-color:transparent;
+  transition:color 140ms ease,
     background-color 140ms ease,
     border-color 140ms ease,
     transform 140ms ease;
 }
 
 .scanner-chart-toolbar button:hover {
-  color: #c9d6e7;
-  background: rgba(24, 47, 77, 0.7);
-  border-color: rgba(53, 80, 115, 0.35);
+  color:#F1F5F1;
+  background:rgba(17, 29, 22, 0.7);
+  border-color:rgba(255,255,255,0.120);
 }
 
 .scanner-chart-toolbar button:active { transform: scale(0.97); }
 
 .scanner-chart-toolbar button.active {
-  color: #9dc9ff;
-  background: rgba(37, 82, 139, 0.32);
-  border-color: rgba(67, 125, 200, 0.32);
+  color: #4AE87D;
+  background: rgba(39, 199, 91, 0.32);
+  border-color: rgba(39, 199, 91, 0.32);
 }
 
 .scanner-chart-toolbar button.indicator-sma.active {
   color: var(--chart-amber);
-  background: rgba(174, 121, 35, 0.1);
-  border-color: rgba(221, 164, 75, 0.18);
+  background: rgba(39, 199, 91, 0.1);
+  border-color: rgba(39, 199, 91, 0.18);
 }
 
 .scanner-chart-toolbar button.indicator-ema.active {
   color: var(--chart-purple);
-  background: rgba(126, 94, 203, 0.1);
-  border-color: rgba(161, 126, 235, 0.18);
+  background: rgba(39, 199, 91, 0.1);
+  border-color: rgba(39, 199, 91, 0.18);
 }
 
 .scanner-chart-toolbar button.indicator-vwap.active {
-  color: #65baff;
-  background: rgba(45, 125, 190, 0.1);
-  border-color: rgba(70, 153, 216, 0.18);
+  color: #4AE87D;
+  background: rgba(39, 199, 91, 0.1);
+  border-color: rgba(39, 199, 91, 0.18);
 }
 
 .scanner-vwap-icon {
-  width: 14px;
-  height: 14px;
-  display: inline-grid;
-  place-items: center;
-  border: 1px solid currentColor;
-  border-radius: 4px;
-  font-size: 7px;
-  font-weight: 800;
+  width:14px;
+  height:14px;
+  display:inline-grid;
+  place-items:center;
+  border:1px solid currentColor;
+  border-radius:4px;
+  font-size:7px;
+  font-weight:800;
 }
 
 .scanner-chart-toolbar-actions {
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  gap: 3px;
-  padding-left: 6px;
-  border-left: 1px solid rgba(47, 69, 99, 0.5);
+  flex-shrink:0;
+  display:flex;
+  align-items:center;
+  gap:3px;
+  padding-left:6px;
+  border-left:1px solid rgba(255,255,255,0.120);
 }
 
 .scanner-chart-toolbar-actions button {
-  width: 30px;
-  padding: 0;
+  width:30px;
+  padding:0;
 }
 
 /* =========================================================
@@ -343,17 +340,17 @@
    ========================================================= */
 
 .scanner-chart-stage {
-  position: relative;
-  width: 100%;
-  min-width: 0;
-  background: #07111f;
+  position:relative;
+  width:100%;
+  min-width:0;
+  background:#0B100D;
 }
 
 .scanner-chart-container {
-  width: 100%;
-  height: 480px;
-  min-width: 0;
-  background: #07111f;
+  width:100%;
+  height:480px;
+  min-width:0;
+  background:#0B100D;
 }
 
 /* =========================================================
@@ -361,62 +358,62 @@
    ========================================================= */
 
 .scanner-chart-message {
-  min-height: 480px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-  padding: 24px;
-  color: #627996;
-  text-align: center;
+  min-height:480px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  padding:24px;
+  color:#A8B6AB;
+  text-align:center;
 }
 
 
 .scanner-chart-overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 5;
-  min-height: 0;
-  background: rgba(7, 17, 31, 0.94);
-  backdrop-filter: blur(3px);
-  -webkit-backdrop-filter: blur(3px);
+  position:absolute;
+  inset:0;
+  z-index:5;
+  min-height:0;
+  background:rgba(12, 19, 15, 0.94);
+  backdrop-filter:blur(3px);
+  -webkit-backdrop-filter:blur(3px);
 }
 
 .scanner-chart-message strong {
-  margin-top: 4px;
-  color: #b9c8da;
-  font-size: 10px;
+  margin-top:4px;
+  color:#F1F5F1;
+  font-size:10px;
 }
 
 .scanner-chart-message > span:last-child {
-  max-width: 330px;
-  font-size: 8px;
-  line-height: 1.5;
+  max-width:330px;
+  font-size:8px;
+  line-height:1.5;
 }
 
 .scanner-chart-loader {
-  width: 24px;
-  height: 24px;
-  border: 2px solid rgba(95, 129, 174, 0.18);
-  border-top-color: #6eaaf7;
-  border-radius: 50%;
-  animation: scanner-chart-spin 0.8s linear infinite;
+  width:24px;
+  height:24px;
+  border:2px solid rgba(255,255,255,0.120);
+  border-top-color:#4AE87D;
+  border-radius:50%;
+  animation:scanner-chart-spin 0.8s linear infinite;
 }
 
 @keyframes scanner-chart-spin {
-  to { transform: rotate(360deg); }
+  to { transform:rotate(360deg); }
 }
 
 .scanner-chart-empty-icon {
-  width: 38px;
-  height: 38px;
-  display: grid;
-  place-items: center;
-  color: #729fdc;
-  background: rgba(56, 105, 181, 0.09);
-  border: 1px solid rgba(71, 127, 211, 0.13);
-  border-radius: 10px;
+  width:38px;
+  height:38px;
+  display:grid;
+  place-items:center;
+  color:#A8B6AB;
+  background:rgba(255,255,255,0.055);
+  border:1px solid rgba(255,255,255,0.120);
+  border-radius:10px;
 }
 
 /* =========================================================
@@ -424,19 +421,19 @@
    ========================================================= */
 
 .scanner-chart-footer {
-  display: flex;
-  align-items: center;
-  gap: 13px;
-  padding: 7px 11px;
-  color: #415570;
-  background: #07111f;
-  border-top: 1px solid rgba(27, 46, 71, 0.66);
-  font-size: 7px;
+  display:flex;
+  align-items:center;
+  gap:13px;
+  padding:7px 11px;
+  color:#A8B6AB;
+  background:#0B100D;
+  border-top:1px solid rgba(17, 29, 22, 0.66);
+  font-size:7px;
 }
 
 .scanner-chart-footer-source {
-  margin-left: auto;
-  color: #516984;
+  margin-left:auto;
+  color:#A8B6AB;
 }
 
 /* =========================================================
@@ -444,26 +441,26 @@
    ========================================================= */
 
 .scanner-advanced-chart:fullscreen {
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background: #07111f;
-  border: 0;
-  border-radius: 0;
+  width:100vw;
+  height:100vh;
+  display:flex;
+  flex-direction:column;
+  background:#0B100D;
+  border:0;
+  border-radius:0;
 }
 
 .scanner-advanced-chart:fullscreen .scanner-chart-stage {
-  min-height: 0;
-  flex: 1;
+  min-height:0;
+  flex:1;
 }
 
 .scanner-advanced-chart:fullscreen .scanner-chart-container {
-  height: 100%;
+  height:100%;
 }
 
 .scanner-advanced-chart:fullscreen .scanner-chart-message {
-  min-height: 100%;
+  min-height:100%;
 }
 
 /* =========================================================
@@ -473,16 +470,16 @@
 @media (max-width: 900px) {
   .scanner-chart-container,
   .scanner-chart-message {
-    height: 430px;
-    min-height: 430px;
+    height:430px;
+    min-height:430px;
   }
 
   .scanner-chart-header {
-    align-items: flex-start;
+    align-items:flex-start;
   }
 
   .scanner-timeframes {
-    max-width: 52%;
+    max-width:52%;
   }
 }
 
@@ -492,90 +489,90 @@
 
 @media (max-width: 760px) {
   .scanner-advanced-chart {
-    border-radius: 12px;
+    border-radius:12px;
   }
 
   .scanner-chart-header {
-    display: block;
-    padding: 10px 9px 8px;
+    display:block;
+    padding:10px 9px 8px;
   }
 
-  .scanner-chart-symbol-row > strong { font-size: 15px; }
-  .scanner-chart-last-price { font-size: 10px; }
-  .scanner-chart-change { font-size: 7px; }
+  .scanner-chart-symbol-row > strong { font-size:15px; }
+  .scanner-chart-last-price { font-size:10px; }
+  .scanner-chart-change { font-size:7px; }
 
   .scanner-timeframes {
-    width: 100%;
-    max-width: none;
-    margin-top: 9px;
-    padding: 3px;
-    scroll-snap-type: x proximity;
+    width:100%;
+    max-width:none;
+    margin-top:9px;
+    padding:3px;
+    scroll-snap-type:x proximity;
   }
 
   .scanner-timeframes button {
-    min-width: 43px;
-    min-height: 34px;
-    scroll-snap-align: start;
-    font-size: 8px;
+    min-width:43px;
+    min-height:34px;
+    scroll-snap-align:start;
+    font-size:8px;
   }
 
   .scanner-chart-readout {
-    gap: 10px;
-    padding: 7px 9px;
+    gap:10px;
+    padding:7px 9px;
   }
 
-  .scanner-chart-readout > div { gap: 3px; }
-  .scanner-chart-readout span { font-size: 6.5px; }
-  .scanner-chart-readout strong { font-size: 7.5px; }
-  .scanner-chart-timeframe-chip { display: none; }
+  .scanner-chart-readout > div { gap:3px; }
+  .scanner-chart-readout span { font-size:6.5px; }
+  .scanner-chart-readout strong { font-size:7.5px; }
+  .scanner-chart-timeframe-chip { display:none; }
 
   .scanner-chart-toolbar {
-    gap: 5px;
-    padding: 6px 7px;
+    gap:5px;
+    padding:6px 7px;
   }
 
   .scanner-chart-toolbar-scroll {
-    scroll-snap-type: x proximity;
+    scroll-snap-type:x proximity;
   }
 
   .scanner-chart-toolbar button {
-    min-height: 36px;
-    padding: 0 10px;
-    scroll-snap-align: start;
-    font-size: 7.5px;
+    min-height:36px;
+    padding:0 10px;
+    scroll-snap-align:start;
+    font-size:7.5px;
   }
 
   .scanner-chart-toolbar-actions {
-    gap: 2px;
-    padding-left: 5px;
+    gap:2px;
+    padding-left:5px;
   }
 
   .scanner-chart-toolbar-actions button {
-    width: 36px;
-    padding: 0;
+    width:36px;
+    padding:0;
   }
 
   .scanner-chart-container,
   .scanner-chart-message {
-    height: 380px;
-    min-height: 380px;
+    height:380px;
+    min-height:380px;
   }
 
   .scanner-chart-footer {
-    justify-content: space-between;
-    gap: 8px;
-    padding: 7px 9px;
-    font-size: 6.5px;
+    justify-content:space-between;
+    gap:8px;
+    padding:7px 9px;
+    font-size:6.5px;
   }
 
-  .scanner-chart-footer-source { display: none; }
+  .scanner-chart-footer-source { display:none; }
 
   .scanner-advanced-chart:fullscreen .scanner-chart-header {
-    padding-top: max(8px, env(safe-area-inset-top));
+    padding-top:max(8px, env(safe-area-inset-top));
   }
 
   .scanner-advanced-chart:fullscreen .scanner-chart-footer {
-    padding-bottom: max(7px, env(safe-area-inset-bottom));
+    padding-bottom:max(7px, env(safe-area-inset-bottom));
   }
 }
 
@@ -586,13 +583,13 @@
 @media (max-width: 480px) {
   .scanner-chart-container,
   .scanner-chart-message {
-    height: 350px;
-    min-height: 350px;
+    height:350px;
+    min-height:350px;
   }
 
-  .scanner-chart-readout { gap: 8px; }
-  .scanner-chart-readout-volume { display: none !important; }
-  .scanner-chart-toolbar button { padding: 0 9px; }
+  .scanner-chart-readout { gap:8px; }
+  .scanner-chart-readout-volume { display:none !important; }
+  .scanner-chart-toolbar button { padding:0 9px; }
 }
 
 /* =========================================================
@@ -602,14 +599,14 @@
 @media (max-width: 390px) {
   .scanner-chart-container,
   .scanner-chart-message {
-    height: 325px;
-    min-height: 325px;
+    height:325px;
+    min-height:325px;
   }
 
-  .scanner-timeframes button { min-width: 41px; }
-  .scanner-chart-readout { gap: 7px; }
-  .scanner-chart-toolbar button { min-height: 35px; }
-  .scanner-chart-footer span:first-child { display: none; }
+  .scanner-timeframes button { min-width:41px; }
+  .scanner-chart-readout { gap:7px; }
+  .scanner-chart-toolbar button { min-height:35px; }
+  .scanner-chart-footer span:first-child { display:none; }
 }
 
 /* =========================================================
@@ -619,13 +616,13 @@
 @media (max-width: 900px) and (orientation: landscape) {
   .scanner-chart-container,
   .scanner-chart-message {
-    height: 360px;
-    min-height: 360px;
+    height:360px;
+    min-height:360px;
   }
 
   .scanner-advanced-chart:fullscreen .scanner-chart-container {
-    height: 100%;
-    min-height: 0;
+    height:100%;
+    min-height:0;
   }
 }
 
@@ -636,18 +633,18 @@
 @media (hover: none) {
   .scanner-chart-toolbar button:hover,
   .scanner-timeframes button:hover:not(:disabled) {
-    background: transparent;
+    background:transparent;
   }
 
   .scanner-chart-toolbar button.active {
-    background: rgba(37, 82, 139, 0.32);
+    background: rgba(39, 199, 91, 0.32);
   }
 
   .scanner-timeframes button.active {
     background: linear-gradient(
       180deg,
-      rgba(35, 84, 148, 0.72),
-      rgba(22, 56, 101, 0.72)
+      rgba(39, 199, 91, 0.72),
+      rgba(39, 199, 91, 0.72)
     );
   }
 }
@@ -658,17 +655,17 @@
 
 .scanner-chart-toolbar button:focus-visible,
 .scanner-timeframes button:focus-visible {
-  outline: 2px solid rgba(107, 165, 243, 0.8);
+  outline: 2px solid rgba(39, 199, 91, 0.8);
   outline-offset: 2px;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .scanner-chart-toolbar button,
   .scanner-timeframes button {
-    transition: none;
+    transition:none;
   }
 
   .scanner-chart-loader {
-    animation: none;
+    animation:none;
   }
 }

@@ -5,6 +5,7 @@ import {
   startScanner,
   stopScanner,
 } from "../services/api";
+import Sidebar from "../components/Sidebar.jsx";
 import "./Scanner.css";
 
 const EMPTY = Object.freeze([]);
@@ -435,7 +436,9 @@ export default function Scanner({
   ];
 
   return (
-    <main className="stock-scanner-page">
+    <div className="app-shell">
+      <Sidebar />
+      <main className="main-content stock-scanner-page">
       <div className="stock-scanner">
         <header className="stock-scanner__header">
           <div>
@@ -761,6 +764,7 @@ export default function Scanner({
           </div>
         </section>
       </div>
-    </main>
+      </main>
+    </div>
   );
 }

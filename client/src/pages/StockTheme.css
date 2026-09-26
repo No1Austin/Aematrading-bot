@@ -1,0 +1,8 @@
+/* Optional stock workspace theme tokens; import only if your layout uses .stock-workspace. */
+.stock-workspace {
+ --stock-bg:#080A09; --stock-surface:#101311; --stock-surface-raised:#151A16;
+ --stock-border:rgba(255,255,255,.075); --stock-bull:#36E66B;
+ --stock-bull-glow:#4AE87D; --stock-bear:#FF5364;
+ --stock-text:#F1F5F1; --stock-muted:#859188;
+ color:var(--stock-text);background:var(--stock-bg);
+}
