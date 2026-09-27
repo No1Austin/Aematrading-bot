@@ -2067,3 +2067,34 @@
     margin: 16px 0 20px;
   }
 }
+
+/* AEMA mobile polish — preserve data-dense desktop layouts. */
+@media(max-width:760px){
+ 
+.dashboard-page,.dashboard-page{min-width:0;max-width:100%;box-sizing:border-box;}
+ 
+.dashboard-page,.dashboard-page :is(img,svg,canvas){max-width:100%;}
+ 
+.dashboard-page,.dashboard-page :is(input,select,textarea){max-width:100%;font-size:max(16px,1em);}
+ 
+.dashboard-page,.dashboard-page :is(button,a){touch-action:manipulation;}
+ 
+.dashboard-page,.dashboard-page :is(table){max-width:none;}
+ 
+.dashboard-page,.dashboard-page :is(.table-scroll,.table-wrapper,.table-container){max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+}
+
+/* Narrow phones: status information and dashboard cards stay within viewport. */
+@media screen and (max-width:760px) {
+  main.dashboard-page { overflow-x:clip; }
+  .dashboard-page .status-strip { width:100%; min-width:0; max-width:100%; }
+  .dashboard-page .status-strip > div { min-width:0; overflow:hidden; }
+  .dashboard-page .status-strip strong { min-width:0; max-width:55%; overflow:hidden; text-overflow:ellipsis; }
+  .dashboard-page .stats-grid, .dashboard-page .top-grid,
+  .dashboard-page .lower-grid { min-width:0; max-width:100%; }
+}
+@media screen and (max-width:520px) {
+  .dashboard-page .status-strip { grid-template-columns:minmax(0,1fr); }
+  .dashboard-page .status-strip > div { gap:10px; min-height:46px; padding:10px 12px; }
+  .dashboard-page .status-strip strong { margin-left:auto; text-align:right; }
+}

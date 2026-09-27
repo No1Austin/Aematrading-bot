@@ -8,40 +8,37 @@ import {
 import { Link } from "react-router-dom";
 import "./DashboardWallet.css";
 
+function money(value, currency) {
+  if (
+    typeof value !== "number" ||
+    !Number.isFinite(value)
+  ) {
+    return "—";
+  }
+
+  return new Intl.NumberFormat("en-CA", {
+    style: "currency",
+    currency,
+  }).format(value);
+}
+
 export default function DashboardWallet({
   availableBalance = null,
   pendingBalance = null,
   currency = "CAD",
   loading = false,
 }) {
-  const formatBalance = (value) => {
-    if (
-      typeof value !== "number" ||
-      !Number.isFinite(value)
-    ) {
-      return "—";
-    }
-
-    return new Intl.NumberFormat("en-CA", {
-      style: "currency",
-      currency,
-    }).format(value);
-  };
-
-  const isConnected =
+  const connected =
     typeof availableBalance === "number" &&
     Number.isFinite(availableBalance);
 
   return (
-    <section
-      className="dashboard-wallet"
-      aria-label="Referral wallet overview"
-    >
-      <div className="dashboard-wallet-header">
+    <div className="dashboard-wallet">
+      <header className="dashboard-wallet-header">
         <div className="dashboard-wallet-heading">
-          <div className="dashboard-wallet-icon">
+          <span className="dashboard-wallet-icon">
             <WalletCards size={20} />
-          </div>
+          </span>
 
           <div>
             <h2>Referral Wallet</h2>
@@ -50,19 +47,17 @@ export default function DashboardWallet({
         </div>
 
         <span
-          className={
-            isConnected
-              ? "dashboard-wallet-status connected"
-              : "dashboard-wallet-status"
-          }
+          className={`dashboard-wallet-status ${
+            connected ? "connected" : ""
+          }`}
         >
           {loading
             ? "Loading"
-            : isConnected
+            : connected
               ? "Connected"
               : "Awaiting connection"}
         </span>
-      </div>
+      </header>
 
       <div className="dashboard-wallet-balances">
         <div className="dashboard-wallet-balance">
@@ -73,8 +68,8 @@ export default function DashboardWallet({
 
           <strong>
             {loading
-              ? "Loading..."
-              : formatBalance(availableBalance)}
+              ? "Loading…"
+              : money(availableBalance, currency)}
           </strong>
 
           <small>Verified rewards</small>
@@ -88,8 +83,8 @@ export default function DashboardWallet({
 
           <strong>
             {loading
-              ? "Loading..."
-              : formatBalance(pendingBalance)}
+              ? "Loading…"
+              : money(pendingBalance, currency)}
           </strong>
 
           <small>Awaiting confirmation</small>
@@ -98,28 +93,28 @@ export default function DashboardWallet({
 
       <div className="dashboard-wallet-actions">
         <Link
-          to="/wallet"
           className="dashboard-wallet-primary"
+          to="/wallet"
         >
           Open wallet
           <ArrowUpRight size={16} />
         </Link>
 
         <Link
-          to="/referrals"
           className="dashboard-wallet-secondary"
+          to="/referrals"
         >
           <Gift size={16} />
           Refer & Earn
         </Link>
       </div>
 
-      {!isConnected && !loading && (
+      {!connected && !loading && (
         <p className="dashboard-wallet-notice">
-          Connect the rewards service to display
-          your verified balance.
+          Balances will appear once the verified
+          rewards service is connected.
         </p>
       )}
-    </section>
+    </div>
   );
 }

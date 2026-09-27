@@ -2,6 +2,7 @@ import {CircleHelp, History, TrendingUp, TrendingDown} from "lucide-react";
 import {useCallback, useEffect, useMemo, useState} from "react";
 import BotSidebar from "../components/BotSidebar.jsx";
 import {getBotHistory, getTradeExplanation} from "../services/botApi.js";
+import {getDedicatedAlpacaOverview} from "../services/botAlpacaApi.js";
 import "./BotHistory.css";
 
 const numeric = v => v !== null && v !== undefined && v !== "" && Number.isFinite(Number(v)) ? Number(v) : null;
@@ -48,6 +49,9 @@ function OutcomeChart({wins,losses,even}) {
 
 export default function BotHistory(){
   const [rows,setRows]=useState([]);
+  const [source,setSource]=useState("alpaca");
+  const [broker,setBroker]=useState(null);
+  const [brokerError,setBrokerError]=useState("");
   const [err,setErr]=useState("");
   const [loading,setLoading]=useState(false);
   const [ex,setEx]=useState(null);
@@ -66,6 +70,8 @@ export default function BotHistory(){
     finally{setLoading(false);}
   },[]);
   useEffect(()=>{load();},[load]);
+  const loadBroker=useCallback(async()=>{try{const v=await getDedicatedAlpacaOverview();setBroker(v);setBrokerError("")}catch(e){setBroker(null);setBrokerError(e.message||"Broker unavailable")}},[]);
+  useEffect(()=>{loadBroker();const id=setInterval(loadBroker,20000);return()=>clearInterval(id)},[loadBroker]);
   const sorted=useMemo(()=>[...rows].sort((a,b)=>dateValue(a)-dateValue(b)),[rows]);
   const enriched=useMemo(()=>{
     let running=0;
@@ -83,6 +89,12 @@ export default function BotHistory(){
   const winRate=stats.wins+stats.losses?100*stats.wins/(stats.wins+stats.losses):null;
   return <div className="bot-app"><BotSidebar/><main className="bot-main history-page">
     <header className="history-header"><div><span>COMPLETED PAPER TRADES</span><h1>Trade History</h1><p>Closed positions, win/loss analytics and recorded decision evidence.</p></div><b><i/>PAPER · LIVE DISABLED</b></header>
+    <nav className="history-source-tabs"><button className={source==="alpaca"?"active":""} onClick={()=>setSource("alpaca")}>Alpaca broker orders</button><button className={source==="internal"?"active":""} onClick={()=>setSource("internal")}>Internal simulator history</button></nav>
+    {source==="alpaca" && <><p className="history-disclaimer">Broker-reported orders from the dedicated Alpaca crypto paper account. Orders are not the same as completed round-trip trades; no win rate or realized P&L is fabricated. Latest 100 orders only.</p>{brokerError&&<div className="bot-error">{brokerError}</div>}
+      <section className="history-stats"><div><span>Broker equity</span><strong>{broker?.account?.equityUsd==null?"—":money(broker.account.equityUsd,"USD")}</strong></div><div><span>Broker cash</span><strong>{broker?.account?.cashUsd==null?"—":money(broker.account.cashUsd,"USD")}</strong></div><div><span>Open positions</span><strong>{broker?broker.positions.length:"—"}</strong></div><div><span>Recent orders</span><strong>{broker?broker.orders.length:"—"}</strong></div></section>
+      <section className="history-panel"><div className="panel-head"><div><span>BROKER ACTIVITY</span><h2>Recent Alpaca Crypto Orders</h2></div><button className="history-refresh" onClick={loadBroker}>Refresh</button></div>{broker?.orders?.length?<div className="history-broker-list">{broker.orders.map(o=><div className="history-broker-row" key={o.id}><strong>{o.symbol}</strong><span>{o.side?.toUpperCase()||"—"} · {o.type||"—"}</span><span>{o.status||"—"}</span><span>Filled: {o.filledQuantity??"—"}</span><span>{o.filledAveragePrice==null?"—":money(o.filledAveragePrice,"USD")}</span><span>{o.submittedAt?new Date(o.submittedAt).toLocaleString():"—"}</span></div>)}</div>:<div className="bot-empty">{broker?"No recent broker crypto orders.":"Waiting for broker data."}</div>}</section>
+    </>}
+    {source==="internal" && <>
     {err&&<div className="bot-error" role="alert">{err}</div>}
     <section className="history-currency"><div><strong>Display currency</strong><p>Ledger stays in USD. Enter a verified USD → CAD rate and date for estimated CAD charts and totals.</p></div>
       <label>1 USD in CAD<input type="number" min="0.000001" step="0.0001" value={rateInput} onChange={e=>setRateInput(e.target.value)} placeholder="Enter verified rate"/></label>
@@ -109,5 +121,6 @@ export default function BotHistory(){
       <p className="history-disclaimer">*Running P&L includes all earlier known rows, even when a filter is active. It is not account equity.</p>
     </section>
     {ex&&<div className="history-modal" onMouseDown={event=>event.target===event.currentTarget&&setEx(null)}><article role="dialog" aria-modal="true" aria-label="Trade explanation"><button type="button" className="history-close" onClick={()=>setEx(null)} aria-label="Close explanation">×</button><span>TRADE EXPLANATION</span><h2>{ex.symbol} · {direction(ex.direction)}</h2>{ex.evidenceMissing?<div className="history-warning">Original entry evidence is unavailable. No explanation has been invented.</div>:<><h3>Entry evidence</h3><pre>{JSON.stringify(ex.entrySnapshot,null,2)}</pre></>}<h3>Direction decision</h3><pre>{JSON.stringify(ex.entryDirectionDecision,null,2)}</pre><h3>Position management</h3><pre>{JSON.stringify(ex.consistencyHistory||[],null,2)}</pre><h3>Recorded result</h3><pre>{JSON.stringify(ex.result,null,2)}</pre></article></div>}
+    </>}
   </main></div>;
 }

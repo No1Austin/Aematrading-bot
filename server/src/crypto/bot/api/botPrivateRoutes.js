@@ -4,7 +4,7 @@ import {getBotPaperAccount,setBotControls} from "../account/botPaperLedger.js";
 import {getTradeMemory} from "../learning/botTradeMemoryStore.js";
 import {manuallyCloseBotPosition,emergencyStopBot} from "../positions/botManualControls.js";
 import {isBotRuntimeBusy,isBotRuntimeRunning} from "../runtime/botRuntime.js";
-import getBotAlpacaAccount from "../account/botAlpacaAccount.js";
+import getDedicatedAlpacaOverview from "../alpaca/botDedicatedAlpacaOverview.js";
 
 const handle=(fn)=>(req,res)=>Promise.resolve().then(()=>fn(req,res)).catch(e=>{
   const status=e.message==="BOT_RUNTIME_BUSY_RETRY"?409:e.message==="BOT_POSITION_NOT_FOUND"?404:400;
@@ -37,33 +37,17 @@ export default function createBotPrivateRoutes(){
       memory:{records:memory.records||[],count:(memory.records||[]).length},generatedAt:new Date().toISOString()});
   });
 
-  // External Alpaca paper account.
-// Read-only: never submits orders or changes the AEMA ledger.
-r.get("/alpaca/account", async (_req, res) => {
-  try {
-    const alpaca = await getBotAlpacaAccount();
-
+  // Dedicated crypto Alpaca account: authenticated, read-only, never uses stock credentials.
+  const alpacaOverview = async (_req, res) => {
     res.set("Cache-Control", "no-store");
-
-    return res.json({
-      connected: true,
-      executionEnabled: false,
-      ...alpaca
-    });
-  } catch (error) {
-    console.error(
-      "[BOT ALPACA ACCOUNT]",
-      error?.message || error
-    );
-
-    return res.status(503).json({
-      connected: false,
-      provider: "ALPACA_PAPER",
-      executionEnabled: false,
-      error: "ALPACA_PAPER_ACCOUNT_UNAVAILABLE"
-    });
-  }
-});
+    try { return res.json(await getDedicatedAlpacaOverview()); }
+    catch (error) {
+      console.error("[DEDICATED CRYPTO ALPACA]", error?.message || error);
+      return res.status(503).json({connected:false,provider:"ALPACA_PAPER",executionEnabled:false,error:"DEDICATED_ALPACA_OVERVIEW_UNAVAILABLE"});
+    }
+  };
+  r.get("/alpaca/overview", alpacaOverview);
+  r.get("/alpaca/account", alpacaOverview); // compatibility; never returns shared stock account
 
   r.get("/history",(_req,res)=>{
     const account=getBotPaperAccount();

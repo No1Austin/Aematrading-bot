@@ -1214,10 +1214,14 @@
 /* Black-first navigation. Retain green for active links only. */
 .aema-sidebar{background:#090B0A;border-right:1px solid #242B25;}
 
-/* AEMA reference-design account actions */
-.aema-account-shortcuts{position:fixed;right:26px;top:14px;display:flex;gap:10px;z-index:950}
-.aema-account-shortcut{display:flex;align-items:center;gap:9px;min-height:43px;padding:0 15px;border:1px solid #303a33;border-radius:11px;background:#141916;color:#eef5ee;text-decoration:none;font-size:13px;font-weight:650;box-shadow:0 4px 20px #0003}
-.aema-account-shortcut:hover,.aema-account-shortcut.active{border-color:#46d98b;color:#5ce49a}
-.aema-account-shortcut.referral{border-color:#287b4b}
-@media(max-width:1100px){.aema-account-shortcuts{right:12px;top:8px}.aema-account-shortcut{padding:0 10px}}
-@media(max-width:640px){.aema-account-shortcuts{top:7px;right:62px;gap:5px}.aema-account-shortcut{min-height:35px;padding:0 9px;font-size:11px}.aema-account-shortcut svg{width:14px}}
+
+/* Mobile drawer refinements: touch-friendly, independently scrollable. */
+@media(max-width:760px){
+ .aema-sidebar-mobile-bar{min-height:64px;padding-top:max(10px,env(safe-area-inset-top));}
+ .aema-sidebar.mobile-open{max-height:100dvh;overflow-y:auto;overscroll-behavior:contain;}
+ .aema-sidebar.mobile-open .aema-sidebar-content{min-height:100%;height:auto;padding-bottom:max(22px,env(safe-area-inset-bottom));}
+ .aema-sidebar.mobile-open .aema-sidebar-nav{flex:none;}
+ .aema-sidebar.mobile-open .aema-workspace-options{grid-template-columns:repeat(2,minmax(0,1fr));}
+ .aema-sidebar.mobile-open .aema-workspace-button{min-height:72px;align-items:flex-start;}
+ .aema-sidebar.mobile-open .aema-nav-item{min-height:48px;}
+}

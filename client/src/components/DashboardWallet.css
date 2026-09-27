@@ -1,18 +1,20 @@
 
-.dashboard-wallet {
+.dashboard-wallet-section {
   width: 100%;
   min-width: 0;
+  margin: 20px 0 24px;
+}
+
+.dashboard-wallet {
   box-sizing: border-box;
-  background: linear-gradient(
-    135deg,
-    #151c17 0%,
-    #101512 100%
-  );
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  padding: 22px;
+  background: linear-gradient(135deg, #151c17, #101512);
   border: 1px solid #2a3a30;
   border-radius: 16px;
-  padding: 22px;
   color: #f0f5f1;
-  overflow: hidden;
 }
 
 .dashboard-wallet * {
@@ -45,34 +47,31 @@
   flex-shrink: 0;
   display: grid;
   place-items: center;
-  color: #59e596;
   background: #193726;
+  color: #59e596;
   border-radius: 12px;
 }
 
 .dashboard-wallet-heading h2 {
-  font-size: 17px;
-  line-height: 1.3;
-  font-weight: 700;
   margin: 0;
   color: #f0f5f1;
+  font-size: 17px;
 }
 
 .dashboard-wallet-heading p {
+  margin: 4px 0 0;
   color: #98a99d;
   font-size: 12px;
-  margin: 4px 0 0;
 }
 
 .dashboard-wallet-status {
-  color: #b5bdb7;
+  padding: 6px 9px;
   border: 1px solid #39463c;
+  border-radius: 99px;
   background: #252d27;
-  border-radius: 100px;
+  color: #b5bdb7;
   font-size: 10px;
   font-weight: 700;
-  padding: 6px 9px;
-  white-space: nowrap;
 }
 
 .dashboard-wallet-status.connected {
@@ -83,49 +82,47 @@
 
 .dashboard-wallet-balances {
   display: grid;
-  grid-template-columns:
-    repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
 }
 
 .dashboard-wallet-balance {
   min-width: 0;
   padding: 16px;
-  background: #1a241d;
   border: 1px solid #2b382e;
   border-radius: 12px;
+  background: #1a241d;
 }
 
 .dashboard-wallet-label {
   gap: 7px;
-  font-size: 12px;
-  color: #a9b9af;
   margin-bottom: 12px;
+  color: #a9b9af;
+  font-size: 12px;
 }
 
 .dashboard-wallet-balance strong {
   display: block;
+  overflow-wrap: anywhere;
   color: #f1f6f2;
   font-size: clamp(23px, 2.4vw, 31px);
-  font-weight: 750;
-  letter-spacing: -.04em;
-  overflow-wrap: anywhere;
+  letter-spacing: -0.04em;
 }
 
 .dashboard-wallet-balance small {
   display: block;
   margin-top: 8px;
-  font-size: 11px;
   color: #8f9e94;
+  font-size: 11px;
 }
 
 .dashboard-wallet-actions {
   gap: 10px;
+  flex-wrap: wrap;
   margin-top: 16px;
 }
 
-.dashboard-wallet-primary,
-.dashboard-wallet-secondary {
+.dashboard-wallet-actions a {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -135,9 +132,6 @@
   font-size: 12px;
   font-weight: 700;
   text-decoration: none;
-  transition:
-    background .2s ease,
-    border-color .2s ease;
 }
 
 .dashboard-wallet-primary {
@@ -145,20 +139,10 @@
   color: #09150d;
 }
 
-.dashboard-wallet-primary:hover {
-  background: #75efa7;
-  color: #09150d;
-}
-
 .dashboard-wallet-secondary {
   background: #202b23;
   border: 1px solid #35483a;
   color: #c6e4ce;
-}
-
-.dashboard-wallet-secondary:hover {
-  border-color: #55db8d;
-  color: #6de9a1;
 }
 
 .dashboard-wallet-notice {
@@ -181,17 +165,7 @@
     padding: 12px;
   }
 
-  .dashboard-wallet-label {
-    font-size: 11px;
-    align-items: flex-start;
-  }
-
-  .dashboard-wallet-actions {
-    flex-wrap: wrap;
-  }
-
-  .dashboard-wallet-primary,
-  .dashboard-wallet-secondary {
+  .dashboard-wallet-actions a {
     flex: 1 1 auto;
   }
 }
@@ -200,4 +174,18 @@
   .dashboard-wallet-balances {
     grid-template-columns: 1fr;
   }
+}
+
+/* Compact premium wallet / touch-friendly mobile presentation */
+.dashboard-wallet{box-shadow:0 10px 36px rgba(0,0,0,.13)}
+.dashboard-wallet-actions a{min-height:44px;transition:filter .16s ease,transform .16s ease}
+.dashboard-wallet-actions a:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.dashboard-wallet-actions a:focus-visible{outline:2px solid #4ae87d;outline-offset:3px}
+@media(max-width:760px){.dashboard-wallet{padding:16px;border-radius:15px}.dashboard-wallet-header{align-items:flex-start}.dashboard-wallet-status{margin-left:0}.dashboard-wallet-balance{padding:13px}.dashboard-wallet-label{font-size:11px}.dashboard-wallet-balance strong{font-size:clamp(22px,6vw,28px)}.dashboard-wallet-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.dashboard-wallet-actions a{min-width:0;text-align:center;padding:10px 8px}.dashboard-wallet-notice{font-size:12px}}
+@media(max-width:440px){.dashboard-wallet-balances{grid-template-columns:1fr}.dashboard-wallet-actions{grid-template-columns:1fr}.dashboard-wallet-actions a{width:100%}}
+
+@media screen and (max-width:760px) {
+ .dashboard-wallet-section, .dashboard-wallet { max-width:100%; min-width:0; }
+ .dashboard-wallet-header, .dashboard-wallet-heading { min-width:0; }
+ .dashboard-wallet-status { max-width:100%; white-space:normal; }
 }

@@ -461,3 +461,12 @@
     grid-template-columns:1fr;
   }
 }
+/* AEMA mobile polish — preserve data-dense desktop layouts. */
+@media(max-width:760px){
+ .history-page{min-width:0;max-width:100%;box-sizing:border-box;}
+ .history-page :is(img,svg,canvas){max-width:100%;}
+ .history-page :is(input,select,textarea){max-width:100%;font-size:max(16px,1em);}
+ .history-page :is(button,a){touch-action:manipulation;}
+ .history-page :is(table){max-width:none;}
+ .history-page :is(.table-scroll,.table-wrapper,.table-container){max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+}

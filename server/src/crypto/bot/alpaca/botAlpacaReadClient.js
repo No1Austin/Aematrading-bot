@@ -2,9 +2,9 @@ import axios from "axios";
 
 const BASE = "https://paper-api.alpaca.markets";
 function headers() {
-  const key = process.env.ALPACA_API_KEY;
-  const secret = process.env.ALPACA_SECRET_KEY;
-  if (!key || !secret) throw new Error("ALPACA_PAPER_CREDENTIALS_MISSING");
+  const key = process.env.ALPACA_CRYPTO_API_KEY;
+  const secret = process.env.ALPACA_CRYPTO_SECRET_KEY;
+  if (!key || !secret) throw new Error("ALPACA_CRYPTO_PAPER_CREDENTIALS_MISSING");
   return { "APCA-API-KEY-ID": key, "APCA-API-SECRET-KEY": secret, Accept: "application/json" };
 }
 export async function alpacaPaperGet(endpoint, params = {}) {

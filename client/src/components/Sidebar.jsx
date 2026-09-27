@@ -6,9 +6,7 @@ import {
   BookOpen,
   Bot,
   ChevronRight,
-  Gift,
   Gauge,
-  History,
   LayoutDashboard,
   Menu,
   Radar,
@@ -47,18 +45,7 @@ const primaryItems = [
     "/engines",
     "Research engines",
   ],
-  [
-    "Positions",
-    WalletCards,
-    "/positions",
-    "Tracked positions",
-  ],
-  [
-    "History",
-    History,
-    "/history",
-    "Research history",
-  ],
+  
   [
     "Research",
     BookOpen,
@@ -148,21 +135,7 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* Referral shortcut: Wallet now lives on Dashboard */}
-      <div
-        className="aema-account-shortcuts"
-        aria-label="Referral shortcut"
-      >
-        <NavLink
-          to="/referrals"
-          className="aema-account-shortcut referral"
-        >
-          <Gift size={17} />
-          <span>Refer & Earn</span>
-        </NavLink>
-      </div>
-
-      {/* Mobile navigation header */}
+{/* Mobile navigation header */}
       <header className="aema-sidebar-mobile-bar">
         <div className="aema-sidebar-mobile-brand">
           <Brand />

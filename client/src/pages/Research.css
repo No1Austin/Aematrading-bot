@@ -1048,3 +1048,19 @@
 }
 
 .research-page {--research-bg:#0B100D;--research-surface:#0B100D;--research-surface-2:#0B100D;--research-line:rgba(39, 199, 91, .14);--research-line-strong:rgba(39, 199, 91, .26);--research-text:#F1F5F1;--research-muted:#859188;--research-blue:#4AE87D;--research-green:#4AE87D;}
+
+/* AEMA mobile polish — preserve data-dense desktop layouts. */
+@media(max-width:760px){
+ 
+.research-page,  .research-page{min-width:0;max-width:100%;box-sizing:border-box;}
+ 
+.research-page,  .research-page :is(img,svg,canvas){max-width:100%;}
+ 
+.research-page,  .research-page :is(input,select,textarea){max-width:100%;font-size:max(16px,1em);}
+ 
+.research-page,  .research-page :is(button,a){touch-action:manipulation;}
+ 
+.research-page,  .research-page :is(table){max-width:none;}
+ 
+.research-page,  .research-page :is(.table-scroll,.table-wrapper,.table-container){max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+}

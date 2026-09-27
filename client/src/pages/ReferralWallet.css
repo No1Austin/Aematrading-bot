@@ -185,3 +185,29 @@
     padding-top: 100px !important;
   }
 }
+
+/* AEMA mobile polish — preserve data-dense desktop layouts. */
+@media(max-width:760px){
+ 
+.aema-rw-page,
+  .aema-rw-page{min-width:0;max-width:100%;box-sizing:border-box;}
+ 
+.aema-rw-page,
+  .aema-rw-page :is(img,svg,canvas){max-width:100%;}
+ 
+.aema-rw-page,
+  .aema-rw-page :is(input,select,textarea){max-width:100%;font-size:max(16px,1em);}
+ 
+.aema-rw-page,
+  .aema-rw-page :is(button,a){touch-action:manipulation;}
+ 
+.aema-rw-page,
+  .aema-rw-page :is(table){max-width:none;}
+ 
+.aema-rw-page,
+  .aema-rw-page :is(.table-scroll,.table-wrapper,.table-container){max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+}
+
+@media(max-width:900px){.aema-rw-grid{grid-template-columns:1fr;gap:12px}.aema-rw-card{padding:20px}}
+@media(max-width:760px){.aema-rw-page{padding-top:12px!important}.aema-rw-page h1{font-size:clamp(25px,7vw,36px)}.aema-rw-subtitle{font-size:13px;margin-bottom:20px}.aema-rw-card{padding:16px;border-radius:14px}.aema-rw-copy{min-width:0}.aema-rw-copy span{min-width:0}.aema-rw-copy button{min-height:44px;flex-shrink:0}}
+@media(max-width:380px){.aema-rw-copy{flex-wrap:wrap}.aema-rw-copy span{flex-basis:100%}.aema-rw-copy button{width:100%;justify-content:center}}

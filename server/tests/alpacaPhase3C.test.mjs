@@ -1,0 +1,12 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import plan from '../src/crypto/bot/alpaca/botAlpacaProtectionPlanner.js';
+import decide from '../src/crypto/bot/alpaca/botAlpacaExitDecision.js';
+const entry={client_order_id:'aema-pilot-abc',side:'buy',symbol:'BTC/USD',filled_qty:'0.001',status:'filled'};
+const quote={symbol:'BTC/USD',source:'ALPACA_SAME_PAIR',bid:85000,timestamp:new Date().toISOString()};
+const args={entryOrder:entry,position:{symbol:'BTC/USD',qty:'0.001'},stop:80000,priceIncrement:0.01,minTradeIncrement:1e-9,quote};
+test('constructs provider-supported stop-limit without submitting',()=>{const r=plan(args);assert.equal(r.approved,true);assert.equal(r.order.type,'stop_limit');assert.equal(r.order.side,'sell');assert.equal(r.executionAuthority,false);});
+test('never protects unowned entry',()=>assert.equal(plan({...args,entryOrder:{...entry,client_order_id:'external'}}).approved,false));
+test('blocks overlapping protective orders',()=>assert.equal(plan({...args,protectiveOrders:[{status:'new'}]}).approved,false));
+test('blocks stale prices and breached stop',()=>{assert.equal(plan({...args,quote:{...quote,timestamp:'2020-01-01T00:00:00Z'}}).approved,false);assert.equal(plan({...args,quote:{...quote,bid:79000}}).approved,false);});
+test('does not duplicate existing stop on target',()=>assert.equal(decide({position:args.position,entryOrder:entry,protectiveOrder:{status:'new'},quote,target:81000}).action,'MONITOR_EXISTING_STOP'));
+test('flags stop breach for manual action without placing order',()=>assert.equal(decide({position:args.position,entryOrder:entry,quote:{...quote,bid:79000},stop:80000}).action,'URGENT_MANUAL_EXIT_REVIEW'));

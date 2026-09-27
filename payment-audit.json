@@ -1,0 +1,240 @@
+{
+  "project": "AEMA Research",
+  "purpose": "Read-only payment architecture inventory",
+  "generatedAt": "2026-09-27T15:43:42.273Z",
+  "filesScanned": 623,
+  "findings": [
+    {
+      "file": "client/src/App.jsx",
+      "category": "authentication",
+      "matchingLines": [
+        6,
+        33
+      ],
+      "totalMatches": 2
+    },
+    {
+      "file": "client/src/auth/AuthContext.jsx",
+      "category": "authentication",
+      "matchingLines": [
+        9,
+        10,
+        13
+      ],
+      "totalMatches": 3
+    },
+    {
+      "file": "client/src/auth/AuthContext.jsx",
+      "category": "subscriptions",
+      "matchingLines": [
+        10,
+        11
+      ],
+      "totalMatches": 2
+    },
+    {
+      "file": "client/src/auth/AuthPage.jsx",
+      "category": "authentication",
+      "matchingLines": [
+        18,
+        26,
+        32
+      ],
+      "totalMatches": 3
+    },
+    {
+      "file": "client/src/auth/AuthProvider.jsx",
+      "category": "authentication",
+      "matchingLines": [
+        9,
+        13,
+        18
+      ],
+      "totalMatches": 3
+    },
+    {
+      "file": "client/src/auth/AuthProvider.jsx",
+      "category": "subscriptions",
+      "matchingLines": [
+        13,
+        16
+      ],
+      "totalMatches": 2
+    },
+    {
+      "file": "client/src/auth/ReferralModal.jsx",
+      "category": "subscriptions",
+      "matchingLines": [
+        28,
+        32
+      ],
+      "totalMatches": 2
+    },
+    {
+      "file": "client/src/auth/RequireAuth.jsx",
+      "category": "authentication",
+      "matchingLines": [
+        4,
+        9,
+        10
+      ],
+      "totalMatches": 3
+    },
+    {
+      "file": "client/src/auth/RequireAuth.jsx",
+      "category": "subscriptions",
+      "matchingLines": [
+        10,
+        11
+      ],
+      "totalMatches": 2
+    },
+    {
+      "file": "client/src/auth/UpdatePassword.jsx",
+      "category": "authentication",
+      "matchingLines": [
+        13,
+        16
+      ],
+      "totalMatches": 2
+    },
+    {
+      "file": "client/src/landing/pages/LandingPage.jsx",
+      "category": "trials",
+      "matchingLines": [
+        179,
+        315
+      ],
+      "totalMatches": 2
+    },
+    {
+      "file": "client/src/pages/AuthPage.jsx",
+      "category": "authentication",
+      "matchingLines": [
+        23,
+        31,
+        37
+      ],
+      "totalMatches": 3
+    },
+    {
+      "file": "client/src/pages/UpdatePasswordPage.jsx",
+      "category": "authentication",
+      "matchingLines": [
+        11
+      ],
+      "totalMatches": 1
+    },
+    {
+      "file": "server/auth/stripeWebhook.js",
+      "category": "payments",
+      "matchingLines": [
+        2,
+        5,
+        10,
+        35
+      ],
+      "totalMatches": 4
+    },
+    {
+      "file": "server/auth/stripeWebhook.js",
+      "category": "subscriptions",
+      "matchingLines": [
+        15,
+        16,
+        17,
+        20
+      ],
+      "totalMatches": 4
+    },
+    {
+      "file": "server/auth/stripeWebhook.js",
+      "category": "webhooks",
+      "matchingLines": [
+        7,
+        13,
+        35
+      ],
+      "totalMatches": 3
+    },
+    {
+      "file": "server/auth/stripeWebhook.js",
+      "category": "database",
+      "matchingLines": [
+        17
+      ],
+      "totalMatches": 1
+    },
+    {
+      "file": "server/src/data/providers/alpacaLiveMarketStream.js",
+      "category": "subscriptions",
+      "matchingLines": [
+        765,
+        771,
+        783,
+        1101
+      ],
+      "totalMatches": 4
+    },
+    {
+      "file": "server/src/data/providers/alpacaLiveMarketStream.js",
+      "category": "database",
+      "matchingLines": [
+        783
+      ],
+      "totalMatches": 1
+    },
+    {
+      "file": "server/src/data/providers/alpacaLiveMarketStream.test.js",
+      "category": "subscriptions",
+      "matchingLines": [
+        207
+      ],
+      "totalMatches": 1
+    },
+    {
+      "file": "server/src/research/webIntelligenceProvider.js",
+      "category": "subscriptions",
+      "matchingLines": [
+        1304
+      ],
+      "totalMatches": 1
+    },
+    {
+      "file": "server/src/routes/analysisRoutes.js",
+      "category": "subscriptions",
+      "matchingLines": [
+        172
+      ],
+      "totalMatches": 1
+    },
+    {
+      "file": "supabase/migrations/001_auth_referrals.sql",
+      "category": "subscriptions",
+      "matchingLines": [
+        19,
+        44,
+        47,
+        48
+      ],
+      "totalMatches": 4
+    },
+    {
+      "file": "supabase/migrations/001_auth_referrals.sql",
+      "category": "database",
+      "matchingLines": [
+        3,
+        10,
+        19,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48
+      ],
+      "totalMatches": 10
+    }
+  ]
+}
