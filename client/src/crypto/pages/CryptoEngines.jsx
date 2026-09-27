@@ -3552,7 +3552,7 @@ export default function CryptoEngines() {
 
     const savedTheme =
 
-      window\.localStorage.getItem(
+      window.localStorage.getItem(
 
         "aema-crypto-theme",
 
@@ -3574,7 +3574,7 @@ export default function CryptoEngines() {
 
 
 
-    return window\.matchMedia(
+    return window.matchMedia(
 
       "(prefers-color-scheme: dark)",
 
@@ -3656,7 +3656,7 @@ export default function CryptoEngines() {
 
     () => {
 
-      window\.localStorage.setItem(
+      window.localStorage.setItem(
 
         "aema-crypto-theme",
 
