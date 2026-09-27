@@ -4,6 +4,7 @@ import LandingPage from "./landing/pages/LandingPage.jsx";
 import AuthPage from "./auth/AuthPage.jsx";
 import UpdatePassword from "./auth/UpdatePassword.jsx";
 import RequireAuth from "./auth/RequireAuth.jsx";
+import BillingPage from "./billing/BillingPage.jsx";
 import CryptoDashboard from "./crypto/pages/CryptoDashboard.jsx";
 import CryptoMarkets from "./crypto/pages/CryptoMarkets.jsx";
 import CryptoDiscovery from "./crypto/pages/CryptoDiscovery.jsx";
@@ -21,49 +22,60 @@ import Positions from "./pages/Positions.jsx";
 import History from "./pages/History.jsx";
 import Referrals from "./pages/Referrals.jsx";
 import Wallet from "./pages/Wallet.jsx";
+
 export default function App() {
-  return <BrowserRouter><Routes>
-    <Route path="/" element={<LandingPage/>}/>
-    <Route path="/login" element={<AuthPage mode="login"/>}/>
-    <Route path="/register" element={<AuthPage mode="register"/>}/>
-    <Route path="/forgot-password" element={<AuthPage mode="reset"/>}/>
-    <Route path="/update-password" element={<UpdatePassword/>}/>
-    {/* Existing private bot has separate authentication. Do not substitute public Supabase auth for bot authorization. */}
-    <Route path="/bot/*" element={<BotApp/>}/>
-    <Route element={<RequireAuth/>}>
-      <Route path="/dashboard" element={<Dashboard/>}/>
-      <Route path="/markets" element={<Markets/>}/>
-      <Route path="/scanner" element={<Scanner/>}/>
-      <Route path="/research" element={<Research/>}/>
-      <Route path="/engines" element={<Engines/>}/>
-      <Route path="/positions" element={<Positions/>}/>
-      <Route path="/history" element={<History/>}/>
-      <Route path="/referrals" element={<Referrals/>}/>
-      <Route path="/wallet" element={<Wallet/>}/>
-      <Route path="/crypto" element={<CryptoDashboard/>}/>
-      <Route path="/crypto/markets" element={<CryptoMarkets/>}/>
-      <Route path="/crypto/discovery" element={<CryptoDiscovery/>}/>
-      <Route path="/crypto/scanner" element={<CryptoScanner/>}/>
-      <Route path="/crypto/engines" element={<CryptoEngines/>}/>
-      <Route path="/crypto/research" element={<CryptoResearch/>}/>
-      <Route path="/crypto/positions" element={<CryptoPositions/>}/>
-      <Route path="/crypto/health" element={<CryptoHealth/>}/>
-    </Route>
-    <Route path="/app" element={<Navigate to="/dashboard" replace/>}/>
-    <Route path="/app/markets" element={<Navigate to="/markets" replace/>}/>
-    <Route path="/app/scanner" element={<Navigate to="/scanner" replace/>}/>
-    <Route path="/app/research" element={<Navigate to="/research" replace/>}/>
-    <Route path="/app/engines" element={<Navigate to="/engines" replace/>}/>
-    <Route path="/app/positions" element={<Navigate to="/positions" replace/>}/>
-    <Route path="/app/history" element={<Navigate to="/history" replace/>}/>
-    <Route path="/app/crypto" element={<Navigate to="/crypto" replace/>}/>
-    <Route path="/app/crypto/markets" element={<Navigate to="/crypto/markets" replace/>}/>
-    <Route path="/app/crypto/discovery" element={<Navigate to="/crypto/discovery" replace/>}/>
-    <Route path="/app/crypto/scanner" element={<Navigate to="/crypto/scanner" replace/>}/>
-    <Route path="/app/crypto/engines" element={<Navigate to="/crypto/engines" replace/>}/>
-    <Route path="/app/crypto/research" element={<Navigate to="/crypto/research" replace/>}/>
-    <Route path="/app/crypto/positions" element={<Navigate to="/crypto/positions" replace/>}/>
-    <Route path="/app/crypto/health" element={<Navigate to="/crypto/health" replace/>}/>
-    <Route path="*" element={<Navigate to="/" replace/>}/>
-  </Routes></BrowserRouter>;
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/login" element={<AuthPage mode="login" />} />
+        <Route path="/register" element={<AuthPage mode="register" />} />
+        <Route path="/forgot-password" element={<AuthPage mode="reset" />} />
+        <Route path="/update-password" element={<UpdatePassword />} />
+
+        {/* Private bot retains its separate authentication. */}
+        <Route path="/bot/*" element={<BotApp />} />
+
+        <Route element={<RequireAuth />}>
+          {/* Billing must remain available even when a trial has expired. */}
+          <Route path="/billing" element={<BillingPage />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/markets" element={<Markets />} />
+          <Route path="/scanner" element={<Scanner />} />
+          <Route path="/research" element={<Research />} />
+          <Route path="/engines" element={<Engines />} />
+          <Route path="/positions" element={<Positions />} />
+          <Route path="/history" element={<History />} />
+          <Route path="/referrals" element={<Referrals />} />
+          <Route path="/wallet" element={<Wallet />} />
+          <Route path="/crypto" element={<CryptoDashboard />} />
+          <Route path="/crypto/markets" element={<CryptoMarkets />} />
+          <Route path="/crypto/discovery" element={<CryptoDiscovery />} />
+          <Route path="/crypto/scanner" element={<CryptoScanner />} />
+          <Route path="/crypto/engines" element={<CryptoEngines />} />
+          <Route path="/crypto/research" element={<CryptoResearch />} />
+          <Route path="/crypto/positions" element={<CryptoPositions />} />
+          <Route path="/crypto/health" element={<CryptoHealth />} />
+        </Route>
+
+        <Route path="/app" element={<Navigate to="/dashboard" replace />} />
+        <Route path="/app/billing" element={<Navigate to="/billing" replace />} />
+        <Route path="/app/markets" element={<Navigate to="/markets" replace />} />
+        <Route path="/app/scanner" element={<Navigate to="/scanner" replace />} />
+        <Route path="/app/research" element={<Navigate to="/research" replace />} />
+        <Route path="/app/engines" element={<Navigate to="/engines" replace />} />
+        <Route path="/app/positions" element={<Navigate to="/positions" replace />} />
+        <Route path="/app/history" element={<Navigate to="/history" replace />} />
+        <Route path="/app/crypto" element={<Navigate to="/crypto" replace />} />
+        <Route path="/app/crypto/markets" element={<Navigate to="/crypto/markets" replace />} />
+        <Route path="/app/crypto/discovery" element={<Navigate to="/crypto/discovery" replace />} />
+        <Route path="/app/crypto/scanner" element={<Navigate to="/crypto/scanner" replace />} />
+        <Route path="/app/crypto/engines" element={<Navigate to="/crypto/engines" replace />} />
+        <Route path="/app/crypto/research" element={<Navigate to="/crypto/research" replace />} />
+        <Route path="/app/crypto/positions" element={<Navigate to="/crypto/positions" replace />} />
+        <Route path="/app/crypto/health" element={<Navigate to="/crypto/health" replace />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }

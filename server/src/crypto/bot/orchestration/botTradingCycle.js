@@ -60,6 +60,16 @@ export async function runBotTradingCycle(options={}){
   }
   const executionRanking=rankBotExecutionSetups(setups,options.executionRanking);
   const learningRanking=applyTradeLearning(executionRanking.executable,options.learning);
+  // Optional READ-ONLY Alpaca shadow preview. Never changes the internal order path.
+  if (process.env.AEMA_ALPACA_SHADOW_PREVIEW === "1") {
+    try {
+      const { previewExistingBotCandidatesForAlpaca } = await import("../alpaca/botAlpacaExistingBotBridge.js");
+      const shadow = await previewExistingBotCandidatesForAlpaca(learningRanking.ranked);
+      console.log("[ALPACA_SHADOW_PREVIEW]", JSON.stringify(shadow));
+    } catch (error) {
+      console.error("[ALPACA_SHADOW_PREVIEW_FAILED]", error?.message || String(error));
+    }
+  }
   const accountBefore=getBotPaperAccount();
   const orderAttempts=[];
   let selected=null, execution=null;

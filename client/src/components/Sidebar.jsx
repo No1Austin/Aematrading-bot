@@ -7,7 +7,9 @@ import {
   Bot,
   ChevronRight,
   Gauge,
+  History,
   LayoutDashboard,
+  LogOut,
   Menu,
   Radar,
   Settings,
@@ -17,7 +19,8 @@ import {
 } from "lucide-react";
 
 import { useEffect, useState } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { supabase } from "../auth/supabaseClient.js";
 import "./Sidebar.css";
 
 const primaryItems = [
@@ -44,6 +47,12 @@ const primaryItems = [
     Gauge,
     "/engines",
     "Research engines",
+  ],
+  [
+    "Positions",
+    WalletCards,
+    "/positions",
+    "Tracked positions",
   ],
   
   [
@@ -88,6 +97,25 @@ function Brand() {
 
 export default function Sidebar() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
+  const [logoutError, setLogoutError] = useState("");
+  const navigate = useNavigate();
+
+  async function handleLogout() {
+    if (loggingOut) return;
+    setLogoutError("");
+    setLoggingOut(true);
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      setMobileOpen(false);
+      navigate("/login", { replace: true });
+    } catch (error) {
+      setLogoutError(error?.message || "Could not log out. Please try again.");
+    } finally {
+      setLoggingOut(false);
+    }
+  }
 
   const { pathname } = useLocation();
 
@@ -339,6 +367,24 @@ export default function Sidebar() {
                 size={15}
               />
             </button>
+
+            <button
+              className="aema-nav-item aema-settings-button aema-logout-button"
+              type="button"
+              onClick={handleLogout}
+              disabled={loggingOut}
+              aria-busy={loggingOut}
+            >
+              <span className="aema-nav-icon"><LogOut size={18} /></span>
+              <span className="aema-nav-content">
+                <span className="aema-nav-label">{loggingOut ? "Logging out…" : "Log out"}</span>
+                <span className="aema-nav-description">Sign out of AEMA Research</span>
+              </span>
+              <ChevronRight className="aema-nav-chevron" size={15} />
+            </button>
+            {logoutError && (
+              <p className="aema-logout-error" role="alert">{logoutError}</p>
+            )}
 
             <div className="aema-system-mini">
               <div className="aema-system-mini-icon">

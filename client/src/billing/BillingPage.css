@@ -1,0 +1,18 @@
+.aema-billing{min-height:70vh;display:grid;place-items:center;padding:32px 16px;background:#0d1626;color:#f4f7ff}
+.aema-billing-card{width:min(100%,650px);padding:clamp(24px,5vw,44px);background:#152238;border:1px solid #33435a;border-radius:20px;box-shadow:0 20px 60px #0004}
+.aema-billing-eyebrow{font-size:12px;font-weight:700;letter-spacing:.16em;color:#79d3ce}
+.aema-billing h1{font-size:clamp(25px,4vw,36px);line-height:1.2;margin:14px 0}
+.aema-billing-intro,.aema-billing p{line-height:1.6;color:#c4cedd}
+.aema-billing-price{display:flex;align-items:baseline;gap:8px;margin:28px 0}
+.aema-billing-price strong{font-size:42px}
+.aema-billing-price span{color:#b8c4d5}
+.aema-billing-status{border-block:1px solid #34445a;padding:14px 0;margin-bottom:20px}
+.aema-billing-status>div{display:flex;justify-content:space-between;gap:14px;padding:9px 0}
+.aema-billing-status span{color:#b8c4d5}
+.aema-billing-status strong{text-align:right}
+.aema-billing-actions{display:flex;flex-wrap:wrap;gap:10px;margin:22px 0}
+.aema-billing-actions button{border:1px solid #6dd2c9;background:#6dd2c9;color:#0b1723;font:inherit;font-weight:700;border-radius:10px;padding:12px 16px;cursor:pointer}
+.aema-billing-actions .aema-billing-secondary{background:transparent;color:#d9f5f2}
+.aema-billing-actions button:disabled{opacity:.5;cursor:not-allowed}
+.aema-billing-error{color:#ffc6c6!important}.aema-billing-notice{color:#b5f0c6!important}
+.aema-billing small{color:#aab9ca;line-height:1.5;display:block}

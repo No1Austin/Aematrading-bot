@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "provider": "ALPACA_PAPER",
+  "records": [
+    {
+      "eventId": "6d733866-20af-4779-b5ed-3f9b383e7063",
+      "at": "2026-09-27T18:37:51.140Z",
+      "type": "PREPARED",
+      "clientOrderId": "aema-pilot-ab345291-7732-4a25-83c5-8137e383c421",
+      "pair": "BTC/USD",
+      "qty": 0.000295005,
+      "indicativeAsk": 84744.2,
+      "previewAt": "2026-09-27T18:37:45.262Z",
+      "stop": 83049.31,
+      "accountIdSuffix": "70ca"
+    },
+    {
+      "eventId": "9741bd82-ac72-4f39-becf-2e264a7b14d8",
+      "at": "2026-09-27T18:37:51.197Z",
+      "type": "SUBMITTED",
+      "clientOrderId": "aema-pilot-ab345291-7732-4a25-83c5-8137e383c421",
+      "providerOrderId": "5be389b9-fef0-48e0-a0bf-2298cafba818",
+      "providerStatus": "pending_new",
+      "filledQty": "0",
+      "filledAvgPrice": null
+    }
+  ]
+}

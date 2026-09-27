@@ -5,6 +5,7 @@ import "dotenv/config";
 import express from "express";
 
 import cors from "cors";
+import stripeWebhook from "../auth/stripeWebhook.js";
 
 
 
@@ -736,6 +737,9 @@ app.use(
 );
 
 
+
+// Stripe signature verification requires the original raw request body.
+app.use("/api/billing/webhook", stripeWebhook);
 
 app.use(
 
@@ -2478,6 +2482,7 @@ process.on(
   },
 
 );
+
 
 
 export default app;

@@ -1225,3 +1225,8 @@
  .aema-sidebar.mobile-open .aema-workspace-button{min-height:72px;align-items:flex-start;}
  .aema-sidebar.mobile-open .aema-nav-item{min-height:48px;}
 }
+
+/* Authenticated research workspace logout */
+.aema-logout-button { width: 100%; cursor: pointer; }
+.aema-logout-button:disabled { opacity: .6; cursor: wait; }
+.aema-logout-error { color: #ef7676; font-size: 12px; margin: 4px 12px 10px; line-height: 1.4; }
