@@ -1,371 +1,750 @@
 /**
  * ============================================================
- * AEMA CRYPTO DISCOVERY SERVICE — PHASE 6.4
+ * AEMA CRYPTO — DISCOVERY OVERVIEW SERVICE
  * ============================================================
  *
- * Purpose
+ * PURPOSE
  * -------
- * Build the Discovery command-center dataset WITHOUT invoking the
- * six-engine scanner. Discovery remains upstream of deep research.
+ * HTTP-facing orchestration layer for the Crypto Discovery page.
  *
- * Pipeline
- * --------
- * universe -> measurements -> deterministic qualification
- * -> ranked CEX/DEX pools -> bounded GPT trend enrichment
- * -> discovery lists / research queue
+ * The actual discovery/qualification logic remains owned by:
  *
- * GPT never grants eligibility, bot authority or execution authority.
+ *   scanner/cryptoDiscoveryCycle.js
+ *
+ * This service:
+ *
+ * 1. Runs the existing discovery pipeline.
+ * 2. Adds HTTP-level caching.
+ * 3. Normalizes the response for the frontend.
+ * 4. Separates CEX and DEX candidates.
+ * 5. Preserves research-only boundaries.
+ *
+ * IMPORTANT
+ * ---------
+ * This file does NOT create fake market measurements.
+ * Missing data remains unavailable.
+ *
+ * Research only.
+ * No execution authority.
  */
 
-import { getCryptoUniverse } from "../universe/cryptoUniverseProvider.js";
-import { buildCryptoMeasurements } from "../scanner/cryptoMeasurementProvider.js";
-import qualifyCryptoCandidate from "../scanner/cryptoCandidateQualificationEngine.js";
-import { buildCryptoDiscoveryIntelligence } from "../analysis/cryptoDiscoveryIntelligence.js";
-import { buildCryptoScannerGptIntelligence } from "../intelligence/cryptoGptIntelligenceProvider.js";
-import { CRYPTO_SCANNER_CONFIG } from "../scanner/cryptoScannerConfig.js";
-import { CRYPTO_CANDIDATE_TYPE } from "../policy/cryptoCandidateActionPolicy.js";
+import {
+  runCryptoDiscoveryCycle,
+} from "../scanner/cryptoDiscoveryCycle.js";
 
-const CACHE_MS = Number(process.env.AEMA_DISCOVERY_CACHE_MS) || 5 * 60 * 1000;
-const GPT_CEX_LIMIT = Number(process.env.AEMA_DISCOVERY_GPT_CEX_LIMIT) || 8;
-const GPT_DEX_LIMIT = Number(process.env.AEMA_DISCOVERY_GPT_DEX_LIMIT) || 12;
-const GPT_CONCURRENCY = Math.max(1, Number(process.env.AEMA_DISCOVERY_GPT_CONCURRENCY) || 3);
 
-let cache = null;
-let inFlight = null;
+/**
+ * ============================================================
+ * CACHE
+ * ============================================================
+ */
 
-const finite = value => {
-  const number = Number(value);
-  return Number.isFinite(number) ? number : 0;
+const DISCOVERY_CACHE_TTL_MS =
+  Math.max(
+    1_000,
+    Number(
+      process.env.AEMA_DISCOVERY_CACHE_MS,
+    ) || 300_000,
+  );
+
+
+let discoveryCache = {
+  result: null,
+  createdAt: 0,
 };
 
-const finiteOrNull = value => {
-  if (value === null || value === undefined || value === "") return null;
-  const number = Number(value);
-  return Number.isFinite(number) ? number : null;
-};
 
-const clamp = value => Math.min(100, Math.max(0, finite(value)));
+let discoveryInFlight = null;
 
-function keyFor(candidate) {
-  return String(candidate?.assetId ?? candidate?.symbol ?? "").trim().toLowerCase();
-}
 
-function marketQualityScore(candidate) {
-  // Preserve the deterministic scanner score as the canonical discovery
-  // market-quality score. GPT does not replace hard qualification.
-  return clamp(candidate?.scannerScore);
-}
+/**
+ * ============================================================
+ * HELPERS
+ * ============================================================
+ */
 
-function gptTrendScore(intelligence) {
-  const buckets = [
-    [intelligence?.socialNarrative, 0.40],
-    [intelligence?.news, 0.35],
-    [intelligence?.events, 0.25],
-  ].filter(([bucket]) => bucket?.available === true && finiteOrNull(bucket?.score) !== null);
-
-  if (!buckets.length) {
-    return { available: false, score: null, confidence: 0, coverage: 0 };
+function numberOrNull(value) {
+  if (
+    value === null ||
+    value === undefined ||
+    value === ""
+  ) {
+    return null;
   }
 
-  const availableWeight = buckets.reduce((sum, [, weight]) => sum + weight, 0);
-  const score = buckets.reduce(
-    (sum, [bucket, weight]) => sum + Number(bucket.score) * weight,
-    0,
-  ) / availableWeight;
-  const confidence = buckets.reduce(
-    (sum, [bucket, weight]) => sum + finite(bucket.confidence) * weight,
-    0,
-  ) / availableWeight;
+  const number =
+    Number(value);
 
-  return {
-    available: true,
-    score: Math.round(score * 100) / 100,
-    confidence: Math.round(confidence * 100) / 100,
-    coverage: Math.round((availableWeight / 1.0) * 10000) / 100,
-  };
+  return Number.isFinite(number)
+    ? number
+    : null;
 }
 
-function activity(candidate) {
-  const m = candidate?.measurements ?? {};
-  const buys = finite(m?.buys24h ?? m?.buys);
-  const sells = finite(m?.sells24h ?? m?.sells);
-  const transactions = finite(m?.transactions24h ?? m?.txns24h ?? m?.transactions);
-  const uniqueTraders = finiteOrNull(m?.uniqueTraders24h ?? m?.uniqueTraders);
 
-  return {
-    buys,
-    sells,
-    transactions,
-    uniqueTraders,
-    multipleTradersVerified: uniqueTraders !== null ? uniqueTraders > 1 : null,
-  };
+function numberOrZero(value) {
+  return numberOrNull(value) ?? 0;
 }
 
-function compactCandidate(candidate) {
-  const m = candidate?.measurements ?? {};
-  const intel = candidate?.intelligence ?? null;
-  const gpt = candidate?.gptDiscoveryIntelligence ?? null;
-  const trend = candidate?.trendIntelligence ?? { available: false, score: null, confidence: 0, coverage: 0 };
 
-  return {
-    assetId: candidate?.assetId ?? null,
-    symbol: candidate?.symbol ?? null,
-    name: candidate?.name ?? null,
-    candidateType: candidate?.candidateType ?? null,
-    discoveryStatus: candidate?.discoveryStatus ?? null,
-    eligible: candidate?.eligible === true,
-    qualified: candidate?.qualified === true,
-    highInterest: candidate?.highInterest === true,
-    preferredDirection: candidate?.preferredDirection ?? null,
-    discoveryScore: marketQualityScore(candidate),
-    scannerScore: candidate?.scannerScore ?? null,
-    directionEdge: candidate?.directionEdge ?? null,
-    priceUsd: finiteOrNull(m?.priceUsd),
-    volume24hUsd: finiteOrNull(m?.volume24hUsd),
-    liquidityUsd: finiteOrNull(m?.liquidityUsd),
-    change1hPercent: finiteOrNull(m?.change1hPercent),
-    change24hPercent: finiteOrNull(m?.change24hPercent),
-    change7dPercent: finiteOrNull(m?.change7dPercent),
-    marketCapUsd: finiteOrNull(m?.marketCapUsd),
-    venueCount: finite(m?.venueCount),
-    cexCount: finite(m?.cexCount),
-    dexCount: finite(m?.dexCount),
-    primaryVenue: m?.primaryVenue ?? null,
-    exchanges: Array.isArray(m?.exchanges) ? m.exchanges : [],
-    network: m?.network ?? null,
-    contractAddress: m?.contractAddress ?? null,
-    activity: activity(candidate),
-    deterministicIntelligence: intel,
-    trendIntelligence: trend,
-    gpt: gpt
-      ? {
-          status: candidate?.gptDiscoveryStatus ?? "READY",
-          news: gpt.news ?? null,
-          events: gpt.events ?? null,
-          socialNarrative: gpt.socialNarrative ?? null,
-          contradictions: gpt.contradictions ?? [],
-          sources: gpt.sources ?? [],
-          generatedAt: gpt.generatedAt ?? null,
-          cache: gpt.cache ?? null,
-        }
-      : null,
-    deepResearchEligible: candidate?.deepResearchEligible === true,
-    botEligible: false,
-    executionEligible: false,
-    researchOnly: true,
-  };
+function array(value) {
+  return Array.isArray(value)
+    ? value
+    : [];
 }
 
-function rankMarketQuality(rows) {
-  return [...rows].sort((a, b) =>
-    marketQualityScore(b) - marketQualityScore(a) ||
-    finite(b?.measurements?.volume24hUsd) - finite(a?.measurements?.volume24hUsd) ||
-    finite(b?.measurements?.liquidityUsd) - finite(a?.measurements?.liquidityUsd)
-  );
-}
 
-function rankEmerging(rows) {
-  return [...rows].sort((a, b) => {
-    const bt = b?.trendIntelligence?.available ? finite(b.trendIntelligence.score) : -1;
-    const at = a?.trendIntelligence?.available ? finite(a.trendIntelligence.score) : -1;
-    return bt - at ||
-      finite(b?.measurements?.volume24hUsd) - finite(a?.measurements?.volume24hUsd) ||
-      finite(b?.measurements?.liquidityUsd) - finite(a?.measurements?.liquidityUsd) ||
-      marketQualityScore(b) - marketQualityScore(a);
-  });
-}
+function normalizeCandidateType(
+  candidate,
+) {
+  const explicit =
+    String(
+      candidate?.candidateType ??
+      candidate?.type ??
+      "",
+    )
+      .trim()
+      .toUpperCase();
 
-async function mapConcurrent(rows, limit, worker) {
-  const output = new Array(rows.length);
-  let cursor = 0;
-  const workers = Array.from({ length: Math.min(limit, rows.length) }, async () => {
-    while (true) {
-      const index = cursor++;
-      if (index >= rows.length) break;
-      output[index] = await worker(rows[index], index);
-    }
-  });
-  await Promise.all(workers);
-  return output;
-}
-
-async function enrichWithGpt(candidate) {
-  const asset = candidate?.measurements ?? candidate;
-  const result = await buildCryptoScannerGptIntelligence(asset);
-
-  if (result?.approved !== true || !result?.intelligence) {
-    return {
-      ...candidate,
-      gptDiscoveryStatus: result?.status ?? "GPT_INTELLIGENCE_UNAVAILABLE",
-      gptDiscoveryError: result?.error ?? null,
-      gptDiscoveryIntelligence: null,
-      trendIntelligence: { available: false, score: null, confidence: 0, coverage: 0 },
-    };
+  if (
+    explicit === "DEX" ||
+    explicit === "EMERGING"
+  ) {
+    return "DEX";
   }
 
-  return {
-    ...candidate,
-    gptDiscoveryStatus: result.status,
-    gptDiscoveryError: null,
-    gptDiscoveryIntelligence: result.intelligence,
-    trendIntelligence: gptTrendScore(result.intelligence),
-  };
+  if (explicit === "CEX") {
+    return "CEX";
+  }
+
+  const dexCount =
+    numberOrZero(
+      candidate?.dexCount ??
+      candidate?.measurements
+        ?.dexCount ??
+      candidate?.measurements
+        ?.venues
+        ?.dexCount,
+    );
+
+  const cexCount =
+    numberOrZero(
+      candidate?.cexCount ??
+      candidate?.measurements
+        ?.cexCount ??
+      candidate?.measurements
+        ?.venues
+        ?.cexCount,
+    );
+
+  if (
+    dexCount > 0 &&
+    cexCount === 0
+  ) {
+    return "DEX";
+  }
+
+  return "CEX";
 }
 
-async function buildDiscovery({ refreshUniverse = false, refresh = false } = {}) {
-  const startedAt = new Date().toISOString();
 
-  const universe = await getCryptoUniverse({
-    refresh: refreshUniverse,
-    maximumAssets: CRYPTO_SCANNER_CONFIG.cycle.maximumUniverseAssets,
-    includeDexDiscovery: true,
-  });
-
-  const measurements = buildCryptoMeasurements({ assets: universe?.assets ?? [] });
-
-  const qualified = measurements
-    .map(measurement => {
-      const intelligence = buildCryptoDiscoveryIntelligence(measurement);
-      const enrichedMeasurement = {
-        ...measurement,
-        discoveryIntelligence: intelligence,
-        integrity: {
-          score: intelligence?.projectIntegrity?.score ?? null,
-          criticalFlags: intelligence?.projectIntegrity?.criticalFlags ?? [],
-        },
-      };
-      const candidate = qualifyCryptoCandidate(enrichedMeasurement);
-      return {
-        ...candidate,
-        intelligence,
-      };
-    })
-    .filter(candidate => candidate?.qualified === true);
-
-  const cexPool = rankMarketQuality(
-    qualified.filter(candidate => candidate?.candidateType === CRYPTO_CANDIDATE_TYPE.CEX),
+function candidateScore(candidate) {
+  return (
+    numberOrNull(
+      candidate?.scannerScore,
+    ) ??
+    numberOrNull(
+      candidate?.discoveryScore,
+    ) ??
+    numberOrNull(
+      candidate?.score,
+    ) ??
+    numberOrNull(
+      candidate?.qualificationScore,
+    ) ??
+    0
   );
-  const dexPool = rankMarketQuality(
-    qualified.filter(candidate => candidate?.candidateType === CRYPTO_CANDIDATE_TYPE.EMERGING),
-  );
+}
 
-  // GPT is intentionally bounded. We do not web-research the entire universe.
-  const gptShortlist = [
-    ...cexPool.slice(0, GPT_CEX_LIMIT),
-    ...dexPool.slice(0, GPT_DEX_LIMIT),
+
+function directionEdge(candidate) {
+  return (
+    numberOrNull(
+      candidate?.directionEdge,
+    ) ??
+    numberOrNull(
+      candidate?.qualification
+        ?.directionEdge,
+    ) ??
+    0
+  );
+}
+
+
+function rankCandidates(
+  candidates,
+) {
+  return [...array(candidates)]
+    .sort(
+      (a, b) =>
+        candidateScore(b) -
+          candidateScore(a) ||
+        directionEdge(b) -
+          directionEdge(a),
+    );
+}
+
+
+function isQualified(candidate) {
+  return (
+    candidate?.qualified === true ||
+    candidate?.eligible === true ||
+    candidate?.qualification
+      ?.qualified === true
+  );
+}
+
+
+function isHighInterest(candidate) {
+  return (
+    candidate?.highInterest === true ||
+    candidate?.qualification
+      ?.highInterest === true
+  );
+}
+
+
+function getCycleCandidates(cycle) {
+  /*
+   * Candidate arrays have been exposed under different names
+   * across AEMA discovery phases.
+   *
+   * Current Phase 2.4 discovery cycle exposes the scanner-selected
+   * qualified candidates as cycle.selectedCandidates.
+   *
+   * Keep legacy fallbacks for backward compatibility.
+   */
+
+  const sources = [
+    // Current Phase 2.4 contract.
+    cycle?.selectedCandidates,
+
+    // Historical/compatibility contracts.
+    cycle?.candidates,
+    cycle?.researchableCandidates,
+    cycle?.qualifiedCandidates,
+
+    cycle?.scanner?.candidates,
+    cycle?.scanner?.selectedCandidates,
+
+    cycle?.scannerResult?.candidates,
+    cycle?.scannerResult?.selectedCandidates,
+
+    cycle?.result?.candidates,
+    cycle?.result?.selectedCandidates,
   ];
 
-  const enrichedShortlist = await mapConcurrent(
-    gptShortlist,
-    GPT_CONCURRENCY,
-    enrichWithGpt,
-  );
-
-  const enrichedByKey = new Map(enrichedShortlist.map(candidate => [keyFor(candidate), candidate]));
-  const merge = candidate => enrichedByKey.get(keyFor(candidate)) ?? {
-    ...candidate,
-    gptDiscoveryStatus: "NOT_REQUESTED",
-    gptDiscoveryIntelligence: null,
-    trendIntelligence: { available: false, score: null, confidence: 0, coverage: 0 },
-  };
-
-  const cex = cexPool.map(merge);
-  const dex = dexPool.map(merge);
-  const all = rankMarketQuality([...cex, ...dex]);
-
-  const top20Overall = all.slice(0, 20).map(compactCandidate);
-  const top20Cex = cex.slice(0, 20).map(compactCandidate);
-  const top20Dex = dex.slice(0, 20).map(compactCandidate);
-
-  const emergingDexTrends = rankEmerging(
-    dex.filter(candidate =>
-      candidate?.trendIntelligence?.available === true &&
-      finite(candidate?.measurements?.volume24hUsd) >= CRYPTO_SCANNER_CONFIG.hardEligibility.minimum24hVolumeUsd &&
-      finite(candidate?.measurements?.liquidityUsd) >= CRYPTO_SCANNER_CONFIG.hardEligibility.minimumLiquidityUsd
-    ),
-  )
-    .slice(0, 20)
-    .map(compactCandidate);
-
-  // This is a queue, not an approval to execute. The existing six-engine scanner
-  // remains the next stage and decides research results independently.
-  const researchQueue = rankMarketQuality(
-    all.filter(candidate => candidate?.deepResearchEligible === true),
-  )
-    .slice(0, CRYPTO_SCANNER_CONFIG.discovery.maximumCandidates)
-    .map(compactCandidate);
-
-  const result = {
-    approved: true,
-    status: universe?.status ?? "COMPLETE",
-    pipeline: "DISCOVERY_QUALIFICATION",
-    universe: {
-      assetCount: universe?.assetCount ?? measurements.length,
-      providers: universe?.providers ?? {},
-      composition: universe?.composition ?? {},
-    },
-    qualification: {
-      measured: measurements.length,
-      qualified: qualified.length,
-      cexQualified: cex.length,
-      dexQualified: dex.length,
-      highInterest: qualified.filter(candidate => candidate?.highInterest === true).length,
-    },
-    gpt: {
-      enabled: String(process.env.AEMA_GPT_INTELLIGENCE_ENABLED ?? "true").toLowerCase() !== "false",
-      shortlisted: gptShortlist.length,
-      cexLimit: GPT_CEX_LIMIT,
-      dexLimit: GPT_DEX_LIMIT,
-      concurrency: GPT_CONCURRENCY,
-      note: "GPT enriches a bounded shortlist; it never overrides hard eligibility.",
-    },
-    top20Overall,
-    top20Cex,
-    top20Dex,
-    emergingDexTrends,
-    researchQueue,
-    warnings: universe?.warnings ?? [],
-    errors: universe?.errors ?? [],
-    researchOnly: true,
-    executionAuthority: false,
-    liveExecution: false,
-    startedAt,
-    completedAt: new Date().toISOString(),
-  };
-
-  cache = { value: result, createdAt: Date.now() };
-  return result;
-}
-
-export async function getCryptoDiscoveryOverview({ refresh = false, refreshUniverse = false } = {}) {
-  const now = Date.now();
-  if (!refresh && cache?.value && now - cache.createdAt < CACHE_MS) {
-    return {
-      ...cache.value,
-      cache: { hit: true, ageMs: now - cache.createdAt },
-    };
+  for (const source of sources) {
+    if (
+      Array.isArray(source) &&
+      source.length > 0
+    ) {
+      return source;
+    }
   }
 
-  if (!refresh && inFlight) return inFlight;
-
-  inFlight = buildDiscovery({ refreshUniverse, refresh })
-    .then(value => ({ ...value, cache: { hit: false, ageMs: 0 } }))
-    .finally(() => { inFlight = null; });
-
-  return inFlight;
+  return [];
 }
 
-export function getCryptoDiscoveryCacheStatus() {
+
+function getSelectedCandidates(
+  cycle,
+) {
+  const sources = [
+    cycle?.selectedCandidates,
+    cycle?.selectedForDeepResearch,
+    cycle?.researchQueue,
+    cycle?.scanner?.selectedCandidates,
+    cycle?.scannerResult
+      ?.selectedCandidates,
+  ];
+
+  for (const source of sources) {
+    if (Array.isArray(source)) {
+      return source;
+    }
+  }
+
+  return [];
+}
+
+
+function normalizeUniverseSummary(
+  cycle,
+) {
+  const universe =
+    cycle?.universe ??
+    cycle?.universeResult ??
+    {};
+
+  const universeAssets =
+    array(
+      universe?.assets ??
+      cycle?.assets,
+    );
+
   return {
-    cached: Boolean(cache?.value),
-    ageMs: cache?.createdAt ? Date.now() - cache.createdAt : null,
-    ttlMs: CACHE_MS,
-    inFlight: Boolean(inFlight),
+    assetCount:
+      numberOrNull(
+        universe?.assetCount,
+      ) ??
+      numberOrNull(
+        universe?.count,
+      ) ??
+      universeAssets.length,
+
+    providers:
+      universe?.providers ??
+      {},
+
+    composition:
+      universe?.composition ??
+      {},
   };
 }
 
-export function clearCryptoDiscoveryCache() {
-  cache = null;
+
+function getMeasuredCount(
+  cycle,
+  candidates,
+) {
+  return (
+    numberOrNull(
+      cycle?.qualification
+        ?.measured,
+    ) ??
+    numberOrNull(
+      cycle?.measured,
+    ) ??
+    numberOrNull(
+      cycle?.scanner
+        ?.scanned,
+    ) ??
+    numberOrNull(
+      cycle?.scannerResult
+        ?.measured,
+    ) ??
+    candidates.length
+  );
 }
 
-export default getCryptoDiscoveryOverview;
+
+function normalizeGptSummary(
+  cycle,
+) {
+  const gpt =
+    cycle?.gpt ??
+    cycle?.gptIntelligence ??
+    cycle?.intelligence?.gpt ??
+    {};
+
+  const shortlisted =
+    numberOrNull(
+      gpt?.shortlisted,
+    ) ??
+    array(
+      gpt?.candidates,
+    ).length;
+
+  return {
+    enabled:
+      gpt?.enabled === true,
+
+    shortlisted,
+
+    cexLimit:
+      numberOrNull(
+        gpt?.cexLimit,
+      ) ??
+      numberOrNull(
+        process.env
+          .AEMA_DISCOVERY_GPT_CEX_LIMIT,
+      ) ??
+      8,
+
+    dexLimit:
+      numberOrNull(
+        gpt?.dexLimit,
+      ) ??
+      numberOrNull(
+        process.env
+          .AEMA_DISCOVERY_GPT_DEX_LIMIT,
+      ) ??
+      12,
+
+    concurrency:
+      numberOrNull(
+        gpt?.concurrency,
+      ) ??
+      numberOrNull(
+        process.env
+          .AEMA_DISCOVERY_GPT_CONCURRENCY,
+      ) ??
+      3,
+
+    note:
+      gpt?.note ??
+      "GPT enriches a bounded shortlist; it never overrides hard eligibility.",
+  };
+}
+
+
+function normalizeDiscoveryResult(
+  cycle,
+) {
+  const candidates =
+    rankCandidates(
+      getCycleCandidates(cycle),
+    );
+
+  const qualified =
+    candidates.filter(
+      isQualified,
+    );
+
+  const cexQualified =
+    qualified.filter(
+      candidate =>
+        normalizeCandidateType(
+          candidate,
+        ) === "CEX",
+    );
+
+  const dexQualified =
+    qualified.filter(
+      candidate =>
+        normalizeCandidateType(
+          candidate,
+        ) === "DEX",
+    );
+
+  const highInterest =
+    qualified.filter(
+      isHighInterest,
+    );
+
+  const selected =
+    rankCandidates(
+      getSelectedCandidates(cycle),
+    );
+
+  const top20Overall =
+    qualified
+      .slice(0, 20);
+
+  const topCex =
+    cexQualified
+      .slice(0, 20);
+
+  const topDex =
+    dexQualified
+      .slice(0, 20);
+
+  const universe =
+    normalizeUniverseSummary(
+      cycle,
+    );
+
+  const warnings = [
+    ...array(
+      cycle?.warnings,
+    ),
+
+    ...array(
+      cycle?.universe?.warnings,
+    ),
+  ];
+
+  const errors = [
+    ...array(
+      cycle?.errors,
+    ),
+
+    ...array(
+      cycle?.universe?.errors,
+    ),
+  ];
+
+
+  return {
+    approved:
+      cycle?.approved !== false,
+
+    status:
+      cycle?.status ??
+      (
+        errors.length > 0
+          ? "PARTIAL"
+          : "COMPLETE"
+      ),
+
+    pipeline:
+      "DISCOVERY_QUALIFICATION",
+
+    universe,
+
+    qualification: {
+      measured:
+        getMeasuredCount(
+          cycle,
+          candidates,
+        ),
+
+      qualified:
+        qualified.length,
+
+      cexQualified:
+        cexQualified.length,
+
+      dexQualified:
+        dexQualified.length,
+
+      highInterest:
+        highInterest.length,
+    },
+
+    gpt:
+      normalizeGptSummary(
+        cycle,
+      ),
+
+    top20Overall,
+
+    topCex,
+
+    topDex,
+
+    researchQueue:
+      selected.length > 0
+        ? selected
+        : top20Overall,
+
+    /*
+     * Preserve the complete ranked candidate set because
+     * other consumers may need more than the first 20.
+     */
+    candidates,
+
+    warnings,
+
+    errors,
+
+    generatedAt:
+      new Date().toISOString(),
+
+    researchOnly: true,
+
+    executionAuthority: false,
+
+    liveExecution: false,
+  };
+}
+
+
+/**
+ * ============================================================
+ * CACHE STATUS
+ * ============================================================
+ */
+
+export function getCryptoDiscoveryCacheStatus() {
+  const cached =
+    discoveryCache.result !== null;
+
+  return {
+    cached,
+
+    ageMs:
+      cached
+        ? Math.max(
+            0,
+            Date.now() -
+              discoveryCache.createdAt,
+          )
+        : null,
+
+    ttlMs:
+      DISCOVERY_CACHE_TTL_MS,
+
+    inFlight:
+      discoveryInFlight !== null,
+  };
+}
+
+
+/**
+ * ============================================================
+ * CLEAR CACHE
+ * ============================================================
+ */
+
+export function clearCryptoDiscoveryCache() {
+  discoveryCache = {
+    result: null,
+    createdAt: 0,
+  };
+
+  return {
+    approved: true,
+    status: "CACHE_CLEARED",
+  };
+}
+
+
+/**
+ * ============================================================
+ * GET DISCOVERY OVERVIEW
+ * ============================================================
+ */
+
+export async function getCryptoDiscoveryOverview({
+  refresh = false,
+  refreshUniverse = false,
+  maximumUniverseAssets = 1000,
+} = {}) {
+  const now =
+    Date.now();
+
+  const cacheAge =
+    now -
+    discoveryCache.createdAt;
+
+  const cacheValid =
+    discoveryCache.result !== null &&
+    cacheAge >= 0 &&
+    cacheAge <
+      DISCOVERY_CACHE_TTL_MS;
+
+
+  /*
+   * Return cache unless explicit refresh requested.
+   */
+
+  if (
+    refresh !== true &&
+    cacheValid
+  ) {
+    return discoveryCache.result;
+  }
+
+
+  /*
+   * If another request is already rebuilding Discovery,
+   * share the same Promise instead of running another
+   * expensive market scan.
+   */
+
+  if (discoveryInFlight) {
+    return discoveryInFlight;
+  }
+
+
+  discoveryInFlight =
+    (async () => {
+      try {
+        const cycle =
+          await runCryptoDiscoveryCycle({
+            refreshUniverse:
+              refreshUniverse === true ||
+              refresh === true,
+
+            maximumUniverseAssets:
+              Number.isFinite(
+                Number(
+                  maximumUniverseAssets,
+                ),
+              )
+                ? Math.max(
+                    1,
+                    Math.min(
+                      1000,
+                      Number(
+                        maximumUniverseAssets,
+                      ),
+                    ),
+                  )
+                : 1000,
+          });
+
+
+        const result =
+          normalizeDiscoveryResult(
+            cycle,
+          );
+
+
+        discoveryCache = {
+          result,
+          createdAt:
+            Date.now(),
+        };
+
+
+        return result;
+      } catch (error) {
+        /*
+         * Do not overwrite a previously valid cache with
+         * an error result.
+         */
+
+        console.error(
+          "[CRYPTO_DISCOVERY_SERVICE_ERROR]",
+          error,
+        );
+
+
+        if (
+          discoveryCache.result !== null
+        ) {
+          return {
+            ...discoveryCache.result,
+
+            status:
+              "STALE",
+
+            stale:
+              true,
+
+            staleReason:
+              error instanceof Error
+                ? error.message
+                : String(error),
+
+            researchOnly:
+              true,
+
+            executionAuthority:
+              false,
+
+            liveExecution:
+              false,
+          };
+        }
+
+
+        throw error;
+      } finally {
+        discoveryInFlight =
+          null;
+      }
+    })();
+
+
+  return discoveryInFlight;
+}
+
+
+export default {
+  getCryptoDiscoveryOverview,
+  getCryptoDiscoveryCacheStatus,
+  clearCryptoDiscoveryCache,
+};

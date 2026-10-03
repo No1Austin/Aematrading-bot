@@ -2,41 +2,31 @@
  * ============================================================
  * AEMA CRYPTO — DEX SCREENER PROVIDER
  * ============================================================
+ *
+ * DEX pair lookup and enrichment provider.
+ *
+ * NOTE:
+ * DEX Screener is an aggregator, not an execution venue.
  */
 
 const BASE =
   "https://api.dexscreener.com";
 
-async function fetchJson(
-  url,
-) {
-  const response =
-    await fetch(
-      url,
-      {
-        headers: {
-          accept:
-            "application/json",
-        },
-      },
-    );
-
-  if (!response.ok) {
-    throw new Error(
-      `DEX Screener ${response.status}: ${await response.text()}`,
-    );
+function numberOrNull(value) {
+  if (
+    value === null ||
+    value === undefined ||
+    value === ""
+  ) {
+    return null;
   }
 
-  return response.json();
-}
-
-function numberOrNull(
-  value,
-) {
   const number =
     Number(value);
 
-  return Number.isFinite(number)
+  return Number.isFinite(
+    number,
+  )
     ? number
     : null;
 }
@@ -44,7 +34,9 @@ function numberOrNull(
 function normalizeSymbol(
   value,
 ) {
-  return String(value ?? "")
+  return String(
+    value ?? "",
+  )
     .trim()
     .toUpperCase();
 }
@@ -52,19 +44,87 @@ function normalizeSymbol(
 function normalizeAddress(
   value,
 ) {
-  return String(value ?? "")
+  return String(
+    value ?? "",
+  )
     .trim()
     .toLowerCase();
 }
 
+async function fetchJson(
+  url,
+  {
+    timeoutMs = 12000,
+  } = {},
+) {
+  const controller =
+    new AbortController();
+
+  const timer =
+    setTimeout(
+      () =>
+        controller.abort(),
+      timeoutMs,
+    );
+
+  try {
+    const response =
+      await fetch(
+        url,
+        {
+          headers: {
+            accept:
+              "application/json",
+
+            "User-Agent":
+              "AEMA-Research/1.0",
+          },
+
+          signal:
+            controller.signal,
+        },
+      );
+
+    if (
+      !response.ok
+    ) {
+      const body =
+        await response
+          .text()
+          .catch(
+            () => "",
+          );
+
+      throw new Error(
+        `DEXSCREENER_HTTP_${response.status}:${body.slice(0, 200)}`,
+      );
+    }
+
+    return await response.json();
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 export async function searchDexPairs(
   query,
+  options = {},
 ) {
+  if (
+    !String(
+      query ??
+      "",
+    ).trim()
+  ) {
+    return [];
+  }
+
   const result =
     await fetchJson(
       `${BASE}/latest/dex/search?q=${encodeURIComponent(
         query,
       )}`,
+      options,
     );
 
   return Array.isArray(
@@ -74,10 +134,20 @@ export async function searchDexPairs(
     : [];
 }
 
-export async function getDexTokenPairs({
-  chainId,
-  tokenAddress,
-} = {}) {
+export async function getDexTokenPairs(
+  {
+    chainId,
+    tokenAddress,
+  } = {},
+  options = {},
+) {
+  if (
+    !chainId ||
+    !tokenAddress
+  ) {
+    return [];
+  }
+
   const result =
     await fetchJson(
       `${BASE}/token-pairs/v1/${encodeURIComponent(
@@ -85,9 +155,12 @@ export async function getDexTokenPairs({
       )}/${encodeURIComponent(
         tokenAddress,
       )}`,
+      options,
     );
 
-  return Array.isArray(result)
+  return Array.isArray(
+    result,
+  )
     ? result
     : [];
 }
@@ -130,7 +203,15 @@ export function normalizeDexPair(
       pair?.chainId ??
       null,
 
+    network:
+      pair?.chainId ??
+      null,
+
     pairAddress:
+      pair?.pairAddress ??
+      null,
+
+    poolAddress:
       pair?.pairAddress ??
       null,
 
@@ -180,6 +261,13 @@ export function normalizeDexPair(
           ?.usd,
       ),
 
+    reserveUsd:
+      numberOrNull(
+        pair
+          ?.liquidity
+          ?.usd,
+      ),
+
     volume24hUsd:
       numberOrNull(
         pair
@@ -202,6 +290,7 @@ export function normalizeDexPair(
       ),
 
     buys24h,
+
     sells24h,
 
     transactions24h:
@@ -244,8 +333,18 @@ export function normalizeDexPair(
 
     pairCreatedAt:
       numberOrNull(
-        pair?.pairCreatedAt,
+        pair
+          ?.pairCreatedAt,
       ),
+
+    poolCreatedAt:
+      pair?.pairCreatedAt
+        ? new Date(
+            Number(
+              pair.pairCreatedAt,
+            ),
+          ).toISOString()
+        : null,
 
     url:
       pair?.url ??
