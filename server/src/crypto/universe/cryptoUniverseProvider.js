@@ -41,6 +41,11 @@ function finite(value) {
   return Number.isFinite(n) ? n : 0;
 }
 
+function finiteOrNull(value) {
+  const n = Number(value);
+  return Number.isFinite(n) ? n : null;
+}
+
 function symbolKey(value) {
   return String(value ?? "")
     .trim()
@@ -105,6 +110,112 @@ function dedupe(rows) {
   return [...map.values()];
 }
 
+/**
+ * Build a fallback research asset from a CEX product.
+ *
+ * IMPORTANT:
+ * - This does not invent CoinGecko fundamentals.
+ * - marketCap remains unavailable unless another provider supplies it.
+ * - The asset is explicitly identified as CEX-derived.
+ */
+function buildCexFallbackAsset({
+  symbol,
+  venueRows,
+  startedAt,
+}) {
+  const normalizedSymbol =
+    symbolKey(symbol);
+
+  if (!normalizedSymbol) {
+    return null;
+  }
+
+  const rows =
+    Array.isArray(venueRows)
+      ? venueRows
+      : [];
+
+  const preferred =
+    rows.find(
+      row =>
+        String(
+          row?.exchange ??
+          row?.venue ??
+          "",
+        ).toUpperCase() ===
+        "COINBASE",
+    ) ??
+    rows[0] ??
+    null;
+
+  const market =
+    preferred?.market ??
+    {};
+
+  const priceUsd =
+    finiteOrNull(
+      market?.price ??
+      preferred?.priceUsd ??
+      preferred?.price,
+    );
+
+  const volume24hUsd =
+    finiteOrNull(
+      market?.quoteVolume ??
+      preferred?.volume24hUsd ??
+      preferred?.quoteVolumeUsd,
+    );
+
+  const change24hPercent =
+    finiteOrNull(
+      market?.priceChangePercent ??
+      preferred?.change24hPercent,
+    );
+
+  return {
+    assetId:
+      `cex:${normalizedSymbol.toLowerCase()}`,
+
+    symbol:
+      normalizedSymbol,
+
+    name:
+      preferred?.name ??
+      preferred?.baseAsset ??
+      normalizedSymbol,
+
+    priceUsd,
+    volume24hUsd,
+    change24hPercent,
+
+    // These values are not safely derivable here.
+    marketCapUsd: null,
+    change1hPercent: null,
+    change7dPercent: null,
+
+    tradable:
+      rows.length > 0,
+
+    venues:
+      summarizeVenues(rows),
+
+    universeSource:
+      "CEX_FALLBACK",
+
+    marketDataSource:
+      preferred?.exchange ??
+      preferred?.venue ??
+      null,
+
+    discoveredAt:
+      startedAt,
+
+    researchOnly: true,
+    executionAuthority: false,
+    liveExecution: false,
+  };
+}
+
 export function clearCryptoUniverseCache() {
   cache = null;
 }
@@ -156,6 +267,12 @@ export async function getCryptoUniverse({
   let krakenPairs = [];
   let dexAssets = [];
 
+  /*
+   * ------------------------------------------------------------
+   * COINGECKO
+   * ------------------------------------------------------------
+   */
+
   try {
     marketRows = (
       await getCoinGeckoMarkets({
@@ -167,10 +284,16 @@ export async function getCryptoUniverse({
       normalizeCoinGeckoMarket,
     );
   } catch (error) {
-    errors.push(
-      `CoinGecko: ${error.message}`,
+    warnings.push(
+      `CoinGecko market discovery unavailable: ${error.message}`,
     );
   }
+
+  /*
+   * ------------------------------------------------------------
+   * COINBASE
+   * ------------------------------------------------------------
+   */
 
   try {
     coinbaseProducts = (
@@ -183,6 +306,12 @@ export async function getCryptoUniverse({
       `Coinbase venue discovery unavailable: ${error.message}`,
     );
   }
+
+  /*
+   * ------------------------------------------------------------
+   * KRAKEN
+   * ------------------------------------------------------------
+   */
 
   try {
     const raw =
@@ -204,6 +333,12 @@ export async function getCryptoUniverse({
     );
   }
 
+  /*
+   * ------------------------------------------------------------
+   * DEX DISCOVERY
+   * ------------------------------------------------------------
+   */
+
   if (includeDexDiscovery) {
     try {
       const discovery =
@@ -214,9 +349,16 @@ export async function getCryptoUniverse({
         });
 
       dexAssets =
-        discovery.assets;
+        Array.isArray(
+          discovery?.assets,
+        )
+          ? discovery.assets
+          : [];
 
-      for (const item of discovery.errors) {
+      for (
+        const item of
+        discovery?.errors ?? []
+      ) {
         warnings.push(
           `DEX discovery ${item.network}: ${item.error}`,
         );
@@ -228,37 +370,122 @@ export async function getCryptoUniverse({
     }
   }
 
+  /*
+   * ------------------------------------------------------------
+   * BUILD CEX VENUE INDEX
+   * ------------------------------------------------------------
+   */
+
   const venueIndex =
     buildVenueIndex({
       coinbaseProducts,
       krakenPairs,
     });
 
-  const broadAssets =
-    marketRows.map(market => {
-      const symbol =
-        symbolKey(market.symbol);
+  /*
+   * ------------------------------------------------------------
+   * PRIMARY COINGECKO ASSETS
+   * ------------------------------------------------------------
+   */
 
-      const venues =
-        venueIndex.get(symbol) ??
-        [];
+  const broadAssetMap =
+    new Map();
 
-      return {
+  for (const market of marketRows) {
+    const symbol =
+      symbolKey(market?.symbol);
+
+    if (!symbol) {
+      continue;
+    }
+
+    const venues =
+      venueIndex.get(symbol) ??
+      [];
+
+    broadAssetMap.set(
+      symbol,
+      {
         ...market,
+
         symbol,
+
         tradable:
           venues.length > 0,
+
         venues:
-          summarizeVenues(venues),
+          summarizeVenues(
+            venues,
+          ),
+
+        universeSource:
+          "COINGECKO",
+
         discoveredAt:
           startedAt,
-      };
-    });
+      },
+    );
+  }
 
   /*
-   * Reserve capacity for DEX discovery BEFORE the final
-   * universe is truncated.
+   * ------------------------------------------------------------
+   * CEX FALLBACK ASSETS
+   * ------------------------------------------------------------
+   *
+   * Previously Coinbase and Kraken were only venue enrichment.
+   * That meant a CoinGecko failure reduced the CEX universe to 0.
+   *
+   * Now every symbol known to the CEX venue index can become a
+   * research-universe asset if CoinGecko did not already provide it.
    */
+
+  let cexFallbackAssets = 0;
+
+  for (
+    const [symbol, venueRows]
+    of venueIndex.entries()
+  ) {
+    const normalizedSymbol =
+      symbolKey(symbol);
+
+    if (
+      !normalizedSymbol ||
+      broadAssetMap.has(
+        normalizedSymbol,
+      )
+    ) {
+      continue;
+    }
+
+    const fallback =
+      buildCexFallbackAsset({
+        symbol:
+          normalizedSymbol,
+        venueRows,
+        startedAt,
+      });
+
+    if (!fallback) {
+      continue;
+    }
+
+    broadAssetMap.set(
+      normalizedSymbol,
+      fallback,
+    );
+
+    cexFallbackAssets += 1;
+  }
+
+  const broadAssets =
+    [...broadAssetMap.values()];
+
+  /*
+   * ------------------------------------------------------------
+   * DEX RESERVATION
+   * ------------------------------------------------------------
+   */
+
   const rankedDex =
     dedupe(dexAssets)
       .sort(
@@ -322,25 +549,59 @@ export async function getCryptoUniverse({
       maximumAssets,
     );
 
+  /*
+   * ------------------------------------------------------------
+   * STATUS
+   * ------------------------------------------------------------
+   */
+
+  const allPrimaryProvidersFailed =
+    marketRows.length === 0 &&
+    coinbaseProducts.length === 0 &&
+    krakenPairs.length === 0 &&
+    dexAssets.length === 0;
+
+  if (allPrimaryProvidersFailed) {
+    errors.push(
+      "All crypto universe providers returned no usable assets.",
+    );
+  }
+
   const status =
     assets.length === 0
       ? errors.length > 0
         ? CRYPTO_UNIVERSE_STATUS.ERROR
         : CRYPTO_UNIVERSE_STATUS.EMPTY
-      : errors.length > 0 ||
-          warnings.length > 0
+      : warnings.length > 0 ||
+          errors.length > 0
         ? CRYPTO_UNIVERSE_STATUS.PARTIAL
         : CRYPTO_UNIVERSE_STATUS.COMPLETE;
 
+  /*
+   * ------------------------------------------------------------
+   * CACHE
+   * ------------------------------------------------------------
+   */
+
   cache = {
-    approved: assets.length > 0,
+    approved:
+      assets.length > 0,
+
     status,
-    assetCount: assets.length,
+
+    assetCount:
+      assets.length,
+
     assets,
 
     composition: {
       broadAssets:
         selectedBroad.length,
+
+      coinGeckoBroadAssets:
+        marketRows.length,
+
+      cexFallbackAssets,
 
       reservedDexAssets:
         selectedDex.length,
@@ -352,7 +613,8 @@ export async function getCryptoUniverse({
         assets.filter(
           asset =>
             (
-              asset?.venues?.dexCount ??
+              asset?.venues
+                ?.dexCount ??
               0
             ) > 0,
         ).length,
@@ -361,10 +623,13 @@ export async function getCryptoUniverse({
     providers: {
       coinGecko:
         marketRows.length,
+
       coinbase:
         coinbaseProducts.length,
+
       kraken:
         krakenPairs.length,
+
       dexNewPools:
         dexAssets.length,
     },
@@ -373,6 +638,7 @@ export async function getCryptoUniverse({
     warnings,
 
     startedAt,
+
     generatedAt:
       new Date().toISOString(),
   };
