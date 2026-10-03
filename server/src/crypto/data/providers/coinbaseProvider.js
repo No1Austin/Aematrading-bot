@@ -1,133 +1,25 @@
-/**
- * AEMA Coinbase public market-data adapter.
- * Research/data only: no authentication, orders, custody or execution.
- */
-const BASE = process.env.AEMA_COINBASE_MARKET_BASE_URL || "https://api.coinbase.com/api/v3/brokerage";
-
-const finite = (value) => {
-  const n = Number(value);
-  return Number.isFinite(n) ? n : null;
-};
-
-async function fetchJson(url, timeoutMs = 12000) {
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), timeoutMs);
-  try {
-    const response = await fetch(url, {
-      signal: controller.signal,
-      headers: { accept: "application/json", "cache-control": "no-cache" },
-    });
-    if (!response.ok) {
-      throw new Error(`COINBASE_HTTP_${response.status}:${new URL(url).pathname}`);
-    }
-    return await response.json();
-  } finally {
-    clearTimeout(timer);
-  }
+/** Shared public Coinbase Exchange market-data adapter. No API key required. */
+const BASE = process.env.COINBASE_EXCHANGE_BASE_URL || "https://api.exchange.coinbase.com";
+const num=v=>{const n=Number(v);return Number.isFinite(n)?n:null};
+async function getJson(path,{timeoutMs=12000}={}){const c=new AbortController(),t=setTimeout(()=>c.abort(),timeoutMs);try{const r=await fetch(`${BASE}${path}`,{headers:{Accept:"application/json","User-Agent":"AEMA-Research/1.0"},signal:c.signal});if(!r.ok)throw new Error(`COINBASE_HTTP_${r.status}:${path}`);return await r.json();}finally{clearTimeout(t)}}
+const parts=id=>String(id||"").toUpperCase().split("-");
+let enrichedProductsCache={at:0,rows:[]};
+export async function listCoinbaseProducts(options={}){
+  if(Date.now()-enrichedProductsCache.at<60000&&enrichedProductsCache.rows.length)return enrichedProductsCache.rows;
+  const rows=await getJson("/products",options);
+  if(!Array.isArray(rows))throw new Error("COINBASE_PRODUCTS_INVALID_RESPONSE");
+  const eligible=rows.filter(p=>(!p?.status||p.status==="online")&&["USD","USDC","USDT"].includes(String(p?.quote_currency||"").toUpperCase()));
+  const out=new Array(eligible.length); let cursor=0;
+  async function worker(){while(cursor<eligible.length){const i=cursor++,p=eligible[i];try{const [ticker,stats]=await Promise.all([getJson(`/products/${encodeURIComponent(p.id)}/ticker`,options),getJson(`/products/${encodeURIComponent(p.id)}/stats`,options)]);out[i]={...p,_ticker:ticker,_stats:stats};}catch{out[i]=p}}}
+  await Promise.all(Array.from({length:Math.min(10,eligible.length)},()=>worker()));
+  enrichedProductsCache={at:Date.now(),rows:out.filter(Boolean)};
+  return enrichedProductsCache.rows;
 }
-
-export async function listCoinbaseProducts(options = {}) {
-  const timeoutMs = Number(options.timeoutMs || 12000);
-  const result = await fetchJson(`${BASE}/market/products`, timeoutMs);
-  return Array.isArray(result?.products) ? result.products : [];
-}
-
-export function normalizeCoinbaseProduct(product) {
-  const productId = product?.product_id ?? null;
-  const [fallbackBase, fallbackQuote] = String(productId ?? "").split("-");
-  const price = finite(product?.price);
-  const bid = finite(product?.best_bid);
-  const ask = finite(product?.best_ask);
-  const midpoint = bid > 0 && ask > 0 ? (bid + ask) / 2 : price;
-  const spreadPercent = midpoint > 0 && bid > 0 && ask > 0
-    ? ((ask - bid) / midpoint) * 100
-    : null;
-  const baseVolume = finite(product?.volume_24h);
-  const quoteVolume = finite(product?.approximate_quote_24h_volume)
-    ?? (baseVolume !== null && price !== null ? baseVolume * price : null);
-
-  return {
-    exchange: "COINBASE",
-    source: "COINBASE_ADVANCED_PUBLIC",
-    venueType: "CEX",
-    productId,
-    symbol: productId,
-    baseAsset: product?.base_currency_id ?? product?.base_name ?? fallbackBase ?? null,
-    quoteAsset: product?.quote_currency_id ?? product?.quote_name ?? fallbackQuote ?? null,
-    // Legacy aliases used by the broader crypto venue resolver.
-    base: product?.base_currency_id ?? product?.base_name ?? fallbackBase ?? null,
-    quote: product?.quote_currency_id ?? product?.quote_name ?? fallbackQuote ?? null,
-    status: ["OFFLINE", "DELISTED"].includes(String(product?.status ?? "").toUpperCase())
-      ? "OFFLINE"
-      : "TRADING",
-    contractType: "SPOT",
-    instrumentType: "SPOT",
-    tradable: !["OFFLINE", "DELISTED"].includes(String(product?.status ?? "").toUpperCase()),
-    price,
-    volume24h: baseVolume,
-    priceChange24hPercent: finite(product?.price_percentage_change_24h),
-    market: {
-      price,
-      bid,
-      ask,
-      bidQty: null,
-      askQty: null,
-      spreadPercent,
-      quoteVolume,
-      priceChangePercent: finite(product?.price_percentage_change_24h),
-      highPrice: null,
-      lowPrice: null,
-      rangePercent: null,
-      tradeCount24h: null,
-    },
-    raw: product,
-    observedAt: new Date().toISOString(),
-    executionAuthority: false,
-    liveExecution: false,
-  };
-}
-
-export async function getCoinbaseProduct(productId, options = {}) {
-  if (!productId) throw new Error("COINBASE_PRODUCT_ID_REQUIRED");
-  return fetchJson(`${BASE}/market/products/${encodeURIComponent(productId)}`, Number(options.timeoutMs || 12000));
-}
-
-export async function getCoinbaseProductBook(productId, options = {}) {
-  if (!productId) throw new Error("COINBASE_PRODUCT_ID_REQUIRED");
-  const limit = Math.max(1, Math.min(1000, Number(options.limit || 100)));
-  return fetchJson(`${BASE}/market/product_book?product_id=${encodeURIComponent(productId)}&limit=${limit}`, Number(options.timeoutMs || 12000));
-}
-
-const GRANULARITY = Object.freeze({
-  "1m": "ONE_MINUTE",
-  "5m": "FIVE_MINUTE",
-  "15m": "FIFTEEN_MINUTE",
-  "30m": "THIRTY_MINUTE",
-  "1h": "ONE_HOUR",
-  "2h": "TWO_HOUR",
-  "4h": "FOUR_HOUR",
-  "6h": "SIX_HOUR",
-  "1d": "ONE_DAY",
-});
-
-export async function getCoinbaseCandles(productId, options = {}) {
-  if (!productId) throw new Error("COINBASE_PRODUCT_ID_REQUIRED");
-  const interval = options.interval || "15m";
-  const granularity = GRANULARITY[interval];
-  if (!granularity) throw new Error(`COINBASE_UNSUPPORTED_CANDLE_INTERVAL:${interval}`);
-  const limit = Math.max(2, Math.min(350, Number(options.limit || 96)));
-  const secondsByInterval = { "1m":60,"5m":300,"15m":900,"30m":1800,"1h":3600,"2h":7200,"4h":14400,"6h":21600,"1d":86400 };
-  const end = Math.floor(Date.now() / 1000);
-  const start = end - secondsByInterval[interval] * (limit + 2);
-  const url = `${BASE}/market/products/${encodeURIComponent(productId)}/candles?start=${start}&end=${end}&granularity=${granularity}&limit=${limit}`;
-  const result = await fetchJson(url, Number(options.timeoutMs || 12000));
-  return Array.isArray(result?.candles) ? result.candles : [];
-}
-
-export default {
-  listCoinbaseProducts,
-  normalizeCoinbaseProduct,
-  getCoinbaseProduct,
-  getCoinbaseProductBook,
-  getCoinbaseCandles,
-};
+export function normalizeCoinbaseProduct(p={}){const [baseFromId,quoteFromId]=parts(p.id??p.product_id);const price=num(p?._ticker?.price??p.price),bid=num(p?._ticker?.bid),ask=num(p?._ticker?.ask),volume=num(p?._stats?.volume??p.volume_24h),open=num(p?._stats?.open),high=num(p?._stats?.high),low=num(p?._stats?.low),quoteVolume=price!==null&&volume!==null?price*volume:null;const change=open>0&&price!==null?((price-open)/open)*100:num(p.price_percentage_change_24h);return{symbol:p.id??p.product_id,productId:p.id??p.product_id,baseAsset:p.base_currency??p.base_currency_id??baseFromId,quoteAsset:p.quote_currency??p.quote_currency_id??quoteFromId,status:(p.status??"").toLowerCase()==="online"||!p.status?"TRADING":String(p.status).toUpperCase(),contractType:"SPOT",marginAsset:null,pricePrecision:null,quantityPrecision:null,market:{price,bid,ask,bidQty:null,askQty:null,spreadPercent:bid>0&&ask>0?((ask-bid)/((ask+bid)/2))*100:null,quoteVolume,priceChangePercent:change,highPrice:high,lowPrice:low,rangePercent:price>0&&high>0&&low>0?((high-low)/price)*100:null,tradeCount24h:null},source:"COINBASE_EXCHANGE_PUBLIC",instrumentType:"SPOT",observedAt:new Date().toISOString(),executionAuthority:false,liveExecution:false}}
+export async function getCoinbaseProduct(productId,options={}){const id=await resolveCoinbaseProductId(productId,options);const [ticker,stats]=await Promise.all([getJson(`/products/${encodeURIComponent(id)}/ticker`,options),getJson(`/products/${encodeURIComponent(id)}/stats`,options)]);return{product:{id,product_id:id,price:ticker?.price,best_bid:ticker?.bid,best_ask:ticker?.ask,volume_24h:stats?.volume,high_24h:stats?.high,low_24h:stats?.low,open_24h:stats?.open},ticker,stats}}
+export async function getCoinbaseProductBook(productId,{level=2,...options}={}){const id=await resolveCoinbaseProductId(productId,options);return getJson(`/products/${encodeURIComponent(id)}/book?level=${level}`,options)}
+const granularity={"1m":60,"5m":300,"15m":900,"30m":1800,"1h":3600,"2h":7200,"6h":21600,"1d":86400};
+export async function getCoinbaseCandles(productId,{interval="5m",limit=100,...options}={}){const id=await resolveCoinbaseProductId(productId,options),g=granularity[interval]||300,end=Math.floor(Date.now()/1000),start=end-Math.min(300,Math.max(2,Number(limit)||100))*g;const rows=await getJson(`/products/${encodeURIComponent(id)}/candles?granularity=${g}&start=${new Date(start*1000).toISOString()}&end=${new Date(end*1000).toISOString()}`,options);return(Array.isArray(rows)?rows:[]).slice(0,limit).map(r=>({start:r[0],low:r[1],high:r[2],open:r[3],close:r[4],volume:r[5]}))}
+let productCache={at:0,rows:[]};
+export async function resolveCoinbaseProductId(symbol,options={}){const raw=String(symbol||"").toUpperCase();if(raw.includes("-"))return raw;if(Date.now()-productCache.at>300000||!productCache.rows.length){productCache={at:Date.now(),rows:await getJson("/products",options)}}const preferred=["USDT","USDC","USD"];for(const q of preferred){const suffix=q;const base=raw.endsWith(suffix)?raw.slice(0,-suffix.length):raw;const id=`${base}-${q}`;if(productCache.rows.some(x=>x.id===id&&(!x.status||x.status==="online")))return id}const hit=productCache.rows.find(x=>String(x.id||"").replace("-","")===raw&&(!x.status||x.status==="online"));if(hit)return hit.id;throw new Error(`COINBASE_PRODUCT_NOT_FOUND:${raw}`)}
+export default{listCoinbaseProducts,normalizeCoinbaseProduct,getCoinbaseProduct,getCoinbaseProductBook,getCoinbaseCandles,resolveCoinbaseProductId};

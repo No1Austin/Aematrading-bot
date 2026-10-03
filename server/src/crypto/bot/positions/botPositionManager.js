@@ -14,19 +14,17 @@ import evaluateBotTradingConsistency from "../consistency/botTradingConsistencyE
 import recordClosedTradeToMemory from "../learning/botTradeResultRecorder.js";
 
 import getBotFuturesExecutionMarket from "../market/botFuturesExecutionMarketProvider.js";
+import {getCoinbaseProduct,resolveCoinbaseProductId} from "../../data/providers/coinbaseProvider.js";
 
 
-
-const BASE=process.env.AEMA_BOT_BINANCE_FUTURES_BASE_URL||"https://fapi.binance.com";
 
 async function getBook(symbol){
-
-  const r=await fetch(`${BASE}/fapi/v1/ticker/bookTicker?symbol=${encodeURIComponent(symbol)}`);
-
-  if(!r.ok) throw new Error(`BINANCE_HTTP_${r.status}:bookTicker`);
-
-  const x=await r.json(); return {bid:Number(x.bidPrice),ask:Number(x.askPrice)};
-
+  const productId=await resolveCoinbaseProductId(symbol);
+  const p=await getCoinbaseProduct(productId);
+  const t=p?.ticker??{};
+  const bid=Number(t.bid),ask=Number(t.ask);
+  if(!(bid>0&&ask>0))throw new Error(`COINBASE_INVALID_BOOK:${productId}`);
+  return {bid,ask,productId};
 }
 
 const pnl=(p,px,qty=p.quantity)=>p.direction==="LONG"?(px-p.entryPrice)*qty:(p.entryPrice-px)*qty;
