@@ -40,6 +40,7 @@
   "type": "module",
   "dependencies": {
     "@api/alpaca-us": "file:.api/apis/alpaca-us",
+    "@supabase/supabase-js": "^2.117.2",
     "axios": "^1.19.0",
     "cheerio": "^1.2.0",
     "cors": "^2.8.6",
@@ -47,6 +48,7 @@
     "express": "^5.2.1",
     "openai": "^7.18.0",
     "rss-parser": "^3.13.0",
+    "stripe": "^23.0.0",
     "technicalindicators": "^3.1.0",
     "ws": "^8.21.3",
     "zod": "^4.4.3"
