@@ -4,16 +4,16 @@
  */
 export const BOT_CONFIG = Object.freeze({
   universe: {
-    exchange: "BINANCE_USDM",
-    quoteAssets: ["USDT", "USDC"],
-    contractType: "PERPETUAL",
+    exchange: "COINBASE",
+    quoteAssets: ["USD", "USDC", "USDT"],
+    contractType: "SPOT",
     maximumSymbols: 1000,
     timeoutMs: 12000,
   },
 
   eligibility: {
     requireTradingStatus: true,
-    requirePerpetual: true,
+    requirePerpetual: false,
     requireValidPrice: true,
     requireMarketData: true,
     minimumPrice: 0,

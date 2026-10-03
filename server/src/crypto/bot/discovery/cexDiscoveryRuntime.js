@@ -25,7 +25,7 @@ export async function runCexDiscoveryCycle(options={}){
   busy=true;state.busy=true;state.lastStartedAt=new Date().toISOString();cycle++;state.cycle=cycle;
   event(`Starting CEX discovery cycle #${cycle}`,"cycle");
   try{
-    const universe=await getBotFuturesUniverse(options.universe); event(`${universe.assets.length} CEX futures instruments discovered`);
+    const universe=await getBotFuturesUniverse(options.universe); event(`${universe.assets.length} Coinbase CEX instruments discovered`);
     const eligibility=filterBotHardEligibleAssets(universe.assets,options.eligibility); event(`${eligibility.approved.length} passed market eligibility`);
     const filtered=rankBotOpportunities(eligibility.approved,options.opportunity); event(`Market filters completed · ${filtered.qualified.length} qualified by volume, liquidity, volatility, momentum and activity`);
     const top20=filtered.topCandidates.slice(0,20).map((row,index)=>({rank:index+1,symbol:row.asset.symbol,baseAsset:row.asset.baseAsset,quoteAsset:row.asset.quoteAsset,
@@ -39,7 +39,7 @@ export async function runCexDiscoveryCycle(options={}){
       catch(error){failures.push({symbol:candidate.symbol,error:error?.message||String(error)})}}
     const execution=rankBotExecutionSetups(setups,options.executionRanking);
     const learned=applyTradeLearning(execution.executable,options.learning);
-    const bestFive=learned.ranked.slice(0,5).map(compact); event(`${bestFive.length} best executable setups selected`,"accent");
+    const bestFive=learned.ranked.slice(0,5).map(compact); event(`${bestFive.length} best research setups selected`,"accent");
     bestFive.forEach((x,i)=>event(`#${i+1} ${x.symbol} · ${x.direction} · R:R ${Number(x.riskReward||0).toFixed(2)}`,"candidate",{symbol:x.symbol}));
     const strongest=bestFive[0]||null;if(strongest)event(`${strongest.symbol} · ${strongest.direction} · strongest current setup`,"success");
     state.snapshot={cycle,startedAt:state.lastStartedAt,completedAt:new Date().toISOString(),counts:{universe:universe.assets.length,marketEligible:eligibility.approved.length,

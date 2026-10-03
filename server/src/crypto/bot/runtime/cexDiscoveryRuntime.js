@@ -527,7 +527,7 @@ export async function runCexDiscoveryCycle(
       "UNIVERSE",
       `${
         state.counts.universe
-      } CEX futures instruments discovered`,
+      } Coinbase CEX instruments discovered`,
     );
 
 
@@ -896,7 +896,7 @@ export async function runCexDiscoveryCycle(
       "BEST_5",
       `${
         bestFive.length
-      } best executable setups selected`,
+      } best research setups selected`,
       {
         candidates:
           state.bestSetups,

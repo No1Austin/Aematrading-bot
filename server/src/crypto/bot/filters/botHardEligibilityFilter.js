@@ -38,6 +38,11 @@ export function evaluateBotHardEligibility(asset, options = {}) {
     blockers.push("NOT_PERPETUAL_FUTURES");
   }
 
+  // Research-only CEX discovery may use spot instruments. Never relabel spot as futures.
+  if (!config.requirePerpetual && !["SPOT", "PERPETUAL"].includes(String(asset?.contractType || "").toUpperCase())) {
+    blockers.push("UNSUPPORTED_RESEARCH_INSTRUMENT");
+  }
+
   if (
     config.requireValidPrice &&
     !(positive(market.price) > config.minimumPrice)

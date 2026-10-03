@@ -1,80 +1,74 @@
 /**
- * Phase 2 research evidence provider for Top-20 only.
- * Pulls candles, depth, mark/funding and open interest from Binance USD-M.
- * Evidence provider only; no trade authority.
+ * AEMA research evidence provider backed by Coinbase public market data.
+ * Legacy filename/contracts retained. Missing derivatives-only evidence
+ * (funding/open interest) is explicitly null and never fabricated.
  */
 import BOT_CONFIG from "../config/botConfig.js";
+import { getCoinbaseCandles, getCoinbaseProduct, getCoinbaseProductBook } from "../../data/providers/coinbaseProvider.js";
 
-const BASE_URL =
-  process.env.AEMA_BOT_BINANCE_FUTURES_BASE_URL ||
-  "https://fapi.binance.com";
+const num = (v) => { const n = Number(v); return Number.isFinite(n) ? n : null; };
 
-const num = (v) => {
-  const n = Number(v);
-  return Number.isFinite(n) ? n : null;
-};
-
-async function getJson(path, timeoutMs) {
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), timeoutMs);
-  try {
-    const response = await fetch(`${BASE_URL}${path}`, {
-      signal: controller.signal,
-      headers: { Accept: "application/json" },
-    });
-    if (!response.ok) throw new Error(`BINANCE_HTTP_${response.status}:${path}`);
-    return await response.json();
-  } finally {
-    clearTimeout(timer);
-  }
+function normalizeCandles(rows = []) {
+  return rows
+    .map((c) => {
+      const close = num(c?.close);
+      const volume = num(c?.volume);
+      const start = num(c?.start);
+      return {
+        openTime: start !== null ? start * 1000 : null,
+        open: num(c?.open), high: num(c?.high), low: num(c?.low), close,
+        volume,
+        closeTime: start !== null ? start * 1000 : null,
+        quoteVolume: close !== null && volume !== null ? close * volume : null,
+        trades: null,
+      };
+    })
+    .filter((x) => x.open > 0 && x.high > 0 && x.low > 0 && x.close > 0)
+    .sort((a,b) => a.openTime - b.openTime);
 }
 
-function normalizeKlines(rows = []) {
-  return rows.map((k) => ({
-    openTime: num(k[0]), open: num(k[1]), high: num(k[2]), low: num(k[3]),
-    close: num(k[4]), volume: num(k[5]), closeTime: num(k[6]),
-    quoteVolume: num(k[7]), trades: num(k[8]),
-  })).filter((x) => x.open > 0 && x.high > 0 && x.low > 0 && x.close > 0);
-}
-
-function normalizeDepth(depth) {
-  const bids = (depth?.bids || []).map(([p,q]) => ({ price:num(p), qty:num(q) }))
-    .filter(x => x.price > 0 && x.qty > 0);
-  const asks = (depth?.asks || []).map(([p,q]) => ({ price:num(p), qty:num(q) }))
-    .filter(x => x.price > 0 && x.qty > 0);
+function normalizeDepth(result) {
+  const book = result?.pricebook ?? result ?? {};
+  const map = (rows = []) => rows.map((x) => ({
+    price: num(Array.isArray(x) ? x[0] : x?.price),
+    qty: num(Array.isArray(x) ? x[1] : (x?.size ?? x?.qty)),
+  })).filter((x) => x.price > 0 && x.qty > 0);
+  const bids = map(book?.bids);
+  const asks = map(book?.asks);
   const bidNotional = bids.reduce((s,x)=>s+x.price*x.qty,0);
   const askNotional = asks.reduce((s,x)=>s+x.price*x.qty,0);
-  return {
-    bids, asks, bidNotional, askNotional,
-    totalNotional: bidNotional + askNotional,
-    imbalance: (bidNotional + askNotional) > 0
-      ? (bidNotional - askNotional) / (bidNotional + askNotional) : 0,
-  };
+  const totalNotional = bidNotional + askNotional;
+  return { bids, asks, bidNotional, askNotional, totalNotional,
+    imbalance: totalNotional > 0 ? (bidNotional - askNotional) / totalNotional : 0 };
 }
 
 export async function getBotResearchMarketEvidence(asset, options = {}) {
   const cfg = { ...BOT_CONFIG.research, ...options };
-  const symbol = asset?.symbol;
-  if (!symbol) throw new Error("BOT_RESEARCH_SYMBOL_REQUIRED");
+  const productId = asset?.productId ?? asset?.symbol;
+  if (!productId) throw new Error("BOT_RESEARCH_SYMBOL_REQUIRED");
 
-  const [klines, depth, premium, oi] = await Promise.all([
-    getJson(`/fapi/v1/klines?symbol=${encodeURIComponent(symbol)}&interval=${cfg.candleInterval}&limit=${cfg.candleLimit}`, cfg.timeoutMs),
-    getJson(`/fapi/v1/depth?symbol=${encodeURIComponent(symbol)}&limit=${cfg.depthLimit}`, cfg.timeoutMs),
-    getJson(`/fapi/v1/premiumIndex?symbol=${encodeURIComponent(symbol)}`, cfg.timeoutMs),
-    getJson(`/fapi/v1/openInterest?symbol=${encodeURIComponent(symbol)}`, cfg.timeoutMs),
+  const [rawCandles, rawBook, product] = await Promise.all([
+    getCoinbaseCandles(productId, { interval: cfg.candleInterval, limit: cfg.candleLimit, timeoutMs: cfg.timeoutMs }),
+    getCoinbaseProductBook(productId, { limit: cfg.depthLimit, timeoutMs: cfg.timeoutMs }),
+    getCoinbaseProduct(productId, { timeoutMs: cfg.timeoutMs }),
   ]);
+  const p = product?.product ?? product;
 
   return {
-    symbol,
-    candles: normalizeKlines(klines),
-    depth: normalizeDepth(depth),
-    markPrice: num(premium?.markPrice),
-    indexPrice: num(premium?.indexPrice),
-    fundingRate: num(premium?.lastFundingRate),
-    nextFundingTime: num(premium?.nextFundingTime),
-    openInterest: num(oi?.openInterest),
+    symbol: asset?.symbol ?? productId,
+    productId,
+    candles: normalizeCandles(rawCandles),
+    depth: normalizeDepth(rawBook),
+    markPrice: num(p?.price),
+    indexPrice: null,
+    fundingRate: null,
+    nextFundingTime: null,
+    openInterest: null,
+    derivativesEvidenceAvailable: false,
+    derivativesEvidenceReason: "COINBASE_SPOT_MARKET_HAS_NO_FUNDING_OR_OPEN_INTEREST",
     observedAt: new Date().toISOString(),
-    source: "BINANCE_USDM",
+    source: "COINBASE_ADVANCED_PUBLIC",
+    instrumentType: "SPOT",
     executionAuthority: false,
     liveExecution: false,
   };
