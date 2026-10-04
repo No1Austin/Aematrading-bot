@@ -1,4 +1,9 @@
 import {
+  getCoinLoreGlobal,
+  getCoinLoreMarkets,
+  buildCoinLoreSymbolIndex,
+} from "../data/providers/coinLoreProvider.js";
+import {
   getCoinGeckoMarkets,
   normalizeCoinGeckoMarket,
 } from "../data/providers/coinGeckoProvider.js";
@@ -7,25 +12,19 @@ import {
   listCoinbaseProducts,
   normalizeCoinbaseProduct,
 } from "../data/providers/coinbaseProvider.js";
-
 import {
   listKrakenMarkets,
 } from "../data/providers/krakenProvider.js";
-
 import {
   buildVenueIndex,
   summarizeVenues,
 } from "./cryptoVenueResolver.js";
-
 import {
   discoverDexAssets,
 } from "./cryptoDexDiscoveryService.js";
-
 import {
   CRYPTO_SCANNER_CONFIG,
 } from "../scanner/cryptoScannerConfig.js";
-
-
 export const CRYPTO_UNIVERSE_STATUS =
   Object.freeze({
     COMPLETE: "COMPLETE",
@@ -33,17 +32,12 @@ export const CRYPTO_UNIVERSE_STATUS =
     EMPTY: "EMPTY",
     ERROR: "ERROR",
   });
-
-
 let cache = null;
-
-
 /**
  * ============================================================
  * NUMBER HELPERS
  * ============================================================
  */
-
 function finite(value) {
   if (
     value === null ||
@@ -52,16 +46,12 @@ function finite(value) {
   ) {
     return 0;
   }
-
   const n =
     Number(value);
-
   return Number.isFinite(n)
     ? n
     : 0;
 }
-
-
 function finiteOrNull(value) {
   if (
     value === null ||
@@ -70,29 +60,22 @@ function finiteOrNull(value) {
   ) {
     return null;
   }
-
   const n =
     Number(value);
-
   return Number.isFinite(n)
     ? n
     : null;
 }
-
-
 /**
  * ============================================================
  * SYMBOL / ASSET HELPERS
  * ============================================================
  */
-
 function symbolKey(value) {
   return String(value ?? "")
     .trim()
     .toUpperCase();
 }
-
-
 function assetKey(asset) {
   if (
     asset?.network &&
@@ -104,31 +87,25 @@ function assetKey(asset) {
       asset.contractAddress,
     ).toLowerCase()}`;
   }
-
   if (asset?.assetId) {
     return `id:${String(
       asset.assetId,
     ).toLowerCase()}`;
   }
-
   return `symbol:${symbolKey(
     asset?.symbol,
   )}`;
 }
-
-
 function dexRank(asset) {
   const volume =
     finite(
       asset?.volume24hUsd,
     );
-
   const liquidity =
     finite(
       asset?.venues
         ?.dexLiquidityUsd,
     );
-
   const momentum =
     Math.abs(
       finite(
@@ -136,7 +113,6 @@ function dexRank(asset) {
           ?.change24hPercent,
       ),
     );
-
   return (
     Math.log10(
       1 + volume,
@@ -152,19 +128,15 @@ function dexRank(asset) {
     )
   );
 }
-
-
 function dedupe(rows) {
   const map =
     new Map();
-
   for (
     const row
     of rows
   ) {
     const key =
       assetKey(row);
-
     if (!map.has(key)) {
       map.set(
         key,
@@ -172,19 +144,15 @@ function dedupe(rows) {
       );
     }
   }
-
   return [
     ...map.values(),
   ];
 }
-
-
 /**
  * ============================================================
  * CEX MARKET-DATA HELPERS
  * ============================================================
  */
-
 function getVenueName(row) {
   return String(
     row?.exchange ??
@@ -194,8 +162,6 @@ function getVenueName(row) {
     .trim()
     .toUpperCase();
 }
-
-
 function getVenuePrice(row) {
   return finiteOrNull(
     row?.market?.price ??
@@ -203,8 +169,6 @@ function getVenuePrice(row) {
     row?.price,
   );
 }
-
-
 function getVenueVolume(row) {
   return finiteOrNull(
     row?.market
@@ -213,8 +177,6 @@ function getVenueVolume(row) {
     row?.quoteVolumeUsd,
   );
 }
-
-
 function getVenueChange(row) {
   return finiteOrNull(
     row?.market
@@ -222,15 +184,11 @@ function getVenueChange(row) {
     row?.change24hPercent,
   );
 }
-
-
 function hasMarketData(row) {
   const price =
     getVenuePrice(row);
-
   const volume =
     getVenueVolume(row);
-
   return (
     price !== null &&
     price > 0 &&
@@ -238,8 +196,6 @@ function hasMarketData(row) {
     volume >= 0
   );
 }
-
-
 /**
  * ============================================================
  * CEX FALLBACK ASSET
@@ -270,7 +226,6 @@ function hasMarketData(row) {
  * - unavailable measurements remain null.
  * - CEX spot data is never represented as futures data.
  */
-
 function buildCexFallbackAsset({
   symbol,
   venueRows,
@@ -278,26 +233,20 @@ function buildCexFallbackAsset({
 }) {
   const normalizedSymbol =
     symbolKey(symbol);
-
   if (!normalizedSymbol) {
     return null;
   }
-
-
   const rows =
     Array.isArray(
       venueRows,
     )
       ? venueRows
       : [];
-
-
   /*
    * ----------------------------------------------------------
    * 1. KRAKEN WITH MEASUREMENTS
    * ----------------------------------------------------------
    */
-
   const measuredKraken =
     rows.find(
       row =>
@@ -305,8 +254,6 @@ function buildCexFallbackAsset({
           "KRAKEN" &&
         hasMarketData(row),
     );
-
-
   /*
    * ----------------------------------------------------------
    * 2. COINBASE WITH MEASUREMENTS
@@ -315,7 +262,6 @@ function buildCexFallbackAsset({
    * Coinbase broad discovery is metadata-only now, but
    * targeted enrichment may still provide measured rows.
    */
-
   const measuredCoinbase =
     rows.find(
       row =>
@@ -323,42 +269,32 @@ function buildCexFallbackAsset({
           "COINBASE" &&
         hasMarketData(row),
     );
-
-
   /*
    * ----------------------------------------------------------
    * 3. ANY MEASURED CEX
    * ----------------------------------------------------------
    */
-
   const measuredAny =
     rows.find(
       hasMarketData,
     );
-
-
   /*
    * ----------------------------------------------------------
    * 4. METADATA FALLBACKS
    * ----------------------------------------------------------
    */
-
   const coinbaseMetadata =
     rows.find(
       row =>
         getVenueName(row) ===
         "COINBASE",
     );
-
-
   const krakenMetadata =
     rows.find(
       row =>
         getVenueName(row) ===
         "KRAKEN",
     );
-
-
   const preferred =
     measuredKraken ??
     measuredCoinbase ??
@@ -367,80 +303,53 @@ function buildCexFallbackAsset({
     krakenMetadata ??
     rows[0] ??
     null;
-
-
   if (!preferred) {
     return null;
   }
-
-
   const priceUsd =
     getVenuePrice(
       preferred,
     );
-
-
   const volume24hUsd =
     getVenueVolume(
       preferred,
     );
-
-
   const change24hPercent =
     getVenueChange(
       preferred,
     );
-
-
   return {
     assetId:
       `cex:${normalizedSymbol.toLowerCase()}`,
-
     symbol:
       normalizedSymbol,
-
     name:
       preferred?.name ??
       preferred?.baseAsset ??
       preferred?.baseSymbol ??
       preferred?.base ??
       normalizedSymbol,
-
     priceUsd,
-
     volume24hUsd,
-
     change24hPercent,
-
     /*
      * These cannot be safely derived from the CEX
      * measurements available here.
      */
-
     marketCapUsd:
       null,
-
     change1hPercent:
       null,
-
     change7dPercent:
       null,
-
-
     tradable:
       rows.length > 0,
-
-
     venues:
       summarizeVenues(
         rows,
       ),
-
-
     universeSource:
       "CEX_FALLBACK",
-
-
     marketDataSource:
       hasMarketData(
         preferred,
@@ -453,73 +362,51 @@ function buildCexFallbackAsset({
             null
           )
         : null,
-
-
     marketDataAvailable:
       hasMarketData(
         preferred,
       ),
-
-
     discoveredAt:
       startedAt,
-
-
     researchOnly:
       true,
-
     executionAuthority:
       false,
-
     liveExecution:
       false,
   };
 }
-
-
 /**
  * ============================================================
  * CACHE
  * ============================================================
  */
-
 export function clearCryptoUniverseCache() {
   cache = null;
 }
-
-
 export function getCryptoUniverseCacheStatus() {
   return {
     cached:
       Boolean(cache),
-
     generatedAt:
       cache?.generatedAt ??
       null,
-
     assetCount:
       cache?.assets
         ?.length ??
       0,
   };
 }
-
-
 /**
  * ============================================================
  * GET CRYPTO UNIVERSE
  * ============================================================
  */
-
 export async function getCryptoUniverse({
   refresh = false,
-
   maximumAssets = 1000,
-
   coinGeckoPages = 3,
-
   includeDexDiscovery = true,
-
   dexNetworks = [
     "solana",
     "base",
@@ -527,14 +414,11 @@ export async function getCryptoUniverse({
     "bsc",
     "arbitrum",
   ],
-
   dexPagesPerNetwork = 1,
-
   minimumDexReservedAssets =
     CRYPTO_SCANNER_CONFIG
       .universe
       .minimumDexReservedAssets,
-
   maximumDexReservedAssets =
     CRYPTO_SCANNER_CONFIG
       .universe
@@ -546,60 +430,136 @@ export async function getCryptoUniverse({
   ) {
     return cache;
   }
-
-
   const startedAt =
     new Date()
       .toISOString();
-
-
   const errors = [];
-
   const warnings = [];
-
-
   let marketRows = [];
-
-  let coinbaseProducts = [];
-
-  let krakenPairs = [];
-
-  let dexAssets = [];
-
-
+let coinLoreRows = [];
+let coinLoreGlobal = null;
+let coinGeckoRows = [];
+let coinbaseProducts = [];
+let krakenPairs = [];
+let dexAssets = [];
+let broadMarketProvider = null;
   /**
-   * ==========================================================
-   * COINGECKO
-   * ==========================================================
-   */
-
-  try {
+ * ==========================================================
+ * BROAD MARKET DATA
+ * ==========================================================
+ *
+ * PROVIDER ORDER
+ *
+ * 1. CoinLore
+ * 2. CoinGecko fallback
+ *
+ * CoinLore is the primary broad-market provider.
+ *
+ * CoinGecko is NOT called when CoinLore succeeds. This prevents
+ * a CoinGecko 429 from unnecessarily degrading an otherwise
+ * healthy universe to PARTIAL.
+ *
+ * Coinbase/Kraken remain independent CEX venue providers.
+ */
+try {
+  const [
+    globalResult,
+    marketsResult,
+  ] = await Promise.all([
+    getCoinLoreGlobal({
+      refresh,
+    }),
+    getCoinLoreMarkets({
+      limit:
+        Math.max(
+          maximumAssets,
+          1000,
+        ),
+      refresh,
+    }),
+  ]);
+  coinLoreGlobal =
+    globalResult ?? null;
+  coinLoreRows =
+    Array.isArray(
+      marketsResult,
+    )
+      ? marketsResult
+      : [];
+  if (
+    coinLoreRows.length >
+    0
+  ) {
     marketRows =
+      coinLoreRows;
+    broadMarketProvider =
+      "COINLORE";
+  }
+  console.log(
+    [
+      "[CRYPTO_UNIVERSE]",
+      `coinLore=${coinLoreRows.length}`,
+      `global=${coinLoreGlobal ? "AVAILABLE" : "UNAVAILABLE"}`,
+      `totalMarketCap=${coinLoreGlobal?.totalMarketCapUsd ?? "N/A"}`,
+      `btcDominance=${coinLoreGlobal?.btcDominancePercent ?? "N/A"}`,
+    ].join(" "),
+  );
+} catch (error) {
+  warnings.push(
+    `CoinLore market discovery unavailable: ${
+      error instanceof Error
+        ? error.message
+        : String(error)
+    }`,
+  );
+}
+/**
+ * ==========================================================
+ * COINGECKO FALLBACK
+ * ==========================================================
+ *
+ * CoinGecko is now fallback broad-market discovery only.
+ *
+ * Do not call it when CoinLore has already supplied a usable
+ * market universe.
+ */
+if (
+  marketRows.length ===
+  0
+) {
+  try {
+    coinGeckoRows =
       (
         await getCoinGeckoMarkets({
           pages:
             coinGeckoPages,
-
           perPage:
             250,
-
           order:
             "volume_desc",
         })
       ).map(
         normalizeCoinGeckoMarket,
       );
+    if (
+      coinGeckoRows.length >
+      0
+    ) {
+      marketRows =
+        coinGeckoRows;
+      broadMarketProvider =
+        "COINGECKO";
+    }
   } catch (error) {
     warnings.push(
-      `CoinGecko market discovery unavailable: ${
+      `CoinGecko fallback market discovery unavailable: ${
         error instanceof Error
           ? error.message
           : String(error)
       }`,
     );
   }
-
-
+}
   /**
    * ==========================================================
    * COINBASE
@@ -610,18 +570,14 @@ export async function getCryptoUniverse({
    * listCoinbaseProducts() intentionally DOES NOT fetch
    * ticker + stats for every instrument.
    */
-
   try {
     const raw =
       await listCoinbaseProducts();
-
-
     /*
      * The updated Coinbase provider already returns normalized
      * rows, but normalizeCoinbaseProduct remains idempotent
      * enough for backward compatibility.
      */
-
     coinbaseProducts =
       Array.isArray(raw)
         ? raw.map(
@@ -639,7 +595,6 @@ export async function getCryptoUniverse({
               ) {
                 return row;
               }
-
               return normalizeCoinbaseProduct(
                 row,
               );
@@ -655,8 +610,6 @@ export async function getCryptoUniverse({
       }`,
     );
   }
-
-
   /**
    * ==========================================================
    * KRAKEN — BULK MARKET MEASUREMENTS
@@ -689,29 +642,20 @@ export async function getCryptoUniverse({
    *
    * where Kraken supplies those measurements.
    */
-
   try {
     const raw =
       await listKrakenMarkets();
-
-
     krakenPairs =
       Array.isArray(raw)
         ? raw
         : [];
-
-
     const measured =
       krakenPairs.filter(
         hasMarketData,
       ).length;
-
-
     console.log(
       `[CRYPTO_UNIVERSE] Kraken rows=${krakenPairs.length} measured=${measured}`,
     );
-
-
     if (
       krakenPairs.length > 0 &&
       measured === 0
@@ -729,14 +673,11 @@ export async function getCryptoUniverse({
       }`,
     );
   }
-
-
   /**
    * ==========================================================
    * DEX DISCOVERY
    * ==========================================================
    */
-
   if (
     includeDexDiscovery
   ) {
@@ -745,20 +686,15 @@ export async function getCryptoUniverse({
         await discoverDexAssets({
           networks:
             dexNetworks,
-
           pagesPerNetwork:
             dexPagesPerNetwork,
         });
-
-
       dexAssets =
         Array.isArray(
           discovery?.assets,
         )
           ? discovery.assets
           : [];
-
-
       for (
         const item
         of discovery?.errors ??
@@ -768,17 +704,13 @@ export async function getCryptoUniverse({
           item?.provider
             ? `${item.provider} `
             : "";
-
         const network =
           item?.network
             ? `${item.network}: `
             : "";
-
         const message =
           item?.error ??
           "Unknown DEX discovery error";
-
-
         warnings.push(
           `DEX discovery ${provider}${network}${message}`,
         );
@@ -793,8 +725,6 @@ export async function getCryptoUniverse({
       );
     }
   }
-
-
   /**
    * ==========================================================
    * BUILD CEX VENUE INDEX
@@ -806,73 +736,204 @@ export async function getCryptoUniverse({
    * Kraken:
    *   broad metadata + bulk measurements
    */
-
   const venueIndex =
     buildVenueIndex({
       coinbaseProducts,
       krakenPairs,
     });
-
-
   /**
-   * ==========================================================
-   * PRIMARY COINGECKO ASSETS
-   * ==========================================================
-   */
+ * ============================================================
+ * PRIMARY BROAD-MARKET ASSETS
+ * ============================================================
+ *
+ * CoinLore -> CoinGecko fallback for broad market data.
+ * Kraken -> Coinbase for measured CEX price/volume/change.
+ * CoinLore supplies market-cap/supply evidence where present.
+ *
+ * Missing evidence remains null. CoinLore does not overwrite a
+ * real Kraken/Coinbase market measurement.
+ */
+const broadAssetMap = new Map();
 
-  const broadAssetMap =
-    new Map();
+const coinLoreSymbolIndex =
+  buildCoinLoreSymbolIndex(coinLoreRows);
 
+for (const market of marketRows) {
+  const symbol = symbolKey(market?.symbol);
 
-  for (
-    const market
-    of marketRows
-  ) {
-    const symbol =
-      symbolKey(
-        market?.symbol,
-      );
-
-
-    if (!symbol) {
-      continue;
-    }
-
-
-    const venues =
-      venueIndex.get(
-        symbol,
-      ) ??
-      [];
-
-
-    broadAssetMap.set(
-      symbol,
-      {
-        ...market,
-
-        symbol,
-
-        tradable:
-          venues.length >
-          0,
-
-        venues:
-          summarizeVenues(
-            venues,
-          ),
-
-        universeSource:
-          "COINGECKO",
-
-        discoveredAt:
-          startedAt,
-      },
-    );
+  if (!symbol) {
+    continue;
   }
 
+  const venues =
+    venueIndex.get(symbol) ?? [];
 
-  /**
+  const measuredKraken =
+    venues.find(
+      row =>
+        getVenueName(row) === "KRAKEN" &&
+        hasMarketData(row),
+    );
+
+  const measuredCoinbase =
+    venues.find(
+      row =>
+        getVenueName(row) === "COINBASE" &&
+        hasMarketData(row),
+    );
+
+  const measuredAny =
+    venues.find(hasMarketData);
+
+  const measuredVenue =
+    measuredKraken ??
+    measuredCoinbase ??
+    measuredAny ??
+    null;
+
+  const coinLore =
+    coinLoreSymbolIndex.get(symbol) ??
+    null;
+
+  const marketPrice =
+    finiteOrNull(market?.priceUsd);
+
+  const marketVolume =
+    finiteOrNull(market?.volume24hUsd);
+
+  const marketChange =
+    finiteOrNull(market?.change24hPercent);
+
+  const venuePrice =
+    measuredVenue
+      ? getVenuePrice(measuredVenue)
+      : null;
+
+  const venueVolume =
+    measuredVenue
+      ? getVenueVolume(measuredVenue)
+      : null;
+
+  const venueChange =
+    measuredVenue
+      ? getVenueChange(measuredVenue)
+      : null;
+
+  const coinLoreMarketCap =
+    finiteOrNull(coinLore?.marketCapUsd);
+
+  broadAssetMap.set(
+    symbol,
+    {
+      ...market,
+
+      symbol,
+
+      name:
+        market?.name ??
+        coinLore?.name ??
+        symbol,
+
+      priceUsd:
+        venuePrice ??
+        marketPrice,
+
+      volume24hUsd:
+        venueVolume ??
+        marketVolume,
+
+      change24hPercent:
+        venueChange ??
+        marketChange,
+
+      marketCapUsd:
+        coinLoreMarketCap ??
+        finiteOrNull(market?.marketCapUsd),
+
+      marketCapRank:
+        finiteOrNull(coinLore?.rank) ??
+        finiteOrNull(market?.marketCapRank),
+
+      circulatingSupply:
+        finiteOrNull(coinLore?.circulatingSupply) ??
+        finiteOrNull(market?.circulatingSupply),
+
+      totalSupply:
+        finiteOrNull(coinLore?.totalSupply) ??
+        finiteOrNull(market?.totalSupply),
+
+      maxSupply:
+        finiteOrNull(coinLore?.maxSupply) ??
+        finiteOrNull(market?.maxSupply),
+
+      change1hPercent:
+        finiteOrNull(coinLore?.change1hPercent) ??
+        finiteOrNull(market?.change1hPercent),
+
+      change7dPercent:
+        finiteOrNull(coinLore?.change7dPercent) ??
+        finiteOrNull(market?.change7dPercent),
+
+      tradable:
+        venues.length > 0,
+
+      venues:
+        summarizeVenues(venues),
+
+      universeSource:
+        broadMarketProvider ??
+        "UNKNOWN",
+
+      marketDataSource:
+        measuredVenue
+          ? (
+              measuredVenue?.exchange ??
+              measuredVenue?.venue ??
+              null
+            )
+          : (
+              broadMarketProvider ??
+              null
+            ),
+
+      marketCapSource:
+        coinLoreMarketCap !== null
+          ? "COINLORE"
+          : (
+              broadMarketProvider ??
+              null
+            ),
+
+      supplySource:
+        coinLore
+          ? "COINLORE"
+          : (
+              broadMarketProvider ??
+              null
+            ),
+
+      marketDataAvailable:
+        (
+          venuePrice ??
+          marketPrice
+        ) !== null,
+
+      discoveredAt:
+        startedAt,
+
+      researchOnly:
+        true,
+
+      executionAuthority:
+        false,
+
+      liveExecution:
+        false,
+    },
+  );
+}
+
+/**
    * ==========================================================
    * CEX FALLBACK ASSETS
    * ==========================================================
@@ -887,15 +948,10 @@ export async function getCryptoUniverse({
    *
    * Coinbase metadata-only rows do NOT create fake prices.
    */
-
   let cexFallbackAssets =
     0;
-
-
   let measuredCexFallbackAssets =
     0;
-
-
   for (
     const [
       symbol,
@@ -905,8 +961,6 @@ export async function getCryptoUniverse({
   ) {
     const normalizedSymbol =
       symbolKey(symbol);
-
-
     if (
       !normalizedSymbol ||
       broadAssetMap.has(
@@ -915,34 +969,84 @@ export async function getCryptoUniverse({
     ) {
       continue;
     }
-
-
     const fallback =
       buildCexFallbackAsset({
         symbol:
           normalizedSymbol,
-
         venueRows,
-
         startedAt,
       });
-
-
     if (!fallback) {
       continue;
     }
+    /*
+   * CoinLore enriches CEX-only assets with market-cap/supply
+   * evidence. Kraken/Coinbase price, volume and 24h change stay
+   * untouched.
+   */
+  const coinLore =
+    coinLoreSymbolIndex.get(
+      normalizedSymbol,
+    ) ??
+    null;
 
+  if (coinLore) {
+    fallback.marketCapUsd =
+      finiteOrNull(
+        coinLore.marketCapUsd,
+      );
 
-    broadAssetMap.set(
+    fallback.marketCapRank =
+      finiteOrNull(
+        coinLore.rank,
+      );
+
+    fallback.circulatingSupply =
+      finiteOrNull(
+        coinLore.circulatingSupply,
+      );
+
+    fallback.totalSupply =
+      finiteOrNull(
+        coinLore.totalSupply,
+      );
+
+    fallback.maxSupply =
+      finiteOrNull(
+        coinLore.maxSupply,
+      );
+
+    fallback.change1hPercent =
+      finiteOrNull(
+        coinLore.change1hPercent,
+      );
+
+    fallback.change7dPercent =
+      finiteOrNull(
+        coinLore.change7dPercent,
+      );
+
+    fallback.marketCapSource =
+      fallback.marketCapUsd !== null
+        ? "COINLORE"
+        : null;
+
+    fallback.supplySource =
+      (
+        fallback.circulatingSupply !== null ||
+        fallback.totalSupply !== null ||
+        fallback.maxSupply !== null
+      )
+        ? "COINLORE"
+        : null;
+  }
+
+  broadAssetMap.set(
       normalizedSymbol,
       fallback,
     );
-
-
     cexFallbackAssets +=
       1;
-
-
     if (
       fallback
         ?.marketDataAvailable ===
@@ -952,20 +1056,15 @@ export async function getCryptoUniverse({
         1;
     }
   }
-
-
   const broadAssets = [
     ...broadAssetMap
       .values(),
   ];
-
-
   /**
    * ==========================================================
    * DEX RESERVATION
    * ==========================================================
    */
-
   const rankedDex =
     dedupe(
       dexAssets,
@@ -978,53 +1077,39 @@ export async function getCryptoUniverse({
           dexRank(b) -
           dexRank(a),
       );
-
-
   const dexSlots =
     Math.min(
       maximumAssets,
-
       maximumDexReservedAssets,
-
       rankedDex.length,
-
       Math.max(
         Math.min(
           minimumDexReservedAssets,
           maximumAssets,
         ),
-
         Math.min(
           rankedDex.length,
           maximumDexReservedAssets,
         ),
       ),
     );
-
-
   const selectedDex =
     rankedDex.slice(
       0,
       dexSlots,
     );
-
-
   const broadSlots =
     Math.max(
       0,
-
       maximumAssets -
         selectedDex.length,
     );
-
-
   /**
    * Prefer measured broad assets.
    *
    * Missing volume is treated as 0 only for ranking.
    * The actual stored measurement remains null.
    */
-
   const selectedBroad =
     broadAssets
       .sort(
@@ -1043,8 +1128,6 @@ export async function getCryptoUniverse({
         0,
         broadSlots,
       );
-
-
   const assets =
     dedupe([
       ...selectedBroad,
@@ -1054,25 +1137,17 @@ export async function getCryptoUniverse({
         0,
         maximumAssets,
       );
-
-
   /**
    * ==========================================================
    * STATUS
    * ==========================================================
    */
-
   const allPrimaryProvidersFailed =
-    marketRows.length ===
-      0 &&
-    coinbaseProducts.length ===
-      0 &&
-    krakenPairs.length ===
-      0 &&
-    dexAssets.length ===
-      0;
-
-
+    coinLoreRows.length === 0 &&
+    coinGeckoRows.length === 0 &&
+    coinbaseProducts.length === 0 &&
+    krakenPairs.length === 0 &&
+    dexAssets.length === 0;
   if (
     allPrimaryProvidersFailed
   ) {
@@ -1080,8 +1155,6 @@ export async function getCryptoUniverse({
       "All crypto universe providers returned no usable assets.",
     );
   }
-
-
   const status =
     assets.length === 0
       ? errors.length > 0
@@ -1097,31 +1170,26 @@ export async function getCryptoUniverse({
             .PARTIAL
         : CRYPTO_UNIVERSE_STATUS
             .COMPLETE;
-
-
   /**
    * ==========================================================
    * DIAGNOSTICS
    * ==========================================================
    */
-
   const krakenMeasured =
     krakenPairs.filter(
       hasMarketData,
     ).length;
-
-
   const coinbaseMeasured =
     coinbaseProducts.filter(
       hasMarketData,
     ).length;
-
-
   console.log(
     [
       "[CRYPTO_UNIVERSE]",
       `assets=${assets.length}`,
-      `coinGecko=${marketRows.length}`,
+      `broadProvider=${broadMarketProvider ?? "NONE"}`,
+      `coinLore=${coinLoreRows.length}`,
+      `coinGecko=${coinGeckoRows.length}`,
       `coinbase=${coinbaseProducts.length}`,
       `coinbaseMeasured=${coinbaseMeasured}`,
       `kraken=${krakenPairs.length}`,
@@ -1129,45 +1197,90 @@ export async function getCryptoUniverse({
       `cexFallback=${cexFallbackAssets}`,
       `cexFallbackMeasured=${measuredCexFallbackAssets}`,
       `dex=${dexAssets.length}`,
+      `globalMarketCap=${coinLoreGlobal?.totalMarketCapUsd ?? "N/A"}`,
+      `btcDominance=${coinLoreGlobal?.btcDominancePercent ?? "N/A"}`,
     ].join(" "),
-  );
-
-
+  )
   /**
    * ==========================================================
    * CACHE / RESPONSE
    * ==========================================================
    */
-
   cache = {
     approved:
       assets.length > 0,
-
     status,
-
     assetCount:
       assets.length,
-
     assets,
+    globalMarket: {
+    totalMarketCapUsd:
+      finiteOrNull(
+        coinLoreGlobal?.totalMarketCapUsd,
+      ),
 
+    totalVolume24hUsd:
+      finiteOrNull(
+        coinLoreGlobal?.totalVolume24hUsd,
+      ),
 
-    composition: {
+    btcDominancePercent:
+      finiteOrNull(
+        coinLoreGlobal?.btcDominancePercent,
+      ),
+
+    ethDominancePercent:
+      finiteOrNull(
+        coinLoreGlobal?.ethDominancePercent,
+      ),
+
+    marketCapChange24hPercent:
+      finiteOrNull(
+        coinLoreGlobal?.marketCapChange24hPercent,
+      ),
+
+    volumeChange24hPercent:
+      finiteOrNull(
+        coinLoreGlobal?.volumeChange24hPercent,
+      ),
+
+    coinsCount:
+      finiteOrNull(
+        coinLoreGlobal?.coinsCount,
+      ),
+
+    activeMarkets:
+      finiteOrNull(
+        coinLoreGlobal?.activeMarkets,
+      ),
+
+    source:
+      coinLoreGlobal
+        ? "COINLORE"
+        : null,
+
+    observedAt:
+      coinLoreGlobal?.observedAt ??
+      null,
+  },
+
+  composition: {
       broadAssets:
         selectedBroad.length,
+      coinLoreBroadAssets:
+      coinLoreRows.length,
 
-      coinGeckoBroadAssets:
-        marketRows.length,
+    coinGeckoBroadAssets:
+      coinGeckoRows.length,
 
-      cexFallbackAssets,
+    broadMarketProvider,
 
+    cexFallbackAssets,
       measuredCexFallbackAssets,
-
       reservedDexAssets:
         selectedDex.length,
-
       dexAssetsDiscovered:
         dexAssets.length,
-
       dexAssetsMeasured:
         assets.filter(
           asset =>
@@ -1178,41 +1291,41 @@ export async function getCryptoUniverse({
             ) > 0,
         ).length,
     },
-
-
     providers: {
-      coinGecko:
-        marketRows.length,
+    broadMarket:
+      broadMarketProvider,
 
-      coinbase:
-        coinbaseProducts.length,
+    coinLore:
+      coinLoreRows.length,
 
-      coinbaseMeasured,
+    coinLoreGlobal:
+      Boolean(
+        coinLoreGlobal,
+      ),
 
-      kraken:
-        krakenPairs.length,
+    coinGecko:
+      coinGeckoRows.length,
 
-      krakenMeasured,
+    coinbase:
+      coinbaseProducts.length,
 
-      dexNewPools:
-        dexAssets.length,
-    },
+    coinbaseMeasured,
 
+    kraken:
+      krakenPairs.length,
 
+    krakenMeasured,
+
+    dexNewPools:
+      dexAssets.length,
+  },
     errors,
-
     warnings,
-
     startedAt,
-
     generatedAt:
       new Date()
         .toISOString(),
   };
-
-
   return cache;
 }
-
-
 export default getCryptoUniverse;
