@@ -11,7 +11,7 @@ import CryptoDiscovery from "./crypto/pages/CryptoDiscovery.jsx";
 import CryptoScanner from "./crypto/pages/CryptoScanner.jsx";
 import CryptoEngines from "./crypto/pages/CryptoEngines.jsx";
 import CryptoResearch from "./crypto/pages/CryptoResearch.jsx";
-import CryptoPositions from "./crypto/pages/CryptoPositions.jsx";
+import CryptoEmergingDex from "./crypto/pages/CryptoEmergingDex.jsx";
 import CryptoHealth from "./crypto/pages/CryptoHealth.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import Markets from "./pages/Markets.jsx";
@@ -32,12 +32,9 @@ export default function App() {
         <Route path="/register" element={<AuthPage mode="register" />} />
         <Route path="/forgot-password" element={<AuthPage mode="reset" />} />
         <Route path="/update-password" element={<UpdatePassword />} />
-
-        {/* Private bot retains its separate authentication. */}
         <Route path="/bot/*" element={<BotApp />} />
 
         <Route element={<RequireAuth />}>
-          {/* Billing must remain available even when a trial has expired. */}
           <Route path="/billing" element={<BillingPage />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/markets" element={<Markets />} />
@@ -54,7 +51,8 @@ export default function App() {
           <Route path="/crypto/scanner" element={<CryptoScanner />} />
           <Route path="/crypto/engines" element={<CryptoEngines />} />
           <Route path="/crypto/research" element={<CryptoResearch />} />
-          <Route path="/crypto/positions" element={<CryptoPositions />} />
+          <Route path="/crypto/emerging-dex" element={<CryptoEmergingDex />} />
+          <Route path="/crypto/positions" element={<Navigate to="/crypto/emerging-dex" replace />} />
           <Route path="/crypto/health" element={<CryptoHealth />} />
         </Route>
 
@@ -72,7 +70,8 @@ export default function App() {
         <Route path="/app/crypto/scanner" element={<Navigate to="/crypto/scanner" replace />} />
         <Route path="/app/crypto/engines" element={<Navigate to="/crypto/engines" replace />} />
         <Route path="/app/crypto/research" element={<Navigate to="/crypto/research" replace />} />
-        <Route path="/app/crypto/positions" element={<Navigate to="/crypto/positions" replace />} />
+        <Route path="/app/crypto/emerging-dex" element={<Navigate to="/crypto/emerging-dex" replace />} />
+        <Route path="/app/crypto/positions" element={<Navigate to="/crypto/emerging-dex" replace />} />
         <Route path="/app/crypto/health" element={<Navigate to="/crypto/health" replace />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
