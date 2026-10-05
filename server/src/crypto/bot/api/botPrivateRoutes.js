@@ -5,6 +5,11 @@ import {getTradeMemory} from "../learning/botTradeMemoryStore.js";
 import {manuallyCloseBotPosition,emergencyStopBot} from "../positions/botManualControls.js";
 import {isBotRuntimeBusy,isBotRuntimeRunning} from "../runtime/botRuntime.js";
 import getDedicatedAlpacaOverview from "../alpaca/botDedicatedAlpacaOverview.js";
+import runBotMarketSearch from "../orchestration/botMarketSearchCycle.js";
+import calculateBotPositionScenario from "../setup/botPositionScenarioCalculator.js";
+import {getSearchSetup} from "../monitoring/botSearchResultStore.js";
+import {createMonitoredSetup,listMonitoredSetups,getMonitoredSetup} from "../monitoring/botSetupMonitorStore.js";
+import refreshMonitoredSetup from "../monitoring/botSetupMonitoringEngine.js";
 
 const handle=(fn)=>(req,res)=>Promise.resolve().then(()=>fn(req,res)).catch(e=>{
   const status=e.message==="BOT_RUNTIME_BUSY_RETRY"?409:e.message==="BOT_POSITION_NOT_FOUND"?404:400;
@@ -76,5 +81,28 @@ export default function createBotPrivateRoutes(){
     setBotControls({paused:true});
     res.json(await emergencyStopBot());
   }));
+
+  // On-demand private research. This path never places an order.
+  r.post("/market/search",handle(async(req,res)=>{
+    if(isBotRuntimeBusy())throw new Error("BOT_RUNTIME_BUSY_RETRY");
+    res.set("Cache-Control","no-store");
+    res.json(await runBotMarketSearch(req.body?.options||{}));
+  }));
+
+  r.post("/setups/:setupId/scenario",handle((req,res)=>{
+    const candidate=getSearchSetup(req.params.setupId);
+    if(!candidate)throw new Error("SETUP_NOT_FOUND");
+    res.json({setupId:req.params.setupId,scenario:calculateBotPositionScenario(candidate.setup,{capitalUsd:req.body?.capitalUsd,leverage:req.body?.leverage,feeRatePercent:req.body?.feeRatePercent})});
+  }));
+
+  r.post("/setups/:setupId/monitor",handle((req,res)=>{
+    const candidate=getSearchSetup(req.params.setupId);
+    if(!candidate)throw new Error("SETUP_NOT_FOUND");
+    const scenario=req.body?.capitalUsd?calculateBotPositionScenario(candidate.setup,{capitalUsd:req.body.capitalUsd,leverage:req.body?.leverage,feeRatePercent:req.body?.feeRatePercent}):null;
+    res.json({monitor:createMonitoredSetup(candidate,scenario)});
+  }));
+  r.get("/monitoring",(_req,res)=>res.json({monitors:listMonitoredSetups()}));
+  r.get("/monitoring/:id",(req,res)=>{const monitor=getMonitoredSetup(req.params.id);if(!monitor)return res.status(404).json({error:"MONITORED_SETUP_NOT_FOUND"});res.json({monitor});});
+  r.post("/monitoring/:id/refresh",handle(async(req,res)=>res.json({monitor:await refreshMonitoredSetup(req.params.id,req.body?.options||{})})));
   return r;
 }

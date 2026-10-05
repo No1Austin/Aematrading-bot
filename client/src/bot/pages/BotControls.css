@@ -1,3 +1,840 @@
-.controls-page .control-ok{padding:10px;margin-bottom:12px;border:1px solid rgba(22,199,132,.25);border-radius:8px;color:#16c784}.control-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.control-grid>article{padding:18px;border:1px solid #20262e;border-radius:12px;background:#0f1318}.control-title{display:flex;gap:10px;align-items:center}.control-title>svg{color:#f0b90b}.control-title span{color:#f0b90b;font-size:8px;font-weight:900;letter-spacing:.12em}.control-title h2{margin:3px 0;font-size:16px}.control-grid p{color:#7b8591;font-size:10px;line-height:1.6}.allocation-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:16px 0}.allocation-stats>div{padding:12px;border:1px solid #20262e;border-radius:8px;background:#0a0e12}.allocation-stats span{display:block;color:#69727d;font-size:8px}.allocation-stats b{display:block;margin-top:5px;font-size:13px}.control-grid label{display:block;margin:14px 0 6px;color:#9aa4b0;font-size:9px;font-weight:800}.allocation-input{display:flex;align-items:center;border:1px solid #29313a;border-radius:9px;overflow:hidden;background:#090c10}.allocation-input>span{padding-left:12px;color:#69727d}.allocation-input input{min-width:0;flex:1;padding:12px 7px;border:0;outline:0;background:transparent;color:#e9edf2}.allocation-input button,.control-actions button{padding:12px 14px;border:0;background:#f0b90b;color:#0b0e12;font-weight:900;cursor:pointer}.control-grid small{display:block;margin-top:8px;color:#69727d;font-size:8px;line-height:1.5}.runtime-state{display:inline-flex;align-items:center;gap:6px;margin:15px 0 4px;padding:7px 9px;border:1px solid #29313a;border-radius:7px;font-size:9px;font-weight:900}.runtime-state i{width:7px;height:7px;border-radius:50%}.runtime-state.running{color:#16c784}.runtime-state.running i{background:#16c784}.runtime-state.paused{color:#f0b90b}.runtime-state.paused i{background:#f0b90b}.control-actions{display:grid;gap:8px;margin-top:16px}.control-actions button{display:flex;justify-content:center;align-items:center;gap:7px;border-radius:8px}.control-actions button svg{width:15px}.control-actions .emergency{background:rgba(234,57,67,.12);border:1px solid rgba(234,57,67,.3);color:#ea3943}.control-actions button:disabled,.allocation-input button:disabled{opacity:.5;cursor:not-allowed}@media(max-width:900px){.control-grid{grid-template-columns:1fr}}@media(max-width:600px){.allocation-stats{grid-template-columns:1fr}.allocation-input{align-items:stretch}.allocation-input button{font-size:9px}}
+/* =========================================================
+   AEMA PRIVATE BOT — LEGACY CONTROLS
+   Matches the existing BotControls.jsx exactly
+   ========================================================= */
 
-.controls-page .control-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.controls-page .control-safety-note{display:flex;align-items:center;gap:9px;padding:12px;border:1px solid rgba(240,185,11,.28);background:rgba(240,185,11,.06);border-radius:9px;color:#e6c66b;font-size:11px}.controls-page .bot-refresh{display:flex;align-items:center;gap:7px;border:1px solid #29313a;background:#11171d;color:#e9edf2;padding:9px 12px;border-radius:8px;cursor:pointer}@media(max-width:900px){.controls-page .control-grid{grid-template-columns:1fr}}
+
+/* =========================================================
+   PAGE LAYOUT
+   ========================================================= */
+
+.bot-main.controls-page {
+  margin-left: 220px;
+  width: calc(100% - 220px);
+  min-height: 100vh;
+
+  box-sizing: border-box;
+  padding: 28px 32px 48px;
+
+  background: #090c10;
+  color: #e9edf2;
+
+  font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
+  overflow-x: hidden;
+}
+
+
+/* =========================================================
+   PAGE HEADER
+   ========================================================= */
+
+.controls-page > header {
+  width: 100%;
+  max-width: 1280px;
+
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 24px;
+
+  margin: 0 auto 22px;
+}
+
+
+.controls-page > header > div {
+  min-width: 0;
+}
+
+
+.controls-page > header span {
+  display: block;
+
+  margin-bottom: 6px;
+
+  color: #f0b90b;
+
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+
+  text-transform: uppercase;
+}
+
+
+.controls-page > header h1 {
+  margin: 0;
+
+  color: #f3f5f7;
+
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 1.15;
+}
+
+
+.controls-page > header p {
+  max-width: 720px;
+
+  margin: 8px 0 0;
+
+  color: #8993a0;
+
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+
+/* =========================================================
+   REFRESH BUTTON
+   ========================================================= */
+
+.bot-refresh {
+  flex: 0 0 auto;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  min-height: 36px;
+
+  padding: 9px 13px;
+
+  border: 1px solid #29313a;
+  border-radius: 8px;
+
+  background: #11161c;
+  color: #dce2e8;
+
+  font-size: 10px;
+  font-weight: 800;
+
+  cursor: pointer;
+
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+
+.bot-refresh:hover {
+  border-color: #424c57;
+  background: #171d24;
+  color: #ffffff;
+}
+
+
+/* =========================================================
+   ERROR / SUCCESS
+   ========================================================= */
+
+.controls-page > .bot-error,
+.controls-page > .control-ok {
+  width: 100%;
+  max-width: 1280px;
+
+  box-sizing: border-box;
+
+  margin: 0 auto 12px;
+
+  padding: 11px 13px;
+
+  border-radius: 8px;
+
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+
+.controls-page > .bot-error {
+  border: 1px solid rgba(234, 57, 67, 0.35);
+
+  background: rgba(234, 57, 67, 0.07);
+  color: #ff7d84;
+}
+
+
+.control-ok {
+  border: 1px solid rgba(22, 199, 132, 0.3);
+
+  background: rgba(22, 199, 132, 0.07);
+  color: #36d99a;
+}
+
+
+/* =========================================================
+   CONTROL GRID
+   ========================================================= */
+
+.control-grid {
+  width: 100%;
+  max-width: 1280px;
+
+  box-sizing: border-box;
+
+  margin: 0 auto;
+
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 12px;
+}
+
+
+/* =========================================================
+   CONTROL CARDS
+   ========================================================= */
+
+.control-grid > article {
+  min-width: 0;
+
+  box-sizing: border-box;
+
+  padding: 20px;
+
+  border: 1px solid #20262e;
+  border-radius: 13px;
+
+  background: #0f1318;
+
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.015);
+}
+
+
+/*
+   Runtime card spans full width because it contains
+   the most important legacy safety controls.
+*/
+
+.control-grid > article:nth-child(3) {
+  grid-column: 1 / -1;
+}
+
+
+/* =========================================================
+   CARD TITLE
+   ========================================================= */
+
+.control-title {
+  display: flex;
+  align-items: flex-start;
+
+  gap: 11px;
+
+  min-width: 0;
+
+  margin-bottom: 17px;
+}
+
+
+.control-title > svg {
+  flex: 0 0 auto;
+
+  width: 18px;
+  height: 18px;
+
+  margin-top: 2px;
+
+  color: #f0b90b;
+}
+
+
+.control-title > div {
+  min-width: 0;
+}
+
+
+.control-title span {
+  display: block;
+
+  margin-bottom: 5px;
+
+  color: #f0b90b;
+
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+
+  text-transform: uppercase;
+}
+
+
+.control-title h2 {
+  margin: 0;
+
+  color: #f0f3f6;
+
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+
+/* =========================================================
+   CARD TEXT
+   ========================================================= */
+
+.control-grid > article > p {
+  margin: 14px 0;
+
+  color: #8993a0;
+
+  font-size: 11px;
+  line-height: 1.65;
+}
+
+
+.control-grid > article > small {
+  display: block;
+
+  margin-top: 9px;
+
+  color: #68727d;
+
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+
+/* =========================================================
+   ALLOCATION STATS
+   ========================================================= */
+
+.allocation-stats {
+  display: grid;
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  gap: 8px;
+
+  width: 100%;
+}
+
+
+.allocation-stats > div {
+  min-width: 0;
+
+  box-sizing: border-box;
+
+  padding: 12px;
+
+  border: 1px solid #20262e;
+  border-radius: 9px;
+
+  background: #0a0e12;
+}
+
+
+.allocation-stats span {
+  display: block;
+
+  margin-bottom: 6px;
+
+  color: #737e89;
+
+  font-size: 9px;
+  font-weight: 700;
+}
+
+
+.allocation-stats b {
+  display: block;
+
+  color: #edf1f4;
+
+  font-size: 15px;
+  font-weight: 800;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+/* =========================================================
+   SIMULATOR ALLOCATION LABEL
+   ========================================================= */
+
+.control-grid > article > label {
+  display: block;
+
+  margin-top: 16px;
+  margin-bottom: 6px;
+
+  color: #8993a0;
+
+  font-size: 9px;
+  font-weight: 800;
+
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+
+/* =========================================================
+   ALLOCATION INPUT
+   ========================================================= */
+
+.allocation-input {
+  width: 100%;
+
+  display: grid;
+  grid-template-columns:
+    auto minmax(0, 1fr) auto;
+
+  align-items: center;
+
+  box-sizing: border-box;
+
+  border: 1px solid #29313a;
+  border-radius: 9px;
+
+  overflow: hidden;
+
+  background: #090d12;
+}
+
+
+.allocation-input > span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  align-self: stretch;
+
+  min-width: 38px;
+
+  border-right: 1px solid #29313a;
+
+  color: #7e8994;
+
+  font-size: 12px;
+  font-weight: 800;
+}
+
+
+.allocation-input input {
+  width: 100%;
+  min-width: 0;
+
+  box-sizing: border-box;
+
+  padding: 11px;
+
+  border: 0;
+  outline: none;
+
+  background: transparent;
+  color: #f1f4f6;
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+
+.allocation-input input:focus {
+  background: rgba(240, 185, 11, 0.025);
+}
+
+
+.allocation-input button {
+  align-self: stretch;
+
+  min-width: 76px;
+
+  padding: 0 15px;
+
+  border: 0;
+  border-left: 1px solid #29313a;
+
+  background: #f0b90b;
+  color: #111;
+
+  font-size: 10px;
+  font-weight: 900;
+
+  cursor: pointer;
+}
+
+
+.allocation-input button:hover:not(:disabled) {
+  background: #dca900;
+}
+
+
+.allocation-input button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+
+/* Remove number arrows where supported */
+
+.allocation-input input::-webkit-outer-spin-button,
+.allocation-input input::-webkit-inner-spin-button {
+  margin: 0;
+
+  -webkit-appearance: none;
+}
+
+
+/* =========================================================
+   BROKER SAFETY NOTE
+   ========================================================= */
+
+.control-safety-note {
+  display: flex;
+  align-items: flex-start;
+
+  gap: 8px;
+
+  margin-top: 14px;
+
+  padding: 11px 12px;
+
+  border: 1px solid rgba(240, 185, 11, 0.22);
+  border-radius: 8px;
+
+  background: rgba(240, 185, 11, 0.045);
+  color: #c6a844;
+
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+
+.control-safety-note svg {
+  flex: 0 0 auto;
+
+  width: 15px;
+  height: 15px;
+
+  margin-top: 1px;
+}
+
+
+/* =========================================================
+   CARD-LEVEL ERROR
+   ========================================================= */
+
+.control-grid article .bot-error {
+  box-sizing: border-box;
+
+  width: 100%;
+
+  margin: 0 0 13px;
+
+  padding: 10px 11px;
+
+  border: 1px solid rgba(234, 57, 67, 0.3);
+  border-radius: 8px;
+
+  background: rgba(234, 57, 67, 0.06);
+  color: #ff7d84;
+
+  font-size: 10px;
+}
+
+
+/* =========================================================
+   RUNTIME STATE
+   ========================================================= */
+
+.runtime-state {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 7px;
+
+  margin: 2px 0 4px;
+
+  padding: 6px 9px;
+
+  border-radius: 7px;
+
+  background: #171c22;
+  color: #aab3bc;
+
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+}
+
+
+.runtime-state i {
+  width: 7px;
+  height: 7px;
+
+  border-radius: 50%;
+
+  background: currentColor;
+
+  box-shadow:
+    0 0 8px currentColor;
+}
+
+
+.runtime-state.running {
+  background: rgba(22, 199, 132, 0.09);
+  color: #16c784;
+}
+
+
+.runtime-state.paused {
+  background: rgba(240, 185, 11, 0.08);
+  color: #f0b90b;
+}
+
+
+/* =========================================================
+   RUNTIME ACTIONS
+   ========================================================= */
+
+.control-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+
+  gap: 8px;
+
+  margin-top: 15px;
+}
+
+
+.control-actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  min-height: 38px;
+
+  padding: 9px 14px;
+
+  border: 1px solid #303842;
+  border-radius: 8px;
+
+  background: #151a20;
+  color: #e2e7eb;
+
+  font-size: 10px;
+  font-weight: 800;
+
+  cursor: pointer;
+
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+
+
+.control-actions button svg {
+  width: 14px;
+  height: 14px;
+}
+
+
+.control-actions button:hover:not(:disabled) {
+  border-color: #46515c;
+  background: #1a2027;
+}
+
+
+.control-actions button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+
+/* =========================================================
+   EMERGENCY BUTTON
+   ========================================================= */
+
+.control-actions .emergency {
+  border-color: rgba(234, 57, 67, 0.38);
+
+  background: rgba(234, 57, 67, 0.07);
+  color: #ff6972;
+}
+
+
+.control-actions .emergency:hover:not(:disabled) {
+  border-color: rgba(234, 57, 67, 0.7);
+
+  background: rgba(234, 57, 67, 0.13);
+}
+
+
+/* =========================================================
+   DESKTOP — LARGE SCREENS
+   ========================================================= */
+
+@media (min-width: 1500px) {
+
+  .controls-page > header,
+  .control-grid,
+  .controls-page > .bot-error,
+  .controls-page > .control-ok {
+    max-width: 1380px;
+  }
+
+}
+
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 1050px) {
+
+  .bot-main.controls-page {
+    padding: 24px;
+  }
+
+
+  .control-grid {
+    grid-template-columns: 1fr;
+  }
+
+
+  .control-grid > article:nth-child(3) {
+    grid-column: auto;
+  }
+
+}
+
+
+/* =========================================================
+   MOBILE
+   Sidebar switches to the mobile layout from BotSidebar.css
+   ========================================================= */
+
+@media (max-width: 760px) {
+
+  .bot-main.controls-page {
+    margin-left: 0;
+
+    width: 100%;
+
+    padding:
+      16px
+      16px
+      100px;
+  }
+
+
+  .controls-page > header {
+    flex-direction: column;
+
+    gap: 14px;
+
+    margin-bottom: 17px;
+  }
+
+
+  .controls-page > header h1 {
+    font-size: 23px;
+  }
+
+
+  .controls-page > header p {
+    font-size: 11px;
+  }
+
+
+  .bot-refresh {
+    width: 100%;
+  }
+
+
+  .control-grid {
+    grid-template-columns: 1fr;
+  }
+
+
+  .control-grid > article {
+    padding: 16px;
+  }
+
+
+  .allocation-stats {
+    grid-template-columns:
+      repeat(3, minmax(0, 1fr));
+  }
+
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 520px) {
+
+  .bot-main.controls-page {
+    padding:
+      14px
+      13px
+      105px;
+  }
+
+
+  .allocation-stats {
+    grid-template-columns: 1fr;
+  }
+
+
+  .allocation-stats > div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 12px;
+  }
+
+
+  .allocation-stats span {
+    margin-bottom: 0;
+  }
+
+
+  .allocation-input {
+    grid-template-columns:
+      auto minmax(0, 1fr);
+  }
+
+
+  .allocation-input button {
+    grid-column: 1 / -1;
+
+    min-height: 38px;
+
+    border-left: 0;
+    border-top: 1px solid #29313a;
+  }
+
+
+  .control-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+
+  .control-actions button {
+    width: 100%;
+  }
+
+}

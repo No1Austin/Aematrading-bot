@@ -106,14 +106,83 @@ function normalizeCandidate(raw = {}, index = 0) {
 }
 
 function normalizePayload(payload = {}) {
-  const root = payload.discovery ?? payload.data ?? payload;
-  const groups = root.candidates ?? root.lists ?? root;
-  const overall = arr(root.top20Overall);
-  const cex = arr(root.top20Cex);
-  const dex = arr(root.top20Dex);
-  const emerging = arr(root.emergingDexTrends);
-  const queue = arr(root.researchQueue);
-  const norm = (xs) => xs.map(normalizeCandidate);
+  const root =
+    payload?.discovery ??
+    payload?.data ??
+    payload ??
+    {};
+
+  /*
+   * Return the first value that is actually an array.
+   *
+   * Important:
+   * An empty array is still considered a valid backend response.
+   * We do not manufacture data from another category.
+   */
+  const firstArray = (...values) => {
+    const found = values.find((value) => Array.isArray(value));
+    return found ?? [];
+  };
+
+  /*
+   * Main discovery collections.
+   *
+   * Current backend:
+   *   top20Overall
+   *   topCex
+   *   topDex
+   *   researchQueue
+   *
+   * Older names are retained as fallbacks so the frontend
+   * remains compatible during the transition.
+   */
+  const overall = firstArray(
+    root.top20Overall,
+    root.overall,
+    root.candidates?.overall,
+    root.lists?.overall
+  );
+
+  const cex = firstArray(
+    root.topCex,
+    root.top20Cex,
+    root.candidates?.cex,
+    root.lists?.cex
+  );
+
+  const dex = firstArray(
+    root.topDex,
+    root.top20Dex,
+    root.candidates?.dex,
+    root.lists?.dex
+  );
+
+  /*
+   * Emerging DEX must come from an explicit backend
+   * emerging classification.
+   *
+   * Do NOT infer emerging assets merely because they
+   * happen to be DEX assets.
+   */
+  const emerging = firstArray(
+    root.emergingCandidates,
+    root.emergingDexTrends,
+    root.emergingDexCandidates,
+    root.candidates?.emerging,
+    root.lists?.emerging
+  );
+
+  const queue = firstArray(
+    root.researchQueue,
+    root.queue,
+    root.candidates?.researchQueue,
+    root.lists?.researchQueue
+  );
+
+  const norm = (items) =>
+    items
+      .filter(Boolean)
+      .map(normalizeCandidate);
 
   const normalizedOverall = norm(overall);
   const normalizedCex = norm(cex);
@@ -123,32 +192,64 @@ function normalizePayload(payload = {}) {
 
   /*
    * Valuation is research depth only (0% canonical weight).
-   * Discovery only labels an asset as a relative-value candidate when
-   * the backend valuation engine explicitly flags it. We do not infer
-   * "undervalued" merely from a small market cap.
+   *
+   * Discovery labels an asset as a relative-value candidate
+   * only when the backend valuation engine explicitly flags it.
+   *
+   * We do NOT infer "undervalued" from:
+   *   - small market cap
+   *   - low token price
+   *   - high 24h movement
+   *   - discovery score
    */
-  const undervaluedSource = arr(
+  const undervaluedSource = firstArray(
     root.undervaluedTokens,
     root.relativeValueCandidates,
-    root.valuationCandidates
+    root.valuationCandidates,
+    root.candidates?.undervalued,
+    root.lists?.undervalued
   );
 
+  /*
+   * If the backend explicitly supplied a valuation collection,
+   * normalize it directly.
+   *
+   * Otherwise we may expose candidates already carrying an
+   * explicit valuationCandidate flag from backend research.
+   */
   const normalizedUndervalued = undervaluedSource.length
     ? norm(undervaluedSource)
-    : [...normalizedOverall, ...normalizedCex, ...normalizedDex]
-        .filter((item, index, all) =>
-          item.valuationCandidate &&
-          all.findIndex((other) => other.id === item.id) === index
+    : [
+        ...normalizedOverall,
+        ...normalizedCex,
+        ...normalizedDex,
+      ]
+        .filter(
+          (item, index, all) =>
+            item?.valuationCandidate === true &&
+            all.findIndex(
+              (other) => other?.id === item?.id
+            ) === index
         )
-        .sort((a, b) => (n(b.score) ?? -1) - (n(a.score) ?? -1));
+        .sort(
+          (a, b) =>
+            (n(b?.score) ?? -1) -
+            (n(a?.score) ?? -1)
+        );
 
   return {
     root,
+
     overall: normalizedOverall,
+
     cex: normalizedCex,
+
     dex: normalizedDex,
+
     emerging: normalizedEmerging,
+
     undervalued: normalizedUndervalued,
+
     queue: normalizedQueue,
   };
 }
