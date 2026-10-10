@@ -80,6 +80,8 @@ import coinbaseTestRoute
 import deribitTestRoute
   from "./routes/deribitTestRoute.js";
 
+import futuresFeedHealthRoute from "./routes/futuresFeedHealthRoute.js";
+
 
 const cryptoRuntimeRoutes =
   createCryptoRuntimeRouter({
@@ -816,6 +818,9 @@ app.use(
   "/api/diagnostics",
   deribitTestRoute,
 );
+
+// Read-only multi-venue futures connectivity and evidence diagnostic.
+app.use("/api/diagnostics", futuresFeedHealthRoute);
 
 
 /**
