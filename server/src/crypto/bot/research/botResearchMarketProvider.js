@@ -15,11 +15,11 @@
 import BOT_CONFIG from "../config/botConfig.js";
 
 import {
-  getBybitLinearKlines,
-  getBybitLinearOrderbook,
-  getBybitLinearTicker,
-  getBybitOpenInterest,
-} from "../../data/providers/bybitFuturesProvider.js";
+  getGateLinearKlines,
+  getGateLinearOrderbook,
+  getGateLinearTicker,
+  getGateOpenInterest,
+} from "../../data/providers/gateFuturesProvider.js";
 
 /*
  * ---------------------------------------------------------
@@ -400,7 +400,7 @@ export async function getBotResearchMarketEvidence(
     ticker,
     rawOpenInterestHistory,
   ] = await Promise.all([
-    getBybitLinearKlines(
+    getGateLinearKlines(
       symbol,
       {
         interval:
@@ -416,7 +416,7 @@ export async function getBotResearchMarketEvidence(
       }
     ),
 
-    getBybitLinearOrderbook(
+    getGateLinearOrderbook(
       symbol,
       {
         limit:
@@ -427,7 +427,7 @@ export async function getBotResearchMarketEvidence(
       }
     ),
 
-    getBybitLinearTicker(
+    getGateLinearTicker(
       symbol,
       {
         timeoutMs:
@@ -441,7 +441,7 @@ export async function getBotResearchMarketEvidence(
      * If this endpoint fails, the entire research
      * candidate should not automatically fail.
      */
-    getBybitOpenInterest(
+    getGateOpenInterest(
       symbol,
       {
         intervalTime:
@@ -589,10 +589,10 @@ export async function getBotResearchMarketEvidence(
       new Date().toISOString(),
 
     source:
-      "BYBIT_V5_PUBLIC_LINEAR",
+      "GATE_USDT_PERPETUAL",
 
     exchange:
-      "BYBIT",
+      "GATE",
 
     instrumentType:
       "PERPETUAL",

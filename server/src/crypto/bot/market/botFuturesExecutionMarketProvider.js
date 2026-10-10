@@ -16,10 +16,10 @@
 import BOT_CONFIG from "../config/botConfig.js";
 
 import {
-  getBybitLinearKlines,
-  getBybitLinearOrderbook,
-  getBybitLinearTicker,
-} from "../../data/providers/bybitFuturesProvider.js";
+  getGateLinearKlines,
+  getGateLinearOrderbook,
+  getGateLinearTicker,
+} from "../../data/providers/gateFuturesProvider.js";
 
 /*
  * ---------------------------------------------------------
@@ -496,7 +496,7 @@ export async function getBotFuturesExecutionMarket(
     rawDepth,
     ticker,
   ] = await Promise.all([
-    getBybitLinearKlines(
+    getGateLinearKlines(
       symbol,
       {
         interval:
@@ -512,7 +512,7 @@ export async function getBotFuturesExecutionMarket(
       }
     ),
 
-    getBybitLinearOrderbook(
+    getGateLinearOrderbook(
       symbol,
       {
         limit:
@@ -523,7 +523,7 @@ export async function getBotFuturesExecutionMarket(
       }
     ),
 
-    getBybitLinearTicker(
+    getGateLinearTicker(
       symbol,
       {
         timeoutMs:
@@ -920,10 +920,10 @@ export async function getBotFuturesExecutionMarket(
       new Date().toISOString(),
 
     source:
-      "BYBIT_V5_PUBLIC_LINEAR",
+      "GATE_USDT_PERPETUAL",
 
     exchange:
-      "BYBIT",
+      "GATE",
 
     instrumentType:
       "PERPETUAL",
