@@ -1,3 +1,4 @@
+import { researchAuthHeaders, isProtectedResearchPath } from "./researchAuth.js";
 // client/src/services/api.js
 
 /**
@@ -350,6 +351,9 @@ export async function apiFetch(
     );
 
   try {
+    const requestHeaders = isProtectedResearchPath(path)
+      ? await researchAuthHeaders(headers)
+      : headers;
     const response =
       await fetch(
         endpoint,
@@ -370,7 +374,7 @@ export async function apiFetch(
                 : {}
             ),
 
-            ...headers,
+            ...Object.fromEntries(new Headers(requestHeaders).entries()),
           },
 
           ...(

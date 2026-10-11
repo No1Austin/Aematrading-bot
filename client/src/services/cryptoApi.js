@@ -1,3 +1,4 @@
+import { researchAuthHeaders } from "./researchAuth.js";
 /**
  * ============================================================
  * AEMA CRYPTO
@@ -40,13 +41,16 @@ function buildQuery(params = {}) {
 }
 
 async function request(path, options = {}) {
+  const requestHeaders = /^\/research(?:\/|$)/.test(path)
+    ? await researchAuthHeaders(options.headers ?? {})
+    : options.headers ?? {};
   const response =
     await fetch(
       `${CRYPTO_BASE}${path}`,
       {
         headers: {
           "Content-Type": "application/json",
-          ...(options.headers ?? {}),
+          ...Object.fromEntries(new Headers(requestHeaders).entries()),
         },
         ...options,
       },

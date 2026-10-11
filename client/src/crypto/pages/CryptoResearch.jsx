@@ -1,3 +1,4 @@
+import { researchAuthHeaders } from "../../services/researchAuth.js";
 import {
   Activity,
   AlertTriangle,
@@ -217,7 +218,7 @@ async function requestResearch(symbol, { signal } = {}) {
   const query = text(symbol).toUpperCase();
   const response = await fetch(`${API_BASE}/api/crypto/scanner/engines`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: await researchAuthHeaders({ "Content-Type": "application/json" }),
     signal,
     body: JSON.stringify({ query }),
   });
@@ -237,7 +238,7 @@ async function requestExchangeIntelligence(symbol, { signal } = {}) {
   const query = text(symbol).toUpperCase();
   const response = await fetch(
     `${API_BASE}/api/crypto/research/exchange-intelligence?symbol=${encodeURIComponent(query)}`,
-    { signal },
+    { signal, headers: await researchAuthHeaders() },
   );
 
   const body = await response.json().catch(() => ({}));

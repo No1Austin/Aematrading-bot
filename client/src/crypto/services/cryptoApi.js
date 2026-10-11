@@ -1,3 +1,4 @@
+import { researchAuthHeaders } from "../../services/researchAuth.js";
 /**
  * AEMA CRYPTO API CLIENT
  *
@@ -65,6 +66,9 @@ async function request(
   path,
   options = {},
 ) {
+  const requestHeaders = /^\/research(?:\/|$)/.test(path)
+    ? await researchAuthHeaders(options.headers ?? {})
+    : options.headers ?? {};
   const response = await fetch(
     `${CRYPTO_BASE}${path}`,
     {
@@ -74,7 +78,7 @@ async function request(
         "Content-Type":
           "application/json",
 
-        ...(options.headers ?? {}),
+        ...Object.fromEntries(new Headers(requestHeaders).entries()),
       },
     },
   );
