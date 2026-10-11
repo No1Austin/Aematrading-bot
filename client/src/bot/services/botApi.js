@@ -1,10 +1,22 @@
+import { researchAuthHeaders } from "../../services/researchAuth.js";
+
 const BASE=`${(import.meta.env.VITE_API_BASE_URL??"").replace(/\/+$/ ,"")}/api/crypto/bot`;
 
 async function req(path,options={}){
+  // Use the same Supabase session as the rest of AEMA. This makes bot access
+  // portable across desktop/mobile browsers after the user signs in there.
+  let headers;
+  try {
+    headers = await researchAuthHeaders({"Content-Type":"application/json",...(options.headers||{})});
+  } catch (error) {
+    error.code = "BOT_AUTH_REQUIRED";
+    throw error;
+  }
+
   const r=await fetch(`${BASE}${path}`,{
-    credentials:"include",
+    credentials:"include", // retained for legacy bot-key cookie compatibility
     ...options,
-    headers:{"Content-Type":"application/json",...(options.headers||{})}
+    headers
   });
   let b=null;
   try{b=await r.json()}catch{}
@@ -20,30 +32,12 @@ async function req(path,options={}){
 export const getBotAuthStatus=()=>req("/auth/status");
 export const loginBot=accessKey=>req("/auth/login",{method:"POST",body:JSON.stringify({accessKey})});
 export const logoutBot=()=>req("/auth/logout",{method:"POST"});
-
-export const searchBotMarket=(options={})=>req("/market/search",{
-  method:"POST",
-  body:JSON.stringify({options})
-});
-
-export const calculateSetupScenario=(setupId,{capitalUsd,leverage,feeRatePercent}={})=>req(
-  `/setups/${encodeURIComponent(setupId)}/scenario`,
-  {method:"POST",body:JSON.stringify({capitalUsd,leverage,feeRatePercent})}
-);
-
-export const monitorSetup=(setupId,{capitalUsd,leverage,feeRatePercent}={})=>req(
-  `/setups/${encodeURIComponent(setupId)}/monitor`,
-  {method:"POST",body:JSON.stringify({capitalUsd,leverage,feeRatePercent})}
-);
-
+export const searchBotMarket=(options={})=>req("/market/search",{method:"POST",body:JSON.stringify({options})});
+export const calculateSetupScenario=(setupId,{capitalUsd,leverage,feeRatePercent}={})=>req(`/setups/${encodeURIComponent(setupId)}/scenario`,{method:"POST",body:JSON.stringify({capitalUsd,leverage,feeRatePercent})});
+export const monitorSetup=(setupId,{capitalUsd,leverage,feeRatePercent}={})=>req(`/setups/${encodeURIComponent(setupId)}/monitor`,{method:"POST",body:JSON.stringify({capitalUsd,leverage,feeRatePercent})});
 export const getBotMonitors=()=>req("/monitoring");
 export const getBotMonitor=id=>req(`/monitoring/${encodeURIComponent(id)}`);
-export const refreshBotMonitor=(id,options={})=>req(
-  `/monitoring/${encodeURIComponent(id)}/refresh`,
-  {method:"POST",body:JSON.stringify({options})}
-);
-
-// Legacy endpoints intentionally retained while the backend is migrated.
+export const refreshBotMonitor=(id,options={})=>req(`/monitoring/${encodeURIComponent(id)}/refresh`,{method:"POST",body:JSON.stringify({options})});
 export const getBotDashboard=()=>req("/dashboard");
 export const getBotHistory=()=>req("/history");
 export const getTradeExplanation=id=>req(`/positions/${encodeURIComponent(id)}/explanation`);
