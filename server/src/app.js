@@ -4,7 +4,7 @@ import express from "express";
 import cors from "cors";
 
 import stripeWebhook from "../auth/stripeWebhook.js";
-import requireResearchSubscription from "./middleware/requireResearchSubscription.js";
+import billingRoutes from "./billing/routes.js";
 
 import createCryptoRuntimeRouter
   from "./routes/cryptoRuntimeRoutes.js";
@@ -594,6 +594,9 @@ app.use(
   }),
 );
 
+// Billing routes (after Stripe raw webhook and JSON parsing).
+app.use("/api/billing", billingRoutes);
+
 
 /**
  * Gracefully handle malformed JSON.
@@ -847,7 +850,6 @@ app.use(
 
 app.use(
   "/api/analysis",
-  requireResearchSubscription,
   analysisRoutes,
 );
 
@@ -888,7 +890,6 @@ app.use(
 
 app.use(
   "/api/research",
-  requireResearchSubscription,
   researchRoutes,
 );
 
@@ -903,13 +904,6 @@ app.use(
 /**
  * Crypto scanner
  */
-
-// Protect the public crypto research engine endpoint only.
-// Do not gate private bot services or other scanner routes.
-app.post(
-  "/api/crypto/scanner/engines",
-  requireResearchSubscription,
-);
 
 app.use(
   "/api/crypto/scanner",
@@ -971,7 +965,6 @@ app.use(
 
 app.use(
   "/api/crypto/research",
-  requireResearchSubscription,
   cryptoResearchRoutes,
 );
 
