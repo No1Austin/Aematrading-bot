@@ -66,7 +66,7 @@ async function request(
   path,
   options = {},
 ) {
-  const requestHeaders = /^\/research(?:\/|$)/.test(path)
+  const requestHeaders = /^\/(?:research|bot)(?:\/|$)/.test(path)
     ? await researchAuthHeaders(options.headers ?? {})
     : options.headers ?? {};
   const response = await fetch(
@@ -532,3 +532,26 @@ export default {
   config:
     cryptoApiConfig,
 };
+
+/**
+ * ============================================================
+ * PRIVATE SETUP ENGINE — RESEARCH ONLY
+ * ============================================================
+ */
+
+export async function analyzeCryptoSetup(symbol) {
+  const clean = requireValue(symbol, "CRYPTO_SETUP_SYMBOL_REQUIRED").toUpperCase();
+  const contract = clean.includes("_") ? clean : `${clean}_USDT`;
+
+  return request("/bot/setup/analyze", {
+    method: "POST",
+    body: JSON.stringify({ symbol: contract }),
+  });
+}
+
+export async function searchCryptoBotMarket() {
+  return request("/bot/market/search", {
+    method: "POST",
+    body: JSON.stringify({}),
+  });
+}

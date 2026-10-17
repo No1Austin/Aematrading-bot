@@ -594,3 +594,36 @@
   .crypto-research-arb-metrics.crypto-research-detail-grid,
   .crypto-research-liquidity-panel .crypto-research-detail-grid { grid-template-columns: 1fr; }
 }
+
+
+/* ============================================================
+   PRIVATE V4 SETUP ENGINE
+   ============================================================ */
+.crypto-setup-engine-panel {
+  margin-top: 12px; padding: 16px; border: 1px solid var(--border);
+  border-radius: 12px; background: var(--surface);
+}
+.crypto-setup-engine-status-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  margin: 10px 0 12px; padding: 10px 12px; border: 1px solid var(--border);
+  border-radius: 9px; background: var(--surface-soft);
+}
+.crypto-setup-engine-status-row strong { font-size: 12px; letter-spacing: .04em; }
+.crypto-setup-engine-status-row span { color: var(--text-muted); font-size: 9px; }
+.crypto-setup-engine-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 8px; }
+.crypto-setup-engine-targets { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 8px; margin-top: 8px; }
+.crypto-setup-engine-entry-zone {
+  display: flex; justify-content: space-between; gap: 12px; margin-top: 8px; padding: 10px 12px;
+  border: 1px solid var(--border); border-radius: 8px; background: var(--surface-soft);
+}
+.crypto-setup-engine-entry-zone span { color: var(--text-muted); font-size: 9px; text-transform: uppercase; letter-spacing: .06em; }
+.crypto-setup-engine-entry-zone strong { font-size: 11px; }
+.crypto-setup-engine-state { display: flex; align-items: center; gap: 9px; min-height: 70px; color: var(--text-secondary); }
+.crypto-setup-engine-state.warning { color: var(--warning); }
+.crypto-setup-engine-state div { display: grid; gap: 3px; }
+.crypto-setup-engine-state span { color: var(--text-muted); font-size: 10px; }
+@media (max-width: 900px) { .crypto-setup-engine-grid { grid-template-columns: repeat(2,minmax(0,1fr)); } }
+@media (max-width: 520px) {
+  .crypto-setup-engine-grid, .crypto-setup-engine-targets { grid-template-columns: 1fr; }
+  .crypto-setup-engine-status-row, .crypto-setup-engine-entry-zone { align-items: flex-start; flex-direction: column; }
+}

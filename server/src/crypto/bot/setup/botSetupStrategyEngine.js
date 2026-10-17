@@ -21,6 +21,42 @@ const STRATEGY_REGISTRY = Object.freeze({
   MOMENTUM_BREAKOUT: detectMomentumBreakoutSetup,
   RANGE_ROTATION: detectRangeRotationSetup,
 });
+const PLANNING_BLOCKERS = Object.freeze({
+  TREND_PULLBACK: new Set([
+    "TREND_PULLBACK_NOT_PRESENT",
+    "TREND_PULLBACK_PATTERN_SCORE_TOO_LOW",
+  ]),
+  BREAKOUT_RETEST: new Set([
+    "BREAKOUT_RETEST_WAITING_FOR_RETEST",
+    "BREAKOUT_RETEST_RETEST_NOT_CONFIRMED",
+    "BREAKOUT_RETEST_PATTERN_SCORE_TOO_LOW",
+  ]),
+  LIQUIDITY_SWEEP: new Set([
+    "LIQUIDITY_SWEEP_WAITING_FOR_CONFIRMATION",
+    "LIQUIDITY_SWEEP_PATTERN_SCORE_TOO_LOW",
+  ]),
+  MOMENTUM_BREAKOUT: new Set([
+    "MOMENTUM_BREAKOUT_ENTRY_TOO_EXTENDED",
+    "MOMENTUM_BREAKOUT_PATTERN_SCORE_TOO_LOW",
+  ]),
+  RANGE_ROTATION: new Set([
+    "RANGE_ROTATION_BULL_NOT_AT_LOWER_EDGE",
+    "RANGE_ROTATION_BEAR_NOT_AT_UPPER_EDGE",
+    "RANGE_ROTATION_REJECTION_NOT_CONFIRMED",
+    "RANGE_ROTATION_PATTERN_SCORE_TOO_LOW",
+  ]),
+});
+
+function isPlannableResult(result) {
+  if (!result || result.matched === true) return false;
+  const allowed = PLANNING_BLOCKERS[result?.strategy];
+  if (!allowed) return false;
+  const blockers = Array.isArray(result?.blockers) ? result.blockers : [];
+  if (!blockers.length || blockers.some((b) => !allowed.has(b))) return false;
+  const geometry = calculateGeometryQuality(result);
+  return geometry.available === true && result?.entryZone?.available === true;
+}
+
 
 function finiteOrNull(value) {
   if (value === null || value === undefined || value === "") return null;
@@ -731,10 +767,13 @@ export function selectBotSetupStrategy(
    */
 
   const matched =
-    attempted.filter(
-      (result) =>
-        result?.matched === true
-    );
+    attempted
+      .filter((result) => result?.matched === true || isPlannableResult(result))
+      .map((result) => ({
+        ...result,
+        planned: result?.matched !== true,
+        lifecycleStatus: result?.matched === true ? "ENTRY_CANDIDATE" : "PLANNED",
+      }));
 
   /*
    * -------------------------------------------------------
@@ -895,7 +934,9 @@ export function selectBotSetupStrategy(
 
     status:
       selected
-        ? "SETUP_STRATEGY_SELECTED"
+        ? (selected?.result?.planned === true
+            ? "SETUP_STRATEGY_PLANNED"
+            : "SETUP_STRATEGY_SELECTED")
         : "NO_SETUP_STRATEGY",
 
     direction,
@@ -922,6 +963,16 @@ export function selectBotSetupStrategy(
           matched:
             result?.matched ===
             true,
+
+          planned:
+            isPlannableResult(result),
+
+          lifecycleStatus:
+            result?.matched === true
+              ? "ENTRY_CANDIDATE"
+              : isPlannableResult(result)
+                ? "PLANNED"
+                : "REJECTED",
 
           status:
             result?.status ??

@@ -6,6 +6,7 @@ import {manuallyCloseBotPosition,emergencyStopBot} from "../positions/botManualC
 import {isBotRuntimeBusy,isBotRuntimeRunning} from "../runtime/botRuntime.js";
 import getDedicatedAlpacaOverview from "../alpaca/botDedicatedAlpacaOverview.js";
 import runBotMarketSearch from "../orchestration/botMarketSearchCycle.js";
+import analyzeBotSingleSetup from "../orchestration/botSingleSetupAnalysis.js";
 import calculateBotPositionScenario from "../setup/botPositionScenarioCalculator.js";
 import {getSearchSetup} from "../monitoring/botSearchResultStore.js";
 import {createMonitoredSetup,listMonitoredSetups,getMonitoredSetup} from "../monitoring/botSetupMonitorStore.js";
@@ -87,6 +88,14 @@ export default function createBotPrivateRoutes(){
     if(isBotRuntimeBusy())throw new Error("BOT_RUNTIME_BUSY_RETRY");
     res.set("Cache-Control","no-store");
     res.json(await runBotMarketSearch(req.body?.options||{}));
+  }));
+
+  // Single-symbol private Setup Engine. Reuses the same V4 setup builder as
+  // Search Market and never places an order.
+  r.post("/setup/analyze",handle(async(req,res)=>{
+    if(isBotRuntimeBusy())throw new Error("BOT_RUNTIME_BUSY_RETRY");
+    res.set("Cache-Control","no-store");
+    res.json(await analyzeBotSingleSetup(req.body?.symbol,req.body?.options||{}));
   }));
 
   r.post("/setups/:setupId/scenario",handle((req,res)=>{

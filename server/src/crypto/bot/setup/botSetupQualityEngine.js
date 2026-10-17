@@ -19,6 +19,8 @@
  * - Does NOT execute orders.
  */
 
+import resolveSetupLifecycle from "./botSetupLifecycleEngine.js";
+
 import BOT_CONFIG from "../config/botConfig.js";
 
 /*
@@ -539,14 +541,13 @@ function evaluateEntryQuality(
       high !== null
     ) {
       /*
-       * Not automatically a blocker.
-       *
-       * Pullback and retest setups are allowed to wait
-       * for price to return to the entry zone.
+       * A structural entry can be valid before price arrives.
+       * Reward the existence of a defined entry zone; do not
+       * pretend the entry has triggered.
        */
-      risks.push(
-        "CURRENT_PRICE_OUTSIDE_ENTRY_ZONE"
-      );
+      score += 20;
+      evidence.push("STRUCTURAL_ENTRY_ZONE_DEFINED");
+      risks.push("WAITING_FOR_ENTRY_ZONE");
     }
   }
 
@@ -1171,11 +1172,25 @@ export function evaluateBotSetupQuality(
 
   /*
    * -------------------------------------------------------
-   * 9. RETURN
+   * 9. LIFECYCLE
+   * -------------------------------------------------------
+   */
+
+  const lifecycle = resolveSetupLifecycle({
+    selectedResult,
+    market,
+    qualityApproved: approved,
+  });
+
+  /*
+   * -------------------------------------------------------
+   * 10. RETURN
    * -------------------------------------------------------
    */
 
   return {
+    lifecycleStatus: lifecycle.status,
+    lifecycle,
     approved,
 
     status:

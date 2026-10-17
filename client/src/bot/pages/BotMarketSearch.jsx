@@ -232,6 +232,22 @@ export default function BotMarketSearch() {
       ? result.noSetup
       : [];
 
+  const developingSetups = noSetup.filter(candidate => {
+    const status =
+      candidate?.diagnosticSetup?.lifecycleStatus ??
+      candidate?.diagnosticSetup?.lifecycle?.status ??
+      candidate?.lifecycleStatus ??
+      candidate?.lifecycle?.status ??
+      null;
+
+    return [
+      "FORMING",
+      "PLANNED",
+      "WAITING_FOR_ENTRY",
+      "ENTRY_READY",
+    ].includes(status);
+  });
+
 
   return (
     <div className="bot-app">
@@ -524,6 +540,33 @@ export default function BotMarketSearch() {
 
             )}
 
+
+            {/* =============================================
+                DEVELOPING / PLANNED SETUPS
+                ============================================= */}
+
+            {developingSetups.length > 0 && (
+              <>
+                <div className="search-section-title lifecycle-title">
+                  <div>
+                    <span>SETUP ENGINE WATCHLIST</span>
+                    <h2>
+                      {developingSetups.length} developing setup{developingSetups.length === 1 ? "" : "s"}
+                    </h2>
+                  </div>
+                  <Activity size={19} />
+                </div>
+
+                <section className="lifecycle-list">
+                  {developingSetups.map((candidate, index) => (
+                    <LifecycleCard
+                      key={`${candidate?.symbol || "developing"}-${index}`}
+                      candidate={candidate}
+                    />
+                  ))}
+                </section>
+              </>
+            )}
 
             {/* =============================================
                 REJECTED CANDIDATES
@@ -1099,6 +1142,94 @@ function Level({ l, v }) {
 
     </div>
 
+  );
+}
+
+
+/* =========================================================
+   V4 LIFECYCLE / DEVELOPING SETUP CARD
+   ========================================================= */
+
+function LifecycleCard({ candidate }) {
+  const setup = candidate?.diagnosticSetup ?? candidate?.setup ?? candidate;
+  const lifecycle = setup?.lifecycle ?? candidate?.lifecycle ?? {};
+  const status = setup?.lifecycleStatus ?? lifecycle?.status ?? "FORMING";
+  const direction = directionOf(candidate);
+  const strategy =
+    setup?.strategy?.id ??
+    setup?.strategy ??
+    candidate?.strategy ??
+    setup?.strategySelection?.selectedStrategy ??
+    "Not selected yet";
+  const regime = setup?.marketRegime ?? candidate?.regime ?? "—";
+  const entryZone = setup?.entryZone;
+  const zoneLow = finite(entryZone?.low ?? entryZone?.min ?? entryZone?.lower);
+  const zoneHigh = finite(entryZone?.high ?? entryZone?.max ?? entryZone?.upper);
+  const preferredEntry = finite(setup?.entry ?? entryZone?.preferredEntry ?? entryZone?.preferred);
+  const currentPrice = finite(
+    lifecycle?.currentPrice ??
+    setup?.entryQuality?.currentPrice ??
+    setup?.structure?.current?.close
+  );
+  const targets = Array.isArray(setup?.targets) ? setup.targets : [];
+  const eligible =
+    setup?.regime?.eligibleStrategies ??
+    candidate?.strategySelection?.eligibleStrategies ??
+    [];
+
+  const statusText = status.replaceAll("_", " ");
+  const explanation =
+    status === "FORMING"
+      ? "Potential setup conditions are developing, but a complete structural entry, stop and targets are not ready yet."
+      : status === "PLANNED" || status === "WAITING_FOR_ENTRY"
+        ? "A structural setup exists. The market has not reached the planned entry yet."
+        : status === "ENTRY_READY"
+          ? "Price has reached the planned entry area. The setup is ready for current revalidation/monitoring."
+          : lifecycle?.reason || "Setup Engine lifecycle update.";
+
+  return (
+    <article className={`lifecycle-card ${direction.toLowerCase()}`}>
+      <div className="lifecycle-card-head">
+        <div>
+          <span className={`direction ${direction === "BULL" ? "bull" : direction === "BEAR" ? "bear" : "neutral"}`}>
+            {direction}
+          </span>
+          <h3>{candidate?.symbol || setup?.symbol || "Unknown symbol"}</h3>
+          <small>{regime} · {String(strategy).replaceAll("_", " ")}</small>
+        </div>
+        <div className={`lifecycle-badge ${status.toLowerCase().replaceAll("_", "-")}`}>
+          <span>SETUP STATUS</span>
+          <strong>{statusText}</strong>
+        </div>
+      </div>
+
+      <p className="lifecycle-explanation">{explanation}</p>
+
+      {eligible.length > 0 && !setup?.strategy?.id && (
+        <div className="lifecycle-mechanics">
+          <span>WATCHING FOR</span>
+          <strong>{eligible.map(x => String(x).replaceAll("_", " ")).join(" · ")}</strong>
+        </div>
+      )}
+
+      <div className="lifecycle-levels">
+        <Level l="Current" v={fmt(currentPrice, 8)} />
+        <Level
+          l="Entry zone"
+          v={zoneLow !== null && zoneHigh !== null ? `${fmt(zoneLow, 8)} – ${fmt(zoneHigh, 8)}` : "Not ready"}
+        />
+        <Level l="Preferred entry" v={preferredEntry === null ? "Not ready" : fmt(preferredEntry, 8)} />
+        <Level l="Stop / invalidation" v={fmt(setup?.stop ?? setup?.invalidation, 8)} />
+        <Level l="TP1" v={fmt(targets?.[0], 8)} />
+        <Level l="TP2 / TP3" v={targets.length > 1 ? targets.slice(1, 3).map(x => fmt(x, 8)).join(" / ") : "Not ready"} />
+      </div>
+
+      <div className="lifecycle-meta">
+        <span>Class <strong>{setup?.setupClass ?? "—"}</strong></span>
+        <span>Quality <strong>{setup?.setupQualityScore ?? "—"}</strong></span>
+        <span>Research only · execution disabled</span>
+      </div>
+    </article>
   );
 }
 

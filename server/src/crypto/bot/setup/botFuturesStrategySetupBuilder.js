@@ -963,6 +963,14 @@ if (
           ?.selectedStrategy ??
         null,
 
+      lifecycleStatus:
+        setupQuality?.lifecycleStatus ??
+        (strategySelection?.status === "SETUP_STRATEGY_PLANNED" ? "PLANNED" : null),
+
+      lifecycle:
+        setupQuality?.lifecycle ??
+        null,
+
       marketRegime:
         regime?.regime ??
         null,

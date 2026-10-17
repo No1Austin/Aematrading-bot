@@ -1,0 +1,4520 @@
+{
+  system: 'AEMA_PRIVATE_MARKET_RESEARCH',
+  status: 'NO_SETUP',
+  startedAt: '2026-10-17T19:06:06.552Z',
+  completedAt: '2026-10-17T19:06:20.305Z',
+  onDemand: true,
+  executionDisabled: true,
+  executionAuthority: false,
+  liveExecution: false,
+  marketType: 'PERPETUAL',
+  exchange: 'GATE',
+  instrumentWarning: 'NONE',
+  counts: {
+    universe: 1000,
+    hardEligible: 983,
+    opportunityQualified: 112,
+    top20: 20,
+    researchCompleted: 20,
+    researchFailed: 0,
+    directionQualified: 8,
+    directionRejected: 12,
+    top10: 8,
+    setupsBuilt: 8,
+    qualifiedSetups: 0,
+    noSetup: 19,
+    setupFailures: 0
+  },
+  setups: [],
+  noSetup: [
+    {
+      symbol: 'AGT_USDT',
+      stage: 'DIRECTION',
+      reason: 'DIRECTION_NOT_STRONG_ENOUGH',
+      blockers: [
+        'DIRECTION_SCORE_TOO_LOW',
+        'DIRECTION_SEPARATION_TOO_LOW',
+        'MARKET_STRUCTURE_DIRECTION_DISAGREEMENT'
+      ],
+      direction: null,
+      confidence: 64.006,
+      separation: 1.0449
+    },
+    {
+      symbol: 'SAND_USDT',
+      stage: 'DIRECTION',
+      reason: 'DIRECTION_NOT_STRONG_ENOUGH',
+      blockers: [ 'DIRECTION_SCORE_TOO_LOW', 'DIRECTION_SEPARATION_TOO_LOW' ],
+      direction: null,
+      confidence: 65.768,
+      separation: 11.5989
+    },
+    {
+      symbol: 'EPIC_USDT',
+      stage: 'DIRECTION',
+      reason: 'DIRECTION_NOT_STRONG_ENOUGH',
+      blockers: [ 'DIRECTION_SCORE_TOO_LOW', 'DIRECTION_SEPARATION_TOO_LOW' ],
+      direction: null,
+      confidence: 66.6263,
+      separation: 11.5261
+    },
+    {
+      symbol: 'ERA_USDT',
+      stage: 'DIRECTION',
+      reason: 'DIRECTION_NOT_STRONG_ENOUGH',
+      blockers: [ 'DIRECTION_SCORE_TOO_LOW' ],
+      direction: null,
+      confidence: 63.0961,
+      separation: 14.1845
+    },
+    {
+      symbol: 'FIL_USDT',
+      stage: 'DIRECTION',
+      reason: 'DIRECTION_NOT_STRONG_ENOUGH',
+      blockers: [ 'DIRECTION_SCORE_TOO_LOW', 'TECHNICAL_CONFIRMATION_TOO_WEAK' ],
+      direction: null,
+      confidence: 65.951,
+      separation: 13.9903
+    },
+    {
+      symbol: 'US_USDT',
+      stage: 'DIRECTION',
+      reason: 'DIRECTION_NOT_STRONG_ENOUGH',
+      blockers: [
+        'DIRECTION_SCORE_TOO_LOW',
+        'DIRECTION_SEPARATION_TOO_LOW',
+        'MARKET_STRUCTURE_DIRECTION_DISAGREEMENT',
+        'TECHNICAL_CONFIRMATION_TOO_WEAK'
+      ],
+      direction: null,
+      confidence: 55.8607,
+      separation: 2.1368
+    },
+    {
+      symbol: 'TIA_USDT',
+      stage: 'DIRECTION',
+      reason: 'DIRECTION_NOT_STRONG_ENOUGH',
+      blockers: [
+        'DIRECTION_SCORE_TOO_LOW',
+        'DIRECTION_SEPARATION_TOO_LOW',
+        'TECHNICAL_DIRECTION_DISAGREEMENT'
+      ],
+      direction: null,
+      confidence: 60.1673,
+      separation: 6.7141
+    },
+    {
+      symbol: 'FOLKS_USDT',
+      stage: 'DIRECTION',
+      reason: 'DIRECTION_NOT_STRONG_ENOUGH',
+      blockers: [
+        'DIRECTION_SCORE_TOO_LOW',
+        'DIRECTION_SEPARATION_TOO_LOW',
+        'TECHNICAL_DIRECTION_DISAGREEMENT'
+      ],
+      direction: null,
+      confidence: 55.8775,
+      separation: 4.4149
+    },
+    {
+      symbol: 'PONS_USDT',
+      stage: 'DIRECTION',
+      reason: 'DIRECTION_NOT_STRONG_ENOUGH',
+      blockers: [ 'DIRECTION_SCORE_TOO_LOW', 'DIRECTION_SEPARATION_TOO_LOW' ],
+      direction: null,
+      confidence: 60.9921,
+      separation: 11.357
+    },
+    {
+      symbol: 'PROM_USDT',
+      stage: 'DIRECTION',
+      reason: 'DIRECTION_NOT_STRONG_ENOUGH',
+      blockers: [
+        'DIRECTION_SCORE_TOO_LOW',
+        'DIRECTION_SEPARATION_TOO_LOW',
+        'TECHNICAL_DIRECTION_DISAGREEMENT'
+      ],
+      direction: null,
+      confidence: 60.3363,
+      separation: 0.1248
+    },
+    {
+      symbol: 'SIREN_USDT',
+      stage: 'DIRECTION',
+      reason: 'DIRECTION_NOT_STRONG_ENOUGH',
+      blockers: [ 'DIRECTION_SCORE_TOO_LOW', 'DIRECTION_SEPARATION_TOO_LOW' ],
+      direction: null,
+      confidence: 56.5381,
+      separation: 11.9968
+    },
+    {
+      symbol: 'PUMP_USDT',
+      stage: 'DIRECTION',
+      reason: 'DIRECTION_NOT_STRONG_ENOUGH',
+      blockers: [
+        'DIRECTION_SCORE_TOO_LOW',
+        'DIRECTION_SEPARATION_TOO_LOW',
+        'TECHNICAL_DIRECTION_DISAGREEMENT'
+      ],
+      direction: null,
+      confidence: 59.4701,
+      separation: 0.8084
+    },
+    {
+      symbol: 'BTW_USDT',
+      stage: 'SETUP',
+      reason: 'SETUP_BLOCKED',
+      blockers: [
+        'STRUCTURE_DIRECTION_CONFLICT',
+        'SETUP_STRATEGY_REGIME_NOT_READY',
+        'NO_SETUP_PATTERN_MATCHED',
+        'SETUP_STRATEGY_NOT_SELECTED',
+        'SETUP_REGIME_NOT_APPROVED',
+        'SETUP_ENTRY_UNAVAILABLE',
+        'SETUP_STOP_UNAVAILABLE',
+        'SETUP_STRUCTURAL_TARGETS_UNAVAILABLE',
+        'ENTRY_PRICE_UNAVAILABLE',
+        'REWARD_BELOW_MINIMUM_TRADABLE_THRESHOLD',
+        'SETUP_QUALITY_SCORE_TOO_LOW'
+      ],
+      direction: 'LONG',
+      regime: 'TRENDING',
+      strategy: null,
+      strategySelection: {
+        approved: false,
+        status: 'NO_SETUP_STRATEGY',
+        direction: 'BULL',
+        marketRegime: 'TRENDING',
+        eligibleStrategies: [ 'TREND_PULLBACK', 'BREAKOUT_RETEST' ],
+        attemptedStrategies: [
+          {
+            strategy: 'TREND_PULLBACK',
+            matched: false,
+            planned: false,
+            lifecycleStatus: 'REJECTED',
+            status: 'PATTERN_REJECTED',
+            patternScore: 35,
+            blockers: [
+              'TREND_PULLBACK_REGIME_NOT_READY',
+              'TREND_PULLBACK_NOT_PRESENT',
+              'TREND_PULLBACK_PATTERN_SCORE_TOO_LOW'
+            ],
+            evidence: [
+              'TRENDING_REGIME',
+              'SUITABLE_VOLATILITY',
+              'ADEQUATE_MARKET_PARTICIPATION'
+            ],
+            risks: [
+              'TREND_STRUCTURE_NOT_FULLY_ALIGNED',
+              'PRICE_EXTENDED_NO_PULLBACK',
+              'PRICE_OUTSIDE_PREFERRED_ENTRY_ZONE'
+            ]
+          },
+          {
+            strategy: 'BREAKOUT_RETEST',
+            matched: false,
+            planned: false,
+            lifecycleStatus: 'REJECTED',
+            status: 'PATTERN_REJECTED',
+            patternScore: 90,
+            blockers: [ 'BREAKOUT_RETEST_REGIME_NOT_READY' ],
+            evidence: [
+              'DIRECTIONAL_BREAKOUT_CONFIRMED',
+              'MEANINGFUL_BREAKOUT_DISPLACEMENT',
+              'STRONG_BREAKOUT_DISPLACEMENT',
+              'BROKEN_LEVEL_RETESTED',
+              'RETEST_HELD',
+              'REGIME_SUPPORTS_BREAKOUT_SETUP'
+            ],
+            risks: [ 'PRICE_AWAY_FROM_RETEST_ENTRY' ]
+          }
+        ],
+        matchedStrategies: [],
+        selectedStrategy: null,
+        selectionScore: null,
+        minimumSelectionScore: 60,
+        selectionComponents: null,
+        selectedResult: null,
+        runnerUp: null,
+        ambiguity: {
+          ambiguous: false,
+          scoreDifference: null,
+          entryDifferencePercent: null,
+          stopDifferencePercent: null,
+          reasons: []
+        },
+        blockers: [
+          'SETUP_STRATEGY_REGIME_NOT_READY',
+          'NO_SETUP_PATTERN_MATCHED'
+        ],
+        observedAt: '2026-10-17T19:06:17.967Z',
+        executionAuthority: false,
+        liveExecution: false
+      },
+      marketStructure: null,
+      setupQuality: null,
+      candleAnalysis: null,
+      entry: null,
+      entryZone: null,
+      stop: null,
+      invalidation: null,
+      target: null,
+      targets: [],
+      targetsDetailed: [],
+      riskReward: null,
+      diagnosticSetup: {
+        approved: false,
+        status: 'NO_SETUP',
+        setupType: 'NONE',
+        symbol: 'BTW_USDT',
+        direction: 'LONG',
+        researchDirection: 'BULL',
+        entry: null,
+        stop: null,
+        target: null,
+        targets: [],
+        stopDistance: null,
+        targetDistance: null,
+        stopDistancePercent: null,
+        targetDistancePercent: null,
+        riskReward: null,
+        minimumRiskReward: 1.5,
+        spreadPercent: 0.06003146755045614,
+        maximumSpreadPercent: 0.5,
+        slippagePercent: 0.008472617643886548,
+        depthNotional: 1287603.9577000001,
+        atr: 0.03415821428571432,
+        support: 2.4876,
+        resistance: 2.626468,
+        freshness: { available: true, stale: false, ageMs: 0 },
+        instrumentType: 'PERPETUAL',
+        futuresValidated: true,
+        strategy: null,
+        lifecycleStatus: 'FORMING',
+        lifecycle: {
+          status: 'FORMING',
+          entryReached: false,
+          currentPrice: null,
+          reason: 'NO_STRUCTURAL_SETUP_SELECTED'
+        },
+        marketRegime: 'TRENDING',
+        regimeScore: 85,
+        entryZone: null,
+        invalidation: null,
+        targetsDetailed: [],
+        setupQualityScore: 20,
+        minimumSetupQualityScore: 70,
+        qualityComponents: {
+          strategy: { score: 0, weight: 0.4 },
+          entry: { score: 0, weight: 0.2 },
+          reward: { score: 0, weight: 0.2, riskReward: null, setupClass: null },
+          execution: { score: 100, weight: 0.2 }
+        },
+        entryQuality: {
+          approved: false,
+          score: 0,
+          currentPrice: 2.604416,
+          preferredEntry: null,
+          chaseState: null,
+          evidence: [],
+          risks: [],
+          blockers: [ 'ENTRY_PRICE_UNAVAILABLE' ]
+        },
+        executionQuality: {
+          approved: true,
+          score: 100,
+          spreadPercent: 0.06003146755045614,
+          maximumSpreadPercent: 0.5,
+          slippagePercent: 0.008472617643886548,
+          maximumSlippagePercent: 0.5,
+          freshness: { available: true, stale: false, ageMs: 0 },
+          evidence: [
+            'SPREAD_ACCEPTABLE',
+            'SLIPPAGE_ACCEPTABLE',
+            'MARKET_DATA_FRESH'
+          ],
+          risks: [],
+          blockers: []
+        },
+        structure: {
+          approved: true,
+          status: 'MARKET_STRUCTURE_READY',
+          candleCount: 99,
+          current: {
+            openTime: 1792263600000,
+            open: 2.608071,
+            high: 2.611573,
+            low: 2.585618,
+            close: 2.593798,
+            changePercent: -0.547262708722261
+          },
+          atr: 0.03478585714285717,
+          trend: 'BEARISH',
+          structurePattern: 'LH_LL',
+          highStructure: 'LOWER_HIGH',
+          lowStructure: 'LOWER_LOW',
+          swingHighs: [
+            { index: 26, openTime: 1792242000000, price: 2.241407 },
+            { index: 32, openTime: 1792243800000, price: 2.272695 },
+            { index: 35, openTime: 1792244700000, price: 2.26891 },
+            { index: 42, openTime: 1792246800000, price: 2.422112 },
+            { index: 53, openTime: 1792250100000, price: 2.245022 },
+            { index: 66, openTime: 1792254000000, price: 2.3976 },
+            { index: 78, openTime: 1792257600000, price: 2.554125 },
+            { index: 84, openTime: 1792259400000, price: 2.593803 },
+            { index: 89, openTime: 1792260900000, price: 2.592495 },
+            { index: 92, openTime: 1792261800000, price: 2.584422 }
+          ],
+          swingLows: [
+            { index: 19, openTime: 1792239900000, price: 2.17537 },
+            { index: 23, openTime: 1792241100000, price: 2.197155 },
+            { index: 35, openTime: 1792244700000, price: 2.240641 },
+            { index: 50, openTime: 1792249200000, price: 2.113481 },
+            { index: 55, openTime: 1792250700000, price: 2.09 },
+            { index: 65, openTime: 1792253700000, price: 2.28096 },
+            { index: 69, openTime: 1792254900000, price: 2.307793 },
+            { index: 82, openTime: 1792258800000, price: 2.4876 },
+            { index: 90, openTime: 1792261200000, price: 2.534796 },
+            { index: 95, openTime: 1792262700000, price: 2.505503 }
+          ],
+          latestSwingHigh: { index: 92, openTime: 1792261800000, price: 2.584422 },
+          previousSwingHigh: { index: 89, openTime: 1792260900000, price: 2.592495 },
+          latestSwingLow: { index: 95, openTime: 1792262700000, price: 2.505503 },
+          previousSwingLow: { index: 90, openTime: 1792261200000, price: 2.534796 },
+          range: {
+            high: 2.626468,
+            low: 2.4876,
+            midpoint: 2.557034,
+            widthPercent: 5.4308233680115325
+          },
+          volatility: {
+            regime: 'NORMAL',
+            atrPercent: 1.3411166614692882,
+            recentRangeRatio: 1.3202263145684456
+          },
+          breakout: {
+            detected: false,
+            direction: null,
+            level: null,
+            displacementAtr: 0.4103104299366255
+          },
+          liquiditySweep: {
+            detected: false,
+            direction: null,
+            level: null,
+            extreme: null,
+            reclaimed: false
+          },
+          volume: {
+            available: true,
+            ratio: 0.7397959183673469,
+            state: 'NORMAL'
+          },
+          blockers: [],
+          observedAt: '2026-10-17T19:06:17.967Z',
+          executionAuthority: false,
+          liveExecution: false
+        },
+        regime: {
+          approved: false,
+          status: 'MARKET_REGIME_BLOCKED',
+          regime: 'TRENDING',
+          regimeScore: 85,
+          researchDirection: 'BULL',
+          structuralDirection: 'BEAR',
+          alignment: {
+            aligned: false,
+            state: 'CONFLICT',
+            reason: 'RESEARCH_AND_STRUCTURE_CONFLICT'
+          },
+          scores: {
+            TRENDING: {
+              score: 85,
+              reasons: [
+                'LOWER_HIGH_LOWER_LOW_STRUCTURE',
+                'DIRECTIONAL_SWING_STRUCTURE',
+                'NORMAL_VOLATILITY'
+              ]
+            },
+            COMPRESSION: { score: 15, reasons: [ 'RELATIVELY_TIGHT_RANGE' ] },
+            EXPANSION: { score: 0, reasons: [] },
+            LIQUIDITY_SWEEP: { score: 0, reasons: [] },
+            RANGING: {
+              score: 55,
+              reasons: [
+                'NO_ACTIVE_BREAKOUT_OR_SWEEP',
+                'STABLE_RANGE_VOLATILITY',
+                'DEFINED_RANGE_BOUNDARIES'
+              ]
+            }
+          },
+          eligibleStrategies: [ 'TREND_PULLBACK', 'BREAKOUT_RETEST' ],
+          context: {
+            structurePattern: 'LH_LL',
+            volatility: 'NORMAL',
+            breakout: {
+              detected: false,
+              direction: null,
+              level: null,
+              displacementAtr: 0.4103104299366255
+            },
+            liquiditySweep: {
+              detected: false,
+              direction: null,
+              level: null,
+              extreme: null,
+              reclaimed: false
+            },
+            range: {
+              high: 2.626468,
+              low: 2.4876,
+              midpoint: 2.557034,
+              widthPercent: 5.4308233680115325
+            },
+            volume: {
+              available: true,
+              ratio: 0.7397959183673469,
+              state: 'NORMAL'
+            }
+          },
+          blockers: [ 'STRUCTURE_DIRECTION_CONFLICT' ],
+          observedAt: '2026-10-17T19:06:17.967Z',
+          executionAuthority: false,
+          liveExecution: false
+        },
+        strategySelection: {
+          approved: false,
+          status: 'NO_SETUP_STRATEGY',
+          direction: 'BULL',
+          marketRegime: 'TRENDING',
+          eligibleStrategies: [ 'TREND_PULLBACK', 'BREAKOUT_RETEST' ],
+          attemptedStrategies: [
+            {
+              strategy: 'TREND_PULLBACK',
+              matched: false,
+              planned: false,
+              lifecycleStatus: 'REJECTED',
+              status: 'PATTERN_REJECTED',
+              patternScore: 35,
+              blockers: [
+                'TREND_PULLBACK_REGIME_NOT_READY',
+                'TREND_PULLBACK_NOT_PRESENT',
+                'TREND_PULLBACK_PATTERN_SCORE_TOO_LOW'
+              ],
+              evidence: [
+                'TRENDING_REGIME',
+                'SUITABLE_VOLATILITY',
+                'ADEQUATE_MARKET_PARTICIPATION'
+              ],
+              risks: [
+                'TREND_STRUCTURE_NOT_FULLY_ALIGNED',
+                'PRICE_EXTENDED_NO_PULLBACK',
+                'PRICE_OUTSIDE_PREFERRED_ENTRY_ZONE'
+              ]
+            },
+            {
+              strategy: 'BREAKOUT_RETEST',
+              matched: false,
+              planned: false,
+              lifecycleStatus: 'REJECTED',
+              status: 'PATTERN_REJECTED',
+              patternScore: 90,
+              blockers: [ 'BREAKOUT_RETEST_REGIME_NOT_READY' ],
+              evidence: [
+                'DIRECTIONAL_BREAKOUT_CONFIRMED',
+                'MEANINGFUL_BREAKOUT_DISPLACEMENT',
+                'STRONG_BREAKOUT_DISPLACEMENT',
+                'BROKEN_LEVEL_RETESTED',
+                'RETEST_HELD',
+                'REGIME_SUPPORTS_BREAKOUT_SETUP'
+              ],
+              risks: [ 'PRICE_AWAY_FROM_RETEST_ENTRY' ]
+            }
+          ],
+          matchedStrategies: [],
+          selectedStrategy: null,
+          selectionScore: null,
+          minimumSelectionScore: 60,
+          selectionComponents: null,
+          selectedResult: null,
+          runnerUp: null,
+          ambiguity: {
+            ambiguous: false,
+            scoreDifference: null,
+            entryDifferencePercent: null,
+            stopDifferencePercent: null,
+            reasons: []
+          },
+          blockers: [
+            'SETUP_STRATEGY_REGIME_NOT_READY',
+            'NO_SETUP_PATTERN_MATCHED'
+          ],
+          observedAt: '2026-10-17T19:06:17.967Z',
+          executionAuthority: false,
+          liveExecution: false
+        },
+        quality: {
+          lifecycleStatus: 'FORMING',
+          lifecycle: {
+            status: 'FORMING',
+            entryReached: false,
+            currentPrice: null,
+            reason: 'NO_STRUCTURAL_SETUP_SELECTED'
+          },
+          approved: false,
+          status: 'SETUP_QUALITY_REJECTED',
+          symbol: 'BTW_USDT',
+          direction: 'BULL',
+          strategy: {
+            id: null,
+            selectionScore: null,
+            patternScore: null,
+            marketRegime: 'TRENDING'
+          },
+          setupClass: null,
+          expectancyMode: 'BOOTSTRAP',
+          rewardProfile: {
+            bestRiskReward: null,
+            selectedRiskReward: null,
+            minimumTradableRiskReward: 0.5,
+            standardRiskReward: 1,
+            asymmetricRiskReward: 1.5,
+            structuralTargetCount: 0,
+            tradableTargetCount: 0
+          },
+          entry: null,
+          entryZone: null,
+          stop: null,
+          invalidation: null,
+          target: null,
+          targets: [],
+          targetsDetailed: [],
+          riskDistance: null,
+          targetDistance: null,
+          riskReward: null,
+          minimumRiskReward: 1.5,
+          minimumTradableRiskReward: 0.5,
+          setupQualityScore: 20,
+          minimumSetupQualityScore: 70,
+          qualityComponents: {
+            strategy: { score: 0, weight: 0.4 },
+            entry: { score: 0, weight: 0.2 },
+            reward: {
+              score: 0,
+              weight: 0.2,
+              riskReward: null,
+              setupClass: null
+            },
+            execution: { score: 100, weight: 0.2 }
+          },
+          entryQuality: {
+            approved: false,
+            score: 0,
+            currentPrice: 2.604416,
+            preferredEntry: null,
+            chaseState: null,
+            evidence: [],
+            risks: [],
+            blockers: [ 'ENTRY_PRICE_UNAVAILABLE' ]
+          },
+          executionQuality: {
+            approved: true,
+            score: 100,
+            spreadPercent: 0.06003146755045614,
+            maximumSpreadPercent: 0.5,
+            slippagePercent: 0.008472617643886548,
+            maximumSlippagePercent: 0.5,
+            freshness: { available: true, stale: false, ageMs: 0 },
+            evidence: [
+              'SPREAD_ACCEPTABLE',
+              'SLIPPAGE_ACCEPTABLE',
+              'MARKET_DATA_FRESH'
+            ],
+            risks: [],
+            blockers: []
+          },
+          spreadPercent: 0.06003146755045614,
+          maximumSpreadPercent: 0.5,
+          slippagePercent: 0.008472617643886548,
+          maximumSlippagePercent: 0.5,
+          freshness: { available: true, stale: false, ageMs: 0 },
+          learningContext: {
+            strategy: null,
+            regime: 'TRENDING',
+            direction: 'BULL',
+            patternScore: null,
+            selectionScore: null,
+            entryScore: 0,
+            executionScore: 100,
+            riskReward: null,
+            setupClass: null
+          },
+          evidence: [
+            'SPREAD_ACCEPTABLE',
+            'SLIPPAGE_ACCEPTABLE',
+            'MARKET_DATA_FRESH'
+          ],
+          risks: [],
+          blockers: [
+            'SETUP_STRATEGY_NOT_SELECTED',
+            'SETUP_REGIME_NOT_APPROVED',
+            'SETUP_ENTRY_UNAVAILABLE',
+            'SETUP_STOP_UNAVAILABLE',
+            'SETUP_STRUCTURAL_TARGETS_UNAVAILABLE',
+            'ENTRY_PRICE_UNAVAILABLE',
+            'REWARD_BELOW_MINIMUM_TRADABLE_THRESHOLD',
+            'SETUP_QUALITY_SCORE_TOO_LOW'
+          ],
+          observedAt: '2026-10-17T19:06:17.968Z',
+          executionAuthority: false,
+          liveExecution: false
+        },
+        evidence: [
+          'SPREAD_ACCEPTABLE',
+          'SLIPPAGE_ACCEPTABLE',
+          'MARKET_DATA_FRESH'
+        ],
+        risks: [],
+        blockers: [
+          'STRUCTURE_DIRECTION_CONFLICT',
+          'SETUP_STRATEGY_REGIME_NOT_READY',
+          'NO_SETUP_PATTERN_MATCHED',
+          'SETUP_STRATEGY_NOT_SELECTED',
+          'SETUP_REGIME_NOT_APPROVED',
+          'SETUP_ENTRY_UNAVAILABLE',
+          'SETUP_STOP_UNAVAILABLE',
+          'SETUP_STRUCTURAL_TARGETS_UNAVAILABLE',
+          'ENTRY_PRICE_UNAVAILABLE',
+          'REWARD_BELOW_MINIMUM_TRADABLE_THRESHOLD',
+          'SETUP_QUALITY_SCORE_TOO_LOW'
+        ],
+        executionAuthority: false,
+        liveExecution: false
+      }
+    },
+    {
+      symbol: 'AVA_USDT',
+      stage: 'SETUP',
+      reason: 'SETUP_BLOCKED',
+      blockers: [
+        'BEST_SETUP_SELECTION_SCORE_TOO_LOW',
+        'SETUP_STRATEGY_NOT_SELECTED',
+        'SETUP_ENTRY_UNAVAILABLE',
+        'SETUP_STOP_UNAVAILABLE',
+        'SETUP_STRUCTURAL_TARGETS_UNAVAILABLE',
+        'ENTRY_PRICE_UNAVAILABLE',
+        'REWARD_BELOW_MINIMUM_TRADABLE_THRESHOLD',
+        'SETUP_QUALITY_SCORE_TOO_LOW'
+      ],
+      direction: 'LONG',
+      regime: 'RANGING',
+      strategy: null,
+      strategySelection: {
+        approved: false,
+        status: 'NO_SETUP_STRATEGY',
+        direction: 'BULL',
+        marketRegime: 'RANGING',
+        eligibleStrategies: [ 'RANGE_ROTATION' ],
+        attemptedStrategies: [
+          {
+            strategy: 'RANGE_ROTATION',
+            matched: false,
+            planned: true,
+            lifecycleStatus: 'PLANNED',
+            status: 'PATTERN_REJECTED',
+            patternScore: 50,
+            blockers: [
+              'RANGE_ROTATION_BULL_NOT_AT_LOWER_EDGE',
+              'RANGE_ROTATION_REJECTION_NOT_CONFIRMED',
+              'RANGE_ROTATION_PATTERN_SCORE_TOO_LOW'
+            ],
+            evidence: [
+              'RANGING_REGIME',
+              'SUFFICIENT_RANGE_WIDTH',
+              'NON_TRENDING_STRUCTURE'
+            ],
+            risks: [ 'PRICE_AWAY_FROM_RANGE_ENTRY_ZONE' ]
+          }
+        ],
+        matchedStrategies: [
+          {
+            strategy: 'RANGE_ROTATION',
+            selectionScore: 57,
+            patternScore: 50,
+            bestRiskReward: 12.05681933070471,
+            selectionComponents: {
+              pattern: { score: 50, weight: 0.7 },
+              geometry: {
+                score: 85,
+                weight: 0.2,
+                bestRiskReward: 12.05681933070471,
+                validTargetCount: 2
+              },
+              entry: { score: 50, weight: 0.1 }
+            }
+          }
+        ],
+        selectedStrategy: null,
+        selectionScore: null,
+        minimumSelectionScore: 60,
+        selectionComponents: null,
+        selectedResult: null,
+        runnerUp: null,
+        ambiguity: {
+          ambiguous: false,
+          scoreDifference: null,
+          entryDifferencePercent: null,
+          stopDifferencePercent: null,
+          reasons: []
+        },
+        blockers: [ 'BEST_SETUP_SELECTION_SCORE_TOO_LOW' ],
+        observedAt: '2026-10-17T19:06:18.351Z',
+        executionAuthority: false,
+        liveExecution: false
+      },
+      marketStructure: null,
+      setupQuality: null,
+      candleAnalysis: null,
+      entry: null,
+      entryZone: null,
+      stop: null,
+      invalidation: null,
+      target: null,
+      targets: [],
+      targetsDetailed: [],
+      riskReward: null,
+      diagnosticSetup: {
+        approved: false,
+        status: 'NO_SETUP',
+        setupType: 'NONE',
+        symbol: 'AVA_USDT',
+        direction: 'LONG',
+        researchDirection: 'BULL',
+        entry: null,
+        stop: null,
+        target: null,
+        targets: [],
+        stopDistance: null,
+        targetDistance: null,
+        stopDistancePercent: null,
+        targetDistancePercent: null,
+        riskReward: null,
+        minimumRiskReward: 1.5,
+        spreadPercent: 0.18389596742413722,
+        maximumSpreadPercent: 0.5,
+        slippagePercent: 0.1519426127323265,
+        depthNotional: 82756.84999999999,
+        atr: 0.009935714285714294,
+        support: 0.362,
+        resistance: 0.4056,
+        freshness: { available: true, stale: false, ageMs: 0 },
+        instrumentType: 'PERPETUAL',
+        futuresValidated: true,
+        strategy: null,
+        lifecycleStatus: 'FORMING',
+        lifecycle: {
+          status: 'FORMING',
+          entryReached: false,
+          currentPrice: null,
+          reason: 'NO_STRUCTURAL_SETUP_SELECTED'
+        },
+        marketRegime: 'RANGING',
+        regimeScore: 65,
+        entryZone: null,
+        invalidation: null,
+        targetsDetailed: [],
+        setupQualityScore: 20,
+        minimumSetupQualityScore: 70,
+        qualityComponents: {
+          strategy: { score: 0, weight: 0.4 },
+          entry: { score: 0, weight: 0.2 },
+          reward: { score: 0, weight: 0.2, riskReward: null, setupClass: null },
+          execution: { score: 100, weight: 0.2 }
+        },
+        entryQuality: {
+          approved: false,
+          score: 0,
+          currentPrice: 0.381,
+          preferredEntry: null,
+          chaseState: null,
+          evidence: [],
+          risks: [],
+          blockers: [ 'ENTRY_PRICE_UNAVAILABLE' ]
+        },
+        executionQuality: {
+          approved: true,
+          score: 100,
+          spreadPercent: 0.18389596742413722,
+          maximumSpreadPercent: 0.5,
+          slippagePercent: 0.1519426127323265,
+          maximumSlippagePercent: 0.5,
+          freshness: { available: true, stale: false, ageMs: 0 },
+          evidence: [
+            'SPREAD_ACCEPTABLE',
+            'SLIPPAGE_ACCEPTABLE',
+            'MARKET_DATA_FRESH'
+          ],
+          risks: [],
+          blockers: []
+        },
+        structure: {
+          approved: true,
+          status: 'MARKET_STRUCTURE_READY',
+          candleCount: 99,
+          current: {
+            openTime: 1792263600000,
+            open: 0.3831,
+            high: 0.3833,
+            low: 0.3783,
+            close: 0.3813,
+            changePercent: -0.4698512137823085
+          },
+          atr: 0.01009285714285715,
+          trend: 'NEUTRAL',
+          structurePattern: 'UNDEFINED',
+          highStructure: 'HIGHER_HIGH',
+          lowStructure: 'LOWER_LOW',
+          swingHighs: [
+            { index: 32, openTime: 1792243800000, price: 0.3321 },
+            { index: 37, openTime: 1792245300000, price: 0.3243 },
+            { index: 48, openTime: 1792248600000, price: 0.3253 },
+            { index: 52, openTime: 1792249800000, price: 0.3384 },
+            { index: 67, openTime: 1792254300000, price: 0.3759 },
+            { index: 71, openTime: 1792255500000, price: 0.3914 },
+            { index: 77, openTime: 1792257300000, price: 0.3911 },
+            { index: 83, openTime: 1792259100000, price: 0.3988 },
+            { index: 86, openTime: 1792260000000, price: 0.4025 },
+            { index: 89, openTime: 1792260900000, price: 0.4056 }
+          ],
+          swingLows: [
+            { index: 23, openTime: 1792241100000, price: 0.3186 },
+            { index: 28, openTime: 1792242600000, price: 0.3214 },
+            { index: 34, openTime: 1792244400000, price: 0.3152 },
+            { index: 41, openTime: 1792246500000, price: 0.2954 },
+            { index: 50, openTime: 1792249200000, price: 0.3207 },
+            { index: 57, openTime: 1792251300000, price: 0.3248 },
+            { index: 73, openTime: 1792256100000, price: 0.3604 },
+            { index: 76, openTime: 1792257000000, price: 0.3629 },
+            { index: 87, openTime: 1792260300000, price: 0.3861 },
+            { index: 92, openTime: 1792261800000, price: 0.362 }
+          ],
+          latestSwingHigh: { index: 89, openTime: 1792260900000, price: 0.4056 },
+          previousSwingHigh: { index: 86, openTime: 1792260000000, price: 0.4025 },
+          latestSwingLow: { index: 92, openTime: 1792261800000, price: 0.362 },
+          previousSwingLow: { index: 87, openTime: 1792260300000, price: 0.3861 },
+          range: {
+            high: 0.4056,
+            low: 0.362,
+            midpoint: 0.38380000000000003,
+            widthPercent: 11.360083376758736
+          },
+          volatility: {
+            regime: 'COMPRESSED',
+            atrPercent: 2.6469596493199976,
+            recentRangeRatio: 0.6389756402248593
+          },
+          breakout: {
+            detected: false,
+            direction: null,
+            level: null,
+            displacementAtr: 0.17834394904458822
+          },
+          liquiditySweep: {
+            detected: false,
+            direction: null,
+            level: null,
+            extreme: null,
+            reclaimed: false
+          },
+          volume: {
+            available: true,
+            ratio: 0.13457144246195732,
+            state: 'CONTRACTED'
+          },
+          blockers: [],
+          observedAt: '2026-10-17T19:06:18.350Z',
+          executionAuthority: false,
+          liveExecution: false
+        },
+        regime: {
+          approved: true,
+          status: 'MARKET_REGIME_READY',
+          regime: 'RANGING',
+          regimeScore: 65,
+          researchDirection: 'BULL',
+          structuralDirection: 'NEUTRAL',
+          alignment: {
+            aligned: null,
+            state: 'NEUTRAL_STRUCTURE',
+            reason: 'STRUCTURE_NOT_DIRECTIONAL'
+          },
+          scores: {
+            TRENDING: { score: 0, reasons: [] },
+            COMPRESSION: {
+              score: 55,
+              reasons: [ 'VOLATILITY_COMPRESSION', 'RELATIVELY_TIGHT_RANGE' ]
+            },
+            EXPANSION: { score: 0, reasons: [] },
+            LIQUIDITY_SWEEP: { score: 0, reasons: [] },
+            RANGING: {
+              score: 65,
+              reasons: [
+                'NO_CONFIRMED_DIRECTIONAL_STRUCTURE',
+                'NO_ACTIVE_BREAKOUT_OR_SWEEP',
+                'DEFINED_RANGE_BOUNDARIES'
+              ]
+            }
+          },
+          eligibleStrategies: [ 'RANGE_ROTATION' ],
+          context: {
+            structurePattern: 'UNDEFINED',
+            volatility: 'COMPRESSED',
+            breakout: {
+              detected: false,
+              direction: null,
+              level: null,
+              displacementAtr: 0.17834394904458822
+            },
+            liquiditySweep: {
+              detected: false,
+              direction: null,
+              level: null,
+              extreme: null,
+              reclaimed: false
+            },
+            range: {
+              high: 0.4056,
+              low: 0.362,
+              midpoint: 0.38380000000000003,
+              widthPercent: 11.360083376758736
+            },
+            volume: {
+              available: true,
+              ratio: 0.13457144246195732,
+              state: 'CONTRACTED'
+            }
+          },
+          blockers: [],
+          observedAt: '2026-10-17T19:06:18.350Z',
+          executionAuthority: false,
+          liveExecution: false
+        },
+        strategySelection: {
+          approved: false,
+          status: 'NO_SETUP_STRATEGY',
+          direction: 'BULL',
+          marketRegime: 'RANGING',
+          eligibleStrategies: [ 'RANGE_ROTATION' ],
+          attemptedStrategies: [
+            {
+              strategy: 'RANGE_ROTATION',
+              matched: false,
+              planned: true,
+              lifecycleStatus: 'PLANNED',
+              status: 'PATTERN_REJECTED',
+              patternScore: 50,
+              blockers: [
+                'RANGE_ROTATION_BULL_NOT_AT_LOWER_EDGE',
+                'RANGE_ROTATION_REJECTION_NOT_CONFIRMED',
+                'RANGE_ROTATION_PATTERN_SCORE_TOO_LOW'
+              ],
+              evidence: [
+                'RANGING_REGIME',
+                'SUFFICIENT_RANGE_WIDTH',
+                'NON_TRENDING_STRUCTURE'
+              ],
+              risks: [ 'PRICE_AWAY_FROM_RANGE_ENTRY_ZONE' ]
+            }
+          ],
+          matchedStrategies: [
+            {
+              strategy: 'RANGE_ROTATION',
+              selectionScore: 57,
+              patternScore: 50,
+              bestRiskReward: 12.05681933070471,
+              selectionComponents: {
+                pattern: { score: 50, weight: 0.7 },
+                geometry: {
+                  score: 85,
+                  weight: 0.2,
+                  bestRiskReward: 12.05681933070471,
+                  validTargetCount: 2
+                },
+                entry: { score: 50, weight: 0.1 }
+              }
+            }
+          ],
+          selectedStrategy: null,
+          selectionScore: null,
+          minimumSelectionScore: 60,
+          selectionComponents: null,
+          selectedResult: null,
+          runnerUp: null,
+          ambiguity: {
+            ambiguous: false,
+            scoreDifference: null,
+            entryDifferencePercent: null,
+            stopDifferencePercent: null,
+            reasons: []
+          },
+          blockers: [ 'BEST_SETUP_SELECTION_SCORE_TOO_LOW' ],
+          observedAt: '2026-10-17T19:06:18.351Z',
+          executionAuthority: false,
+          liveExecution: false
+        },
+        quality: {
+          lifecycleStatus: 'FORMING',
+          lifecycle: {
+            status: 'FORMING',
+            entryReached: false,
+            currentPrice: null,
+            reason: 'NO_STRUCTURAL_SETUP_SELECTED'
+          },
+          approved: false,
+          status: 'SETUP_QUALITY_REJECTED',
+          symbol: 'AVA_USDT',
+          direction: 'BULL',
+          strategy: {
+            id: null,
+            selectionScore: null,
+            patternScore: null,
+            marketRegime: 'RANGING'
+          },
+          setupClass: null,
+          expectancyMode: 'BOOTSTRAP',
+          rewardProfile: {
+            bestRiskReward: null,
+            selectedRiskReward: null,
+            minimumTradableRiskReward: 0.5,
+            standardRiskReward: 1,
+            asymmetricRiskReward: 1.5,
+            structuralTargetCount: 0,
+            tradableTargetCount: 0
+          },
+          entry: null,
+          entryZone: null,
+          stop: null,
+          invalidation: null,
+          target: null,
+          targets: [],
+          targetsDetailed: [],
+          riskDistance: null,
+          targetDistance: null,
+          riskReward: null,
+          minimumRiskReward: 1.5,
+          minimumTradableRiskReward: 0.5,
+          setupQualityScore: 20,
+          minimumSetupQualityScore: 70,
+          qualityComponents: {
+            strategy: { score: 0, weight: 0.4 },
+            entry: { score: 0, weight: 0.2 },
+            reward: {
+              score: 0,
+              weight: 0.2,
+              riskReward: null,
+              setupClass: null
+            },
+            execution: { score: 100, weight: 0.2 }
+          },
+          entryQuality: {
+            approved: false,
+            score: 0,
+            currentPrice: 0.381,
+            preferredEntry: null,
+            chaseState: null,
+            evidence: [],
+            risks: [],
+            blockers: [ 'ENTRY_PRICE_UNAVAILABLE' ]
+          },
+          executionQuality: {
+            approved: true,
+            score: 100,
+            spreadPercent: 0.18389596742413722,
+            maximumSpreadPercent: 0.5,
+            slippagePercent: 0.1519426127323265,
+            maximumSlippagePercent: 0.5,
+            freshness: { available: true, stale: false, ageMs: 0 },
+            evidence: [
+              'SPREAD_ACCEPTABLE',
+              'SLIPPAGE_ACCEPTABLE',
+              'MARKET_DATA_FRESH'
+            ],
+            risks: [],
+            blockers: []
+          },
+          spreadPercent: 0.18389596742413722,
+          maximumSpreadPercent: 0.5,
+          slippagePercent: 0.1519426127323265,
+          maximumSlippagePercent: 0.5,
+          freshness: { available: true, stale: false, ageMs: 0 },
+          learningContext: {
+            strategy: null,
+            regime: 'RANGING',
+            direction: 'BULL',
+            patternScore: null,
+            selectionScore: null,
+            entryScore: 0,
+            executionScore: 100,
+            riskReward: null,
+            setupClass: null
+          },
+          evidence: [
+            'SPREAD_ACCEPTABLE',
+            'SLIPPAGE_ACCEPTABLE',
+            'MARKET_DATA_FRESH'
+          ],
+          risks: [],
+          blockers: [
+            'SETUP_STRATEGY_NOT_SELECTED',
+            'SETUP_ENTRY_UNAVAILABLE',
+            'SETUP_STOP_UNAVAILABLE',
+            'SETUP_STRUCTURAL_TARGETS_UNAVAILABLE',
+            'ENTRY_PRICE_UNAVAILABLE',
+            'REWARD_BELOW_MINIMUM_TRADABLE_THRESHOLD',
+            'SETUP_QUALITY_SCORE_TOO_LOW'
+          ],
+          observedAt: '2026-10-17T19:06:18.351Z',
+          executionAuthority: false,
+          liveExecution: false
+        },
+        evidence: [
+          'SPREAD_ACCEPTABLE',
+          'SLIPPAGE_ACCEPTABLE',
+          'MARKET_DATA_FRESH'
+        ],
+        risks: [],
+        blockers: [
+          'BEST_SETUP_SELECTION_SCORE_TOO_LOW',
+          'SETUP_STRATEGY_NOT_SELECTED',
+          'SETUP_ENTRY_UNAVAILABLE',
+          'SETUP_STOP_UNAVAILABLE',
+          'SETUP_STRUCTURAL_TARGETS_UNAVAILABLE',
+          'ENTRY_PRICE_UNAVAILABLE',
+          'REWARD_BELOW_MINIMUM_TRADABLE_THRESHOLD',
+          'SETUP_QUALITY_SCORE_TOO_LOW'
+        ],
+        executionAuthority: false,
+        liveExecution: false
+      }
+    },
+    {
+      symbol: 'ICNT_USDT',
+      stage: 'SETUP',
+      reason: 'SETUP_BLOCKED',
+      blockers: [ 'SCALP_PATTERN_SCORE_TOO_LOW', 'SETUP_QUALITY_SCORE_TOO_LOW' ],
+      direction: 'LONG',
+      regime: 'TRENDING',
+      strategy: 'TREND_PULLBACK',
+      strategySelection: {
+        approved: true,
+        status: 'SETUP_STRATEGY_SELECTED',
+        direction: 'BULL',
+        marketRegime: 'TRENDING',
+        eligibleStrategies: [ 'TREND_PULLBACK', 'BREAKOUT_RETEST' ],
+        attemptedStrategies: [
+          {
+            strategy: 'TREND_PULLBACK',
+            matched: true,
+            planned: false,
+            lifecycleStatus: 'ENTRY_CANDIDATE',
+            status: 'PATTERN_MATCHED',
+            patternScore: 70,
+            blockers: [],
+            evidence: [
+              'BULLISH_HH_HL_STRUCTURE',
+              'TRENDING_REGIME',
+              'DEEP_RETRACEMENT',
+              'SUITABLE_VOLATILITY'
+            ],
+            risks: [
+              'DEEP_PULLBACK_INCREASES_INVALIDATION_RISK',
+              'PRICE_OUTSIDE_PREFERRED_ENTRY_ZONE'
+            ]
+          },
+          {
+            strategy: 'BREAKOUT_RETEST',
+            matched: false,
+            planned: false,
+            lifecycleStatus: 'REJECTED',
+            status: 'PATTERN_REJECTED',
+            patternScore: 10,
+            blockers: [
+              'BREAKOUT_RETEST_BREAKOUT_NOT_FOUND',
+              'BREAKOUT_RETEST_RETEST_NOT_CONFIRMED',
+              'BREAKOUT_RETEST_ENTRY_ZONE_UNAVAILABLE',
+              'BREAKOUT_RETEST_INVALIDATION_UNAVAILABLE',
+              'BREAKOUT_RETEST_TARGET_UNAVAILABLE',
+              'BREAKOUT_RETEST_PATTERN_SCORE_TOO_LOW'
+            ],
+            evidence: [ 'REGIME_SUPPORTS_BREAKOUT_SETUP' ],
+            risks: []
+          }
+        ],
+        matchedStrategies: [
+          {
+            strategy: 'TREND_PULLBACK',
+            selectionScore: 71,
+            patternScore: 70,
+            bestRiskReward: 0.8444549988126336,
+            selectionComponents: {
+              pattern: { score: 70, weight: 0.7 },
+              geometry: {
+                score: 85,
+                weight: 0.2,
+                bestRiskReward: 0.8444549988126336,
+                validTargetCount: 2
+              },
+              entry: { score: 50, weight: 0.1 }
+            }
+          }
+        ],
+        selectedStrategy: 'TREND_PULLBACK',
+        selectionScore: 71,
+        minimumSelectionScore: 60,
+        selectionComponents: {
+          pattern: { score: 70, weight: 0.7 },
+          geometry: {
+            score: 85,
+            weight: 0.2,
+            bestRiskReward: 0.8444549988126336,
+            validTargetCount: 2
+          },
+          entry: { score: 50, weight: 0.1 }
+        },
+        selectedResult: {
+          strategy: 'TREND_PULLBACK',
+          matched: true,
+          status: 'PATTERN_MATCHED',
+          direction: 'BULL',
+          patternScore: 70,
+          minimumPatternScore: 65,
+          retracement: {
+            available: true,
+            percent: 69.59999999999997,
+            zone: 'DEEP',
+            impulseStart: 0.2204,
+            impulseEnd: 0.2329,
+            impulseSize: 0.012499999999999983
+          },
+          entryZone: {
+            available: true,
+            low: 0.22515000000000002,
+            high: 0.22915,
+            preferred: 0.22655,
+            atr: 0.005478571428571422
+          },
+          preferredEntry: 0.22655,
+          invalidation: {
+            available: true,
+            price: 0.21903035714285715,
+            structuralLevel: 0.2204,
+            buffer: 0.0013696428571428555,
+            reason: 'BULLISH_HIGHER_LOW_INVALIDATED'
+          },
+          stop: 0.21903035714285715,
+          targets: [
+            {
+              price: 0.2279,
+              reason: 'PREVIOUS_SWING_HIGH',
+              label: 'TP1',
+              rewardDistance: 0.00134999999999999,
+              riskReward: 0.17952980289717294
+            },
+            {
+              price: 0.2329,
+              reason: 'LATEST_SWING_HIGH',
+              label: 'TP2',
+              rewardDistance: 0.0063499999999999945,
+              riskReward: 0.8444549988126336
+            }
+          ],
+          evidence: [
+            'BULLISH_HH_HL_STRUCTURE',
+            'TRENDING_REGIME',
+            'DEEP_RETRACEMENT',
+            'SUITABLE_VOLATILITY'
+          ],
+          risks: [
+            'DEEP_PULLBACK_INCREASES_INVALIDATION_RISK',
+            'PRICE_OUTSIDE_PREFERRED_ENTRY_ZONE'
+          ],
+          blockers: [],
+          diagnostics: {
+            currentPrice: 0.2242,
+            structurePattern: 'HH_HL',
+            marketRegime: 'TRENDING',
+            volatilityRegime: 'NORMAL',
+            volumeRatio: 0.541016635656013,
+            averageTargetRiskReward: 0.5119924008549033
+          },
+          executionAuthority: false,
+          liveExecution: false,
+          planned: false,
+          lifecycleStatus: 'ENTRY_CANDIDATE'
+        },
+        runnerUp: null,
+        ambiguity: {
+          ambiguous: false,
+          scoreDifference: null,
+          entryDifferencePercent: null,
+          stopDifferencePercent: null,
+          reasons: []
+        },
+        blockers: [],
+        observedAt: '2026-10-17T19:06:18.741Z',
+        executionAuthority: false,
+        liveExecution: false
+      },
+      marketStructure: null,
+      setupQuality: null,
+      candleAnalysis: null,
+      entry: 0.22655,
+      entryZone: {
+        available: true,
+        low: 0.22515000000000002,
+        high: 0.22915,
+        preferred: 0.22655,
+        atr: 0.005478571428571422
+      },
+      stop: 0.21903035714285715,
+      invalidation: {
+        available: true,
+        price: 0.21903035714285715,
+        structuralLevel: 0.2204,
+        buffer: 0.0013696428571428555,
+        reason: 'BULLISH_HIGHER_LOW_INVALIDATED'
+      },
+      target: null,
+      targets: [ 0.2279, 0.2329 ],
+      targetsDetailed: [
+        {
+          price: 0.2279,
+          label: 'TP1',
+          reason: 'PREVIOUS_SWING_HIGH',
+          rewardDistance: 0.00134999999999999,
+          riskReward: 0.17952980289717294,
+          qualifies: false,
+          setupClass: null,
+          classApproved: false,
+          primary: false
+        },
+        {
+          price: 0.2329,
+          label: 'TP2',
+          reason: 'LATEST_SWING_HIGH',
+          rewardDistance: 0.0063499999999999945,
+          riskReward: 0.8444549988126336,
+          qualifies: true,
+          setupClass: 'SCALP',
+          classApproved: false,
+          primary: false
+        }
+      ],
+      riskReward: null,
+      diagnosticSetup: {
+        approved: false,
+        status: 'NO_SETUP',
+        setupType: 'NONE',
+        symbol: 'ICNT_USDT',
+        direction: 'LONG',
+        researchDirection: 'BULL',
+        entry: 0.22655,
+        stop: 0.21903035714285715,
+        target: null,
+        targets: [ 0.2279, 0.2329 ],
+        stopDistance: null,
+        targetDistance: null,
+        stopDistancePercent: 3.3191979064854777,
+        targetDistancePercent: null,
+        riskReward: null,
+        minimumRiskReward: 1.5,
+        spreadPercent: 0.17857142857143368,
+        maximumSpreadPercent: 0.5,
+        slippagePercent: 0.2393472256106932,
+        depthNotional: 91714.06100000002,
+        atr: 0.004835714285714281,
+        support: 0.2107,
+        resistance: 0.2329,
+        freshness: { available: true, stale: false, ageMs: 0 },
+        instrumentType: 'PERPETUAL',
+        futuresValidated: true,
+        strategy: 'TREND_PULLBACK',
+        lifecycleStatus: 'PLANNED',
+        lifecycle: {
+          status: 'PLANNED',
+          entryReached: false,
+          currentPrice: 0.2242,
+          reason: 'STRUCTURAL_PLAN_EXISTS_PENDING_FINAL_QUALITY'
+        },
+        marketRegime: 'TRENDING',
+        regimeScore: 85,
+        entryZone: {
+          available: true,
+          low: 0.22515000000000002,
+          high: 0.22915,
+          preferred: 0.22655,
+          atr: 0.005478571428571422
+        },
+        invalidation: {
+          available: true,
+          price: 0.21903035714285715,
+          structuralLevel: 0.2204,
+          buffer: 0.0013696428571428555,
+          reason: 'BULLISH_HIGHER_LOW_INVALIDATED'
+        },
+        targetsDetailed: [
+          {
+            price: 0.2279,
+            label: 'TP1',
+            reason: 'PREVIOUS_SWING_HIGH',
+            rewardDistance: 0.00134999999999999,
+            riskReward: 0.17952980289717294,
+            qualifies: false,
+            setupClass: null,
+            classApproved: false,
+            primary: false
+          },
+          {
+            price: 0.2329,
+            label: 'TP2',
+            reason: 'LATEST_SWING_HIGH',
+            rewardDistance: 0.0063499999999999945,
+            riskReward: 0.8444549988126336,
+            qualifies: true,
+            setupClass: 'SCALP',
+            classApproved: false,
+            primary: false
+          }
+        ],
+        setupQualityScore: 62.400000000000006,
+        minimumSetupQualityScore: 70,
+        qualityComponents: {
+          strategy: { score: 71, weight: 0.4 },
+          entry: { score: 70, weight: 0.2 },
+          reward: { score: 0, weight: 0.2, riskReward: null, setupClass: null },
+          execution: { score: 100, weight: 0.2 }
+        },
+        entryQuality: {
+          approved: true,
+          score: 70,
+          currentPrice: 0.2242,
+          preferredEntry: 0.22655,
+          chaseState: null,
+          evidence: [ 'STRUCTURAL_ENTRY_ZONE_DEFINED' ],
+          risks: [ 'WAITING_FOR_ENTRY_ZONE' ],
+          blockers: []
+        },
+        executionQuality: {
+          approved: true,
+          score: 100,
+          spreadPercent: 0.17857142857143368,
+          maximumSpreadPercent: 0.5,
+          slippagePercent: 0.2393472256106932,
+          maximumSlippagePercent: 0.5,
+          freshness: { available: true, stale: false, ageMs: 0 },
+          evidence: [
+            'SPREAD_ACCEPTABLE',
+            'SLIPPAGE_ACCEPTABLE',
+            'MARKET_DATA_FRESH'
+          ],
+          risks: [],
+          blockers: []
+        },
+        structure: {
+          approved: true,
+          status: 'MARKET_STRUCTURE_READY',
+          candleCount: 99,
+          current: {
+            openTime: 1792263600000,
+            open: 0.2263,
+            high: 0.2278,
+            low: 0.2224,
+            close: 0.224,
+            changePercent: -1.0163499779054337
+          },
+          atr: 0.005478571428571422,
+          trend: 'BULLISH',
+          structurePattern: 'HH_HL',
+          highStructure: 'HIGHER_HIGH',
+          lowStructure: 'HIGHER_LOW',
+          swingHighs: [
+            { index: 33, openTime: 1792244100000, price: 0.1939 },
+            { index: 38, openTime: 1792245600000, price: 0.1894 },
+            { index: 46, openTime: 1792248000000, price: 0.1974 },
+            { index: 53, openTime: 1792250100000, price: 0.2032 },
+            { index: 59, openTime: 1792251900000, price: 0.1946 },
+            { index: 66, openTime: 1792254000000, price: 0.2738 },
+            { index: 73, openTime: 1792256100000, price: 0.2253 },
+            { index: 79, openTime: 1792257900000, price: 0.2227 },
+            { index: 84, openTime: 1792259400000, price: 0.2279 },
+            { index: 92, openTime: 1792261800000, price: 0.2329 }
+          ],
+          swingLows: [
+            { index: 18, openTime: 1792239600000, price: 0.1784 },
+            { index: 23, openTime: 1792241100000, price: 0.1759 },
+            { index: 36, openTime: 1792245000000, price: 0.1839 },
+            { index: 56, openTime: 1792251000000, price: 0.1886 },
+            { index: 61, openTime: 1792252500000, price: 0.1826 },
+            { index: 69, openTime: 1792254900000, price: 0.2119 },
+            { index: 72, openTime: 1792255800000, price: 0.2059 },
+            { index: 78, openTime: 1792257600000, price: 0.2124 },
+            { index: 85, openTime: 1792259700000, price: 0.2107 },
+            { index: 93, openTime: 1792262100000, price: 0.2204 }
+          ],
+          latestSwingHigh: { index: 92, openTime: 1792261800000, price: 0.2329 },
+          previousSwingHigh: { index: 84, openTime: 1792259400000, price: 0.2279 },
+          latestSwingLow: { index: 93, openTime: 1792262100000, price: 0.2204 },
+          previousSwingLow: { index: 85, openTime: 1792259700000, price: 0.2107 },
+          range: {
+            high: 0.2329,
+            low: 0.2107,
+            midpoint: 0.2218,
+            widthPercent: 10.009017132551849
+          },
+          volatility: {
+            regime: 'NORMAL',
+            atrPercent: 2.445790816326528,
+            recentRangeRatio: 0.8866822429906542
+          },
+          breakout: {
+            detected: false,
+            direction: null,
+            level: null,
+            displacementAtr: 0.41981747066492814
+          },
+          liquiditySweep: {
+            detected: false,
+            direction: null,
+            level: null,
+            extreme: null,
+            reclaimed: false
+          },
+          volume: {
+            available: true,
+            ratio: 0.541016635656013,
+            state: 'CONTRACTED'
+          },
+          blockers: [],
+          observedAt: '2026-10-17T19:06:18.740Z',
+          executionAuthority: false,
+          liveExecution: false
+        },
+        regime: {
+          approved: true,
+          status: 'MARKET_REGIME_READY',
+          regime: 'TRENDING',
+          regimeScore: 85,
+          researchDirection: 'BULL',
+          structuralDirection: 'BULL',
+          alignment: {
+            aligned: true,
+            state: 'ALIGNED',
+            reason: 'RESEARCH_AND_STRUCTURE_AGREE'
+          },
+          scores: {
+            TRENDING: {
+              score: 85,
+              reasons: [
+                'HIGHER_HIGH_HIGHER_LOW_STRUCTURE',
+                'DIRECTIONAL_SWING_STRUCTURE',
+                'NORMAL_VOLATILITY'
+              ]
+            },
+            COMPRESSION: { score: 15, reasons: [ 'RELATIVELY_TIGHT_RANGE' ] },
+            EXPANSION: { score: 0, reasons: [] },
+            LIQUIDITY_SWEEP: { score: 0, reasons: [] },
+            RANGING: {
+              score: 55,
+              reasons: [
+                'NO_ACTIVE_BREAKOUT_OR_SWEEP',
+                'STABLE_RANGE_VOLATILITY',
+                'DEFINED_RANGE_BOUNDARIES'
+              ]
+            }
+          },
+          eligibleStrategies: [ 'TREND_PULLBACK', 'BREAKOUT_RETEST' ],
+          context: {
+            structurePattern: 'HH_HL',
+            volatility: 'NORMAL',
+            breakout: {
+              detected: false,
+              direction: null,
+              level: null,
+              displacementAtr: 0.41981747066492814
+            },
+            liquiditySweep: {
+              detected: false,
+              direction: null,
+              level: null,
+              extreme: null,
+              reclaimed: false
+            },
+            range: {
+              high: 0.2329,
+              low: 0.2107,
+              midpoint: 0.2218,
+              widthPercent: 10.009017132551849
+            },
+            volume: {
+              available: true,
+              ratio: 0.541016635656013,
+              state: 'CONTRACTED'
+            }
+          },
+          blockers: [],
+          observedAt: '2026-10-17T19:06:18.740Z',
+          executionAuthority: false,
+          liveExecution: false
+        },
+        strategySelection: {
+          approved: true,
+          status: 'SETUP_STRATEGY_SELECTED',
+          direction: 'BULL',
+          marketRegime: 'TRENDING',
+          eligibleStrategies: [ 'TREND_PULLBACK', 'BREAKOUT_RETEST' ],
+          attemptedStrategies: [
+            {
+              strategy: 'TREND_PULLBACK',
+              matched: true,
+              planned: false,
+              lifecycleStatus: 'ENTRY_CANDIDATE',
+              status: 'PATTERN_MATCHED',
+              patternScore: 70,
+              blockers: [],
+              evidence: [
+                'BULLISH_HH_HL_STRUCTURE',
+                'TRENDING_REGIME',
+                'DEEP_RETRACEMENT',
+                'SUITABLE_VOLATILITY'
+              ],
+              risks: [
+                'DEEP_PULLBACK_INCREASES_INVALIDATION_RISK',
+                'PRICE_OUTSIDE_PREFERRED_ENTRY_ZONE'
+              ]
+            },
+            {
+              strategy: 'BREAKOUT_RETEST',
+              matched: false,
+              planned: false,
+              lifecycleStatus: 'REJECTED',
+              status: 'PATTERN_REJECTED',
+              patternScore: 10,
+              blockers: [
+                'BREAKOUT_RETEST_BREAKOUT_NOT_FOUND',
+                'BREAKOUT_RETEST_RETEST_NOT_CONFIRMED',
+                'BREAKOUT_RETEST_ENTRY_ZONE_UNAVAILABLE',
+                'BREAKOUT_RETEST_INVALIDATION_UNAVAILABLE',
+                'BREAKOUT_RETEST_TARGET_UNAVAILABLE',
+                'BREAKOUT_RETEST_PATTERN_SCORE_TOO_LOW'
+              ],
+              evidence: [ 'REGIME_SUPPORTS_BREAKOUT_SETUP' ],
+              risks: []
+            }
+          ],
+          matchedStrategies: [
+            {
+              strategy: 'TREND_PULLBACK',
+              selectionScore: 71,
+              patternScore: 70,
+              bestRiskReward: 0.8444549988126336,
+              selectionComponents: {
+                pattern: { score: 70, weight: 0.7 },
+                geometry: {
+                  score: 85,
+                  weight: 0.2,
+                  bestRiskReward: 0.8444549988126336,
+                  validTargetCount: 2
+                },
+                entry: { score: 50, weight: 0.1 }
+              }
+            }
+          ],
+          selectedStrategy: 'TREND_PULLBACK',
+          selectionScore: 71,
+          minimumSelectionScore: 60,
+          selectionComponents: {
+            pattern: { score: 70, weight: 0.7 },
+            geometry: {
+              score: 85,
+              weight: 0.2,
+              bestRiskReward: 0.8444549988126336,
+              validTargetCount: 2
+            },
+            entry: { score: 50, weight: 0.1 }
+          },
+          selectedResult: {
+            strategy: 'TREND_PULLBACK',
+            matched: true,
+            status: 'PATTERN_MATCHED',
+            direction: 'BULL',
+            patternScore: 70,
+            minimumPatternScore: 65,
+            retracement: {
+              available: true,
+              percent: 69.59999999999997,
+              zone: 'DEEP',
+              impulseStart: 0.2204,
+              impulseEnd: 0.2329,
+              impulseSize: 0.012499999999999983
+            },
+            entryZone: {
+              available: true,
+              low: 0.22515000000000002,
+              high: 0.22915,
+              preferred: 0.22655,
+              atr: 0.005478571428571422
+            },
+            preferredEntry: 0.22655,
+            invalidation: {
+              available: true,
+              price: 0.21903035714285715,
+              structuralLevel: 0.2204,
+              buffer: 0.0013696428571428555,
+              reason: 'BULLISH_HIGHER_LOW_INVALIDATED'
+            },
+            stop: 0.21903035714285715,
+            targets: [
+              {
+                price: 0.2279,
+                reason: 'PREVIOUS_SWING_HIGH',
+                label: 'TP1',
+                rewardDistance: 0.00134999999999999,
+                riskReward: 0.17952980289717294
+              },
+              {
+                price: 0.2329,
+                reason: 'LATEST_SWING_HIGH',
+                label: 'TP2',
+                rewardDistance: 0.0063499999999999945,
+                riskReward: 0.8444549988126336
+              }
+            ],
+            evidence: [
+              'BULLISH_HH_HL_STRUCTURE',
+              'TRENDING_REGIME',
+              'DEEP_RETRACEMENT',
+              'SUITABLE_VOLATILITY'
+            ],
+            risks: [
+              'DEEP_PULLBACK_INCREASES_INVALIDATION_RISK',
+              'PRICE_OUTSIDE_PREFERRED_ENTRY_ZONE'
+            ],
+            blockers: [],
+            diagnostics: {
+              currentPrice: 0.2242,
+              structurePattern: 'HH_HL',
+              marketRegime: 'TRENDING',
+              volatilityRegime: 'NORMAL',
+              volumeRatio: 0.541016635656013,
+              averageTargetRiskReward: 0.5119924008549033
+            },
+            executionAuthority: false,
+            liveExecution: false,
+            planned: false,
+            lifecycleStatus: 'ENTRY_CANDIDATE'
+          },
+          runnerUp: null,
+          ambiguity: {
+            ambiguous: false,
+            scoreDifference: null,
+            entryDifferencePercent: null,
+            stopDifferencePercent: null,
+            reasons: []
+          },
+          blockers: [],
+          observedAt: '2026-10-17T19:06:18.741Z',
+          executionAuthority: false,
+          liveExecution: false
+        },
+        quality: {
+          lifecycleStatus: 'PLANNED',
+          lifecycle: {
+            status: 'PLANNED',
+            entryReached: false,
+            currentPrice: 0.2242,
+            reason: 'STRUCTURAL_PLAN_EXISTS_PENDING_FINAL_QUALITY'
+          },
+          approved: false,
+          status: 'SETUP_QUALITY_REJECTED',
+          symbol: 'ICNT_USDT',
+          direction: 'BULL',
+          strategy: {
+            id: 'TREND_PULLBACK',
+            selectionScore: 71,
+            patternScore: 70,
+            marketRegime: 'TRENDING'
+          },
+          setupClass: null,
+          expectancyMode: 'BOOTSTRAP',
+          rewardProfile: {
+            bestRiskReward: 0.8444549988126336,
+            selectedRiskReward: null,
+            minimumTradableRiskReward: 0.5,
+            standardRiskReward: 1,
+            asymmetricRiskReward: 1.5,
+            structuralTargetCount: 2,
+            tradableTargetCount: 1
+          },
+          entry: 0.22655,
+          entryZone: {
+            available: true,
+            low: 0.22515000000000002,
+            high: 0.22915,
+            preferred: 0.22655,
+            atr: 0.005478571428571422
+          },
+          stop: 0.21903035714285715,
+          invalidation: {
+            available: true,
+            price: 0.21903035714285715,
+            structuralLevel: 0.2204,
+            buffer: 0.0013696428571428555,
+            reason: 'BULLISH_HIGHER_LOW_INVALIDATED'
+          },
+          target: null,
+          targets: [ 0.2279, 0.2329 ],
+          targetsDetailed: [
+            {
+              price: 0.2279,
+              label: 'TP1',
+              reason: 'PREVIOUS_SWING_HIGH',
+              rewardDistance: 0.00134999999999999,
+              riskReward: 0.17952980289717294,
+              qualifies: false,
+              setupClass: null,
+              classApproved: false,
+              primary: false
+            },
+            {
+              price: 0.2329,
+              label: 'TP2',
+              reason: 'LATEST_SWING_HIGH',
+              rewardDistance: 0.0063499999999999945,
+              riskReward: 0.8444549988126336,
+              qualifies: true,
+              setupClass: 'SCALP',
+              classApproved: false,
+              primary: false
+            }
+          ],
+          riskDistance: 0.00751964285714285,
+          targetDistance: null,
+          riskReward: null,
+          minimumRiskReward: 1.5,
+          minimumTradableRiskReward: 0.5,
+          setupQualityScore: 62.400000000000006,
+          minimumSetupQualityScore: 70,
+          qualityComponents: {
+            strategy: { score: 71, weight: 0.4 },
+            entry: { score: 70, weight: 0.2 },
+            reward: {
+              score: 0,
+              weight: 0.2,
+              riskReward: null,
+              setupClass: null
+            },
+            execution: { score: 100, weight: 0.2 }
+          },
+          entryQuality: {
+            approved: true,
+            score: 70,
+            currentPrice: 0.2242,
+            preferredEntry: 0.22655,
+            chaseState: null,
+            evidence: [ 'STRUCTURAL_ENTRY_ZONE_DEFINED' ],
+            risks: [ 'WAITING_FOR_ENTRY_ZONE' ],
+            blockers: []
+          },
+          executionQuality: {
+            approved: true,
+            score: 100,
+            spreadPercent: 0.17857142857143368,
+            maximumSpreadPercent: 0.5,
+            slippagePercent: 0.2393472256106932,
+            maximumSlippagePercent: 0.5,
+            freshness: { available: true, stale: false, ageMs: 0 },
+            evidence: [
+              'SPREAD_ACCEPTABLE',
+              'SLIPPAGE_ACCEPTABLE',
+              'MARKET_DATA_FRESH'
+            ],
+            risks: [],
+            blockers: []
+          },
+          spreadPercent: 0.17857142857143368,
+          maximumSpreadPercent: 0.5,
+          slippagePercent: 0.2393472256106932,
+          maximumSlippagePercent: 0.5,
+          freshness: { available: true, stale: false, ageMs: 0 },
+          learningContext: {
+            strategy: 'TREND_PULLBACK',
+            regime: 'TRENDING',
+            direction: 'BULL',
+            patternScore: 70,
+            selectionScore: 71,
+            entryScore: 70,
+            executionScore: 100,
+            riskReward: null,
+            setupClass: null
+          },
+          evidence: [
+            'STRUCTURAL_ENTRY_ZONE_DEFINED',
+            'SPREAD_ACCEPTABLE',
+            'SLIPPAGE_ACCEPTABLE',
+            'MARKET_DATA_FRESH',
+            'BULLISH_HH_HL_STRUCTURE',
+            'TRENDING_REGIME',
+            'DEEP_RETRACEMENT',
+            'SUITABLE_VOLATILITY'
+          ],
+          risks: [
+            'WAITING_FOR_ENTRY_ZONE',
+            'DEEP_PULLBACK_INCREASES_INVALIDATION_RISK',
+            'PRICE_OUTSIDE_PREFERRED_ENTRY_ZONE'
+          ],
+          blockers: [
+            'SCALP_PATTERN_SCORE_TOO_LOW',
+            'SETUP_QUALITY_SCORE_TOO_LOW'
+          ],
+          observedAt: '2026-10-17T19:06:18.741Z',
+          executionAuthority: false,
+          liveExecution: false
+        },
+        evidence: [
+          'STRUCTURAL_ENTRY_ZONE_DEFINED',
+          'SPREAD_ACCEPTABLE',
+          'SLIPPAGE_ACCEPTABLE',
+          'MARKET_DATA_FRESH',
+          'BULLISH_HH_HL_STRUCTURE',
+          'TRENDING_REGIME',
+          'DEEP_RETRACEMENT',
+          'SUITABLE_VOLATILITY'
+        ],
+        risks: [
+          'WAITING_FOR_ENTRY_ZONE',
+          'DEEP_PULLBACK_INCREASES_INVALIDATION_RISK',
+          'PRICE_OUTSIDE_PREFERRED_ENTRY_ZONE'
+        ],
+        blockers: [
+          'SCALP_PATTERN_SCORE_TOO_LOW',
+          'SETUP_QUALITY_SCORE_TOO_LOW'
+        ],
+        executionAuthority: false,
+        liveExecution: false
+      }
+    },
+    {
+      symbol: 'BR_USDT',
+      stage: 'SETUP',
+      reason: 'SETUP_BLOCKED',
+      blockers: [
+        'ENTRY_TOO_EXTENDED',
+        'SCALP_PATTERN_SCORE_TOO_LOW',
+        'SCALP_ENTRY_SCORE_TOO_LOW',
+        'STANDARD_ENTRY_SCORE_TOO_LOW',
+        'ASYMMETRIC_ENTRY_SCORE_TOO_LOW',
+        'SETUP_QUALITY_SCORE_TOO_LOW'
+      ],
+      direction: 'LONG',
+      regime: 'EXPANSION',
+      strategy: 'MOMENTUM_BREAKOUT',
+      strategySelection: {
+        approved: true,
+        status: 'SETUP_STRATEGY_PLANNED',
+        direction: 'BULL',
+        marketRegime: 'EXPANSION',
+        eligibleStrategies: [ 'MOMENTUM_BREAKOUT', 'BREAKOUT_RETEST' ],
+        attemptedStrategies: [
+          {
+            strategy: 'MOMENTUM_BREAKOUT',
+            matched: false,
+            planned: true,
+            lifecycleStatus: 'PLANNED',
+            status: 'PATTERN_REJECTED',
+            patternScore: 85,
+            blockers: [ 'MOMENTUM_BREAKOUT_ENTRY_TOO_EXTENDED' ],
+            evidence: [
+              'DIRECTIONAL_BREAKOUT_CONFIRMED',
+              'BREAKOUT_DISPLACEMENT_CONFIRMED',
+              'STRONG_ATR_DISPLACEMENT',
+              'BREAKOUT_VOLUME_EXPANSION',
+              'EXPANSION_REGIME',
+              'VOLATILITY_EXPANDING'
+            ],
+            risks: [ 'ENTRY_TOO_EXTENDED' ]
+          },
+          {
+            strategy: 'BREAKOUT_RETEST',
+            matched: false,
+            planned: true,
+            lifecycleStatus: 'PLANNED',
+            status: 'PATTERN_REJECTED',
+            patternScore: 55,
+            blockers: [
+              'BREAKOUT_RETEST_WAITING_FOR_RETEST',
+              'BREAKOUT_RETEST_PATTERN_SCORE_TOO_LOW'
+            ],
+            evidence: [
+              'DIRECTIONAL_BREAKOUT_CONFIRMED',
+              'MEANINGFUL_BREAKOUT_DISPLACEMENT',
+              'STRONG_BREAKOUT_DISPLACEMENT',
+              'REGIME_SUPPORTS_BREAKOUT_SETUP',
+              'ABOVE_NORMAL_PARTICIPATION'
+            ],
+            risks: [ 'PRICE_AWAY_FROM_RETEST_ENTRY' ]
+          }
+        ],
+        matchedStrategies: [
+          {
+            strategy: 'MOMENTUM_BREAKOUT',
+            selectionScore: 79.5,
+            patternScore: 85,
+            bestRiskReward: 2.9086615364662203,
+            selectionComponents: {
+              pattern: { score: 85, weight: 0.7 },
+              geometry: {
+                score: 100,
+                weight: 0.2,
+                bestRiskReward: 2.9086615364662203,
+                validTargetCount: 4
+              },
+              entry: { score: 0, weight: 0.1 }
+            }
+          },
+          {
+            strategy: 'BREAKOUT_RETEST',
+            selectionScore: 60.5,
+            patternScore: 55,
+            bestRiskReward: 12.760592490526914,
+            selectionComponents: {
+              pattern: { score: 55, weight: 0.7 },
+              geometry: {
+                score: 85,
+                weight: 0.2,
+                bestRiskReward: 12.760592490526914,
+                validTargetCount: 2
+              },
+              entry: { score: 50, weight: 0.1 }
+            }
+          }
+        ],
+        selectedStrategy: 'MOMENTUM_BREAKOUT',
+        selectionScore: 79.5,
+        minimumSelectionScore: 60,
+        selectionComponents: {
+          pattern: { score: 85, weight: 0.7 },
+          geometry: {
+            score: 100,
+            weight: 0.2,
+            bestRiskReward: 2.9086615364662203,
+            validTargetCount: 4
+          },
+          entry: { score: 0, weight: 0.1 }
+        },
+        selectedResult: {
+          strategy: 'MOMENTUM_BREAKOUT',
+          matched: false,
+          status: 'PATTERN_REJECTED',
+          direction: 'BULL',
+          patternScore: 85,
+          minimumPatternScore: 70,
+          breakout: {
+            detected: true,
+            direction: 'BULL',
+            candleIndex: 98,
+            candle: {
+              openTime: 1792263600000,
+              open: 0.39866,
+              high: 0.40562,
+              low: 0.39505,
+              close: 0.40483,
+              volume: 5095
+            },
+            level: 0.4,
+            priorHigh: 0.4,
+            priorLow: 0.38677,
+            body: 0.006170000000000009,
+            candleRange: 0.010569999999999968,
+            bodyToRange: 0.5837275307474009,
+            displacementAtr: 1.4877712710988653,
+            volumeRatio: 4.27110403219046,
+            reason: 'BULLISH_MOMENTUM_BREAKOUT'
+          },
+          breakoutQuality: {
+            approved: true,
+            minimumDisplacementAtr: 0.6,
+            minimumBodyToRange: 0.55,
+            blockers: []
+          },
+          entryZone: {
+            available: true,
+            low: 0.4,
+            high: 0.4014515,
+            preferred: 0.4006220714285714
+          },
+          preferredEntry: 0.4006220714285714,
+          entryQuality: {
+            currentPrice: 0.40405,
+            breakoutLevel: 0.4,
+            extension: 0.004049999999999998,
+            extensionAtr: 0.9765759559076812,
+            maximumExtensionAtr: 0.75,
+            insideEntryZone: false,
+            chaseState: 'TOO_EXTENDED'
+          },
+          invalidation: {
+            available: true,
+            price: 0.3940132142857143,
+            structuralLevel: 0.39505,
+            buffer: 0.0010367857142857143,
+            reason: 'BULLISH_MOMENTUM_BREAKOUT_FAILED'
+          },
+          stop: 0.3940132142857143,
+          targets: [
+            {
+              price: 0.40562,
+              reason: 'EXTERNAL_STRUCTURE_HIGH',
+              label: 'TP1',
+              rewardDistance: 0.004997928571428556,
+              riskReward: 0.7562470277981911
+            },
+            {
+              price: 0.4099225,
+              reason: 'MOMENTUM_RANGE_PROJECTION_075',
+              label: 'TP2',
+              rewardDistance: 0.009300428571428598,
+              riskReward: 1.4072673036185257
+            },
+            {
+              price: 0.41323000000000004,
+              reason: 'MOMENTUM_RANGE_PROJECTION_100',
+              label: 'TP3',
+              rewardDistance: 0.012607928571428617,
+              riskReward: 1.9077320479010933
+            },
+            {
+              price: 0.419845,
+              reason: 'MOMENTUM_RANGE_PROJECTION_150',
+              label: 'TP4',
+              rewardDistance: 0.0192229285714286,
+              riskReward: 2.9086615364662203
+            }
+          ],
+          evidence: [
+            'DIRECTIONAL_BREAKOUT_CONFIRMED',
+            'BREAKOUT_DISPLACEMENT_CONFIRMED',
+            'STRONG_ATR_DISPLACEMENT',
+            'BREAKOUT_VOLUME_EXPANSION',
+            'EXPANSION_REGIME',
+            'VOLATILITY_EXPANDING'
+          ],
+          risks: [ 'ENTRY_TOO_EXTENDED' ],
+          blockers: [ 'MOMENTUM_BREAKOUT_ENTRY_TOO_EXTENDED' ],
+          diagnostics: {
+            candleCount: 99,
+            marketRegime: 'EXPANSION',
+            structurePattern: 'COMPRESSION',
+            volatilityRegime: 'EXPANDING',
+            breakoutDisplacementAtr: 1.4877712710988653,
+            breakoutBodyToRange: 0.5837275307474009,
+            breakoutVolumeRatio: 4.27110403219046
+          },
+          executionAuthority: false,
+          liveExecution: false,
+          planned: true,
+          lifecycleStatus: 'PLANNED'
+        },
+        runnerUp: {
+          strategy: 'BREAKOUT_RETEST',
+          selectionScore: 60.5,
+          patternScore: 55
+        },
+        ambiguity: {
+          ambiguous: false,
+          scoreDifference: 19,
+          maximumScoreDifference: 5,
+          entryDifferencePercent: 0.1536509975229468,
+          maximumEntryDifferencePercent: 0.5,
+          stopDifferencePercent: 1.22264486489157,
+          maximumStopDifferencePercent: 0.75,
+          reasons: []
+        },
+        blockers: [],
+        observedAt: '2026-10-17T19:06:19.123Z',
+        executionAuthority: false,
+        liveExecution: false
+      },
+      marketStructure: null,
+      setupQuality: null,
+      candleAnalysis: null,
+      entry: 0.4006220714285714,
+      entryZone: {
+        available: true,
+        low: 0.4,
+        high: 0.4014515,
+        preferred: 0.4006220714285714
+      },
+      stop: 0.3940132142857143,
+      invalidation: {
+        available: true,
+        price: 0.3940132142857143,
+        structuralLevel: 0.39505,
+        buffer: 0.0010367857142857143,
+        reason: 'BULLISH_MOMENTUM_BREAKOUT_FAILED'
+      },
+      target: null,
+      targets: [ 0.40562, 0.4099225, 0.41323000000000004, 0.419845 ],
+      targetsDetailed: [
+        {
+          price: 0.40562,
+          label: 'TP1',
+          reason: 'EXTERNAL_STRUCTURE_HIGH',
+          rewardDistance: 0.004997928571428556,
+          riskReward: 0.7562470277981911,
+          qualifies: true,
+          setupClass: 'SCALP',
+          classApproved: false,
+          primary: false
+        },
+        {
+          price: 0.4099225,
+          label: 'TP2',
+          reason: 'MOMENTUM_RANGE_PROJECTION_075',
+          rewardDistance: 0.009300428571428598,
+          riskReward: 1.4072673036185257,
+          qualifies: true,
+          setupClass: 'STANDARD',
+          classApproved: false,
+          primary: false
+        },
+        {
+          price: 0.41323000000000004,
+          label: 'TP3',
+          reason: 'MOMENTUM_RANGE_PROJECTION_100',
+          rewardDistance: 0.012607928571428617,
+          riskReward: 1.9077320479010933,
+          qualifies: true,
+          setupClass: 'ASYMMETRIC',
+          classApproved: false,
+          primary: false
+        },
+        {
+          price: 0.419845,
+          label: 'TP4',
+          reason: 'MOMENTUM_RANGE_PROJECTION_150',
+          rewardDistance: 0.0192229285714286,
+          riskReward: 2.9086615364662203,
+          qualifies: true,
+          setupClass: 'ASYMMETRIC',
+          classApproved: false,
+          primary: false
+        }
+      ],
+      riskReward: null,
+      diagnosticSetup: {
+        approved: false,
+        status: 'NO_SETUP',
+        setupType: 'NONE',
+        symbol: 'BR_USDT',
+        direction: 'LONG',
+        researchDirection: 'BULL',
+        entry: 0.4006220714285714,
+        stop: 0.3940132142857143,
+        target: null,
+        targets: [ 0.40562, 0.4099225, 0.41323000000000004, 0.419845 ],
+        stopDistance: null,
+        targetDistance: null,
+        stopDistancePercent: 1.6496487872699392,
+        targetDistancePercent: null,
+        riskReward: null,
+        minimumRiskReward: 1.5,
+        spreadPercent: 0.1411712258368147,
+        maximumSpreadPercent: 0.5,
+        slippagePercent: 0.04063916120610133,
+        depthNotional: 23681.578199999996,
+        atr: 0.004105000000000005,
+        support: 0.37899,
+        resistance: 0.406,
+        freshness: { available: true, stale: false, ageMs: 0 },
+        instrumentType: 'PERPETUAL',
+        futuresValidated: true,
+        strategy: 'MOMENTUM_BREAKOUT',
+        lifecycleStatus: 'PLANNED',
+        lifecycle: {
+          status: 'PLANNED',
+          entryReached: false,
+          currentPrice: 0.40405,
+          reason: 'STRUCTURAL_PLAN_EXISTS_PENDING_FINAL_QUALITY'
+        },
+        marketRegime: 'EXPANSION',
+        regimeScore: 100,
+        entryZone: {
+          available: true,
+          low: 0.4,
+          high: 0.4014515,
+          preferred: 0.4006220714285714
+        },
+        invalidation: {
+          available: true,
+          price: 0.3940132142857143,
+          structuralLevel: 0.39505,
+          buffer: 0.0010367857142857143,
+          reason: 'BULLISH_MOMENTUM_BREAKOUT_FAILED'
+        },
+        targetsDetailed: [
+          {
+            price: 0.40562,
+            label: 'TP1',
+            reason: 'EXTERNAL_STRUCTURE_HIGH',
+            rewardDistance: 0.004997928571428556,
+            riskReward: 0.7562470277981911,
+            qualifies: true,
+            setupClass: 'SCALP',
+            classApproved: false,
+            primary: false
+          },
+          {
+            price: 0.4099225,
+            label: 'TP2',
+            reason: 'MOMENTUM_RANGE_PROJECTION_075',
+            rewardDistance: 0.009300428571428598,
+            riskReward: 1.4072673036185257,
+            qualifies: true,
+            setupClass: 'STANDARD',
+            classApproved: false,
+            primary: false
+          },
+          {
+            price: 0.41323000000000004,
+            label: 'TP3',
+            reason: 'MOMENTUM_RANGE_PROJECTION_100',
+            rewardDistance: 0.012607928571428617,
+            riskReward: 1.9077320479010933,
+            qualifies: true,
+            setupClass: 'ASYMMETRIC',
+            classApproved: false,
+            primary: false
+          },
+          {
+            price: 0.419845,
+            label: 'TP4',
+            reason: 'MOMENTUM_RANGE_PROJECTION_150',
+            rewardDistance: 0.0192229285714286,
+            riskReward: 2.9086615364662203,
+            qualifies: true,
+            setupClass: 'ASYMMETRIC',
+            classApproved: false,
+            primary: false
+          }
+        ],
+        setupQualityScore: 55.8,
+        minimumSetupQualityScore: 70,
+        qualityComponents: {
+          strategy: { score: 79.5, weight: 0.4 },
+          entry: { score: 20, weight: 0.2 },
+          reward: { score: 0, weight: 0.2, riskReward: null, setupClass: null },
+          execution: { score: 100, weight: 0.2 }
+        },
+        entryQuality: {
+          approved: false,
+          score: 20,
+          currentPrice: 0.40405,
+          preferredEntry: 0.4006220714285714,
+          chaseState: 'TOO_EXTENDED',
+          evidence: [ 'STRUCTURAL_ENTRY_ZONE_DEFINED' ],
+          risks: [ 'WAITING_FOR_ENTRY_ZONE' ],
+          blockers: [ 'ENTRY_TOO_EXTENDED' ]
+        },
+        executionQuality: {
+          approved: true,
+          score: 100,
+          spreadPercent: 0.1411712258368147,
+          maximumSpreadPercent: 0.5,
+          slippagePercent: 0.04063916120610133,
+          maximumSlippagePercent: 0.5,
+          freshness: { available: true, stale: false, ageMs: 0 },
+          evidence: [
+            'SPREAD_ACCEPTABLE',
+            'SLIPPAGE_ACCEPTABLE',
+            'MARKET_DATA_FRESH'
+          ],
+          risks: [],
+          blockers: []
+        },
+        structure: {
+          approved: true,
+          status: 'MARKET_STRUCTURE_READY',
+          candleCount: 99,
+          current: {
+            openTime: 1792263600000,
+            open: 0.39866,
+            high: 0.40562,
+            low: 0.39505,
+            close: 0.40483,
+            changePercent: 1.5476847438920405
+          },
+          atr: 0.004147142857142857,
+          trend: 'NEUTRAL',
+          structurePattern: 'COMPRESSION',
+          highStructure: 'LOWER_HIGH',
+          lowStructure: 'HIGHER_LOW',
+          swingHighs: [
+            { index: 2, openTime: 1792234800000, price: 0.40698 },
+            { index: 15, openTime: 1792238700000, price: 0.40482 },
+            { index: 28, openTime: 1792242600000, price: 0.37432 },
+            { index: 33, openTime: 1792244100000, price: 0.36736 },
+            { index: 46, openTime: 1792248000000, price: 0.39903 },
+            { index: 53, openTime: 1792250100000, price: 0.38923 },
+            { index: 64, openTime: 1792253400000, price: 0.38528 },
+            { index: 89, openTime: 1792260900000, price: 0.39424 },
+            { index: 92, openTime: 1792261800000, price: 0.39204 }
+          ],
+          swingLows: [
+            { index: 18, openTime: 1792239600000, price: 0.37342 },
+            { index: 26, openTime: 1792242000000, price: 0.35998 },
+            { index: 32, openTime: 1792243800000, price: 0.36242 },
+            { index: 45, openTime: 1792247700000, price: 0.38413 },
+            { index: 48, openTime: 1792248600000, price: 0.38262 },
+            { index: 51, openTime: 1792249500000, price: 0.37843 },
+            { index: 58, openTime: 1792251600000, price: 0.36914 },
+            { index: 71, openTime: 1792255500000, price: 0.37053 },
+            { index: 90, openTime: 1792261200000, price: 0.38677 },
+            { index: 95, openTime: 1792262700000, price: 0.38809 }
+          ],
+          latestSwingHigh: { index: 92, openTime: 1792261800000, price: 0.39204 },
+          previousSwingHigh: { index: 89, openTime: 1792260900000, price: 0.39424 },
+          latestSwingLow: { index: 95, openTime: 1792262700000, price: 0.38809 },
+          previousSwingLow: { index: 90, openTime: 1792261200000, price: 0.38677 },
+          range: {
+            high: 0.40562,
+            low: 0.378,
+            midpoint: 0.39181,
+            widthPercent: 7.049335136928608
+          },
+          volatility: {
+            regime: 'EXPANDING',
+            atrPercent: 1.0244158923851634,
+            recentRangeRatio: 1.6639549436796022
+          },
+          breakout: {
+            detected: true,
+            direction: 'BULL',
+            level: 0.4,
+            displacementAtr: 1.4877712710988653
+          },
+          liquiditySweep: {
+            detected: false,
+            direction: null,
+            level: null,
+            extreme: null,
+            reclaimed: false
+          },
+          volume: {
+            available: true,
+            ratio: 4.27110403219046,
+            state: 'EXPANDED'
+          },
+          blockers: [],
+          observedAt: '2026-10-17T19:06:19.121Z',
+          executionAuthority: false,
+          liveExecution: false
+        },
+        regime: {
+          approved: true,
+          status: 'MARKET_REGIME_READY',
+          regime: 'EXPANSION',
+          regimeScore: 100,
+          researchDirection: 'BULL',
+          structuralDirection: 'NEUTRAL',
+          alignment: {
+            aligned: null,
+            state: 'NEUTRAL_STRUCTURE',
+            reason: 'STRUCTURE_NOT_DIRECTIONAL'
+          },
+          scores: {
+            TRENDING: {
+              score: 15,
+              reasons: [
+                'TREND_WITH_EXPANDING_VOLATILITY',
+                'PARTICIPATION_SUPPORTS_TREND'
+              ]
+            },
+            COMPRESSION: { score: 45, reasons: [ 'CONVERGING_SWING_STRUCTURE' ] },
+            EXPANSION: {
+              score: 100,
+              reasons: [
+                'VOLATILITY_EXPANSION',
+                'STRUCTURAL_BREAKOUT',
+                'STRONG_BREAKOUT_DISPLACEMENT',
+                'EXPANDED_VOLUME'
+              ]
+            },
+            LIQUIDITY_SWEEP: {
+              score: 15,
+              reasons: [ 'SWEEP_WITH_VOLATILITY', 'SWEEP_WITH_PARTICIPATION' ]
+            },
+            RANGING: {
+              score: 60,
+              reasons: [
+                'NO_CONFIRMED_DIRECTIONAL_STRUCTURE',
+                'CONTAINED_STRUCTURE',
+                'DEFINED_RANGE_BOUNDARIES'
+              ]
+            }
+          },
+          eligibleStrategies: [ 'MOMENTUM_BREAKOUT', 'BREAKOUT_RETEST' ],
+          context: {
+            structurePattern: 'COMPRESSION',
+            volatility: 'EXPANDING',
+            breakout: {
+              detected: true,
+              direction: 'BULL',
+              level: 0.4,
+              displacementAtr: 1.4877712710988653
+            },
+            liquiditySweep: {
+              detected: false,
+              direction: null,
+              level: null,
+              extreme: null,
+              reclaimed: false
+            },
+            range: {
+              high: 0.40562,
+              low: 0.378,
+              midpoint: 0.39181,
+              widthPercent: 7.049335136928608
+            },
+            volume: {
+              available: true,
+              ratio: 4.27110403219046,
+              state: 'EXPANDED'
+            }
+          },
+          blockers: [],
+          observedAt: '2026-10-17T19:06:19.121Z',
+          executionAuthority: false,
+          liveExecution: false
+        },
+        strategySelection: {
+          approved: true,
+          status: 'SETUP_STRATEGY_PLANNED',
+          direction: 'BULL',
+          marketRegime: 'EXPANSION',
+          eligibleStrategies: [ 'MOMENTUM_BREAKOUT', 'BREAKOUT_RETEST' ],
+          attemptedStrategies: [
+            {
+              strategy: 'MOMENTUM_BREAKOUT',
+              matched: false,
+              planned: true,
+              lifecycleStatus: 'PLANNED',
+              status: 'PATTERN_REJECTED',
+              patternScore: 85,
+              blockers: [ 'MOMENTUM_BREAKOUT_ENTRY_TOO_EXTENDED' ],
+              evidence: [
+                'DIRECTIONAL_BREAKOUT_CONFIRMED',
+                'BREAKOUT_DISPLACEMENT_CONFIRMED',
+                'STRONG_ATR_DISPLACEMENT',
+                'BREAKOUT_VOLUME_EXPANSION',
+                'EXPANSION_REGIME',
+                'VOLATILITY_EXPANDING'
+              ],
+              risks: [ 'ENTRY_TOO_EXTENDED' ]
+            },
+            {
+              strategy: 'BREAKOUT_RETEST',
+              matched: false,
+              planned: true,
+              lifecycleStatus: 'PLANNED',
+              status: 'PATTERN_REJECTED',
+              patternScore: 55,
+              blockers: [
+                'BREAKOUT_RETEST_WAITING_FOR_RETEST',
+                'BREAKOUT_RETEST_PATTERN_SCORE_TOO_LOW'
+              ],
+              evidence: [
+                'DIRECTIONAL_BREAKOUT_CONFIRMED',
+                'MEANINGFUL_BREAKOUT_DISPLACEMENT',
+                'STRONG_BREAKOUT_DISPLACEMENT',
+                'REGIME_SUPPORTS_BREAKOUT_SETUP',
+                'ABOVE_NORMAL_PARTICIPATION'
+              ],
+              risks: [ 'PRICE_AWAY_FROM_RETEST_ENTRY' ]
+            }
+          ],
+          matchedStrategies: [
+            {
+              strategy: 'MOMENTUM_BREAKOUT',
+              selectionScore: 79.5,
+              patternScore: 85,
+              bestRiskReward: 2.9086615364662203,
+              selectionComponents: {
+                pattern: { score: 85, weight: 0.7 },
+                geometry: {
+                  score: 100,
+                  weight: 0.2,
+                  bestRiskReward: 2.9086615364662203,
+                  validTargetCount: 4
+                },
+                entry: { score: 0, weight: 0.1 }
+              }
+            },
+            {
+              strategy: 'BREAKOUT_RETEST',
+              selectionScore: 60.5,
+              patternScore: 55,
+              bestRiskReward: 12.760592490526914,
+              selectionComponents: {
+                pattern: { score: 55, weight: 0.7 },
+                geometry: {
+                  score: 85,
+                  weight: 0.2,
+                  bestRiskReward: 12.760592490526914,
+                  validTargetCount: 2
+                },
+                entry: { score: 50, weight: 0.1 }
+              }
+            }
+          ],
+          selectedStrategy: 'MOMENTUM_BREAKOUT',
+          selectionScore: 79.5,
+          minimumSelectionScore: 60,
+          selectionComponents: {
+            pattern: { score: 85, weight: 0.7 },
+            geometry: {
+              score: 100,
+              weight: 0.2,
+              bestRiskReward: 2.9086615364662203,
+              validTargetCount: 4
+            },
+            entry: { score: 0, weight: 0.1 }
+          },
+          selectedResult: {
+            strategy: 'MOMENTUM_BREAKOUT',
+            matched: false,
+            status: 'PATTERN_REJECTED',
+            direction: 'BULL',
+            patternScore: 85,
+            minimumPatternScore: 70,
+            breakout: {
+              detected: true,
+              direction: 'BULL',
+              candleIndex: 98,
+              candle: {
+                openTime: 1792263600000,
+                open: 0.39866,
+                high: 0.40562,
+                low: 0.39505,
+                close: 0.40483,
+                volume: 5095
+              },
+              level: 0.4,
+              priorHigh: 0.4,
+              priorLow: 0.38677,
+              body: 0.006170000000000009,
+              candleRange: 0.010569999999999968,
+              bodyToRange: 0.5837275307474009,
+              displacementAtr: 1.4877712710988653,
+              volumeRatio: 4.27110403219046,
+              reason: 'BULLISH_MOMENTUM_BREAKOUT'
+            },
+            breakoutQuality: {
+              approved: true,
+              minimumDisplacementAtr: 0.6,
+              minimumBodyToRange: 0.55,
+              blockers: []
+            },
+            entryZone: {
+              available: true,
+              low: 0.4,
+              high: 0.4014515,
+              preferred: 0.4006220714285714
+            },
+            preferredEntry: 0.4006220714285714,
+            entryQuality: {
+              currentPrice: 0.40405,
+              breakoutLevel: 0.4,
+              extension: 0.004049999999999998,
+              extensionAtr: 0.9765759559076812,
+              maximumExtensionAtr: 0.75,
+              insideEntryZone: false,
+              chaseState: 'TOO_EXTENDED'
+            },
+            invalidation: {
+              available: true,
+              price: 0.3940132142857143,
+              structuralLevel: 0.39505,
+              buffer: 0.0010367857142857143,
+              reason: 'BULLISH_MOMENTUM_BREAKOUT_FAILED'
+            },
+            stop: 0.3940132142857143,
+            targets: [
+              {
+                price: 0.40562,
+                reason: 'EXTERNAL_STRUCTURE_HIGH',
+                label: 'TP1',
+                rewardDistance: 0.004997928571428556,
+                riskReward: 0.7562470277981911
+              },
+              {
+                price: 0.4099225,
+                reason: 'MOMENTUM_RANGE_PROJECTION_075',
+                label: 'TP2',
+                rewardDistance: 0.009300428571428598,
+                riskReward: 1.4072673036185257
+              },
+              {
+                price: 0.41323000000000004,
+                reason: 'MOMENTUM_RANGE_PROJECTION_100',
+                label: 'TP3',
+                rewardDistance: 0.012607928571428617,
+                riskReward: 1.9077320479010933
+              },
+              {
+                price: 0.419845,
+                reason: 'MOMENTUM_RANGE_PROJECTION_150',
+                label: 'TP4',
+                rewardDistance: 0.0192229285714286,
+                riskReward: 2.9086615364662203
+              }
+            ],
+            evidence: [
+              'DIRECTIONAL_BREAKOUT_CONFIRMED',
+              'BREAKOUT_DISPLACEMENT_CONFIRMED',
+              'STRONG_ATR_DISPLACEMENT',
+              'BREAKOUT_VOLUME_EXPANSION',
+              'EXPANSION_REGIME',
+              'VOLATILITY_EXPANDING'
+            ],
+            risks: [ 'ENTRY_TOO_EXTENDED' ],
+            blockers: [ 'MOMENTUM_BREAKOUT_ENTRY_TOO_EXTENDED' ],
+            diagnostics: {
+              candleCount: 99,
+              marketRegime: 'EXPANSION',
+              structurePattern: 'COMPRESSION',
+              volatilityRegime: 'EXPANDING',
+              breakoutDisplacementAtr: 1.4877712710988653,
+              breakoutBodyToRange: 0.5837275307474009,
+              breakoutVolumeRatio: 4.27110403219046
+            },
+            executionAuthority: false,
+            liveExecution: false,
+            planned: true,
+            lifecycleStatus: 'PLANNED'
+          },
+          runnerUp: {
+            strategy: 'BREAKOUT_RETEST',
+            selectionScore: 60.5,
+            patternScore: 55
+          },
+          ambiguity: {
+            ambiguous: false,
+            scoreDifference: 19,
+            maximumScoreDifference: 5,
+            entryDifferencePercent: 0.1536509975229468,
+            maximumEntryDifferencePercent: 0.5,
+            stopDifferencePercent: 1.22264486489157,
+            maximumStopDifferencePercent: 0.75,
+            reasons: []
+          },
+          blockers: [],
+          observedAt: '2026-10-17T19:06:19.123Z',
+          executionAuthority: false,
+          liveExecution: false
+        },
+        quality: {
+          lifecycleStatus: 'PLANNED',
+          lifecycle: {
+            status: 'PLANNED',
+            entryReached: false,
+            currentPrice: 0.40405,
+            reason: 'STRUCTURAL_PLAN_EXISTS_PENDING_FINAL_QUALITY'
+          },
+          approved: false,
+          status: 'SETUP_QUALITY_REJECTED',
+          symbol: 'BR_USDT',
+          direction: 'BULL',
+          strategy: {
+            id: 'MOMENTUM_BREAKOUT',
+            selectionScore: 79.5,
+            patternScore: 85,
+            marketRegime: 'EXPANSION'
+          },
+          setupClass: null,
+          expectancyMode: 'BOOTSTRAP',
+          rewardProfile: {
+            bestRiskReward: 2.9086615364662203,
+            selectedRiskReward: null,
+            minimumTradableRiskReward: 0.5,
+            standardRiskReward: 1,
+            asymmetricRiskReward: 1.5,
+            structuralTargetCount: 4,
+            tradableTargetCount: 4
+          },
+          entry: 0.4006220714285714,
+          entryZone: {
+            available: true,
+            low: 0.4,
+            high: 0.4014515,
+            preferred: 0.4006220714285714
+          },
+          stop: 0.3940132142857143,
+          invalidation: {
+            available: true,
+            price: 0.3940132142857143,
+            structuralLevel: 0.39505,
+            buffer: 0.0010367857142857143,
+            reason: 'BULLISH_MOMENTUM_BREAKOUT_FAILED'
+          },
+          target: null,
+          targets: [ 0.40562, 0.4099225, 0.41323000000000004, 0.419845 ],
+          targetsDetailed: [
+            {
+              price: 0.40562,
+              label: 'TP1',
+              reason: 'EXTERNAL_STRUCTURE_HIGH',
+              rewardDistance: 0.004997928571428556,
+              riskReward: 0.7562470277981911,
+              qualifies: true,
+              setupClass: 'SCALP',
+              classApproved: false,
+              primary: false
+            },
+            {
+              price: 0.4099225,
+              label: 'TP2',
+              reason: 'MOMENTUM_RANGE_PROJECTION_075',
+              rewardDistance: 0.009300428571428598,
+              riskReward: 1.4072673036185257,
+              qualifies: true,
+              setupClass: 'STANDARD',
+              classApproved: false,
+              primary: false
+            },
+            {
+              price: 0.41323000000000004,
+              label: 'TP3',
+              reason: 'MOMENTUM_RANGE_PROJECTION_100',
+              rewardDistance: 0.012607928571428617,
+              riskReward: 1.9077320479010933,
+              qualifies: true,
+              setupClass: 'ASYMMETRIC',
+              classApproved: false,
+              primary: false
+            },
+            {
+              price: 0.419845,
+              label: 'TP4',
+              reason: 'MOMENTUM_RANGE_PROJECTION_150',
+              rewardDistance: 0.0192229285714286,
+              riskReward: 2.9086615364662203,
+              qualifies: true,
+              setupClass: 'ASYMMETRIC',
+              classApproved: false,
+              primary: false
+            }
+          ],
+          riskDistance: 0.0066088571428571385,
+          targetDistance: null,
+          riskReward: null,
+          minimumRiskReward: 1.5,
+          minimumTradableRiskReward: 0.5,
+          setupQualityScore: 55.8,
+          minimumSetupQualityScore: 70,
+          qualityComponents: {
+            strategy: { score: 79.5, weight: 0.4 },
+            entry: { score: 20, weight: 0.2 },
+            reward: {
+              score: 0,
+              weight: 0.2,
+              riskReward: null,
+              setupClass: null
+            },
+            execution: { score: 100, weight: 0.2 }
+          },
+          entryQuality: {
+            approved: false,
+            score: 20,
+            currentPrice: 0.40405,
+            preferredEntry: 0.4006220714285714,
+            chaseState: 'TOO_EXTENDED',
+            evidence: [ 'STRUCTURAL_ENTRY_ZONE_DEFINED' ],
+            risks: [ 'WAITING_FOR_ENTRY_ZONE' ],
+            blockers: [ 'ENTRY_TOO_EXTENDED' ]
+          },
+          executionQuality: {
+            approved: true,
+            score: 100,
+            spreadPercent: 0.1411712258368147,
+            maximumSpreadPercent: 0.5,
+            slippagePercent: 0.04063916120610133,
+            maximumSlippagePercent: 0.5,
+            freshness: { available: true, stale: false, ageMs: 0 },
+            evidence: [
+              'SPREAD_ACCEPTABLE',
+              'SLIPPAGE_ACCEPTABLE',
+              'MARKET_DATA_FRESH'
+            ],
+            risks: [],
+            blockers: []
+          },
+          spreadPercent: 0.1411712258368147,
+          maximumSpreadPercent: 0.5,
+          slippagePercent: 0.04063916120610133,
+          maximumSlippagePercent: 0.5,
+          freshness: { available: true, stale: false, ageMs: 0 },
+          learningContext: {
+            strategy: 'MOMENTUM_BREAKOUT',
+            regime: 'EXPANSION',
+            direction: 'BULL',
+            patternScore: 85,
+            selectionScore: 79.5,
+            entryScore: 20,
+            executionScore: 100,
+            riskReward: null,
+            setupClass: null
+          },
+          evidence: [
+            'STRUCTURAL_ENTRY_ZONE_DEFINED',
+            'SPREAD_ACCEPTABLE',
+            'SLIPPAGE_ACCEPTABLE',
+            'MARKET_DATA_FRESH',
+            'DIRECTIONAL_BREAKOUT_CONFIRMED',
+            'BREAKOUT_DISPLACEMENT_CONFIRMED',
+            'STRONG_ATR_DISPLACEMENT',
+            'BREAKOUT_VOLUME_EXPANSION',
+            'EXPANSION_REGIME',
+            'VOLATILITY_EXPANDING'
+          ],
+          risks: [ 'WAITING_FOR_ENTRY_ZONE', 'ENTRY_TOO_EXTENDED' ],
+          blockers: [
+            'ENTRY_TOO_EXTENDED',
+            'SCALP_PATTERN_SCORE_TOO_LOW',
+            'SCALP_ENTRY_SCORE_TOO_LOW',
+            'STANDARD_ENTRY_SCORE_TOO_LOW',
+            'ASYMMETRIC_ENTRY_SCORE_TOO_LOW',
+            'SETUP_QUALITY_SCORE_TOO_LOW'
+          ],
+          observedAt: '2026-10-17T19:06:19.124Z',
+          executionAuthority: false,
+          liveExecution: false
+        },
+        evidence: [
+          'STRUCTURAL_ENTRY_ZONE_DEFINED',
+          'SPREAD_ACCEPTABLE',
+          'SLIPPAGE_ACCEPTABLE',
+          'MARKET_DATA_FRESH',
+          'DIRECTIONAL_BREAKOUT_CONFIRMED',
+          'BREAKOUT_DISPLACEMENT_CONFIRMED',
+          'STRONG_ATR_DISPLACEMENT',
+          'BREAKOUT_VOLUME_EXPANSION',
+          'EXPANSION_REGIME',
+          'VOLATILITY_EXPANDING'
+        ],
+        risks: [ 'WAITING_FOR_ENTRY_ZONE', 'ENTRY_TOO_EXTENDED' ],
+        blockers: [
+          'ENTRY_TOO_EXTENDED',
+          'SCALP_PATTERN_SCORE_TOO_LOW',
+          'SCALP_ENTRY_SCORE_TOO_LOW',
+          'STANDARD_ENTRY_SCORE_TOO_LOW',
+          'ASYMMETRIC_ENTRY_SCORE_TOO_LOW',
+          'SETUP_QUALITY_SCORE_TOO_LOW'
+        ],
+        executionAuthority: false,
+        liveExecution: false
+      }
+    },
+    {
+      symbol: 'STRK_USDT',
+      stage: 'SETUP',
+      reason: 'SETUP_BLOCKED',
+      blockers: [
+        'STRUCTURE_DIRECTION_CONFLICT',
+        'SETUP_STRATEGY_REGIME_NOT_READY',
+        'NO_SETUP_PATTERN_MATCHED',
+        'SETUP_STRATEGY_NOT_SELECTED',
+        'SETUP_REGIME_NOT_APPROVED',
+        'SETUP_ENTRY_UNAVAILABLE',
+        'SETUP_STOP_UNAVAILABLE',
+        'SETUP_STRUCTURAL_TARGETS_UNAVAILABLE',
+        'ENTRY_PRICE_UNAVAILABLE',
+        'REWARD_BELOW_MINIMUM_TRADABLE_THRESHOLD',
+        'SETUP_QUALITY_SCORE_TOO_LOW'
+      ],
+      direction: 'SHORT',
+      regime: 'TRENDING',
+      strategy: null,
+      strategySelection: {
+        approved: false,
+        status: 'NO_SETUP_STRATEGY',
+        direction: 'BEAR',
+        marketRegime: 'TRENDING',
+        eligibleStrategies: [ 'TREND_PULLBACK', 'BREAKOUT_RETEST' ],
+        attemptedStrategies: [
+          {
+            strategy: 'TREND_PULLBACK',
+            matched: false,
+            planned: false,
+            lifecycleStatus: 'REJECTED',
+            status: 'PATTERN_REJECTED',
+            patternScore: 25,
+            blockers: [
+              'TREND_PULLBACK_REGIME_NOT_READY',
+              'TREND_PULLBACK_NOT_PRESENT',
+              'TREND_PULLBACK_PATTERN_SCORE_TOO_LOW'
+            ],
+            evidence: [ 'TRENDING_REGIME', 'ADEQUATE_MARKET_PARTICIPATION' ],
+            risks: [
+              'TREND_STRUCTURE_NOT_FULLY_ALIGNED',
+              'PRICE_EXTENDED_NO_PULLBACK',
+              'EXTREME_VOLATILITY',
+              'PRICE_OUTSIDE_PREFERRED_ENTRY_ZONE'
+            ]
+          },
+          {
+            strategy: 'BREAKOUT_RETEST',
+            matched: false,
+            planned: false,
+            lifecycleStatus: 'REJECTED',
+            status: 'PATTERN_REJECTED',
+            patternScore: 95,
+            blockers: [ 'BREAKOUT_RETEST_REGIME_NOT_READY' ],
+            evidence: [
+              'DIRECTIONAL_BREAKOUT_CONFIRMED',
+              'MEANINGFUL_BREAKOUT_DISPLACEMENT',
+              'BROKEN_LEVEL_RETESTED',
+              'RETEST_HELD',
+              'REGIME_SUPPORTS_BREAKOUT_SETUP',
+              'PRICE_NEAR_RETEST_ENTRY'
+            ],
+            risks: [ 'EXTREME_VOLATILITY' ]
+          }
+        ],
+        matchedStrategies: [],
+        selectedStrategy: null,
+        selectionScore: null,
+        minimumSelectionScore: 60,
+        selectionComponents: null,
+        selectedResult: null,
+        runnerUp: null,
+        ambiguity: {
+          ambiguous: false,
+          scoreDifference: null,
+          entryDifferencePercent: null,
+          stopDifferencePercent: null,
+          reasons: []
+        },
+        blockers: [
+          'SETUP_STRATEGY_REGIME_NOT_READY',
+          'NO_SETUP_PATTERN_MATCHED'
+        ],
+        observedAt: '2026-10-17T19:06:19.508Z',
+        executionAuthority: false,
+        liveExecution: false
+      },
+      marketStructure: null,
+      setupQuality: null,
+      candleAnalysis: null,
+      entry: null,
+      entryZone: null,
+      stop: null,
+      invalidation: null,
+      target: null,
+      targets: [],
+      targetsDetailed: [],
+      riskReward: null,
+      diagnosticSetup: {
+        approved: false,
+        status: 'NO_SETUP',
+        setupType: 'NONE',
+        symbol: 'STRK_USDT',
+        direction: 'SHORT',
+        researchDirection: 'BEAR',
+        entry: null,
+        stop: null,
+        target: null,
+        targets: [],
+        stopDistance: null,
+        targetDistance: null,
+        stopDistancePercent: null,
+        targetDistancePercent: null,
+        riskReward: null,
+        minimumRiskReward: 1.5,
+        spreadPercent: 0.07623694442328027,
+        maximumSpreadPercent: 0.5,
+        slippagePercent: 0.030076535674428716,
+        depthNotional: 87692.43331999998,
+        atr: 0.0006607142857142853,
+        support: 0.06454,
+        resistance: 0.06829,
+        freshness: { available: true, stale: false, ageMs: 0 },
+        instrumentType: 'PERPETUAL',
+        futuresValidated: true,
+        strategy: null,
+        lifecycleStatus: 'FORMING',
+        lifecycle: {
+          status: 'FORMING',
+          entryReached: false,
+          currentPrice: null,
+          reason: 'NO_STRUCTURAL_SETUP_SELECTED'
+        },
+        marketRegime: 'TRENDING',
+        regimeScore: 80,
+        entryZone: null,
+        invalidation: null,
+        targetsDetailed: [],
+        setupQualityScore: 20,
+        minimumSetupQualityScore: 70,
+        qualityComponents: {
+          strategy: { score: 0, weight: 0.4 },
+          entry: { score: 0, weight: 0.2 },
+          reward: { score: 0, weight: 0.2, riskReward: null, setupClass: null },
+          execution: { score: 100, weight: 0.2 }
+        },
+        entryQuality: {
+          approved: false,
+          score: 0,
+          currentPrice: 0.06556,
+          preferredEntry: null,
+          chaseState: null,
+          evidence: [],
+          risks: [],
+          blockers: [ 'ENTRY_PRICE_UNAVAILABLE' ]
+        },
+        executionQuality: {
+          approved: true,
+          score: 100,
+          spreadPercent: 0.07623694442328027,
+          maximumSpreadPercent: 0.5,
+          slippagePercent: 0.030076535674428716,
+          maximumSlippagePercent: 0.5,
+          freshness: { available: true, stale: false, ageMs: 0 },
+          evidence: [
+            'SPREAD_ACCEPTABLE',
+            'SLIPPAGE_ACCEPTABLE',
+            'MARKET_DATA_FRESH'
+          ],
+          risks: [],
+          blockers: []
+        },
+        structure: {
+          approved: true,
+          status: 'MARKET_STRUCTURE_READY',
+          candleCount: 99,
+          current: {
+            openTime: 1792263600000,
+            open: 0.06535,
+            high: 0.0657,
+            low: 0.06488,
+            close: 0.065,
+            changePercent: -0.535577658760525
+          },
+          atr: 0.0006314285714285704,
+          trend: 'BULLISH',
+          structurePattern: 'HH_HL',
+          highStructure: 'HIGHER_HIGH',
+          lowStructure: 'HIGHER_LOW',
+          swingHighs: [
+            { index: 9, openTime: 1792236900000, price: 0.07259 },
+            { index: 33, openTime: 1792244100000, price: 0.06724 },
+            { index: 39, openTime: 1792245900000, price: 0.0686 },
+            { index: 48, openTime: 1792248600000, price: 0.06894 },
+            { index: 65, openTime: 1792253700000, price: 0.06698 },
+            { index: 71, openTime: 1792255500000, price: 0.0665 },
+            { index: 78, openTime: 1792257600000, price: 0.06701 },
+            { index: 83, openTime: 1792259100000, price: 0.06704 },
+            { index: 86, openTime: 1792260000000, price: 0.06759 },
+            { index: 95, openTime: 1792262700000, price: 0.06829 }
+          ],
+          swingLows: [
+            { index: 24, openTime: 1792241400000, price: 0.06522 },
+            { index: 28, openTime: 1792242600000, price: 0.06561 },
+            { index: 43, openTime: 1792247100000, price: 0.06748 },
+            { index: 46, openTime: 1792248000000, price: 0.06732 },
+            { index: 59, openTime: 1792251900000, price: 0.06526 },
+            { index: 69, openTime: 1792254900000, price: 0.06541 },
+            { index: 74, openTime: 1792256400000, price: 0.06592 },
+            { index: 82, openTime: 1792258800000, price: 0.06646 }
+          ],
+          latestSwingHigh: { index: 95, openTime: 1792262700000, price: 0.06829 },
+          previousSwingHigh: { index: 86, openTime: 1792260000000, price: 0.06759 },
+          latestSwingLow: { index: 82, openTime: 1792258800000, price: 0.06646 },
+          previousSwingLow: { index: 74, openTime: 1792256400000, price: 0.06592 },
+          range: {
+            high: 0.06829,
+            low: 0.06454,
+            midpoint: 0.066415,
+            widthPercent: 5.6463148385154005
+          },
+          volatility: {
+            regime: 'EXTREME',
+            atrPercent: 0.9714285714285698,
+            recentRangeRatio: 2.982922201138542
+          },
+          breakout: {
+            detected: false,
+            direction: null,
+            level: null,
+            displacementAtr: 0.5542986425339425
+          },
+          liquiditySweep: {
+            detected: false,
+            direction: null,
+            level: null,
+            extreme: null,
+            reclaimed: false
+          },
+          volume: {
+            available: true,
+            ratio: 1.1320331392913305,
+            state: 'NORMAL'
+          },
+          blockers: [],
+          observedAt: '2026-10-17T19:06:19.507Z',
+          executionAuthority: false,
+          liveExecution: false
+        },
+        regime: {
+          approved: false,
+          status: 'MARKET_REGIME_BLOCKED',
+          regime: 'TRENDING',
+          regimeScore: 80,
+          researchDirection: 'BEAR',
+          structuralDirection: 'BULL',
+          alignment: {
+            aligned: false,
+            state: 'CONFLICT',
+            reason: 'RESEARCH_AND_STRUCTURE_CONFLICT'
+          },
+          scores: {
+            TRENDING: {
+              score: 80,
+              reasons: [
+                'HIGHER_HIGH_HIGHER_LOW_STRUCTURE',
+                'DIRECTIONAL_SWING_STRUCTURE',
+                'PARTICIPATION_SUPPORTS_TREND'
+              ]
+            },
+            COMPRESSION: { score: 15, reasons: [ 'RELATIVELY_TIGHT_RANGE' ] },
+            EXPANSION: { score: 30, reasons: [ 'EXTREME_VOLATILITY' ] },
+            LIQUIDITY_SWEEP: { score: 10, reasons: [ 'SWEEP_WITH_VOLATILITY' ] },
+            RANGING: {
+              score: 35,
+              reasons: [
+                'NO_ACTIVE_BREAKOUT_OR_SWEEP',
+                'DEFINED_RANGE_BOUNDARIES'
+              ]
+            }
+          },
+          eligibleStrategies: [ 'TREND_PULLBACK', 'BREAKOUT_RETEST' ],
+          context: {
+            structurePattern: 'HH_HL',
+            volatility: 'EXTREME',
+            breakout: {
+              detected: false,
+              direction: null,
+              level: null,
+              displacementAtr: 0.5542986425339425
+            },
+            liquiditySweep: {
+              detected: false,
+              direction: null,
+              level: null,
+              extreme: null,
+              reclaimed: false
+            },
+            range: {
+              high: 0.06829,
+              low: 0.06454,
+              midpoint: 0.066415,
+              widthPercent: 5.6463148385154005
+            },
+            volume: {
+              available: true,
+              ratio: 1.1320331392913305,
+              state: 'NORMAL'
+            }
+          },
+          blockers: [ 'STRUCTURE_DIRECTION_CONFLICT' ],
+          observedAt: '2026-10-17T19:06:19.507Z',
+          executionAuthority: false,
+          liveExecution: false
+        },
+        strategySelection: {
+          approved: false,
+          status: 'NO_SETUP_STRATEGY',
+          direction: 'BEAR',
+          marketRegime: 'TRENDING',
+          eligibleStrategies: [ 'TREND_PULLBACK', 'BREAKOUT_RETEST' ],
+          attemptedStrategies: [
+            {
+              strategy: 'TREND_PULLBACK',
+              matched: false,
+              planned: false,
+              lifecycleStatus: 'REJECTED',
+              status: 'PATTERN_REJECTED',
+              patternScore: 25,
+              blockers: [
+                'TREND_PULLBACK_REGIME_NOT_READY',
+                'TREND_PULLBACK_NOT_PRESENT',
+                'TREND_PULLBACK_PATTERN_SCORE_TOO_LOW'
+              ],
+              evidence: [ 'TRENDING_REGIME', 'ADEQUATE_MARKET_PARTICIPATION' ],
+              risks: [
+                'TREND_STRUCTURE_NOT_FULLY_ALIGNED',
+                'PRICE_EXTENDED_NO_PULLBACK',
+                'EXTREME_VOLATILITY',
+                'PRICE_OUTSIDE_PREFERRED_ENTRY_ZONE'
+              ]
+            },
+            {
+              strategy: 'BREAKOUT_RETEST',
+              matched: false,
+              planned: false,
+              lifecycleStatus: 'REJECTED',
+              status: 'PATTERN_REJECTED',
+              patternScore: 95,
+              blockers: [ 'BREAKOUT_RETEST_REGIME_NOT_READY' ],
+              evidence: [
+                'DIRECTIONAL_BREAKOUT_CONFIRMED',
+                'MEANINGFUL_BREAKOUT_DISPLACEMENT',
+                'BROKEN_LEVEL_RETESTED',
+                'RETEST_HELD',
+                'REGIME_SUPPORTS_BREAKOUT_SETUP',
+                'PRICE_NEAR_RETEST_ENTRY'
+              ],
+              risks: [ 'EXTREME_VOLATILITY' ]
+            }
+          ],
+          matchedStrategies: [],
+          selectedStrategy: null,
+          selectionScore: null,
+          minimumSelectionScore: 60,
+          selectionComponents: null,
+          selectedResult: null,
+          runnerUp: null,
+          ambiguity: {
+            ambiguous: false,
+            scoreDifference: null,
+            entryDifferencePercent: null,
+            stopDifferencePercent: null,
+            reasons: []
+          },
+          blockers: [
+            'SETUP_STRATEGY_REGIME_NOT_READY',
+            'NO_SETUP_PATTERN_MATCHED'
+          ],
+          observedAt: '2026-10-17T19:06:19.508Z',
+          executionAuthority: false,
+          liveExecution: false
+        },
+        quality: {
+          lifecycleStatus: 'FORMING',
+          lifecycle: {
+            status: 'FORMING',
+            entryReached: false,
+            currentPrice: null,
+            reason: 'NO_STRUCTURAL_SETUP_SELECTED'
+          },
+          approved: false,
+          status: 'SETUP_QUALITY_REJECTED',
+          symbol: 'STRK_USDT',
+          direction: 'BEAR',
+          strategy: {
+            id: null,
+            selectionScore: null,
+            patternScore: null,
+            marketRegime: 'TRENDING'
+          },
+          setupClass: null,
+          expectancyMode: 'BOOTSTRAP',
+          rewardProfile: {
+            bestRiskReward: null,
+            selectedRiskReward: null,
+            minimumTradableRiskReward: 0.5,
+            standardRiskReward: 1,
+            asymmetricRiskReward: 1.5,
+            structuralTargetCount: 0,
+            tradableTargetCount: 0
+          },
+          entry: null,
+          entryZone: null,
+          stop: null,
+          invalidation: null,
+          target: null,
+          targets: [],
+          targetsDetailed: [],
+          riskDistance: null,
+          targetDistance: null,
+          riskReward: null,
+          minimumRiskReward: 1.5,
+          minimumTradableRiskReward: 0.5,
+          setupQualityScore: 20,
+          minimumSetupQualityScore: 70,
+          qualityComponents: {
+            strategy: { score: 0, weight: 0.4 },
+            entry: { score: 0, weight: 0.2 },
+            reward: {
+              score: 0,
+              weight: 0.2,
+              riskReward: null,
+              setupClass: null
+            },
+            execution: { score: 100, weight: 0.2 }
+          },
+          entryQuality: {
+            approved: false,
+            score: 0,
+            currentPrice: 0.06556,
+            preferredEntry: null,
+            chaseState: null,
+            evidence: [],
+            risks: [],
+            blockers: [ 'ENTRY_PRICE_UNAVAILABLE' ]
+          },
+          executionQuality: {
+            approved: true,
+            score: 100,
+            spreadPercent: 0.07623694442328027,
+            maximumSpreadPercent: 0.5,
+            slippagePercent: 0.030076535674428716,
+            maximumSlippagePercent: 0.5,
+            freshness: { available: true, stale: false, ageMs: 0 },
+            evidence: [
+              'SPREAD_ACCEPTABLE',
+              'SLIPPAGE_ACCEPTABLE',
+              'MARKET_DATA_FRESH'
+            ],
+            risks: [],
+            blockers: []
+          },
+          spreadPercent: 0.07623694442328027,
+          maximumSpreadPercent: 0.5,
+          slippagePercent: 0.030076535674428716,
+          maximumSlippagePercent: 0.5,
+          freshness: { available: true, stale: false, ageMs: 0 },
+          learningContext: {
+            strategy: null,
+            regime: 'TRENDING',
+            direction: 'BEAR',
+            patternScore: null,
+            selectionScore: null,
+            entryScore: 0,
+            executionScore: 100,
+            riskReward: null,
+            setupClass: null
+          },
+          evidence: [
+            'SPREAD_ACCEPTABLE',
+            'SLIPPAGE_ACCEPTABLE',
+            'MARKET_DATA_FRESH'
+          ],
+          risks: [],
+          blockers: [
+            'SETUP_STRATEGY_NOT_SELECTED',
+            'SETUP_REGIME_NOT_APPROVED',
+            'SETUP_ENTRY_UNAVAILABLE',
+            'SETUP_STOP_UNAVAILABLE',
+            'SETUP_STRUCTURAL_TARGETS_UNAVAILABLE',
+            'ENTRY_PRICE_UNAVAILABLE',
+            'REWARD_BELOW_MINIMUM_TRADABLE_THRESHOLD',
+            'SETUP_QUALITY_SCORE_TOO_LOW'
+          ],
+          observedAt: '2026-10-17T19:06:19.508Z',
+          executionAuthority: false,
+          liveExecution: false
+        },
+        evidence: [
+          'SPREAD_ACCEPTABLE',
+          'SLIPPAGE_ACCEPTABLE',
+          'MARKET_DATA_FRESH'
+        ],
+        risks: [],
+        blockers: [
+          'STRUCTURE_DIRECTION_CONFLICT',
+          'SETUP_STRATEGY_REGIME_NOT_READY',
+          'NO_SETUP_PATTERN_MATCHED',
+          'SETUP_STRATEGY_NOT_SELECTED',
+          'SETUP_REGIME_NOT_APPROVED',
+          'SETUP_ENTRY_UNAVAILABLE',
+          'SETUP_STOP_UNAVAILABLE',
+          'SETUP_STRUCTURAL_TARGETS_UNAVAILABLE',
+          'ENTRY_PRICE_UNAVAILABLE',
+          'REWARD_BELOW_MINIMUM_TRADABLE_THRESHOLD',
+          'SETUP_QUALITY_SCORE_TOO_LOW'
+        ],
+        executionAuthority: false,
+        liveExecution: false
+      }
+    },
+    {
+      symbol: 'DNA_USDT',
+      stage: 'SETUP',
+      reason: 'SETUP_BLOCKED',
+      blockers: [
+        'LIQUIDITY_SWEEP_OPPOSES_RESEARCH_DIRECTION',
+        'NO_STRATEGY_ELIGIBLE_FOR_REGIME',
+        'SETUP_STRATEGY_REGIME_NOT_READY',
+        'NO_ELIGIBLE_SETUP_STRATEGIES',
+        'NO_SETUP_PATTERN_MATCHED',
+        'SETUP_STRATEGY_NOT_SELECTED',
+        'SETUP_REGIME_NOT_APPROVED',
+        'SETUP_ENTRY_UNAVAILABLE',
+        'SETUP_STOP_UNAVAILABLE',
+        'SETUP_STRUCTURAL_TARGETS_UNAVAILABLE',
+        'ENTRY_PRICE_UNAVAILABLE',
+        'REWARD_BELOW_MINIMUM_TRADABLE_THRESHOLD',
+        'SETUP_QUALITY_SCORE_TOO_LOW'
+      ],
+      direction: 'SHORT',
+      regime: 'LIQUIDITY_SWEEP',
+      strategy: null,
+      strategySelection: {
+        approved: false,
+        status: 'NO_SETUP_STRATEGY',
+        direction: 'BEAR',
+        marketRegime: 'LIQUIDITY_SWEEP',
+        eligibleStrategies: [],
+        attemptedStrategies: [],
+        matchedStrategies: [],
+        selectedStrategy: null,
+        selectionScore: null,
+        minimumSelectionScore: 60,
+        selectionComponents: null,
+        selectedResult: null,
+        runnerUp: null,
+        ambiguity: {
+          ambiguous: false,
+          scoreDifference: null,
+          entryDifferencePercent: null,
+          stopDifferencePercent: null,
+          reasons: []
+        },
+        blockers: [
+          'SETUP_STRATEGY_REGIME_NOT_READY',
+          'NO_ELIGIBLE_SETUP_STRATEGIES',
+          'NO_SETUP_PATTERN_MATCHED'
+        ],
+        observedAt: '2026-10-17T19:06:19.894Z',
+        executionAuthority: false,
+        liveExecution: false
+      },
+      marketStructure: null,
+      setupQuality: null,
+      candleAnalysis: null,
+      entry: null,
+      entryZone: null,
+      stop: null,
+      invalidation: null,
+      target: null,
+      targets: [],
+      targetsDetailed: [],
+      riskReward: null,
+      diagnosticSetup: {
+        approved: false,
+        status: 'NO_SETUP',
+        setupType: 'NONE',
+        symbol: 'DNA_USDT',
+        direction: 'SHORT',
+        researchDirection: 'BEAR',
+        entry: null,
+        stop: null,
+        target: null,
+        targets: [],
+        stopDistance: null,
+        targetDistance: null,
+        stopDistancePercent: null,
+        targetDistancePercent: null,
+        riskReward: null,
+        minimumRiskReward: 1.5,
+        spreadPercent: 0.07855459544382482,
+        maximumSpreadPercent: 0.5,
+        slippagePercent: 0.00019280623203652878,
+        depthNotional: 198195.94000000006,
+        atr: 0.003128571428571431,
+        support: 0.2488,
+        resistance: 0.2697,
+        freshness: { available: true, stale: false, ageMs: 0 },
+        instrumentType: 'PERPETUAL',
+        futuresValidated: true,
+        strategy: null,
+        lifecycleStatus: 'FORMING',
+        lifecycle: {
+          status: 'FORMING',
+          entryReached: false,
+          currentPrice: null,
+          reason: 'NO_STRUCTURAL_SETUP_SELECTED'
+        },
+        marketRegime: 'LIQUIDITY_SWEEP',
+        regimeScore: 95,
+        entryZone: null,
+        invalidation: null,
+        targetsDetailed: [],
+        setupQualityScore: 20,
+        minimumSetupQualityScore: 70,
+        qualityComponents: {
+          strategy: { score: 0, weight: 0.4 },
+          entry: { score: 0, weight: 0.2 },
+          reward: { score: 0, weight: 0.2, riskReward: null, setupClass: null },
+          execution: { score: 100, weight: 0.2 }
+        },
+        entryQuality: {
+          approved: false,
+          score: 0,
+          currentPrice: 0.2545,
+          preferredEntry: null,
+          chaseState: null,
+          evidence: [],
+          risks: [],
+          blockers: [ 'ENTRY_PRICE_UNAVAILABLE' ]
+        },
+        executionQuality: {
+          approved: true,
+          score: 100,
+          spreadPercent: 0.07855459544382482,
+          maximumSpreadPercent: 0.5,
+          slippagePercent: 0.00019280623203652878,
+          maximumSlippagePercent: 0.5,
+          freshness: { available: true, stale: false, ageMs: 0 },
+          evidence: [
+            'SPREAD_ACCEPTABLE',
+            'SLIPPAGE_ACCEPTABLE',
+            'MARKET_DATA_FRESH'
+          ],
+          risks: [],
+          blockers: []
+        },
+        structure: {
+          approved: true,
+          status: 'MARKET_STRUCTURE_READY',
+          candleCount: 99,
+          current: {
+            openTime: 1792263600000,
+            open: 0.2514,
+            high: 0.2534,
+            low: 0.2488,
+            close: 0.253,
+            changePercent: 0.6364359586316588
+          },
+          atr: 0.0031071428571428617,
+          trend: 'BEARISH',
+          structurePattern: 'LH_LL',
+          highStructure: 'LOWER_HIGH',
+          lowStructure: 'LOWER_LOW',
+          swingHighs: [
+            { index: 10, openTime: 1792237200000, price: 0.2776 },
+            { index: 18, openTime: 1792239600000, price: 0.2798 },
+            { index: 30, openTime: 1792243200000, price: 0.2728 },
+            { index: 36, openTime: 1792245000000, price: 0.2692 },
+            { index: 49, openTime: 1792248900000, price: 0.2773 },
+            { index: 62, openTime: 1792252800000, price: 0.2757 },
+            { index: 71, openTime: 1792255500000, price: 0.2627 },
+            { index: 78, openTime: 1792257600000, price: 0.2729 },
+            { index: 85, openTime: 1792259700000, price: 0.2656 },
+            { index: 89, openTime: 1792260900000, price: 0.265 }
+          ],
+          swingLows: [
+            { index: 15, openTime: 1792238700000, price: 0.2715 },
+            { index: 21, openTime: 1792240500000, price: 0.2732 },
+            { index: 26, openTime: 1792242000000, price: 0.2645 },
+            { index: 35, openTime: 1792244700000, price: 0.2623 },
+            { index: 42, openTime: 1792246800000, price: 0.2648 },
+            { index: 52, openTime: 1792249800000, price: 0.2675 },
+            { index: 56, openTime: 1792251000000, price: 0.2644 },
+            { index: 66, openTime: 1792254000000, price: 0.254 },
+            { index: 81, openTime: 1792258500000, price: 0.2627 },
+            { index: 86, openTime: 1792260000000, price: 0.2607 }
+          ],
+          latestSwingHigh: { index: 89, openTime: 1792260900000, price: 0.265 },
+          previousSwingHigh: { index: 85, openTime: 1792259700000, price: 0.2656 },
+          latestSwingLow: { index: 86, openTime: 1792260000000, price: 0.2607 },
+          previousSwingLow: { index: 81, openTime: 1792258500000, price: 0.2627 },
+          range: {
+            high: 0.2702,
+            low: 0.2488,
+            midpoint: 0.2595,
+            widthPercent: 8.246628131021195
+          },
+          volatility: {
+            regime: 'EXTREME',
+            atrPercent: 1.2281197063805778,
+            recentRangeRatio: 2.160714285714289
+          },
+          breakout: {
+            detected: false,
+            direction: null,
+            level: null,
+            displacementAtr: 0.5149425287356283
+          },
+          liquiditySweep: {
+            detected: true,
+            direction: 'BULL',
+            level: 0.2508,
+            extreme: 0.2488,
+            reclaimed: true
+          },
+          volume: {
+            available: true,
+            ratio: 0.8378830648569158,
+            state: 'NORMAL'
+          },
+          blockers: [],
+          observedAt: '2026-10-17T19:06:19.894Z',
+          executionAuthority: false,
+          liveExecution: false
+        },
+        regime: {
+          approved: false,
+          status: 'MARKET_REGIME_BLOCKED',
+          regime: 'LIQUIDITY_SWEEP',
+          regimeScore: 95,
+          researchDirection: 'BEAR',
+          structuralDirection: 'BEAR',
+          alignment: {
+            aligned: true,
+            state: 'ALIGNED',
+            reason: 'RESEARCH_AND_STRUCTURE_AGREE'
+          },
+          scores: {
+            TRENDING: {
+              score: 75,
+              reasons: [
+                'LOWER_HIGH_LOWER_LOW_STRUCTURE',
+                'DIRECTIONAL_SWING_STRUCTURE'
+              ]
+            },
+            COMPRESSION: { score: 0, reasons: [] },
+            EXPANSION: { score: 30, reasons: [ 'EXTREME_VOLATILITY' ] },
+            LIQUIDITY_SWEEP: {
+              score: 95,
+              reasons: [
+                'LIQUIDITY_EXTREME_SWEPT',
+                'SWEPT_LEVEL_RECLAIMED',
+                'SWEEP_WITH_VOLATILITY'
+              ]
+            },
+            RANGING: { score: 15, reasons: [ 'DEFINED_RANGE_BOUNDARIES' ] }
+          },
+          eligibleStrategies: [],
+          context: {
+            structurePattern: 'LH_LL',
+            volatility: 'EXTREME',
+            breakout: {
+              detected: false,
+              direction: null,
+              level: null,
+              displacementAtr: 0.5149425287356283
+            },
+            liquiditySweep: {
+              detected: true,
+              direction: 'BULL',
+              level: 0.2508,
+              extreme: 0.2488,
+              reclaimed: true
+            },
+            range: {
+              high: 0.2702,
+              low: 0.2488,
+              midpoint: 0.2595,
+              widthPercent: 8.246628131021195
+            },
+            volume: {
+              available: true,
+              ratio: 0.8378830648569158,
+              state: 'NORMAL'
+            }
+          },
+          blockers: [
+            'LIQUIDITY_SWEEP_OPPOSES_RESEARCH_DIRECTION',
+            'NO_STRATEGY_ELIGIBLE_FOR_REGIME'
+          ],
+          observedAt: '2026-10-17T19:06:19.894Z',
+          executionAuthority: false,
+          liveExecution: false
+        },
+        strategySelection: {
+          approved: false,
+          status: 'NO_SETUP_STRATEGY',
+          direction: 'BEAR',
+          marketRegime: 'LIQUIDITY_SWEEP',
+          eligibleStrategies: [],
+          attemptedStrategies: [],
+          matchedStrategies: [],
+          selectedStrategy: null,
+          selectionScore: null,
+          minimumSelectionScore: 60,
+          selectionComponents: null,
+          selectedResult: null,
+          runnerUp: null,
+          ambiguity: {
+            ambiguous: false,
+            scoreDifference: null,
+            entryDifferencePercent: null,
+            stopDifferencePercent: null,
+            reasons: []
+          },
+          blockers: [
+            'SETUP_STRATEGY_REGIME_NOT_READY',
+            'NO_ELIGIBLE_SETUP_STRATEGIES',
+            'NO_SETUP_PATTERN_MATCHED'
+          ],
+          observedAt: '2026-10-17T19:06:19.894Z',
+          executionAuthority: false,
+          liveExecution: false
+        },
+        quality: {
+          lifecycleStatus: 'FORMING',
+          lifecycle: {
+            status: 'FORMING',
+            entryReached: false,
+            currentPrice: null,
+            reason: 'NO_STRUCTURAL_SETUP_SELECTED'
+          },
+          approved: false,
+          status: 'SETUP_QUALITY_REJECTED',
+          symbol: 'DNA_USDT',
+          direction: 'BEAR',
+          strategy: {
+            id: null,
+            selectionScore: null,
+            patternScore: null,
+            marketRegime: 'LIQUIDITY_SWEEP'
+          },
+          setupClass: null,
+          expectancyMode: 'BOOTSTRAP',
+          rewardProfile: {
+            bestRiskReward: null,
+            selectedRiskReward: null,
+            minimumTradableRiskReward: 0.5,
+            standardRiskReward: 1,
+            asymmetricRiskReward: 1.5,
+            structuralTargetCount: 0,
+            tradableTargetCount: 0
+          },
+          entry: null,
+          entryZone: null,
+          stop: null,
+          invalidation: null,
+          target: null,
+          targets: [],
+          targetsDetailed: [],
+          riskDistance: null,
+          targetDistance: null,
+          riskReward: null,
+          minimumRiskReward: 1.5,
+          minimumTradableRiskReward: 0.5,
+          setupQualityScore: 20,
+          minimumSetupQualityScore: 70,
+          qualityComponents: {
+            strategy: { score: 0, weight: 0.4 },
+            entry: { score: 0, weight: 0.2 },
+            reward: {
+              score: 0,
+              weight: 0.2,
+              riskReward: null,
+              setupClass: null
+            },
+            execution: { score: 100, weight: 0.2 }
+          },
+          entryQuality: {
+            approved: false,
+            score: 0,
+            currentPrice: 0.2545,
+            preferredEntry: null,
+            chaseState: null,
+            evidence: [],
+            risks: [],
+            blockers: [ 'ENTRY_PRICE_UNAVAILABLE' ]
+          },
+          executionQuality: {
+            approved: true,
+            score: 100,
+            spreadPercent: 0.07855459544382482,
+            maximumSpreadPercent: 0.5,
+            slippagePercent: 0.00019280623203652878,
+            maximumSlippagePercent: 0.5,
+            freshness: { available: true, stale: false, ageMs: 0 },
+            evidence: [
+              'SPREAD_ACCEPTABLE',
+              'SLIPPAGE_ACCEPTABLE',
+              'MARKET_DATA_FRESH'
+            ],
+            risks: [],
+            blockers: []
+          },
+          spreadPercent: 0.07855459544382482,
+          maximumSpreadPercent: 0.5,
+          slippagePercent: 0.00019280623203652878,
+          maximumSlippagePercent: 0.5,
+          freshness: { available: true, stale: false, ageMs: 0 },
+          learningContext: {
+            strategy: null,
+            regime: 'LIQUIDITY_SWEEP',
+            direction: 'BEAR',
+            patternScore: null,
+            selectionScore: null,
+            entryScore: 0,
+            executionScore: 100,
+            riskReward: null,
+            setupClass: null
+          },
+          evidence: [
+            'SPREAD_ACCEPTABLE',
+            'SLIPPAGE_ACCEPTABLE',
+            'MARKET_DATA_FRESH'
+          ],
+          risks: [],
+          blockers: [
+            'SETUP_STRATEGY_NOT_SELECTED',
+            'SETUP_REGIME_NOT_APPROVED',
+            'SETUP_ENTRY_UNAVAILABLE',
+            'SETUP_STOP_UNAVAILABLE',
+            'SETUP_STRUCTURAL_TARGETS_UNAVAILABLE',
+            'ENTRY_PRICE_UNAVAILABLE',
+            'REWARD_BELOW_MINIMUM_TRADABLE_THRESHOLD',
+            'SETUP_QUALITY_SCORE_TOO_LOW'
+          ],
+          observedAt: '2026-10-17T19:06:19.894Z',
+          executionAuthority: false,
+          liveExecution: false
+        },
+        evidence: [
+          'SPREAD_ACCEPTABLE',
+          'SLIPPAGE_ACCEPTABLE',
+          'MARKET_DATA_FRESH'
+        ],
+        risks: [],
+        blockers: [
+          'LIQUIDITY_SWEEP_OPPOSES_RESEARCH_DIRECTION',
+          'NO_STRATEGY_ELIGIBLE_FOR_REGIME',
+          'SETUP_STRATEGY_REGIME_NOT_READY',
+          'NO_ELIGIBLE_SETUP_STRATEGIES',
+          'NO_SETUP_PATTERN_MATCHED',
+          'SETUP_STRATEGY_NOT_SELECTED',
+          'SETUP_REGIME_NOT_APPROVED',
+          'SETUP_ENTRY_UNAVAILABLE',
+          'SETUP_STOP_UNAVAILABLE',
+          'SETUP_STRUCTURAL_TARGETS_UNAVAILABLE',
+          'ENTRY_PRICE_UNAVAILABLE',
+          'REWARD_BELOW_MINIMUM_TRADABLE_THRESHOLD',
+          'SETUP_QUALITY_SCORE_TOO_LOW'
+        ],
+        executionAuthority: false,
+        liveExecution: false
+      }
+    },
+    {
+      symbol: 'BAT_USDT',
+      stage: 'SETUP',
+      reason: 'SETUP_BLOCKED',
+      blockers: [
+        'NO_SETUP_PATTERN_MATCHED',
+        'SETUP_STRATEGY_NOT_SELECTED',
+        'SETUP_ENTRY_UNAVAILABLE',
+        'SETUP_STOP_UNAVAILABLE',
+        'SETUP_STRUCTURAL_TARGETS_UNAVAILABLE',
+        'ENTRY_PRICE_UNAVAILABLE',
+        'REWARD_BELOW_MINIMUM_TRADABLE_THRESHOLD',
+        'SETUP_QUALITY_SCORE_TOO_LOW'
+      ],
+      direction: 'LONG',
+      regime: 'COMPRESSION',
+      strategy: null,
+      strategySelection: {
+        approved: false,
+        status: 'NO_SETUP_STRATEGY',
+        direction: 'BULL',
+        marketRegime: 'COMPRESSION',
+        eligibleStrategies: [ 'BREAKOUT_RETEST', 'MOMENTUM_BREAKOUT' ],
+        attemptedStrategies: [
+          {
+            strategy: 'BREAKOUT_RETEST',
+            matched: false,
+            planned: false,
+            lifecycleStatus: 'REJECTED',
+            status: 'PATTERN_REJECTED',
+            patternScore: 10,
+            blockers: [
+              'BREAKOUT_RETEST_BREAKOUT_NOT_FOUND',
+              'BREAKOUT_RETEST_RETEST_NOT_CONFIRMED',
+              'BREAKOUT_RETEST_ENTRY_ZONE_UNAVAILABLE',
+              'BREAKOUT_RETEST_INVALIDATION_UNAVAILABLE',
+              'BREAKOUT_RETEST_TARGET_UNAVAILABLE',
+              'BREAKOUT_RETEST_PATTERN_SCORE_TOO_LOW'
+            ],
+            evidence: [ 'REGIME_SUPPORTS_BREAKOUT_SETUP' ],
+            risks: []
+          },
+          {
+            strategy: 'MOMENTUM_BREAKOUT',
+            matched: false,
+            planned: false,
+            lifecycleStatus: 'REJECTED',
+            status: 'PATTERN_REJECTED',
+            patternScore: 10,
+            blockers: [
+              'MOMENTUM_BREAKOUT_NOT_FOUND',
+              'MOMENTUM_DISPLACEMENT_TOO_WEAK',
+              'BREAKOUT_CANDLE_BODY_TOO_WEAK',
+              'MOMENTUM_BREAKOUT_ENTRY_UNAVAILABLE',
+              'MOMENTUM_BREAKOUT_INVALIDATION_UNAVAILABLE',
+              'MOMENTUM_BREAKOUT_TARGET_UNAVAILABLE',
+              'MOMENTUM_BREAKOUT_PATTERN_SCORE_TOO_LOW'
+            ],
+            evidence: [ 'BREAKOUT_FROM_COMPRESSION_CONTEXT' ],
+            risks: []
+          }
+        ],
+        matchedStrategies: [],
+        selectedStrategy: null,
+        selectionScore: null,
+        minimumSelectionScore: 60,
+        selectionComponents: null,
+        selectedResult: null,
+        runnerUp: null,
+        ambiguity: {
+          ambiguous: false,
+          scoreDifference: null,
+          entryDifferencePercent: null,
+          stopDifferencePercent: null,
+          reasons: []
+        },
+        blockers: [ 'NO_SETUP_PATTERN_MATCHED' ],
+        observedAt: '2026-10-17T19:06:20.304Z',
+        executionAuthority: false,
+        liveExecution: false
+      },
+      marketStructure: null,
+      setupQuality: null,
+      candleAnalysis: null,
+      entry: null,
+      entryZone: null,
+      stop: null,
+      invalidation: null,
+      target: null,
+      targets: [],
+      targetsDetailed: [],
+      riskReward: null,
+      diagnosticSetup: {
+        approved: false,
+        status: 'NO_SETUP',
+        setupType: 'NONE',
+        symbol: 'BAT_USDT',
+        direction: 'LONG',
+        researchDirection: 'BULL',
+        entry: null,
+        stop: null,
+        target: null,
+        targets: [],
+        stopDistance: null,
+        targetDistance: null,
+        stopDistancePercent: null,
+        targetDistancePercent: null,
+        riskReward: null,
+        minimumRiskReward: 1.5,
+        spreadPercent: 0.070352030738421,
+        maximumSpreadPercent: 0.5,
+        slippagePercent: 0.07660034878192504,
+        depthNotional: 186706.0726,
+        atr: 0.001031428571428574,
+        support: 0.18126,
+        resistance: 0.18987,
+        freshness: { available: true, stale: false, ageMs: 0 },
+        instrumentType: 'PERPETUAL',
+        futuresValidated: true,
+        strategy: null,
+        lifecycleStatus: 'FORMING',
+        lifecycle: {
+          status: 'FORMING',
+          entryReached: false,
+          currentPrice: null,
+          reason: 'NO_STRUCTURAL_SETUP_SELECTED'
+        },
+        marketRegime: 'COMPRESSION',
+        regimeScore: 85,
+        entryZone: null,
+        invalidation: null,
+        targetsDetailed: [],
+        setupQualityScore: 20,
+        minimumSetupQualityScore: 70,
+        qualityComponents: {
+          strategy: { score: 0, weight: 0.4 },
+          entry: { score: 0, weight: 0.2 },
+          reward: { score: 0, weight: 0.2, riskReward: null, setupClass: null },
+          execution: { score: 100, weight: 0.2 }
+        },
+        entryQuality: {
+          approved: false,
+          score: 0,
+          currentPrice: 0.18485,
+          preferredEntry: null,
+          chaseState: null,
+          evidence: [],
+          risks: [],
+          blockers: [ 'ENTRY_PRICE_UNAVAILABLE' ]
+        },
+        executionQuality: {
+          approved: true,
+          score: 100,
+          spreadPercent: 0.070352030738421,
+          maximumSpreadPercent: 0.5,
+          slippagePercent: 0.07660034878192504,
+          maximumSlippagePercent: 0.5,
+          freshness: { available: true, stale: false, ageMs: 0 },
+          evidence: [
+            'SPREAD_ACCEPTABLE',
+            'SLIPPAGE_ACCEPTABLE',
+            'MARKET_DATA_FRESH'
+          ],
+          risks: [],
+          blockers: []
+        },
+        structure: {
+          approved: true,
+          status: 'MARKET_STRUCTURE_READY',
+          candleCount: 99,
+          current: {
+            openTime: 1792263600000,
+            open: 0.186,
+            high: 0.18606,
+            low: 0.18489,
+            close: 0.18499,
+            changePercent: -0.5430107526881779
+          },
+          atr: 0.0011071428571428601,
+          trend: 'NEUTRAL',
+          structurePattern: 'COMPRESSION',
+          highStructure: 'LOWER_HIGH',
+          lowStructure: 'HIGHER_LOW',
+          swingHighs: [
+            { index: 34, openTime: 1792244400000, price: 0.18096 },
+            { index: 39, openTime: 1792245900000, price: 0.18001 },
+            { index: 50, openTime: 1792249200000, price: 0.17776 },
+            { index: 53, openTime: 1792250100000, price: 0.17818 },
+            { index: 66, openTime: 1792254000000, price: 0.18538 },
+            { index: 72, openTime: 1792255800000, price: 0.18696 },
+            { index: 83, openTime: 1792259100000, price: 0.18987 },
+            { index: 87, openTime: 1792260300000, price: 0.18801 },
+            { index: 91, openTime: 1792261500000, price: 0.18764 },
+            { index: 96, openTime: 1792263000000, price: 0.18665 }
+          ],
+          swingLows: [
+            { index: 28, openTime: 1792242600000, price: 0.176 },
+            { index: 36, openTime: 1792245000000, price: 0.178 },
+            { index: 47, openTime: 1792248300000, price: 0.17461 },
+            { index: 54, openTime: 1792250400000, price: 0.17473 },
+            { index: 59, openTime: 1792251900000, price: 0.17398 },
+            { index: 62, openTime: 1792252800000, price: 0.16917 },
+            { index: 70, openTime: 1792255200000, price: 0.18118 },
+            { index: 82, openTime: 1792258800000, price: 0.18126 },
+            { index: 86, openTime: 1792260000000, price: 0.1848 },
+            { index: 93, openTime: 1792262100000, price: 0.18484 }
+          ],
+          latestSwingHigh: { index: 96, openTime: 1792263000000, price: 0.18665 },
+          previousSwingHigh: { index: 91, openTime: 1792261500000, price: 0.18764 },
+          latestSwingLow: { index: 93, openTime: 1792262100000, price: 0.18484 },
+          previousSwingLow: { index: 86, openTime: 1792260000000, price: 0.1848 },
+          range: {
+            high: 0.18987,
+            low: 0.18126,
+            midpoint: 0.185565,
+            widthPercent: 4.63988359873899
+          },
+          volatility: {
+            regime: 'COMPRESSED',
+            atrPercent: 0.5984879491555545,
+            recentRangeRatio: 0.450269299820465
+          },
+          breakout: {
+            detected: false,
+            direction: null,
+            level: null,
+            displacementAtr: 0.9122580645161364
+          },
+          liquiditySweep: {
+            detected: false,
+            direction: null,
+            level: null,
+            extreme: null,
+            reclaimed: false
+          },
+          volume: {
+            available: true,
+            ratio: 1.0033422459893049,
+            state: 'NORMAL'
+          },
+          blockers: [],
+          observedAt: '2026-10-17T19:06:20.303Z',
+          executionAuthority: false,
+          liveExecution: false
+        },
+        regime: {
+          approved: true,
+          status: 'MARKET_REGIME_READY',
+          regime: 'COMPRESSION',
+          regimeScore: 85,
+          researchDirection: 'BULL',
+          structuralDirection: 'NEUTRAL',
+          alignment: {
+            aligned: null,
+            state: 'NEUTRAL_STRUCTURE',
+            reason: 'STRUCTURE_NOT_DIRECTIONAL'
+          },
+          scores: {
+            TRENDING: { score: 5, reasons: [ 'PARTICIPATION_SUPPORTS_TREND' ] },
+            COMPRESSION: {
+              score: 85,
+              reasons: [
+                'CONVERGING_SWING_STRUCTURE',
+                'VOLATILITY_COMPRESSION'
+              ]
+            },
+            EXPANSION: { score: 20, reasons: [ 'STRONG_BREAKOUT_DISPLACEMENT' ] },
+            LIQUIDITY_SWEEP: { score: 0, reasons: [] },
+            RANGING: {
+              score: 80,
+              reasons: [
+                'NO_CONFIRMED_DIRECTIONAL_STRUCTURE',
+                'CONTAINED_STRUCTURE',
+                'NO_ACTIVE_BREAKOUT_OR_SWEEP',
+                'DEFINED_RANGE_BOUNDARIES'
+              ]
+            }
+          },
+          eligibleStrategies: [ 'BREAKOUT_RETEST', 'MOMENTUM_BREAKOUT' ],
+          context: {
+            structurePattern: 'COMPRESSION',
+            volatility: 'COMPRESSED',
+            breakout: {
+              detected: false,
+              direction: null,
+              level: null,
+              displacementAtr: 0.9122580645161364
+            },
+            liquiditySweep: {
+              detected: false,
+              direction: null,
+              level: null,
+              extreme: null,
+              reclaimed: false
+            },
+            range: {
+              high: 0.18987,
+              low: 0.18126,
+              midpoint: 0.185565,
+              widthPercent: 4.63988359873899
+            },
+            volume: {
+              available: true,
+              ratio: 1.0033422459893049,
+              state: 'NORMAL'
+            }
+          },
+          blockers: [],
+          observedAt: '2026-10-17T19:06:20.303Z',
+          executionAuthority: false,
+          liveExecution: false
+        },
+        strategySelection: {
+          approved: false,
+          status: 'NO_SETUP_STRATEGY',
+          direction: 'BULL',
+          marketRegime: 'COMPRESSION',
+          eligibleStrategies: [ 'BREAKOUT_RETEST', 'MOMENTUM_BREAKOUT' ],
+          attemptedStrategies: [
+            {
+              strategy: 'BREAKOUT_RETEST',
+              matched: false,
+              planned: false,
+              lifecycleStatus: 'REJECTED',
+              status: 'PATTERN_REJECTED',
+              patternScore: 10,
+              blockers: [
+                'BREAKOUT_RETEST_BREAKOUT_NOT_FOUND',
+                'BREAKOUT_RETEST_RETEST_NOT_CONFIRMED',
+                'BREAKOUT_RETEST_ENTRY_ZONE_UNAVAILABLE',
+                'BREAKOUT_RETEST_INVALIDATION_UNAVAILABLE',
+                'BREAKOUT_RETEST_TARGET_UNAVAILABLE',
+                'BREAKOUT_RETEST_PATTERN_SCORE_TOO_LOW'
+              ],
+              evidence: [ 'REGIME_SUPPORTS_BREAKOUT_SETUP' ],
+              risks: []
+            },
+            {
+              strategy: 'MOMENTUM_BREAKOUT',
+              matched: false,
+              planned: false,
+              lifecycleStatus: 'REJECTED',
+              status: 'PATTERN_REJECTED',
+              patternScore: 10,
+              blockers: [
+                'MOMENTUM_BREAKOUT_NOT_FOUND',
+                'MOMENTUM_DISPLACEMENT_TOO_WEAK',
+                'BREAKOUT_CANDLE_BODY_TOO_WEAK',
+                'MOMENTUM_BREAKOUT_ENTRY_UNAVAILABLE',
+                'MOMENTUM_BREAKOUT_INVALIDATION_UNAVAILABLE',
+                'MOMENTUM_BREAKOUT_TARGET_UNAVAILABLE',
+                'MOMENTUM_BREAKOUT_PATTERN_SCORE_TOO_LOW'
+              ],
+              evidence: [ 'BREAKOUT_FROM_COMPRESSION_CONTEXT' ],
+              risks: []
+            }
+          ],
+          matchedStrategies: [],
+          selectedStrategy: null,
+          selectionScore: null,
+          minimumSelectionScore: 60,
+          selectionComponents: null,
+          selectedResult: null,
+          runnerUp: null,
+          ambiguity: {
+            ambiguous: false,
+            scoreDifference: null,
+            entryDifferencePercent: null,
+            stopDifferencePercent: null,
+            reasons: []
+          },
+          blockers: [ 'NO_SETUP_PATTERN_MATCHED' ],
+          observedAt: '2026-10-17T19:06:20.304Z',
+          executionAuthority: false,
+          liveExecution: false
+        },
+        quality: {
+          lifecycleStatus: 'FORMING',
+          lifecycle: {
+            status: 'FORMING',
+            entryReached: false,
+            currentPrice: null,
+            reason: 'NO_STRUCTURAL_SETUP_SELECTED'
+          },
+          approved: false,
+          status: 'SETUP_QUALITY_REJECTED',
+          symbol: 'BAT_USDT',
+          direction: 'BULL',
+          strategy: {
+            id: null,
+            selectionScore: null,
+            patternScore: null,
+            marketRegime: 'COMPRESSION'
+          },
+          setupClass: null,
+          expectancyMode: 'BOOTSTRAP',
+          rewardProfile: {
+            bestRiskReward: null,
+            selectedRiskReward: null,
+            minimumTradableRiskReward: 0.5,
+            standardRiskReward: 1,
+            asymmetricRiskReward: 1.5,
+            structuralTargetCount: 0,
+            tradableTargetCount: 0
+          },
+          entry: null,
+          entryZone: null,
+          stop: null,
+          invalidation: null,
+          target: null,
+          targets: [],
+          targetsDetailed: [],
+          riskDistance: null,
+          targetDistance: null,
+          riskReward: null,
+          minimumRiskReward: 1.5,
+          minimumTradableRiskReward: 0.5,
+          setupQualityScore: 20,
+          minimumSetupQualityScore: 70,
+          qualityComponents: {
+            strategy: { score: 0, weight: 0.4 },
+            entry: { score: 0, weight: 0.2 },
+            reward: {
+              score: 0,
+              weight: 0.2,
+              riskReward: null,
+              setupClass: null
+            },
+            execution: { score: 100, weight: 0.2 }
+          },
+          entryQuality: {
+            approved: false,
+            score: 0,
+            currentPrice: 0.18485,
+            preferredEntry: null,
+            chaseState: null,
+            evidence: [],
+            risks: [],
+            blockers: [ 'ENTRY_PRICE_UNAVAILABLE' ]
+          },
+          executionQuality: {
+            approved: true,
+            score: 100,
+            spreadPercent: 0.070352030738421,
+            maximumSpreadPercent: 0.5,
+            slippagePercent: 0.07660034878192504,
+            maximumSlippagePercent: 0.5,
+            freshness: { available: true, stale: false, ageMs: 0 },
+            evidence: [
+              'SPREAD_ACCEPTABLE',
+              'SLIPPAGE_ACCEPTABLE',
+              'MARKET_DATA_FRESH'
+            ],
+            risks: [],
+            blockers: []
+          },
+          spreadPercent: 0.070352030738421,
+          maximumSpreadPercent: 0.5,
+          slippagePercent: 0.07660034878192504,
+          maximumSlippagePercent: 0.5,
+          freshness: { available: true, stale: false, ageMs: 0 },
+          learningContext: {
+            strategy: null,
+            regime: 'COMPRESSION',
+            direction: 'BULL',
+            patternScore: null,
+            selectionScore: null,
+            entryScore: 0,
+            executionScore: 100,
+            riskReward: null,
+            setupClass: null
+          },
+          evidence: [
+            'SPREAD_ACCEPTABLE',
+            'SLIPPAGE_ACCEPTABLE',
+            'MARKET_DATA_FRESH'
+          ],
+          risks: [],
+          blockers: [
+            'SETUP_STRATEGY_NOT_SELECTED',
+            'SETUP_ENTRY_UNAVAILABLE',
+            'SETUP_STOP_UNAVAILABLE',
+            'SETUP_STRUCTURAL_TARGETS_UNAVAILABLE',
+            'ENTRY_PRICE_UNAVAILABLE',
+            'REWARD_BELOW_MINIMUM_TRADABLE_THRESHOLD',
+            'SETUP_QUALITY_SCORE_TOO_LOW'
+          ],
+          observedAt: '2026-10-17T19:06:20.304Z',
+          executionAuthority: false,
+          liveExecution: false
+        },
+        evidence: [
+          'SPREAD_ACCEPTABLE',
+          'SLIPPAGE_ACCEPTABLE',
+          'MARKET_DATA_FRESH'
+        ],
+        risks: [],
+        blockers: [
+          'NO_SETUP_PATTERN_MATCHED',
+          'SETUP_STRATEGY_NOT_SELECTED',
+          'SETUP_ENTRY_UNAVAILABLE',
+          'SETUP_STOP_UNAVAILABLE',
+          'SETUP_STRUCTURAL_TARGETS_UNAVAILABLE',
+          'ENTRY_PRICE_UNAVAILABLE',
+          'REWARD_BELOW_MINIMUM_TRADABLE_THRESHOLD',
+          'SETUP_QUALITY_SCORE_TOO_LOW'
+        ],
+        executionAuthority: false,
+        liveExecution: false
+      }
+    }
+  ],
+  researchFailures: [],
+  setupFailures: []
+}

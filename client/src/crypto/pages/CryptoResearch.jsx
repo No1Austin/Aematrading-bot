@@ -31,6 +31,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
 import CryptoSidebar from "../components/CryptoSidebar.jsx";
+import { analyzeCryptoSetup } from "../services/cryptoApi.js";
 import WorkspaceJumpButton from "../../components/WorkspaceJumpButton.jsx";
 import "./CryptoResearch.css";
 
@@ -577,6 +578,9 @@ export default function CryptoResearch() {
   );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [setupResult, setSetupResult] = useState(null);
+  const [setupLoading, setSetupLoading] = useState(false);
+  const [setupError, setSetupError] = useState(null);
   const [lastUpdated, setLastUpdated] = useState(() => {
     if (
       text(cachedAtMount?.symbol).toUpperCase() === initialAsset &&
@@ -636,6 +640,23 @@ export default function CryptoResearch() {
     valuation?.marketCap,
   );
 
+  const runSetupEngine = useCallback(async symbol => {
+    const clean = text(symbol).toUpperCase();
+    if (!clean) return;
+
+    setSetupLoading(true);
+    setSetupError(null);
+    try {
+      const result = await analyzeCryptoSetup(clean);
+      setSetupResult(result?.data ?? result?.result ?? result ?? null);
+    } catch (requestError) {
+      setSetupResult(null);
+      setSetupError(requestError?.message ?? "Setup Engine unavailable.");
+    } finally {
+      setSetupLoading(false);
+    }
+  }, []);
+
   const runResearch = useCallback(async (symbol, { updateUrl = true } = {}) => {
     const clean = text(symbol).toUpperCase();
     if (!clean) {
@@ -651,6 +672,7 @@ export default function CryptoResearch() {
     const controller = new AbortController();
     setLoading(true);
     setError(null);
+    void runSetupEngine(clean);
     try {
       const [researchResult, exchangeResult] = await Promise.allSettled([
         requestResearch(clean, { signal: controller.signal }),
@@ -686,7 +708,7 @@ export default function CryptoResearch() {
     } finally {
       setLoading(false);
     }
-  }, [setSearchParams]);
+  }, [setSearchParams, runSetupEngine]);
 
   // Restore research when the user returns to this page. Cached results render
   // immediately; if the URL asset has no matching cache, research is reloaded.
@@ -734,6 +756,19 @@ export default function CryptoResearch() {
       ["READY", "COMPLETE"].includes(normalizeStatus(engine?.status))
     );
   }).length;
+
+  const setup = setupResult?.setup ?? setupResult?.diagnosticSetup ?? setupResult;
+  const setupLifecycle = first(setup?.lifecycleStatus, setup?.lifecycle?.status, setup?.status);
+  const setupStrategy = first(setup?.strategy?.id, setup?.strategy, setup?.setupType);
+  const setupDirection = first(setup?.researchDirection, setup?.direction);
+  const setupRegime = first(setup?.marketRegime, setup?.regime?.regime, setup?.regime);
+  const setupEntry = first(setup?.entry, setup?.preferredEntry, setup?.entryZone?.preferred);
+  const setupZoneLow = first(setup?.entryZone?.low, setup?.entryZone?.min, setup?.entryZone?.lower);
+  const setupZoneHigh = first(setup?.entryZone?.high, setup?.entryZone?.max, setup?.entryZone?.upper);
+  const setupStop = first(setup?.stop, setup?.invalidation);
+  const setupTargets = Array.isArray(setup?.targets) ? setup.targets : [];
+  const setupQuality = first(setup?.setupQualityScore, setup?.quality?.setupQualityScore);
+  const setupClass = first(setup?.setupClass, setup?.quality?.setupClass);
 
   return (
     <div className={`crypto-shell crypto-theme-${theme}`}>
@@ -830,6 +865,69 @@ export default function CryptoResearch() {
               <strong>Research unavailable</strong>
               <span>{error}</span>
             </div>
+          </section>
+        ) : null}
+
+        {(setupLoading || setupResult || setupError) ? (
+          <section className="crypto-setup-engine-panel">
+            <div className="crypto-research-section-heading">
+              <div>
+                <span>Private V4 Setup Engine</span>
+                <h2>{lastSymbol || text(query).toUpperCase() || "Asset"} Setup</h2>
+              </div>
+              <Target size={20} />
+            </div>
+
+            {setupLoading ? (
+              <div className="crypto-setup-engine-state">
+                <RefreshCw size={18} className="spin" />
+                <strong>Analyzing perpetual setup…</strong>
+              </div>
+            ) : setupError ? (
+              <div className="crypto-setup-engine-state warning">
+                <AlertTriangle size={18} />
+                <div>
+                  <strong>Setup Engine unavailable</strong>
+                  <span>{setupError}</span>
+                </div>
+              </div>
+            ) : (
+              <>
+                <div className="crypto-setup-engine-status-row">
+                  <strong>{normalizeStatus(setupLifecycle || "FORMING").replaceAll("_", " ")}</strong>
+                  <span>Research only · execution disabled</span>
+                </div>
+
+                <div className="crypto-setup-engine-grid">
+                  <MiniMetric label="Direction" value={setupDirection ?? "—"} />
+                  <MiniMetric label="Regime" value={setupRegime ?? "—"} />
+                  <MiniMetric label="Strategy" value={setupStrategy && setupStrategy !== "NONE" ? String(setupStrategy).replaceAll("_", " ") : "Forming"} />
+                  <MiniMetric label="Setup Class" value={setupClass ?? "—"} />
+                  <MiniMetric label="Setup Quality" value={finite(setupQuality) === null ? "—" : `${finite(setupQuality).toFixed(0)}/100`} />
+                  <MiniMetric label="Current Price" value={money(first(setup?.lifecycle?.currentPrice, setup?.currentPrice, currentPrice))} />
+                  <MiniMetric label="Entry" value={money(setupEntry)} />
+                  <MiniMetric label="Stop / Invalidation" value={money(setupStop)} />
+                </div>
+
+                {(finite(setupZoneLow) !== null || finite(setupZoneHigh) !== null) ? (
+                  <div className="crypto-setup-engine-entry-zone">
+                    <span>Entry Zone</span>
+                    <strong>{money(setupZoneLow)} — {money(setupZoneHigh)}</strong>
+                  </div>
+                ) : null}
+
+                <div className="crypto-setup-engine-targets">
+                  {[0, 1, 2].map(index => (
+                    <MiniMetric key={index} label={`TP${index + 1}`} value={money(setupTargets[index])} />
+                  ))}
+                </div>
+
+                <div className="crypto-research-authority-note">
+                  <ShieldCheck size={15} />
+                  {setup?.lifecycle?.reason ? String(setup.lifecycle.reason).replaceAll("_", " ") : "Setup lifecycle is determined by the backend V4 engine."}
+                </div>
+              </>
+            )}
           </section>
         ) : null}
 
