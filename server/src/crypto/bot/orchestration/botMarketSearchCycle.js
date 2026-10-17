@@ -5,7 +5,7 @@ import { researchBotTop20 } from "../research/botResearchOrchestrator.js";
 import determineBotDirection from "../direction/botDirectionEngine.js";
 import rankBotResearchCandidates from "../ranking/botResearchRankingEngine.js";
 import getBotFuturesExecutionMarket from "../market/botFuturesExecutionMarketProvider.js";
-import buildBotFuturesSetup from "../setup/botFuturesSetupBuilder.js";
+import buildBotFuturesSetup from "../setup/botFuturesStrategySetupBuilder.js";
 import rankBotExecutionSetups from "../ranking/botExecutionRankingEngine.js";
 import { registerSearchSetups } from "../monitoring/botSearchResultStore.js";
 
