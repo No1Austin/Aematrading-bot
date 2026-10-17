@@ -120,6 +120,18 @@ function resolveConfig(options = {}) {
       ) ??
       1.5,
 
+    standardRiskReward:
+      finiteOrNull(options.standardRiskReward) ?? 1.0,
+
+    minimumTradableRiskReward:
+      finiteOrNull(options.minimumTradableRiskReward) ?? 0.50,
+
+    classRequirements: {
+      SCALP: { pattern: 90, entry: 70, execution: 85 },
+      STANDARD: { pattern: 75, entry: 60, execution: 75 },
+      ASYMMETRIC: { pattern: 65, entry: 50, execution: 70 },
+    },
+
     maximumSpreadPercent:
       finiteOrNull(
         options.maximumSpreadPercent
@@ -365,152 +377,58 @@ function validateGeometry({
  * We do not manufacture an arbitrary 1.5R target.
  */
 
-function evaluateTargets({
-  targets,
-  direction,
-  entry,
-  risk,
-  minimumRiskReward,
-}) {
-  if (
-    !Array.isArray(targets) ||
-    !targets.length ||
-    entry === null ||
-    risk === null ||
-    !(risk > 0)
-  ) {
-    return [];
-  }
-
-  return targets
-    .map((target, index) => {
-      const rawPrice =
-        typeof target === "number"
-          ? target
-          : target?.price;
-
-      const price =
-        positiveOrNull(
-          rawPrice
-        );
-
-      if (price === null) {
-        return null;
-      }
-
-      const correctSide =
-        direction === "BULL"
-          ? price > entry
-          : direction === "BEAR"
-            ? price < entry
-            : false;
-
-      if (!correctSide) {
-        return null;
-      }
-
-      const rewardDistance =
-        Math.abs(
-          price - entry
-        );
-
-      const riskReward =
-        rewardDistance /
-        risk;
-
-      return {
-        price,
-
-        label:
-          typeof target === "object"
-            ? (
-                target?.label ??
-                `TP${index + 1}`
-              )
-            : `TP${index + 1}`,
-
-        reason:
-          typeof target === "object"
-            ? (
-                target?.reason ??
-                "STRUCTURAL_TARGET"
-              )
-            : "STRUCTURAL_TARGET",
-
-        rewardDistance,
-
-        riskReward,
-
-        qualifies:
-          riskReward >=
-          minimumRiskReward,
-
-        originalIndex:
-          index,
-      };
-    })
-    .filter(Boolean)
-    .sort(
-      (a, b) =>
-        a.rewardDistance -
-        b.rewardDistance
-    );
+function classifySetupClass(riskReward, config) {
+  if (riskReward === null || !(riskReward > 0)) return null;
+  if (riskReward >= config.minimumRiskReward) return "ASYMMETRIC";
+  if (riskReward >= config.standardRiskReward) return "STANDARD";
+  if (riskReward >= config.minimumTradableRiskReward) return "SCALP";
+  return null;
 }
 
-/*
- * ---------------------------------------------------------
- * PRIMARY TARGET
- * ---------------------------------------------------------
- *
- * Default behavior:
- *
- * Select the nearest real structural target that already
- * satisfies minimum R:R.
- *
- * This prevents the engine from skipping a realistic
- * target merely to advertise a larger theoretical R:R.
- */
-
-function selectPrimaryTarget(
-  evaluatedTargets,
-  config
-) {
-  const qualified =
-    evaluatedTargets.filter(
-      (target) =>
-        target.qualifies === true
-    );
-
-  if (!qualified.length) {
+function evaluateTargets({ targets, direction, entry, risk, config }) {
+  if (!Array.isArray(targets) || !targets.length || entry === null || risk === null || !(risk > 0)) return [];
+  return targets.map((target, index) => {
+    const price = positiveOrNull(typeof target === "number" ? target : target?.price);
+    if (price === null) return null;
+    const correctSide = direction === "BULL" ? price > entry : direction === "BEAR" ? price < entry : false;
+    if (!correctSide) return null;
+    const rewardDistance = Math.abs(price - entry);
+    const riskReward = rewardDistance / risk;
+    const setupClass = classifySetupClass(riskReward, config);
     return {
-      selected: null,
-      qualified: [],
+      price,
+      label: typeof target === "object" ? (target?.label ?? `TP${index + 1}`) : `TP${index + 1}`,
+      reason: typeof target === "object" ? (target?.reason ?? "STRUCTURAL_TARGET") : "STRUCTURAL_TARGET",
+      rewardDistance,
+      riskReward,
+      setupClass,
+      qualifies: setupClass !== null,
+      originalIndex: index,
     };
-  }
+  }).filter(Boolean).sort((x,y)=>x.rewardDistance-y.rewardDistance);
+}
 
-  if (
-    config
-      .preferNearestQualifiedTarget
-  ) {
-    return {
-      selected:
-        qualified[0],
+function classRequirementsMet(setupClass, strategySelection, entryQuality, executionQuality, config) {
+  const req = config.classRequirements?.[setupClass];
+  if (!req) return { approved: false, blockers: ["SETUP_CLASS_UNAVAILABLE"] };
+  const pattern = finiteOrNull(strategySelection?.selectedResult?.patternScore) ?? 0;
+  const blockers = [];
+  if (pattern < req.pattern) blockers.push(`${setupClass}_PATTERN_SCORE_TOO_LOW`);
+  if (entryQuality.score < req.entry) blockers.push(`${setupClass}_ENTRY_SCORE_TOO_LOW`);
+  if (executionQuality.score < req.execution) blockers.push(`${setupClass}_EXECUTION_SCORE_TOO_LOW`);
+  return { approved: blockers.length === 0, blockers, requirements: req, patternScore: pattern };
+}
 
-      qualified,
-    };
-  }
-
-  const best =
-    [...qualified].sort(
-      (a, b) =>
-        b.riskReward -
-        a.riskReward
-    )[0];
-
-  return {
-    selected: best,
-    qualified,
-  };
+function selectPrimaryTarget(evaluatedTargets, config, strategySelection, entryQuality, executionQuality) {
+  const economicallyTradable = evaluatedTargets.filter(t => t.qualifies === true);
+  const evaluated = economicallyTradable.map(target => ({
+    ...target,
+    classValidation: classRequirementsMet(target.setupClass, strategySelection, entryQuality, executionQuality, config),
+  }));
+  const approved = evaluated.filter(t => t.classValidation.approved);
+  if (!approved.length) return { selected: null, qualified: evaluated };
+  // Prefer the nearest real target among class-approved targets. Learning can later optimize this choice.
+  return { selected: config.preferNearestQualifiedTarget ? approved[0] : [...approved].sort((x,y)=>y.riskReward-x.riskReward)[0], qualified: evaluated };
 }
 
 /*
@@ -842,62 +760,23 @@ function evaluateExecutionQuality(
  * ---------------------------------------------------------
  */
 
-function calculateRewardQuality(
-  riskReward,
-  config
-) {
-  if (
-    riskReward === null ||
-    !(riskReward > 0)
-  ) {
-    return 0;
+function calculateRewardQuality(riskReward, config) {
+  if (riskReward === null || !(riskReward > 0)) return 0;
+  const min = config.minimumTradableRiskReward;
+  const standard = config.standardRiskReward;
+  const asymmetric = config.minimumRiskReward;
+  const max = Math.max(asymmetric, config.maximumRewardedRiskReward);
+  if (riskReward < min) return 0;
+  if (riskReward < standard) {
+    const span = Math.max(0.000001, standard - min);
+    return clamp(50 + ((riskReward - min) / span) * 20);
   }
-
-  const minimum =
-    config.minimumRiskReward;
-
-  const maximum =
-    Math.max(
-      minimum,
-      config
-        .maximumRewardedRiskReward
-    );
-
-  if (
-    riskReward < minimum
-  ) {
-    return 0;
+  if (riskReward < asymmetric) {
+    const span = Math.max(0.000001, asymmetric - standard);
+    return clamp(70 + ((riskReward - standard) / span) * 15);
   }
-
-  if (
-    maximum === minimum
-  ) {
-    return 100;
-  }
-
-  const normalized =
-    (
-      Math.min(
-        riskReward,
-        maximum
-      ) -
-      minimum
-    ) /
-    (
-      maximum -
-      minimum
-    );
-
-  /*
-   * Merely satisfying minimum R:R receives 70.
-   *
-   * Better reward geometry can improve the score, but
-   * R:R cannot dominate the complete setup assessment.
-   */
-  return clamp(
-    70 +
-    normalized * 30
-  );
+  const span = Math.max(0.000001, max - asymmetric);
+  return clamp(85 + ((Math.min(riskReward, max) - asymmetric) / span) * 15);
 }
 
 /*
@@ -971,6 +850,7 @@ function calculateSetupQualityScore({
           weights.reward,
 
         riskReward,
+        setupClass: classifySetupClass(riskReward, config),
       },
 
       execution: {
@@ -1126,9 +1006,7 @@ export function evaluateBotSetupQuality(
       risk:
         geometry.risk,
 
-      minimumRiskReward:
-        config
-          .minimumRiskReward,
+      config,
     });
 
   if (
@@ -1145,36 +1023,6 @@ export function evaluateBotSetupQuality(
    * -------------------------------------------------------
    */
 
-  const targetSelection =
-    selectPrimaryTarget(
-      evaluatedTargets,
-      config
-    );
-
-  const primaryTarget =
-    targetSelection.selected;
-
-  if (!primaryTarget) {
-    blockers.push(
-      "REALISTIC_REWARD_INSUFFICIENT_FOR_STRUCTURAL_RISK"
-    );
-  }
-
-  const riskReward =
-    finiteOrNull(
-      primaryTarget
-        ?.riskReward
-    );
-
-  if (
-    riskReward !== null &&
-    riskReward <
-      config.minimumRiskReward
-  ) {
-    blockers.push(
-      "SETUP_RISK_REWARD_TOO_LOW"
-    );
-  }
 
   /*
    * -------------------------------------------------------
@@ -1225,6 +1073,32 @@ export function evaluateBotSetupQuality(
   risks.push(
     ...executionQuality.risks
   );
+
+  /*
+   * Economic classification belongs here, after entry and
+   * execution quality are known.
+   */
+  const targetSelection = selectPrimaryTarget(
+    evaluatedTargets,
+    config,
+    strategySelection,
+    entryQuality,
+    executionQuality
+  );
+
+  const primaryTarget = targetSelection.selected;
+  const riskReward = finiteOrNull(primaryTarget?.riskReward);
+  const setupClass = primaryTarget?.setupClass ?? null;
+
+  if (!evaluatedTargets.some(t => t.qualifies === true)) {
+    blockers.push("REWARD_BELOW_MINIMUM_TRADABLE_THRESHOLD");
+  } else if (!primaryTarget) {
+    const classBlockers = unique(
+      targetSelection.qualified.flatMap(t => t.classValidation?.blockers ?? [])
+    );
+    blockers.push(...classBlockers);
+    if (!classBlockers.length) blockers.push("NO_SETUP_CLASS_PASSED_QUALITY_REQUIREMENTS");
+  }
 
   /*
    * Preserve detector evidence.
@@ -1340,6 +1214,23 @@ export function evaluateBotSetupQuality(
         null,
     },
 
+    setupClass,
+
+    expectancyMode:
+      "BOOTSTRAP",
+
+    rewardProfile: {
+      bestRiskReward: evaluatedTargets.length
+        ? Math.max(...evaluatedTargets.map(t => t.riskReward))
+        : null,
+      selectedRiskReward: riskReward,
+      minimumTradableRiskReward: config.minimumTradableRiskReward,
+      standardRiskReward: config.standardRiskReward,
+      asymmetricRiskReward: config.minimumRiskReward,
+      structuralTargetCount: evaluatedTargets.length,
+      tradableTargetCount: evaluatedTargets.filter(t => t.qualifies).length,
+    },
+
     /*
      * Structural geometry.
      */
@@ -1392,6 +1283,12 @@ export function evaluateBotSetupQuality(
           qualifies:
             target.qualifies,
 
+          setupClass:
+            target.setupClass,
+
+          classApproved:
+            targetSelection.qualified.find(t => t.price === target.price)?.classValidation?.approved ?? false,
+
           primary:
             primaryTarget
               ?.price ===
@@ -1411,6 +1308,9 @@ export function evaluateBotSetupQuality(
 
     minimumRiskReward:
       config.minimumRiskReward,
+
+    minimumTradableRiskReward:
+      config.minimumTradableRiskReward,
 
     setupQualityScore:
       quality.score,
@@ -1445,6 +1345,18 @@ export function evaluateBotSetupQuality(
     freshness:
       executionQuality
         .freshness,
+
+    learningContext: {
+      strategy: strategySelection?.selectedStrategy ?? null,
+      regime: regime?.regime ?? null,
+      direction,
+      patternScore: finiteOrNull(selectedResult?.patternScore),
+      selectionScore: finiteOrNull(strategySelection?.selectionScore),
+      entryScore: entryQuality.score,
+      executionScore: executionQuality.score,
+      riskReward,
+      setupClass,
+    },
 
     evidence:
       unique(evidence),

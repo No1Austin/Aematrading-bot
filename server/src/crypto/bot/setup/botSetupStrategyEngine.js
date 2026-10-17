@@ -2,358 +2,120 @@
  * AEMA Private Futures Research Bot
  * Setup Strategy Selection Engine
  *
- * Responsibilities:
- * - Run only strategies appropriate for the detected regime.
- * - Collect pattern-detection results.
- * - Compare valid strategy matches.
- * - Reject weak or ambiguous selections.
- * - Select the strongest setup family.
- *
- * This module DOES NOT:
- * - override the research direction;
- * - manufacture entry/stop/target geometry;
- * - approve final R:R;
- * - execute orders.
+ * Chooses among regime-eligible setup detectors.
+ * Pattern legitimacy is evaluated here; economic reward
+ * classification is deliberately left to the Quality Engine.
+ * Research only. No execution authority.
  */
 
-import detectTrendPullbackSetup
-  from "./strategies/trendPullbackSetup.js";
+import detectTrendPullbackSetup from "./strategies/trendPullbackSetup.js";
+import detectBreakoutRetestSetup from "./strategies/breakoutRetestSetup.js";
+import detectLiquiditySweepSetup from "./strategies/liquiditySweepSetup.js";
+import detectMomentumBreakoutSetup from "./strategies/momentumBreakoutSetup.js";
+import detectRangeRotationSetup from "./strategies/rangeRotationSetup.js";
 
-import detectBreakoutRetestSetup
-  from "./strategies/breakoutRetestSetup.js";
-
-import detectLiquiditySweepSetup
-  from "./strategies/liquiditySweepSetup.js";
-
-import detectMomentumBreakoutSetup
-  from "./strategies/momentumBreakoutSetup.js";
-
-import detectRangeRotationSetup
-  from "./strategies/rangeRotationSetup.js";
-
-/*
- * ---------------------------------------------------------
- * HELPERS
- * ---------------------------------------------------------
- */
+const STRATEGY_REGISTRY = Object.freeze({
+  TREND_PULLBACK: detectTrendPullbackSetup,
+  BREAKOUT_RETEST: detectBreakoutRetestSetup,
+  LIQUIDITY_SWEEP: detectLiquiditySweepSetup,
+  MOMENTUM_BREAKOUT: detectMomentumBreakoutSetup,
+  RANGE_ROTATION: detectRangeRotationSetup,
+});
 
 function finiteOrNull(value) {
-  if (
-    value === null ||
-    value === undefined ||
-    value === ""
-  ) {
-    return null;
-  }
-
+  if (value === null || value === undefined || value === "") return null;
   const n = Number(value);
-
-  return Number.isFinite(n)
-    ? n
-    : null;
+  return Number.isFinite(n) ? n : null;
 }
 
 function clamp(value, min = 0, max = 100) {
   const n = finiteOrNull(value);
-
-  if (n === null) {
-    return min;
-  }
-
-  return Math.max(
-    min,
-    Math.min(max, n)
-  );
+  if (n === null) return min;
+  return Math.min(max, Math.max(min, n));
 }
 
 function unique(values = []) {
-  return [
-    ...new Set(
-      values.filter(Boolean)
-    ),
-  ];
+  return [...new Set(values.filter(Boolean))];
 }
-
-/*
- * ---------------------------------------------------------
- * DIRECTION
- * ---------------------------------------------------------
- */
 
 function normalizeDirection(candidate) {
   const raw =
-    candidate
-      ?.directionDecision
-      ?.direction ??
+    candidate?.directionDecision?.direction ??
+    candidate?.researchDirection ??
     candidate?.direction ??
     null;
-
-  const value =
-    String(
-      raw || ""
-    ).toUpperCase();
-
-  if (
-    value === "LONG" ||
-    value === "BULL"
-  ) {
-    return "BULL";
-  }
-
-  if (
-    value === "SHORT" ||
-    value === "BEAR"
-  ) {
-    return "BEAR";
-  }
-
+  if (!raw) return null;
+  const v = String(raw).toUpperCase();
+  if (v === "BULL" || v === "LONG") return "BULL";
+  if (v === "BEAR" || v === "SHORT") return "BEAR";
   return null;
 }
 
-/*
- * ---------------------------------------------------------
- * STRATEGY REGISTRY
- * ---------------------------------------------------------
- */
-
-const STRATEGY_REGISTRY =
-  Object.freeze({
-    TREND_PULLBACK:
-      detectTrendPullbackSetup,
-
-    BREAKOUT_RETEST:
-      detectBreakoutRetestSetup,
-
-    LIQUIDITY_SWEEP:
-      detectLiquiditySweepSetup,
-
-    MOMENTUM_BREAKOUT:
-      detectMomentumBreakoutSetup,
-
-    RANGE_ROTATION:
-      detectRangeRotationSetup,
-  });
-
-/*
- * ---------------------------------------------------------
- * STRATEGY OPTIONS
- * ---------------------------------------------------------
- */
-
-function resolveStrategyOptions(
-  strategy,
-  options = {}
-) {
-  const shared =
-    options?.shared ?? {};
-
-  const specific =
-    options?.strategies?.[
-      strategy
-    ] ?? {};
-
-  return {
-    ...shared,
-    ...specific,
-  };
+function resolveStrategyOptions(strategy, options = {}) {
+  const shared = options?.shared && typeof options.shared === "object"
+    ? options.shared
+    : {};
+  const specific = options?.[strategy] && typeof options[strategy] === "object"
+    ? options[strategy]
+    : {};
+  return { ...shared, ...specific };
 }
 
 /*
  * ---------------------------------------------------------
- * GEOMETRY QUALITY
+ * STRUCTURAL GEOMETRY QUALITY
  * ---------------------------------------------------------
  *
- * This is NOT final setup approval.
- *
- * Geometry is only used as one component when comparing
- * two legitimate setup patterns.
- *
- * A high theoretical R:R cannot create a valid pattern.
+ * This score asks whether a matched detector produced usable
+ * entry / invalidation / structural-target geometry. It does
+ * NOT reward a larger R:R. R:R economics belong to V3 Quality.
  */
+function calculateGeometryQuality(result) {
+  const entry = finiteOrNull(result?.preferredEntry);
+  const stop = finiteOrNull(result?.stop ?? result?.invalidation?.price);
+  const direction = String(result?.direction || "").toUpperCase();
 
-function calculateGeometryQuality(
-  result
-) {
-  const entry =
-    finiteOrNull(
-      result?.preferredEntry
-    );
-
-  const stop =
-    finiteOrNull(
-      result?.stop ??
-      result
-        ?.invalidation
-        ?.price
-    );
-
-  if (
-    entry === null ||
-    stop === null ||
-    !(entry > 0) ||
-    !(stop > 0)
-  ) {
-    return {
-      available: false,
-
-      score: 0,
-
-      bestRiskReward: null,
-
-      validTargetCount: 0,
-    };
+  if (entry === null || stop === null || !(entry > 0) || !(stop > 0)) {
+    return { available: false, score: 0, bestRiskReward: null, validTargetCount: 0 };
   }
 
-  const risk =
-    Math.abs(
-      entry - stop
-    );
-
-  if (!(risk > 0)) {
-    return {
-      available: false,
-
-      score: 0,
-
-      bestRiskReward: null,
-
-      validTargetCount: 0,
-    };
+  const isBull = direction === "BULL" || direction === "LONG";
+  const isBear = direction === "BEAR" || direction === "SHORT";
+  if (!isBull && !isBear) {
+    return { available: false, score: 0, bestRiskReward: null, validTargetCount: 0 };
   }
 
-  const targets =
-    Array.isArray(
-      result?.targets
-    )
-      ? result.targets
-      : [];
-
-  const riskRewards = [];
-
-  for (
-    const target of targets
-  ) {
-    const price =
-      finiteOrNull(
-        typeof target === "number"
-          ? target
-          : target?.price
-      );
-
-    if (
-      price === null ||
-      !(price > 0)
-    ) {
-      continue;
-    }
-
-    const direction =
-      String(
-        result?.direction || ""
-      ).toUpperCase();
-
-    const correctSide =
-      (
-        direction === "BULL" ||
-        direction === "LONG"
-      )
-        ? price > entry
-        : (
-            direction === "BEAR" ||
-            direction === "SHORT"
-          )
-          ? price < entry
-          : false;
-
-    if (!correctSide) {
-      continue;
-    }
-
-    const reward =
-      Math.abs(
-        price - entry
-      );
-
-    if (!(reward > 0)) {
-      continue;
-    }
-
-    riskRewards.push(
-      reward / risk
-    );
+  const validStop = isBull ? stop < entry : stop > entry;
+  const risk = Math.abs(entry - stop);
+  if (!validStop || !(risk > 0)) {
+    return { available: false, score: 0, bestRiskReward: null, validTargetCount: 0 };
   }
+
+  const targets = Array.isArray(result?.targets) ? result.targets : [];
+  const riskRewards = targets.map((target) => {
+    const price = finiteOrNull(typeof target === "number" ? target : target?.price);
+    if (price === null || !(price > 0)) return null;
+    const correctSide = isBull ? price > entry : price < entry;
+    if (!correctSide) return null;
+    const reward = Math.abs(price - entry);
+    return reward > 0 ? reward / risk : null;
+  }).filter((v) => Number.isFinite(v) && v > 0);
 
   if (!riskRewards.length) {
-    return {
-      available: false,
-
-      score: 0,
-
-      bestRiskReward: null,
-
-      validTargetCount: 0,
-    };
+    return { available: false, score: 0, bestRiskReward: null, validTargetCount: 0 };
   }
 
-  const bestRiskReward =
-    Math.max(
-      ...riskRewards
-    );
-
-  /*
-   * Deliberately capped.
-   *
-   * Pattern quality remains more important than
-   * theoretical reward.
-   */
-  let score = 0;
-
-  if (
-    bestRiskReward >= 1
-  ) {
-    score += 20;
-  }
-
-  if (
-    bestRiskReward >= 1.5
-  ) {
-    score += 30;
-  }
-
-  if (
-    bestRiskReward >= 2
-  ) {
-    score += 20;
-  }
-
-  if (
-    bestRiskReward >= 3
-  ) {
-    score += 15;
-  }
-
-  if (
-    bestRiskReward >= 4
-  ) {
-    score += 10;
-  }
-
-  if (
-    bestRiskReward >= 5
-  ) {
-    score += 5;
-  }
+  const bestRiskReward = Math.max(...riskRewards);
+  let score = 70;
+  if (riskRewards.length >= 2) score += 15;
+  if (riskRewards.length >= 3) score += 10;
+  if (riskRewards.length >= 4) score += 5;
 
   return {
     available: true,
-
-    score:
-      clamp(score),
-
+    score: clamp(score),
     bestRiskReward,
-
-    validTargetCount:
-      riskRewards.length,
+    validTargetCount: riskRewards.length,
   };
 }
 
@@ -1147,7 +909,7 @@ export function selectBotSetupStrategy(
     /*
      * Every strategy attempted, including failures.
      *
-     * This is useful for explaining WHY the bot did not
+     * This is useful for explaining WHY the bot didnot
      * generate a setup.
      */
     attemptedStrategies:
@@ -1303,4 +1065,4 @@ export function selectBotSetupStrategy(
  *   from "./botSetupStrategyEngine.js";
  */
 
-export default selectBotSetupStrategy;
+export default selectBotSetupStrategy;              

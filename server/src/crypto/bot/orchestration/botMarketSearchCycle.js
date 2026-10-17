@@ -246,41 +246,105 @@ const qualifiedSetups =
           candidate.setup?.approved !== true
       )
       .map(
-        (candidate) => ({
-          symbol:
-            candidate.symbol,
+  (candidate) => ({
+    symbol:
+      candidate.symbol,
 
-          stage:
-            "SETUP",
+    stage:
+      "SETUP",
 
-          reason:
-            "SETUP_BLOCKED",
+    reason:
+      "SETUP_BLOCKED",
 
-          blockers:
-            candidate.setup?.blockers ||
-            [],
+    blockers:
+      candidate.setup?.blockers ||
+      [],
 
-          direction:
-            candidate.setup?.direction ||
-            null,
+    direction:
+      candidate.setup?.direction ||
+      null,
 
-          entry:
-            candidate.setup?.entry ??
-            null,
+    /*
+     * ---------------------------------------------------
+     * V2 SETUP DIAGNOSTICS
+     * ---------------------------------------------------
+     */
 
-          stop:
-            candidate.setup?.stop ??
-            null,
+    regime:
+      candidate.setup?.marketRegime ??
+      null,
 
-          target:
-            candidate.setup?.target ??
-            null,
+    strategy:
+      candidate.setup?.strategy ??
+      null,
 
-          riskReward:
-            candidate.setup?.riskReward ??
-            null,
-        })
-      ),
+    strategySelection:
+      candidate.setup?.strategySelection ??
+      null,
+
+    marketStructure:
+      candidate.setup?.marketStructure ??
+      null,
+
+    setupQuality:
+      candidate.setup?.setupQuality ??
+      null,
+
+    candleAnalysis:
+      candidate.setup?.candleAnalysis ??
+      null,
+
+    /*
+     * ---------------------------------------------------
+     * SETUP GEOMETRY
+     * ---------------------------------------------------
+     */
+
+    entry:
+      candidate.setup?.entry ??
+      null,
+
+    entryZone:
+      candidate.setup?.entryZone ??
+      null,
+
+    stop:
+      candidate.setup?.stop ??
+      null,
+
+    invalidation:
+      candidate.setup?.invalidation ??
+      null,
+
+    target:
+      candidate.setup?.target ??
+      null,
+
+    targets:
+      candidate.setup?.targets ??
+      [],
+
+    targetsDetailed:
+      candidate.setup?.targetsDetailed ??
+      [],
+
+    riskReward:
+      candidate.setup?.riskReward ??
+      null,
+
+    /*
+     * Keep the complete setup temporarily while
+     * validating V2. This lets backend diagnostics
+     * inspect fields we have not explicitly surfaced.
+     *
+     * Remove this later if the API payload becomes
+     * unnecessarily large.
+     */
+    diagnosticSetup:
+      candidate.setup ??
+      null,
+  })
+),
   ];
 
   const completedAt =
