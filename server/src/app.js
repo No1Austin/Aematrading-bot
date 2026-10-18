@@ -62,6 +62,7 @@ import continuousMarketScanner
 
 import cryptoNewsRoutes
   from "./routes/cryptoNewsRoutes.js";
+import stockNewsRoutes from "./routes/stockNewsRoutes.js";
 
 /**
  * ============================================================
@@ -957,6 +958,7 @@ app.use(
   "/api/crypto/news",
   cryptoNewsRoutes,
 );
+  app.use("/api/stocks/news", stockNewsRoutes);
 
 
 /**

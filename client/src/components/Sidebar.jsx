@@ -13,7 +13,6 @@ import {
   Menu,
   Radar,
   Settings,
-  Users,
   WalletCards,
   X,
 } from "lucide-react";
@@ -49,10 +48,10 @@ const primaryItems = [
     "Research engines",
   ],
   [
-    "Positions",
+    "Wallet",
     WalletCards,
-    "/positions",
-    "Tracked positions",
+    "/wallet",
+    "Referral rewards",
   ],
   
   [
@@ -60,12 +59,6 @@ const primaryItems = [
     BookOpen,
     "/research",
     "Deep intelligence",
-  ],
-  [
-    "Referrals",
-    Users,
-    "/referrals",
-    "Invite and track rewards",
   ],
 ];
 

@@ -13,9 +13,6 @@ import {
 } from "react";
 
 
-
-
-
 import WorkspaceJumpButton
 
   from "../components/WorkspaceJumpButton.jsx";
@@ -40,7 +37,6 @@ import Sidebar from
 
 
 
-  import DashboardWallet from "../components/DashboardWallet.jsx";
 
 import TopBar from
 
@@ -83,6 +79,7 @@ import {
 
 
 import "./Dashboard.css";
+import StockNewsFeed from "../components/StockNewsFeed.jsx";
 
 
 
@@ -2058,6 +2055,8 @@ function MarketGauge({
 
   hasResult,
 
+  loading,
+
   marketClosed,
 
   decision,
@@ -2084,7 +2083,7 @@ function MarketGauge({
 
     gauge.value === null
 
-      ? 0
+      ? -90
 
       : -90 +
 
@@ -2206,7 +2205,7 @@ function MarketGauge({
 
             <g
 
-              className="gauge-needle-group"
+              className={`gauge-needle-group ${loading ? "is-analyzing" : ""}`}
 
               style={{
 
@@ -2220,15 +2219,7 @@ function MarketGauge({
 
                     : `rotate(${angle}deg)`,
 
-                opacity:
-
-                  gauge.value ===
-
-                  null
-
-                    ? 0
-
-                    : 1,
+                opacity: gauge.value === null ? 0.65 : 1,
 
               }}
 
@@ -2250,11 +2241,12 @@ function MarketGauge({
 
 
 
-          <div className={`market-gauge-verdict market-gauge-verdict--${gauge.tone}`}>
-
-            {gauge.label}
-
+          <div className={`market-gauge-verdict market-gauge-verdict--${gauge.tone}`} role="status" aria-live="polite">
+            {loading ? (
+              <span className="gauge-loading-label"><span className="gauge-loading-spinner" aria-hidden="true" />Analyzing {symbol}…</span>
+            ) : gauge.label}
           </div>
+          {loading && <p className="gauge-loading-note">Running stock research engines. Results will update when analysis completes.</p>}
 
         </div>
 
@@ -2507,6 +2499,10 @@ const initialState = {
 
 
 export default function Dashboard() {
+
+  const [stockNewsInput, setStockNewsInput] = useState("");
+  const [stockNewsSymbol, setStockNewsSymbol] = useState("");
+  const [stockNewsRefreshKey, setStockNewsRefreshKey] = useState(0);
 
   const [
 
@@ -3376,13 +3372,13 @@ export default function Dashboard() {
 
 
 
-  async function runSearch() {
+  async function runSearch(symbolOverride) {
 
     const symbol =
 
       String(
 
-        query ??
+        (typeof symbolOverride === "string" ? symbolOverride : query) ??
 
         "",
 
@@ -3635,56 +3631,35 @@ export default function Dashboard() {
       <main className="main-content dashboard-page">
 
         <TopBar
-
-          query={
-
-            query
-
-          }
-
-          onQueryChange={
-
-            setQuery
-
-          }
-
-          onSearch={
-
-            runSearch
-
-          }
-
+          query={stockNewsInput}
+          onQueryChange={setStockNewsInput}
+          onSearch={(submittedValue) => {
+            const normalized = String(submittedValue ?? stockNewsInput).trim().toUpperCase();
+            if (!normalized) return;
+            setStockNewsSymbol(normalized);
+            setStockNewsRefreshKey(key => key + 1);
+            if (/^[A-Z][A-Z0-9.-]{0,14}$/.test(normalized)) {
+              setQuery(normalized);
+              void runSearch(normalized);
+            }
+          }}
+          onClear={() => { setStockNewsInput(""); setStockNewsSymbol(""); }}
+          onRefresh={() => setStockNewsRefreshKey(key => key + 1)}
         />
-
-
+        <StockNewsFeed ticker={stockNewsSymbol} refreshKey={stockNewsRefreshKey} />
 
         {loading && (
-
-          <div
-
-            className="authority-banner auto dashboard-banner"
-
-          >
-
-            <strong>
-
-              ANALYZING {query.toUpperCase()}
-
-            </strong>
-
-
-
-            <span>
-
-              Loading market history and engine intelligence...
-
-            </span>
-
-          </div>
-
+          <section className="stock-analysis-progress" role="status" aria-live="polite" aria-label={`Analyzing ${query.toUpperCase()}`}>
+            <div className="stock-analysis-progress__spinner" aria-hidden="true" />
+            <div className="stock-analysis-progress__body">
+              <div className="stock-analysis-progress__eyebrow">RESEARCH IN PROGRESS</div>
+              <strong>Analyzing {query.toUpperCase()} — loading market history</strong>
+              <p>Fetching market data and running the stock research engines. Results will update automatically.</p>
+              <div className="stock-analysis-progress__track" aria-hidden="true"><div className="stock-analysis-progress__bar" /></div>
+              <small>Working… this may take up to 90 seconds. The moving bar indicates activity, not a completion percentage.</small>
+            </div>
+          </section>
         )}
-
-
 
         {error && (
 
@@ -3896,7 +3871,7 @@ export default function Dashboard() {
 
 
 
-        <DashboardWallet />
+
 
        <section className="stats-grid">
 
@@ -4105,6 +4080,7 @@ export default function Dashboard() {
             change={selected.change}
 
             hasResult={Boolean(result)}
+            loading={loading}
 
             marketClosed={Boolean(marketClosed)}
 

@@ -1230,3 +1230,7 @@
 .aema-logout-button { width: 100%; cursor: pointer; }
 .aema-logout-button:disabled { opacity: .6; cursor: wait; }
 .aema-logout-error { color: #ef7676; font-size: 12px; margin: 4px 12px 10px; line-height: 1.4; }
+/* Light stock-workspace navigation */
+.aema-stock-light .aema-sidebar,.aema-stock-light .sidebar{background:#eef6f0!important;color:#183321!important;border-color:#d5e4d8!important}
+.aema-stock-light .aema-nav-item{color:#375641}
+.aema-stock-light .aema-nav-item.active{background:#dff4e5;color:#11662c}

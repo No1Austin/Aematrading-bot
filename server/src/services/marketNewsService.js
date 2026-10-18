@@ -284,6 +284,44 @@ function fromCache(
   };
 }
 
+/** Optional, quota-conscious image enrichment. Never substitutes an unrelated photo. */
+async function enrichAlpacaImages(articles, symbols) {
+  if (process.env.STOCK_NEWS_IMAGE_ENRICHMENT !== "true" ||
+      !process.env.MARKETAUX_API_TOKEN ||
+      !Array.isArray(articles) || !articles.some(a => !a.imageUrl)) {
+    return articles;
+  }
+  try {
+    // Marketaux free tiers have low daily limits. Only one 3-item request.
+    const extra = await getMarketauxNews({
+      symbols, limit: 3, includeContent: false, sort: "desc",
+    });
+    if (!extra?.approved || !Array.isArray(extra.news)) return articles;
+    const normalizeUrl = value => {
+      try {
+        const url = new URL(value);
+        return `${url.hostname.replace(/^www\./, "")}${url.pathname.replace(/\/$/, "")}`.toLowerCase();
+      } catch { return ""; }
+    };
+    const normalizeTitle = value => String(value ?? "")
+      .toLowerCase().replace(/&(?:#39|apos);/g, "'")
+      .replace(/[^a-z0-9]+/g, " ").trim();
+    return articles.map(article => {
+      if (article.imageUrl || article.image_url) return article;
+      const match = extra.news.find(candidate =>
+        (candidate.imageUrl || candidate.image_url) && (
+          (normalizeUrl(article.url) && normalizeUrl(article.url) === normalizeUrl(candidate.url)) ||
+          (normalizeTitle(article.headline) && normalizeTitle(article.headline) === normalizeTitle(candidate.headline))
+        )
+      );
+      return match ? { ...article, imageUrl: match.imageUrl ?? match.image_url } : article;
+    });
+  } catch (error) {
+    console.warn("[stock-news] Image enrichment skipped:", error?.message ?? error);
+    return articles;
+  }
+}
+
 async function loadNews({
   symbols,
   limit,
@@ -320,6 +358,7 @@ async function loadNews({
       alpaca.news,
     )
   ) {
+    const enrichedNews = await enrichAlpacaImages(alpaca.news, normalizedSymbols);
     return {
       approved: true,
 
@@ -337,7 +376,7 @@ async function loadNews({
 
       news:
         dedupeNews(
-          alpaca.news,
+          enrichedNews,
         ),
 
       count:

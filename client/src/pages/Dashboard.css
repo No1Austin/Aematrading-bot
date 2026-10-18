@@ -2098,3 +2098,105 @@
   .dashboard-page .status-strip > div { gap:10px; min-height:46px; padding:10px 12px; }
   .dashboard-page .status-strip strong { margin-left:auto; text-align:right; }
 }
+/* The top bar is the single stock-news search and page title. */
+.dashboard-page .stock-news-dashboard-heading{display:none}
+
+/* Mobile stock research: contain all panels within the available viewport. */
+@media (max-width: 760px) {
+ .dashboard-page {min-width:0;width:100%;max-width:100%;box-sizing:border-box;overflow-x:clip}
+ .dashboard-page :is(.panel,.stat-card,.market-gauge-card,.market-gauge-layout,.market-gauge-visual,.market-gauge-market-data,.trade-plan,.dashboard-grid,.stats-grid,.status-strip) {min-width:0;max-width:100%;box-sizing:border-box}
+ .dashboard-page .stats-grid,.dashboard-page .top-grid,.dashboard-page .lower-grid {grid-template-columns:minmax(0,1fr);gap:12px}
+ .dashboard-page .market-gauge-layout {display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+ .dashboard-page .market-gauge-visual {width:100%;min-width:0}
+ .dashboard-page .market-gauge-svg {display:block;width:100%;max-width:360px;height:auto;margin-inline:auto}
+ .dashboard-page .market-gauge-market-data {display:grid;grid-template-columns:minmax(0,1fr);gap:10px}
+ .dashboard-page .trade-plan-grid {grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ .dashboard-page .trade-plan-grid > div {min-width:0;overflow-wrap:anywhere}
+ .dashboard-page .market-gauge-symbol-row {min-width:0;flex-wrap:wrap}
+ .dashboard-page .market-gauge-symbol-row h2 {overflow-wrap:anywhere}
+ .dashboard-page .dashboard-banner {min-width:0;overflow-wrap:anywhere}
+}
+@media (max-width: 400px) {
+ .dashboard-page .trade-plan-grid {grid-template-columns:minmax(0,1fr)}
+ .dashboard-page .market-gauge-head {gap:8px;flex-wrap:wrap}
+}
+
+/* Stock research gauge: stable needle pivot and visible pending/loading states */
+.dashboard-page .gauge-needle-group {
+  transform-box: view-box;
+  transform-origin: 180px 178px;
+}
+.dashboard-page .gauge-needle-group.is-analyzing {
+  opacity: 0.65;
+}
+.dashboard-page .gauge-loading-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+}
+.dashboard-page .gauge-loading-spinner {
+  width: 15px;
+  height: 15px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: aema-gauge-spin 0.8s linear infinite;
+}
+.dashboard-page .gauge-loading-note {
+  max-width: 310px;
+  margin: 10px auto 0;
+  text-align: center;
+  color: #A8B6AB;
+  font-size: 12px;
+  line-height: 1.5;
+}
+@keyframes aema-gauge-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .dashboard-page .gauge-loading-spinner { animation: none; }
+}
+
+/* Prominent, accessible analysis loading state; indeterminate progress. */
+.dashboard-page .stock-analysis-progress {
+  display:flex; align-items:center; gap:18px; width:100%; min-width:0;
+  margin:18px 0; padding:22px 24px; border-radius:16px;
+  border:1px solid rgba(45,211,112,.65);
+  background:linear-gradient(120deg,rgba(19,58,36,.96),rgba(10,23,17,.98));
+  box-shadow:0 0 0 1px rgba(45,211,112,.1),0 12px 36px rgba(0,0,0,.22);
+  color:#f3fff7;
+}
+.dashboard-page .stock-analysis-progress__spinner {
+  width:54px; height:54px; flex:0 0 54px; border-radius:50%;
+  border:5px solid rgba(71,220,125,.19); border-top-color:#3be780;
+  animation:aema-analysis-spin .85s linear infinite;
+}
+.dashboard-page .stock-analysis-progress__body {flex:1;min-width:0}
+.dashboard-page .stock-analysis-progress__eyebrow {
+  font-size:11px;letter-spacing:.16em;font-weight:800;color:#69f5a0;margin-bottom:5px;
+}
+.dashboard-page .stock-analysis-progress strong {
+  display:block;font-size:clamp(18px,2.3vw,25px);line-height:1.3;color:#fff;
+}
+.dashboard-page .stock-analysis-progress p {
+  margin:7px 0 13px;font-size:14px;line-height:1.5;color:#c9dfd0;
+}
+.dashboard-page .stock-analysis-progress__track {
+  height:8px;overflow:hidden;border-radius:999px;background:rgba(255,255,255,.13);
+}
+.dashboard-page .stock-analysis-progress__bar {
+  width:35%;height:100%;border-radius:999px;background:#3be780;
+  animation:aema-analysis-travel 1.8s ease-in-out infinite alternate;
+}
+.dashboard-page .stock-analysis-progress small {display:block;margin-top:9px;font-size:12px;color:#b8d4c2;line-height:1.45}
+@keyframes aema-analysis-spin {to {transform:rotate(360deg)}}
+@keyframes aema-analysis-travel {from {transform:translateX(0)}to {transform:translateX(185%)}}
+@media(max-width:600px) {
+  .dashboard-page .stock-analysis-progress {gap:12px;padding:16px 14px;align-items:flex-start}
+  .dashboard-page .stock-analysis-progress__spinner {width:34px;height:34px;flex-basis:34px;border-width:4px}
+  .dashboard-page .stock-analysis-progress strong {font-size:17px}
+  .dashboard-page .stock-analysis-progress p {font-size:13px}
+}
+@media(prefers-reduced-motion:reduce) {
+  .dashboard-page .stock-analysis-progress__spinner,
+  .dashboard-page .stock-analysis-progress__bar {animation:none}
+}

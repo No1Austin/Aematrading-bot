@@ -17,3 +17,75 @@
 @media(max-width:760px){.aema-topbar{gap:12px;padding:8px 0 18px}.aema-topbar-heading h1{font-size:clamp(21px,5.5vw,28px)}.aema-topbar .aema-topbar-actions{gap:8px}.aema-topbar .aema-topbar-search{min-height:48px;gap:8px;padding:5px 5px 5px 11px;border-radius:12px}.aema-topbar .aema-topbar-search input{font-size:16px}.aema-topbar .aema-topbar-search button{min-height:38px;padding:0 11px;font-size:12px}.aema-topbar .aema-topbar-notifications{flex-basis:44px;width:44px;height:44px}}
 @media(max-width:380px){.aema-topbar .aema-topbar-search input::placeholder{color:transparent}.aema-topbar .aema-topbar-search button{padding:0 9px}}
 @media(prefers-reduced-motion:reduce){.aema-topbar *{scroll-behavior:auto}}
+/* Stock intelligence toolbar: one search, referrals dropdown, theme and refresh */
+.stock-news-topbar{align-items:flex-start;padding-top:12px;padding-bottom:18px}
+.stock-news-topbar .aema-topbar-heading h1{font-size:clamp(24px,2.8vw,40px)}
+.stock-news-topbar .aema-topbar-actions{flex-wrap:wrap;flex-basis:540px}
+.stock-news-topbar .aema-topbar-search{max-width:650px;flex-basis:100%;background:#151d19;border-color:#2b4033}
+.stock-news-topbar .aema-topbar-search button[type=submit]{background:#39d978;color:#07180d}
+.stock-news-topbar .aema-topbar-search .stock-news-clear{background:transparent;color:#b7c6bc;border:0;font-size:12px;padding:0 5px}
+.stock-header-action{min-height:42px;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:0 12px;border-radius:11px;border:1px solid #2b4033;background:#151d19;color:#e3eee6;font:inherit;font-size:13px;font-weight:700;cursor:pointer}
+.stock-header-action:hover{border-color:#39d978}
+.stock-icon-action{width:43px;padding:0}
+.stock-referrals-wrap{position:relative}
+.stock-referrals-menu{position:absolute;top:calc(100% + 8px);right:0;z-index:90;min-width:220px;padding:7px;border:1px solid #2b4033;background:#17221b;border-radius:12px;box-shadow:0 12px 32px #0006}
+.stock-referrals-menu a{display:block;padding:11px 12px;color:#e3eee6;text-decoration:none;border-radius:8px;font-size:13px}
+.stock-referrals-menu a:hover{background:#264632}
+@media(max-width:760px){.stock-news-topbar .aema-topbar-actions{justify-content:flex-start}.stock-news-topbar .aema-topbar-search{flex-basis:100%}.stock-news-topbar .aema-topbar-heading h1{font-size:25px}}
+
+/* Compact unified stock search on desktop; full width on narrow screens */
+@media (min-width: 1151px) {
+  .stock-news-topbar .aema-topbar-actions { flex: 0 1 460px; flex-basis: 460px; }
+  .stock-news-topbar .aema-topbar-search { flex: 0 1 420px; flex-basis: 420px; max-width: 420px; width: 100%; margin-left: auto; }
+}
+@media (min-width: 761px) and (max-width: 1150px) {
+  .stock-news-topbar .aema-topbar-search { max-width: 460px; flex-basis: 460px; }
+}
+
+/* Responsive unified search: one full-width search row on phones. */
+@media (max-width: 760px) {
+ .stock-news-topbar {width:100%;min-width:0;gap:12px}
+ .stock-news-topbar .aema-topbar-heading {width:100%;min-width:0}
+ .stock-news-topbar .aema-topbar-actions {display:flex;flex-wrap:wrap;justify-content:flex-start;width:100%;min-width:0;gap:8px}
+ .stock-news-topbar .aema-topbar-search {order:-1;flex:1 0 100%;width:100%;max-width:100%;min-width:0;box-sizing:border-box;margin:0}
+ .stock-news-topbar .aema-topbar-search input {min-width:0;width:0;flex:1 1 0;font-size:16px}
+ .stock-news-topbar .aema-topbar-search button[type=submit] {min-width:66px}
+ .stock-news-topbar .stock-referrals-wrap {margin-right:auto}
+ .stock-news-topbar .stock-header-action {min-height:44px}
+ .stock-news-topbar .stock-icon-action {width:44px;flex:0 0 44px}
+}
+@media (max-width: 380px) {
+ .stock-news-topbar .aema-topbar-search {gap:6px;padding-left:9px}
+ .stock-news-topbar .aema-topbar-search .stock-news-clear {font-size:11px;padding:0 2px}
+ .stock-news-topbar .stock-header-action {padding-inline:8px;font-size:12px}
+ .stock-news-topbar .stock-icon-action {padding:0;width:42px;flex-basis:42px}
+}
+
+/* FIX: flex-basis is vertical when mobile header uses flex-direction:column.
+   Earlier 540px basis caused the large blank space above the news feed. */
+@media (max-width: 1150px) {
+  .stock-news-topbar.aema-topbar {
+    height: auto !important;
+    min-height: 0 !important;
+    justify-content: flex-start !important;
+    align-items: stretch !important;
+  }
+  .stock-news-topbar .aema-topbar-actions {
+    flex: 0 0 auto !important;
+    flex-basis: auto !important;
+    height: auto !important;
+    min-height: 0 !important;
+    align-content: flex-start !important;
+  }
+}
+@media (max-width: 760px) {
+  .stock-news-topbar.aema-topbar { gap: 12px !important; padding: 8px 0 16px !important; }
+  .stock-news-topbar .aema-topbar-actions { row-gap: 10px !important; }
+  .stock-news-topbar .aema-topbar-search {
+    flex: 0 0 100% !important;
+    flex-basis: 100% !important;
+    height: 48px !important;
+    min-height: 48px !important;
+  }
+  .stock-news-topbar .aema-topbar-heading { flex: 0 0 auto !important; }
+}

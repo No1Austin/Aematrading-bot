@@ -505,6 +505,12 @@ function normalizeArticle(
       article.snippet ??
       null,
 
+    imageUrl:
+      article.image_url ??
+      article.imageUrl ??
+      article.image ??
+      null,
+
     author:
       null,
 

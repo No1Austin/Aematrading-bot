@@ -179,6 +179,13 @@ function normalizeArticle(article) {
       article.summary ??
       null,
 
+    imageUrl:
+      article.images?.[0]?.url ??
+      article.image ??
+      article.image_url ??
+      article.imageUrl ??
+      null,
+
     author:
       article.author ??
       null,
