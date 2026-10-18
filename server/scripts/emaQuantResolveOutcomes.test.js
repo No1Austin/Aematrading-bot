@@ -1,0 +1,11 @@
+import assert from 'node:assert/strict';
+import {evaluateMatchedOutcomes} from '../src/crypto/bot/quant/quantOutcomeDataset.js';
+const setup={observationId:'a',symbol:'BTC_USDT',exchange:'TEST',instrumentType:'FUTURES',timestamp:'2026-01-01T00:05:00.000Z',direction:'BULL',strategy:'TREND_PULLBACK',entry:100,stop:99,target:102};
+const candles=[{openTime:'2026-01-01T00:05:00.000Z',open:100,high:100.5,low:99.8,close:100.2},{openTime:'2026-01-01T00:10:00.000Z',open:100.2,high:102.2,low:100.1,close:102}];
+const bundle={symbol:'BTC_USDT',exchange:'TEST',instrumentType:'FUTURES',provenanceVerified:true,candles};
+assert.equal(evaluateMatchedOutcomes([setup],[bundle]).outcomes[0].status,'TARGET_FIRST');
+assert.equal(evaluateMatchedOutcomes([setup],[{...bundle,provenanceVerified:false}]).outcomes[0].status,'UNVERIFIED_CANDLE_PROVENANCE');
+assert.equal(evaluateMatchedOutcomes([setup],[{...bundle,exchange:'OTHER'}]).outcomes[0].status,'MISSING_MATCHED_FUTURES_CANDLES');
+assert.equal(evaluateMatchedOutcomes([{...setup,exchange:null}],[bundle]).outcomes[0].status,'MISSING_MARKET_IDENTITY_OR_TIME');
+assert.throws(()=>evaluateMatchedOutcomes([setup],[bundle,bundle]),/DUPLICATE/);
+console.log('EMA matched outcome dataset tests passed');

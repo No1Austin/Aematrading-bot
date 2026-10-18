@@ -1,3 +1,5 @@
+import StockThemeToggle from "../components/StockThemeToggle.jsx";
+import "../components/StockPagesTheme.css";
 // client/src/pages/Research.jsx
 
 import {
@@ -38,6 +40,7 @@ import {
 
 import "./Research.css";
 
+import "../components/StockExecutiveFinish.css";
 /**
  * ============================================================
  * RESEARCH PAGE
@@ -2127,6 +2130,7 @@ export default function Research() {
       <Sidebar />
 
       <main className="main-content research-page" aria-busy={loading}>
+        <div className="aema-stock-page-theme-row"><StockThemeToggle /></div>
         <header className="research-header">
           <div>
             <div className="research-kicker">

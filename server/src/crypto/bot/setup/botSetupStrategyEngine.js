@@ -400,12 +400,27 @@ function runStrategy(
      * Ensure every detector result carries a stable
      * strategy identifier.
      */
+    // Never allow a detector to spoof another registered strategy or return
+    // a primitive/null that silently looks like a successful result.
+    if (!result || typeof result !== "object" || Array.isArray(result)) {
+      return {
+        strategy, matched: false, status: "INVALID_DETECTOR_RESULT",
+        patternScore: 0, blockers: ["INVALID_DETECTOR_RESULT"],
+        evidence: [], risks: [], executionAuthority: false, liveExecution: false,
+      };
+    }
+
+    const geometry = calculateGeometryQuality(result);
+    const invalidMatchedGeometry = result.matched === true && !geometry.available;
     return {
       ...result,
+      matched: invalidMatchedGeometry ? false : result.matched === true,
+      ...(invalidMatchedGeometry ? {
+        status: "MATCHED_PATTERN_INVALID_GEOMETRY",
+        blockers: unique([...(Array.isArray(result.blockers) ? result.blockers : []), "MATCHED_PATTERN_INVALID_GEOMETRY"]),
+      } : {}),
 
-      strategy:
-        result?.strategy ??
-        strategy,
+      strategy,
 
       executionAuthority:
         false,
@@ -677,11 +692,7 @@ export function selectBotSetupStrategy(
       candidate
     );
 
-  if (!direction) {
-    blockers.push(
-      "SETUP_STRATEGY_DIRECTION_UNAVAILABLE"
-    );
-  }
+  // Broad research direction is advisory, not a pattern-detection prerequisite.
 
   if (
     !market ||
@@ -732,6 +743,13 @@ export function selectBotSetupStrategy(
         )
       : [];
 
+  const unknownEligibleStrategies = eligibleStrategies.filter(
+    (strategy) => !Object.hasOwn(STRATEGY_REGISTRY, strategy)
+  );
+  if (unknownEligibleStrategies.length > 0) {
+    blockers.push("UNKNOWN_ELIGIBLE_SETUP_STRATEGY");
+  }
+
   if (
     eligibleStrategies.length ===
     0
@@ -747,8 +765,11 @@ export function selectBotSetupStrategy(
    * -------------------------------------------------------
    */
 
+  // A detector must never run against unapproved market, structure or regime.
+  // Invalid inputs remain observable through blockers, but cannot produce setups.
+  const canEvaluate = blockers.length === 0;
   const attempted =
-    eligibleStrategies.map(
+    (canEvaluate ? eligibleStrategies : []).map(
       (strategy) =>
         runStrategy(
           strategy,
@@ -768,7 +789,7 @@ export function selectBotSetupStrategy(
 
   const matched =
     attempted
-      .filter((result) => result?.matched === true || isPlannableResult(result))
+      .filter((result) => (result?.matched === true && calculateGeometryQuality(result).available) || isPlannableResult(result))
       .map((result) => ({
         ...result,
         planned: result?.matched !== true,
@@ -892,13 +913,8 @@ export function selectBotSetupStrategy(
           ? "BEAR"
           : null;
 
-    if (
-      normalizedSelected !==
-      direction
-    ) {
-      blockers.push(
-        "SETUP_STRATEGY_DIRECTION_CONFLICT"
-      );
+    if (!normalizedSelected) {
+      blockers.push("SETUP_STRATEGY_DIRECTION_UNAVAILABLE");
     }
   }
 
@@ -939,13 +955,25 @@ export function selectBotSetupStrategy(
             : "SETUP_STRATEGY_SELECTED")
         : "NO_SETUP_STRATEGY",
 
-    direction,
+    // Strategy direction is authoritative for the selected research setup;
+    // broader direction is advisory and may disagree for reversals.
+    direction: selected ? normalizeDirection(selected.result) ?? direction : direction,
+    researchDirection: direction,
+    directionConflict: Boolean(selected && direction &&
+      normalizeDirection(selected.result) && normalizeDirection(selected.result) !== direction),
 
     marketRegime:
       regime?.regime ??
       null,
 
     eligibleStrategies,
+    registeredStrategies: Object.keys(STRATEGY_REGISTRY),
+    skippedStrategies: Object.keys(STRATEGY_REGISTRY).filter(
+      (strategy) => !eligibleStrategies.includes(strategy)
+    ),
+    unknownEligibleStrategies,
+    evaluationSkipped: !canEvaluate,
+    evaluationSkipReasons: canEvaluate ? [] : unique(blockers),
 
     /*
      * Every strategy attempted, including failures.
@@ -1008,7 +1036,7 @@ export function selectBotSetupStrategy(
       ),
 
     /*
-     * Only successfully matched patterns.
+     * Matched and structurally plannable patterns (planning is not a live entry).
      */
     matchedStrategies:
       ranked.map(

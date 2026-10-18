@@ -486,3 +486,15 @@
     grid-template-columns:1fr;
   }
 }
+
+
+/* Readable, high-contrast score instruments in both AEMA themes. */
+html.aema-stock-light .engines-page .engine-gauge{background:conic-gradient(#15964e var(--engine-progress),#e0eae2 var(--engine-progress))!important;box-shadow:0 0 0 1px #d3e3d8,0 8px 20px rgba(12,66,34,.06)}
+html.aema-stock-light .engines-page .engine-gauge-inner{background:#fff!important;border:1px solid #e1ebe4!important}
+html.aema-stock-light .engines-page .engine-gauge-inner strong{color:#103923!important;font-size:25px!important;opacity:1!important;text-shadow:none!important}
+html.aema-stock-light .engines-page .engine-gauge-inner span{color:#56715e!important;font-size:10px!important;opacity:1!important}
+html.aema-stock-light .engines-page .engine-card{background:#fff!important;border:1px solid #d7e6dc!important;box-shadow:0 8px 28px rgba(19,64,34,.045)!important}
+html.aema-stock-light .engines-page .engine-card :is(h2,h3,h4,strong){color:#193826!important}
+html.aema-stock-light .engines-page .engine-card svg{color:#128745!important;stroke:#128745!important}
+@media(max-width:760px){.engines-page .engine-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important}}
+@media(max-width:540px){.engines-page .engine-grid{grid-template-columns:minmax(0,1fr)!important}}

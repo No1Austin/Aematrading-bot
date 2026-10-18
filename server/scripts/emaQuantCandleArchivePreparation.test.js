@@ -1,0 +1,14 @@
+import assert from 'node:assert/strict';
+import {prepareArchiveCandles} from '../src/crypto/bot/quant/quantCandleArchivePreparation.js';
+const start=Date.parse('2026-10-18T12:00:00Z');
+const candles=Array.from({length:32},(_,i)=>({openTime:start+i*300000,open:1,high:2,low:0.5,close:1.2}));
+const m={candles};
+const now=start+31*300000+1000;
+const good=prepareArchiveCandles(m,{capturedAtMs:now});
+assert.equal(good.ok,true);assert.equal(good.candles.length,31);assert.equal(good.excludedOpenCandles,1);
+assert.equal(good.decisionMs,start+31*300000);
+assert.deepEqual(prepareArchiveCandles({candles:[...candles.slice(0,5),...candles.slice(6)]},{capturedAtMs:now}).errors,['CANDLE_GAP_OR_DUPLICATE']);
+assert.deepEqual(prepareArchiveCandles(m,{interval:'7m',capturedAtMs:now}).errors,['UNSUPPORTED_INTERVAL']);
+assert.deepEqual(prepareArchiveCandles({candles:candles.map((c,i)=>i===1?{...c,openTime:c.openTime+1000}:c)},{capturedAtMs:now}).errors,['INTERVAL_MISMATCH']);
+assert.deepEqual(prepareArchiveCandles(m,{capturedAtMs:start+5*300000}).errors,['INSUFFICIENT_CLOSED_CANDLES']);
+console.log('EMA candle archive preparation tests passed');

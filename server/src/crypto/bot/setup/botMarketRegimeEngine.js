@@ -43,37 +43,20 @@ function clamp(value, min = 0, max = 100) {
 }
 
 function unique(values = []) {
-  return [...new Set(values)];
+  return [...new Set(values.filter(Boolean))];
+}
+
+function normalizeDirectionValue(raw) {
+  const value = String(raw ?? "").trim().toUpperCase();
+  if (value === "LONG" || value === "BULL" || value === "BULLISH") return "BULL";
+  if (value === "SHORT" || value === "BEAR" || value === "BEARISH") return "BEAR";
+  return null;
 }
 
 function normalizeResearchDirection(candidate) {
-  const raw =
-    candidate?.directionDecision?.direction ??
-    candidate?.direction ??
-    null;
-
-  if (!raw) {
-    return null;
-  }
-
-  const value =
-    String(raw).toUpperCase();
-
-  if (
-    value === "LONG" ||
-    value === "BULL"
-  ) {
-    return "BULL";
-  }
-
-  if (
-    value === "SHORT" ||
-    value === "BEAR"
-  ) {
-    return "BEAR";
-  }
-
-  return null;
+  return normalizeDirectionValue(
+    candidate?.directionDecision?.direction ?? candidate?.researchDirection ?? candidate?.direction
+  );
 }
 
 /*
@@ -275,7 +258,7 @@ function scoreExpansion(structure) {
 
   if (
     displacementAtr !== null &&
-    displacementAtr >= 0.75
+    displacementAtr >= 0.75 && structure?.breakout?.detected === true
   ) {
     score += 20;
 
@@ -321,8 +304,8 @@ function scoreSweep(structure) {
   }
 
   if (
-    structure?.liquiditySweep
-      ?.reclaimed === true
+    structure?.liquiditySweep?.detected === true &&
+    structure?.liquiditySweep?.reclaimed === true
   ) {
     score += 25;
 
@@ -396,10 +379,9 @@ function scoreRange(structure) {
   }
 
   if (
-    structure?.breakout?.detected !==
-      true &&
-    structure?.liquiditySweep
-      ?.detected !== true
+    structure?.range?.high > structure?.range?.low &&
+    structure?.breakout?.detected === false &&
+    structure?.liquiditySweep?.detected === false
   ) {
     score += 20;
 
@@ -420,9 +402,13 @@ function scoreRange(structure) {
   }
 
   if (
-    structure?.range?.high != null &&
-    structure?.range?.low != null &&
-    structure?.range?.midpoint != null
+    finiteOrNull(structure?.range?.high) !== null &&
+    finiteOrNull(structure?.range?.low) !== null &&
+    finiteOrNull(structure?.range?.midpoint) !== null &&
+    structure.range.low > 0 &&
+    structure.range.high > structure.range.low &&
+    structure.range.midpoint > structure.range.low &&
+    structure.range.midpoint < structure.range.high
   ) {
     score += 15;
 
@@ -505,14 +491,9 @@ function strategiesForRegime(
 ) {
   const strategies = [];
 
-  const breakoutDirection =
-    structure?.breakout?.direction ??
-    null;
+  const breakoutDirection = normalizeDirectionValue(structure?.breakout?.direction);
 
-  const sweepDirection =
-    structure?.liquiditySweep
-      ?.direction ??
-    null;
+  const sweepDirection = normalizeDirectionValue(structure?.liquiditySweep?.direction);
 
   if (regime === "TRENDING") {
     strategies.push(
@@ -735,8 +716,7 @@ export function classifyBotMarketRegime(
     primaryRegime ===
       "EXPANSION" &&
     structure?.breakout?.direction &&
-    structure.breakout.direction !==
-      researchDirection
+    normalizeDirectionValue(structure.breakout.direction) !== researchDirection
   ) {
     blockers.push(
       "BREAKOUT_OPPOSES_RESEARCH_DIRECTION"
@@ -748,20 +728,39 @@ export function classifyBotMarketRegime(
       "LIQUIDITY_SWEEP" &&
     structure?.liquiditySweep
       ?.direction &&
-    structure.liquiditySweep.direction !==
-      researchDirection
+    normalizeDirectionValue(structure.liquiditySweep.direction) !== researchDirection
   ) {
     blockers.push(
       "LIQUIDITY_SWEEP_OPPOSES_RESEARCH_DIRECTION"
     );
   }
 
-  const eligibleStrategies =
-    strategiesForRegime(
-      primaryRegime,
-      structure,
-      researchDirection
-    );
+  // Stage 5: primary regime is a label, not an exclusive strategy gate.
+  // A structurally detected breakout can compete even when a range score wins.
+  // Detectors retain their own pattern, direction and risk checks.
+  const competingRegimes = [primaryRegime];
+  const configuredCompetingScore = finiteOrNull(options?.minimumCompetingRegimeScore);
+  const minimumCompetingScore = configuredCompetingScore !== null &&
+    configuredCompetingScore >= 0 && configuredCompetingScore <= 100
+    ? configuredCompetingScore : 60;
+  for (const name of ["TRENDING", "COMPRESSION", "EXPANSION", "LIQUIDITY_SWEEP", "RANGING"]) {
+    if (name !== primaryRegime && (scores[name]?.score ?? 0) >= minimumCompetingScore) {
+      competingRegimes.push(name);
+    }
+  }
+  // Breakout evidence may be meaningful even when expansion is just below 60.
+  if (structure?.breakout?.detected === true && !competingRegimes.includes("EXPANSION")) {
+    competingRegimes.push("EXPANSION");
+  }
+  if (structure?.liquiditySweep?.detected === true && !competingRegimes.includes("LIQUIDITY_SWEEP")) {
+    competingRegimes.push("LIQUIDITY_SWEEP");
+  }
+  // Never authorize strategy detection from invalid upstream structure.
+  const eligibleStrategies = structure?.approved === true && researchDirection
+    ? unique(competingRegimes.flatMap(name =>
+        strategiesForRegime(name, structure, researchDirection)
+      ))
+    : [];
 
   if (
     eligibleStrategies.length === 0
@@ -808,7 +807,18 @@ export function classifyBotMarketRegime(
 
     scores,
 
+    competingRegimes,
     eligibleStrategies,
+    eligibilityDiagnostics: {
+      registeredStrategies: ["TREND_PULLBACK", "BREAKOUT_RETEST", "LIQUIDITY_SWEEP", "MOMENTUM_BREAKOUT", "RANGE_ROTATION"],
+      primaryRegime,
+      competingRegimes,
+      minimumCompetingScore,
+      eligibleStrategies,
+      skippedStrategies: ["TREND_PULLBACK", "BREAKOUT_RETEST", "LIQUIDITY_SWEEP", "MOMENTUM_BREAKOUT", "RANGE_ROTATION"]
+        .filter(name => !eligibleStrategies.includes(name)),
+      upstreamReady: structure?.approved === true && Boolean(researchDirection),
+    },
 
     /*
      * Useful downstream context.

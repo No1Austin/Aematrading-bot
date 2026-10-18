@@ -1064,3 +1064,13 @@
  
 .research-page,  .research-page :is(.table-scroll,.table-wrapper,.table-container){max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;}
 }
+
+
+html.aema-stock-light .research-page .research-search-card{background:#fff!important;border:1px solid #d3e6d9!important;box-shadow:0 10px 30px rgba(19,64,34,.045)!important}
+html.aema-stock-light .research-page .research-search-input{background:#fff!important;border:1px solid #b8d8c2!important;color:#173925!important;min-height:50px!important;border-radius:12px!important}
+html.aema-stock-light .research-page .research-search-input input{color:#153c26!important;font-size:15px!important}
+html.aema-stock-light .research-page .research-welcome-grid>div{background:#f0f8f2!important;color:#173a26!important;border:1px solid #d0e7d6!important;min-height:100px!important}
+html.aema-stock-light .research-page .research-welcome-grid :is(svg,strong,h3){color:#118443!important;stroke:#118443!important}
+html.aema-stock-light .research-page button:disabled{background:#e6eee8!important;color:#526a59!important;opacity:1!important;border-color:#d1e0d5!important}
+@media(max-width:650px){.research-page .research-welcome-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+@media(max-width:420px){.research-page .research-welcome-grid{grid-template-columns:1fr!important}}

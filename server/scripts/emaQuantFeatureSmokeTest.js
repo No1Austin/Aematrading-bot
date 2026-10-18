@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import { buildQuantFeatures } from '../src/crypto/bot/quant/quantFeatureEngine.js';
+import { observeQuantResearch } from '../src/crypto/bot/quant/quantShadowEngine.js';
+const start=Date.parse('2026-10-18T00:00:00Z');
+const candles=Array.from({length:40},(_,i)=>({openTime:start+i*60000,estimatedCloseTime:start+(i+1)*60000,open:100+i,high:102+i,low:99+i,close:101+i,volume:100+i}));
+const asOf=start+40*60000;
+const evidence={symbol:'TEST_USDT',source:'TEST',observedAt:new Date(asOf).toISOString(),candles,depth:{bids:[{price:140,qty:5}],asks:[{price:140.1,qty:3}]}};
+const good=buildQuantFeatures(evidence,{asOf});
+assert.equal(good.ready,true);assert.equal(good.candleCount,40);assert.ok(good.features.roc5>0);
+const leak=buildQuantFeatures({...evidence,candles:[...candles,{estimatedCloseTime:asOf+60000,open:500,high:500,low:500,close:500,volume:9999}]},{asOf});
+assert.deepEqual(leak.features,good.features);assert.equal(leak.candleCount,40);
+const stale=buildQuantFeatures(evidence,{asOf:asOf+500000});assert.ok(stale.blockers.includes('STALE_OBSERVATION'));
+const shadow=observeQuantResearch([{symbol:'TEST_USDT',researchEvidence:evidence}],{asOf});
+assert.equal(shadow[0].decision,'SHADOW_ONLY');assert.equal(shadow[0].predictions['5m'],null);
+console.log('EMA Quant Phase 1 smoke tests passed');

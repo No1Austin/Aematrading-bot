@@ -1,0 +1,38 @@
+{
+  "generatedAt": "2026-10-18T21:53:43.241Z",
+  "researchOnly": true,
+  "executionAuthority": false,
+  "trainingReady": false,
+  "setupsExported": 9,
+  "candleBundles": 0,
+  "collectorSkipped": 9,
+  "collectorReasons": {
+    "MISSING_OR_UNSUPPORTED_FUTURES_EXCHANGE": 4,
+    "OUTCOME_WINDOW_NOT_COMPLETE": 5
+  },
+  "outcomeStatuses": {
+    "MISSING_MARKET_IDENTITY_OR_TIME": 4,
+    "MISSING_MATCHED_FUTURES_CANDLES": 5
+  },
+  "pendingUntil": [
+    "2026-10-19T02:45:00.000Z"
+  ],
+  "notes": [
+    "Historical outcomes and model readiness require verified point-in-time observations and market data.",
+    "Old observations with missing exchange identity are not backfilled."
+  ],
+  "steps": [
+    {
+      "name": "export",
+      "exitCode": 0
+    },
+    {
+      "name": "collect",
+      "exitCode": 0
+    },
+    {
+      "name": "resolve",
+      "exitCode": 0
+    }
+  ]
+}

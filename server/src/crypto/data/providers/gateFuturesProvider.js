@@ -29,9 +29,9 @@ export async function getGateLinearTicker(symbol,{timeoutMs=12000}={}) {
   return ticker(t);
 }
 const interval = v => { const m={"1":"1m","3":"3m","5":"5m","15":"15m","30":"30m","60":"1h","240":"4h","D":"1d"};return m[String(v)] || "15m"; };
-export async function getGateLinearKlines(symbol,{interval:iv="15",limit=96,timeoutMs=12000}={}) {
+export async function getGateLinearKlines(symbol,{interval:iv="15",limit=96,from=null,to=null,timeoutMs=12000}={}) {
   requireSymbol(symbol);
-  const rows=await request("/candlesticks",{contract:symbol,interval:interval(iv),limit:Math.min(1000,Math.max(2,limit))},timeoutMs);
+  const rows=await request("/candlesticks",{contract:symbol,interval:interval(iv),limit:Math.min(1000,Math.max(2,limit)),...(from!==null?{from}:{}),...(to!==null?{to}:{})},timeoutMs);
   if (!Array.isArray(rows)) throw new Error("GATE_KLINES_INVALID");
   return rows.map(c=>[String(n(c.t)*1000),c.o,c.h,c.l,c.c,c.v ?? null,c.sum ?? null]);
 }

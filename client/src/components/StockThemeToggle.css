@@ -1,0 +1,5 @@
+.aema-stock-theme-button{display:inline-flex;align-items:center;justify-content:center;gap:9px;flex-shrink:0;min-height:42px;padding:9px 15px;border:1px solid rgba(74,232,125,.3);border-radius:12px;background:#17221a;color:#e8f5ec;font:inherit;font-size:13px;font-weight:700;cursor:pointer;transition:background .2s,border-color .2s}
+.aema-stock-theme-button:hover{background:#203a28;border-color:#4ae87d}
+.aema-stock-light .aema-stock-theme-button{background:#fff;color:#163b26;border-color:#c6d9cc}
+.aema-stock-light .aema-stock-theme-button:hover{background:#eaf7ee}
+@media(max-width:540px){.aema-stock-theme-button{min-height:40px;padding:8px 11px;font-size:12px}}

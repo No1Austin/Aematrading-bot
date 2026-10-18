@@ -7,6 +7,11 @@ import rankBotResearchCandidates from "../ranking/botResearchRankingEngine.js";
 import getBotFuturesExecutionMarket from "../market/botFuturesExecutionMarketProvider.js";
 import buildBotFuturesSetup from "../setup/botFuturesStrategySetupBuilder.js";
 import rankBotExecutionSetups from "../ranking/botExecutionRankingEngine.js";
+import { observeQuantResearch } from "../quant/quantShadowEngine.js";
+import { observeQuantSetupEconomics } from "../quant/quantSetupEconomics.js";
+import { makeSetupCaptureRows, appendSetupCaptureRows } from "../quant/quantSetupCapture.js";
+import { archiveQuantSnapshot } from "../quant/quantSnapshotArchive.js";
+import { prepareArchiveCandles } from "../quant/quantCandleArchivePreparation.js";
 import { registerSearchSetups } from "../monitoring/botSearchResultStore.js";
 
 export async function runBotMarketSearch(options = {}) {
@@ -78,6 +83,15 @@ export async function runBotMarketSearch(options = {}) {
     options.research
   );
 
+  // Quant V1 shadow-only observation. It cannot approve, reject, or reorder setups.
+  // Explicit opt-in avoids changing API payloads or memory usage in production.
+  const quantShadow = options.quantShadow?.enabled === true
+    ? observeQuantResearch(research.researched, {
+        asOf: Date.now(),
+        onRecord: options.quantShadow?.onRecord,
+      })
+    : null;
+
   /*
    * STEP 6
    * Determine directional evidence.
@@ -101,15 +115,10 @@ export async function runBotMarketSearch(options = {}) {
    *
    * Weak/conflicting direction becomes NO SETUP.
    */
-  const directionQualified = directional.filter(
-    (row) =>
-      row.directionDecision?.qualified === true
-  );
+  // Research-only: let strategy detectors inspect weak/conflicting direction.
+  const directionQualified = directional;
 
-  const rejectedDirection = directional.filter(
-    (row) =>
-      row.directionDecision?.qualified !== true
-  );
+  const rejectedDirection = []; // retained for response compatibility; strategy builder is final gate
 
   /*
    * STEP 8
@@ -129,6 +138,7 @@ export async function runBotMarketSearch(options = {}) {
    */
   const setups = [];
   const setupFailures = [];
+  const quantArchive = {enabled: options.quantArchive?.enabled === true, saved: 0, rejected: 0, reasons: {}, records: []};
 
   for (const candidate of ranking.top10) {
     try {
@@ -137,6 +147,47 @@ export async function runBotMarketSearch(options = {}) {
           candidate,
           options.setup
         );
+
+      // Opt-in contemporaneous evidence archive, before setup construction.
+      // Never changes selection, ranking, or execution. An archived record is
+      // NOT automatically verified for historical replay.
+      if (quantArchive.enabled) {
+        try {
+          const captureMs = Date.now();
+          const interval = options.quantArchive.candleInterval || '5m';
+          const prepared = prepareArchiveCandles(market, {interval, capturedAtMs:captureMs});
+          if (!prepared.ok) {
+            quantArchive.rejected++;
+            for (const reason of prepared.errors) quantArchive.reasons[reason] = (quantArchive.reasons[reason] || 0) + 1;
+            if (options.quantArchive.includeDetails === true)
+              quantArchive.records.push({symbol:candidate.symbol,saved:false,errors:prepared.errors});
+          } else {
+          const record = {
+            timestamp: new Date(prepared.decisionMs).toISOString(),
+            candleInterval: interval,
+            market: {...market, candles:prepared.candles, symbol:market?.symbol || candidate.symbol},
+            candidate: {...candidate, symbol:candidate.symbol},
+          };
+          const archived = archiveQuantSnapshot(record, {
+            filePath: options.quantArchive.filePath,
+            capturedAtMs: captureMs,
+          });
+          if (archived.saved) quantArchive.saved++;
+          else {
+            quantArchive.rejected++;
+            for (const reason of archived.errors || []) quantArchive.reasons[reason] = (quantArchive.reasons[reason] || 0) + 1;
+          }
+          if (options.quantArchive.includeDetails === true)
+            quantArchive.records.push({symbol: candidate.symbol, saved: archived.saved, errors: archived.errors || [], excludedOpenCandles:prepared.excludedOpenCandles});
+          }
+        } catch (archiveError) {
+          quantArchive.rejected++;
+          const reason = 'ARCHIVE_ERROR';
+          quantArchive.reasons[reason] = (quantArchive.reasons[reason] || 0) + 1;
+          if (options.quantArchive.includeDetails === true)
+            quantArchive.records.push({symbol: candidate.symbol, saved: false, errors: [String(archiveError?.message || archiveError)]});
+        }
+      }
 
       const setup =
         buildBotFuturesSetup(
@@ -167,6 +218,29 @@ export async function runBotMarketSearch(options = {}) {
       setups,
       options.executionRanking
     );
+
+  // Optional setup-level research observation. No ranking or qualification changes.
+  // Probabilities must be externally validated and explicitly supplied; never inferred.
+  const quantSetupShadow = options.quantSetupShadow?.enabled === true
+    ? observeQuantSetupEconomics(setups, options.quantSetupShadow)
+    : null;
+
+  // Optional research-only capture AFTER actual setup construction. Does not change ranking.
+  let quantSetupCapture = null;
+  if (options.quantSetupCapture?.enabled === true) {
+    try {
+      const captureRows = makeSetupCaptureRows(
+        observeQuantSetupEconomics(setups, {enabled:true}),
+        {interval: options.quantSetupCapture.candleInterval || '5m', marketIdentities: Object.fromEntries((universe.assets || []).filter(a => a.exchange === 'GATE' && a.instrumentType === 'PERPETUAL' && a.productId === a.symbol && /^[A-Z0-9]+_USDT$/.test(a.productId)).map(a => [a.symbol, {exchange:a.exchange,marketId:a.productId,source:'LIVE_FUTURES_UNIVERSE'}]))}
+      );
+      const saved = appendSetupCaptureRows(captureRows, {
+        filePath: options.quantSetupCapture.filePath || 'quant-research/data/setup_observations.jsonl'
+      });
+      quantSetupCapture = {enabled:true, saved:saved.saved, validGeometry:captureRows.filter(x=>x.geometryValid).length, researchOnly:true};
+    } catch (error) {
+      quantSetupCapture = {enabled:true,saved:0,error:String(error?.message || error),researchOnly:true};
+    }
+  }
 
   /*
    * STEP 11
@@ -460,6 +534,27 @@ const qualifiedSetups =
       research.failed,
 
     setupFailures,
+    ...(quantShadow !== null ? {quantShadow} : {}),
+    ...(quantArchive.enabled ? {quantArchive} : {}),
+    ...(quantSetupCapture !== null ? {quantSetupCapture} : {}),
+    ...(quantSetupShadow !== null ? {quantSetupShadow} : {}),
+    // Stage 5 accounting: report every built candidate, including setups that
+    // passed the builder but were excluded by the comparative ranking engine.
+    setupAccounting: {
+      built: setups.length,
+      builderApproved: setups.filter(row => row?.setup?.approved === true).length,
+      builderRejected: setups.filter(row => row?.setup?.approved !== true).length,
+      rankingEvaluated: setupRanking.evaluated?.length ?? null,
+      rankingQualified: setupRanking.rankedSetups?.length ?? 0,
+      rankingExcluded: setups.filter(row => row?.setup?.approved === true &&
+        !setupRanking.rankedSetups?.some(ranked => ranked?.symbol === row?.symbol)).map(row => ({
+          symbol: row.symbol,
+          strategy: row.setup?.strategy ?? null,
+          riskReward: row.setup?.riskReward ?? null,
+          reason: "EXCLUDED_BY_COMPARATIVE_RANKING",
+          rankingDiagnostics: setupRanking.evaluated?.find(item => item.symbol === row.symbol) ?? null,
+        })),
+    },
   };
 }
 

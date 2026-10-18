@@ -1,13 +1,17 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   getScannerSnapshot,
+  getStockCandles,
+  analyzeStock,
   runScannerOnce,
   startScanner,
   stopScanner,
 } from "../services/api";
 import Sidebar from "../components/Sidebar.jsx";
+import TradingChart from "../components/scanner/TradingChart.jsx";
 import "./Scanner.css";
 
+import "../components/StockExecutiveFinish.css";
 const EMPTY = Object.freeze([]);
 
 function finite(value) {
@@ -219,8 +223,24 @@ export default function Scanner({
   limit = 20,
 }) {
   const mounted = useRef(true);
-  const [snapshot, setSnapshot] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [lightTheme, setLightTheme] = useState(() => localStorage.getItem("aema-stock-theme") === "light");
+  const [showDiscovery, setShowDiscovery] = useState(false);
+  useEffect(() => {
+    document.documentElement.classList.toggle("aema-stock-light", lightTheme);
+    localStorage.setItem("aema-stock-theme", lightTheme ? "light" : "dark");
+  }, [lightTheme]);
+  const [snapshot, setSnapshot] = useState(() => {
+    try { return JSON.parse(sessionStorage.getItem("aema:stock:scanner:snapshot") || "null"); }
+    catch { return null; }
+  });
+  const [chartSymbol, setChartSymbol] = useState(() => localStorage.getItem("aema:stock:chart:symbol") || "AAPL");
+  const [symbolInput, setSymbolInput] = useState(chartSymbol);
+  const [chartData, setChartData] = useState([]);
+  const [chartLoading, setChartLoading] = useState(false);
+  const [chartError, setChartError] = useState("");
+  const [analysis, setAnalysis] = useState(null);
+  const [analysisLoading, setAnalysisLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [runningOnce, setRunningOnce] = useState(false);
   const [lifecycleBusy, setLifecycleBusy] = useState(false);
   const [error, setError] = useState("");
@@ -235,6 +255,7 @@ export default function Scanner({
       const response = await getScannerSnapshot({ limit });
       if (!mounted.current) return;
       setSnapshot(response ?? null);
+      try { sessionStorage.setItem("aema:stock:scanner:snapshot", JSON.stringify(response ?? null)); } catch {}
       setError("");
     } catch (requestError) {
       if (!mounted.current) return;
@@ -250,18 +271,55 @@ export default function Scanner({
 
   useEffect(() => {
     mounted.current = true;
-    loadSnapshot();
+    if (!snapshot) loadSnapshot();
+    return () => { mounted.current = false; };
+    // Initial snapshot is loaded only when no cached result exists.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-    const timer = window.setInterval(
-      () => loadSnapshot({ silent: true }),
-      Math.max(5000, pollMs),
-    );
+  useEffect(() => {
+    const key = `aema:stock:candles:${chartSymbol}`;
+    try {
+      const cached = JSON.parse(localStorage.getItem(key) || "null");
+      if (cached) { setChartData(cached); setChartError(""); return; }
+    } catch {}
+    let active = true;
+    setChartLoading(true);
+    getStockCandles(chartSymbol, {limit: 500}).then(data => {
+      if (!active) return;
+      setChartData(data);
+      try { localStorage.setItem(key, JSON.stringify(data)); } catch {}
+      setChartError("");
+    }).catch(e => { if (active) setChartError(e?.message || "Chart data unavailable"); })
+      .finally(() => { if (active) setChartLoading(false); });
+    return () => { active = false; };
+  }, [chartSymbol]);
 
-    return () => {
-      mounted.current = false;
-      window.clearInterval(timer);
-    };
-  }, [loadSnapshot, pollMs]);
+  const searchChart = (event) => {
+    event.preventDefault();
+    const next = symbolInput.trim().toUpperCase();
+    if (!/^[A-Z][A-Z0-9.\-]{0,11}$/.test(next)) { setChartError("Enter a valid stock ticker."); return; }
+    setChartSymbol(next);
+    setAnalysis(null);
+    localStorage.setItem("aema:stock:chart:symbol", next);
+  };
+
+  const refreshChart = async () => {
+    setChartLoading(true); setChartError("");
+    try {
+      const data = await getStockCandles(chartSymbol, {limit: 500});
+      setChartData(data);
+      try { localStorage.setItem(`aema:stock:candles:${chartSymbol}`, JSON.stringify(data)); } catch {}
+    } catch(e) { setChartError(e?.message || "Chart refresh failed"); }
+    finally { setChartLoading(false); }
+  };
+
+  const researchChart = async () => {
+    setAnalysisLoading(true); setChartError("");
+    try { setAnalysis(await analyzeStock(chartSymbol, {useLiveSocial: true, clientTimeoutMs: 90000})); }
+    catch(e) { setChartError(e?.message || "Research unavailable"); }
+    finally { setAnalysisLoading(false); }
+  };
 
   const scanner = getScannerObject(snapshot);
   const scannerStatus = first(
@@ -440,6 +498,51 @@ export default function Scanner({
       <Sidebar />
       <main className="main-content stock-scanner-page">
       <div className="stock-scanner">
+        <div className="scanner-executive-bar">
+          <div className="scanner-executive-brand"><span className="scanner-executive-monogram">A</span><div><span className="scanner-executive-kicker">AEMA / EQUITIES</span><strong>Stock Intelligence Terminal</strong></div></div>
+          <div className="scanner-executive-controls">
+            <span className="scanner-executive-market">● US STOCKS</span>
+            <button type="button" className="scanner-theme-toggle" aria-label={lightTheme ? "Switch to dark background" : "Switch to light background"} aria-pressed={lightTheme} onClick={() => setLightTheme(v => !v)}>
+              <span aria-hidden="true">{lightTheme ? "☾" : "☀"}</span><span>{lightTheme ? "Dark mode" : "Light mode"}</span>
+            </button>
+          </div>
+        </div>
+        <section className="aema-terminal" aria-label="Stock chart trading terminal">
+          <div className="aema-terminal__heading">
+            <div><span className="aema-terminal__eyebrow">AEMA STOCK TERMINAL</span><h2>Analyze the market. Own the insight.</h2><p>Institutional-style charting, technical indicators and AEMA research in one focused workspace.</p></div>
+            <form onSubmit={searchChart} className="aema-terminal__search">
+              <input aria-label="Stock ticker" value={symbolInput} onChange={e=>setSymbolInput(e.target.value)} placeholder="AAPL, TSLA, NVDA" />
+              <button type="submit">Open chart</button>
+            </form>
+          </div>
+          <div className="aema-terminal__actions">
+            <span className="aema-terminal__symbol">{chartSymbol}</span>
+            <button type="button" onClick={refreshChart} disabled={chartLoading}>{chartLoading ? "Loading candles…" : "Refresh chart"}</button>
+            <button type="button" className="aema-terminal__research" onClick={researchChart} disabled={analysisLoading}>{analysisLoading ? "Analyzing…" : "Run AEMA Research"}</button>
+          </div>
+          {chartError && <p role="alert" className="aema-terminal__error">{chartError}</p>}
+          <div className="aema-terminal__workstation">
+            <div className="aema-terminal__chart-pane">
+              <TradingChart symbol={chartSymbol} candles={Array.isArray(chartData) ? chartData : (chartData?.candles ?? chartData?.bars ?? chartData?.data ?? [])} loading={chartLoading} lightTheme={lightTheme}/>
+            </div>
+            <aside className="aema-terminal__depth-pane" aria-label="Stock market depth and trade analysis">
+              <div className="aema-terminal__depth-head"><span className="aema-terminal__eyebrow">MARKET DEPTH</span><span className="aema-terminal__depth-symbol">{chartSymbol}</span></div>
+              <h3>Level 2 Order Book</h3>
+              <div className="aema-terminal__depth-columns"><span>Bid size</span><span>Bid price</span><span>Ask price</span><span>Ask size</span></div>
+              <div className="aema-terminal__depth-empty"><strong>Depth feed not connected</strong><p>Real stock bid/ask levels require a licensed Level 2 market-data feed. No simulated orders are displayed.</p></div>
+              <div className="aema-terminal__depth-head"><span className="aema-terminal__eyebrow">ANALYSIS TOOLS</span></div>
+              <p className="aema-terminal__depth-hint">Use the chart toolbar to enable SMA 20, EMA 20, VWAP and Volume, select a timeframe, and inspect candles with the crosshair.</p>
+              <button type="button" className="aema-terminal__research aema-terminal__depth-action" onClick={researchChart} disabled={analysisLoading}>{analysisLoading ? "Analyzing…" : `Analyze ${chartSymbol}`}</button>
+            </aside>
+          </div>
+          {analysis && <div className="aema-terminal__result"><strong>Research result · {chartSymbol}</strong><pre>{JSON.stringify(analysis, null, 2)}</pre></div>}
+          <p className="aema-terminal__footnote">Previously loaded candles are retained on this device. Refresh chart and Run AEMA Research are separate manual requests. Intraday timeframe accuracy depends on the source candle resolution.</p>
+        </section>
+        <div className="scanner-discovery-switch">
+          <div><span className="scanner-discovery-eyebrow">DISCOVERY ENGINE</span><h2>Market opportunities</h2><p>Scan the stock universe, review qualified candidates and inspect research signals.</p></div>
+          <button type="button" className="scanner-discovery-button" onClick={() => setShowDiscovery(v => !v)} aria-expanded={showDiscovery}>{showDiscovery ? "Hide discovery" : "Explore candidates"} <span aria-hidden="true">{showDiscovery ? "−" : "+"}</span></button>
+        </div>
+        <div className={showDiscovery ? "scanner-discovery-content is-open" : "scanner-discovery-content"}>
         <header className="stock-scanner__header">
           <div>
             <div className="stock-scanner__eyebrow">
@@ -533,67 +636,6 @@ export default function Scanner({
         </section>
 
         <section className="scanner-workspace">
-          <div className="scanner-ranking">
-            <div className="scanner-section-heading">
-              <div>
-                <span>GLOBAL RANKING</span>
-                <h2>Researchable Market Map</h2>
-              </div>
-              <small>{candidates.length} returned</small>
-            </div>
-
-            {loading ? (
-              <div className="scanner-empty">
-                <div className="scanner-radar is-active"><i /></div>
-                <strong>Loading scanner snapshot…</strong>
-              </div>
-            ) : candidates.length ? (
-              <div className="scanner-ranking__rows">
-                {candidates.slice(0, 20).map((candidate, index) => {
-                  const score = finite(candidate.score);
-                  const width =
-                    score === null ? 0 : Math.max(0, Math.min(100, score));
-
-                  return (
-                    <button
-                      type="button"
-                      key={candidate.id}
-                      className={`scanner-ranking__row ${
-                        selected?.id === candidate.id ? "is-selected" : ""
-                      }`}
-                      onClick={() => setSelected(candidate)}
-                    >
-                      <span className="scanner-ranking__rank">
-                        {String(index + 1).padStart(2, "0")}
-                      </span>
-                      <strong>{candidate.symbol ?? "—"}</strong>
-                      <span className="scanner-ranking__track">
-                        <i style={{ width: `${width}%` }} />
-                      </span>
-                      <b>{formatScore(candidate.score)}</b>
-                      <StatusBadge value={candidate.direction} />
-                    </button>
-                  );
-                })}
-              </div>
-            ) : (
-              <div className="scanner-empty">
-                <div className={`scanner-radar ${runningOnce ? "is-active" : ""}`}>
-                  <i />
-                </div>
-                <strong>
-                  {runningOnce
-                    ? "Scanning the market…"
-                    : "No scanner candidates returned"}
-                </strong>
-                <p>
-                  No placeholder stocks are generated. Results appear only when
-                  the backend returns candidates.
-                </p>
-              </div>
-            )}
-          </div>
-
           <aside className="scanner-inspector">
             <div className="scanner-section-heading">
               <div>
@@ -683,7 +725,7 @@ export default function Scanner({
             <div>
               <span>SCANNER RESULTS</span>
               <h2>
-                Market Candidates <small>{visible.length}</small>
+                Stock Candidates <small>{visible.length}</small>
               </h2>
             </div>
 
@@ -763,6 +805,7 @@ export default function Scanner({
             ) : null}
           </div>
         </section>
+        </div>
       </div>
       </main>
     </div>

@@ -1,3 +1,5 @@
+import StockThemeToggle from "../components/StockThemeToggle.jsx";
+import "../components/StockPagesTheme.css";
 
 import {
   WalletCards,
@@ -9,12 +11,14 @@ import { Link } from "react-router-dom";
 import Sidebar from "../components/Sidebar.jsx";
 import "./ReferralWallet.css";
 
+import "../components/StockExecutiveFinish.css";
 export default function Wallet() {
   return (
     <div className="app-shell">
       <Sidebar />
 
       <main className="main-content aema-rw-page">
+        <div className="aema-stock-page-theme-row"><StockThemeToggle /></div>
         <div className="aema-rw-eyebrow">
           <WalletCards size={15} />
           REWARDS WALLET

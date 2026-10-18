@@ -2145,3 +2145,64 @@
  
 .markets-page,  .markets-page :is(.table-scroll,.table-wrapper,.table-container){max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;}
 }
+
+
+/* AEMA Markets: explicit light/dark toggle; synced with Scanner storage key. */
+.markets-page .markets-theme-toggle {
+  display:inline-flex;align-items:center;justify-content:center;gap:9px;
+  min-height:42px;padding:0 15px;border-radius:10px;cursor:pointer;
+  border:1px solid rgba(74,232,125,.35);background:#142019;color:#e7f6e9;
+  font:inherit;font-size:12px;font-weight:750;white-space:nowrap;
+  transition:background .18s,border-color .18s,transform .18s;
+}
+.markets-page .markets-theme-toggle:hover {background:#1b3323;border-color:#4ae87d;}
+.markets-page .markets-theme-toggle:focus-visible {outline:2px solid #4ae87d;outline-offset:3px;}
+
+/* Override original fixed dark colours only within the Markets page. */
+html.aema-stock-light .markets-page {background:#f3f7f4!important;color:#183025!important;}
+html.aema-stock-light .markets-page :is(.market-card,.market-health-strip,.market-health-stat,.market-health-primary,.markets-error,.market-pool-context,.monitored-card,.market-summary-card,.markets-search,.markets-table-wrap,.markets-side-column > section,.markets-main-column > section) {
+  background:#fff!important;color:#183025!important;border-color:#dbe7df!important;
+}
+html.aema-stock-light .markets-page :is(.markets-search input,.markets-search-clear,.market-card input,.market-card select,.market-card button:not(.market-positive):not(.market-negative)) {
+  color:#183025!important;
+}
+html.aema-stock-light .markets-page :is(h1,h2,h3,h4,th,td,strong,.markets-title-row,.market-health-stat strong,.monitored-count) {color:#183025!important;}
+html.aema-stock-light .markets-page :is(p,small,.markets-kicker,.market-health-stat span,.market-card label,.market-pool-context,.markets-section-title p) {color:#607568!important;}
+html.aema-stock-light .markets-page :is(.market-positive,.market-up,.markets-positive) {color:#0d8741!important;}
+html.aema-stock-light .markets-page :is(.market-negative,.market-down,.markets-negative) {color:#bf3548!important;}
+html.aema-stock-light .markets-page .markets-theme-toggle {background:#fff!important;color:#183025!important;border-color:#cbded0!important;}
+html.aema-stock-light .markets-page .markets-theme-toggle:hover {background:#eaf5ed!important;}
+html.aema-stock-light .markets-page .markets-refresh {background:#158646!important;color:#fff!important;border-color:#158646!important;}
+html.aema-stock-light .markets-page .markets-refresh :is(span,svg) {color:#fff!important;}
+html.aema-stock-light .markets-page .markets-search {background:#fff!important;border-color:#d2e3d8!important;}
+html.aema-stock-light .markets-page .markets-search input {background:transparent!important;}
+html.aema-stock-light .markets-page .markets-search input::placeholder {color:#84968b!important;}
+html.aema-stock-light .markets-page :is(.market-card,.market-health-strip,.markets-search,.markets-theme-toggle) {box-shadow:0 5px 24px rgba(19,56,34,.045);}
+@media(max-width:680px){
+  .markets-page .markets-header-actions {display:flex;flex-wrap:wrap;gap:9px;width:100%;}
+  .markets-page .markets-theme-toggle {flex:1 1 auto;min-width:0;}
+  .markets-page .markets-search {order:2;flex:1 1 100%;max-width:none!important;}
+  .markets-page .markets-refresh {flex:1 1 auto;}
+}
+
+
+/* AEMA 2026-10-18: explicit light palette for market DATA, not just containers. */
+html.aema-stock-light .markets-page .markets-table-wrap{background:#fff!important;border:1px solid #d7e7db!important;box-shadow:none!important}
+html.aema-stock-light .markets-page .markets-table{background:#fff!important;border-collapse:separate;border-spacing:0}
+html.aema-stock-light .markets-page .markets-table thead th{background:#e9f4ed!important;color:#205534!important;font-size:10px!important;letter-spacing:.065em!important;border-bottom:1px solid #cbded1!important;white-space:nowrap}
+html.aema-stock-light .markets-page .markets-table tbody tr{background:#fff!important;opacity:1!important;filter:none!important}
+html.aema-stock-light .markets-page .markets-table tbody tr:nth-child(even){background:#f5faf6!important}
+html.aema-stock-light .markets-page .markets-table tbody tr:hover{background:#eaf6ee!important}
+html.aema-stock-light .markets-page .markets-table tbody td{background:transparent!important;color:#1b3826!important;border-bottom:1px solid #e0eae2!important;font-size:12px!important;opacity:1!important;filter:none!important}
+html.aema-stock-light .markets-page .markets-table :is(.market-score-cell,.market-number-cell,.market-symbol-cell){color:#153d26!important;opacity:1!important}
+html.aema-stock-light .markets-page .markets-table :is(.market-chip,.market-status){font-size:10px!important;letter-spacing:.015em!important}
+html.aema-stock-light .markets-page .market-news-rail{background:#fff!important;color:#183825!important;border:1px solid #d6e7db!important;max-height:min(780px,calc(100vh - 110px));scrollbar-color:#b5d9c1 transparent}
+html.aema-stock-light .markets-page .news-item{background:#f7faf8!important;border:1px solid #dfebe2!important;box-shadow:none!important}
+html.aema-stock-light .markets-page .news-item :is(h3,p,span,small,a){color:#284632!important;opacity:1!important}
+html.aema-stock-light .markets-page .news-item h3{color:#133c25!important;font-size:13px!important;line-height:1.45!important}
+html.aema-stock-light .markets-page .news-filter{background:#f3f9f5!important;color:#17623a!important;border:1px solid #cfe4d5!important;font-size:11px!important;min-height:34px!important}
+html.aema-stock-light .markets-page .news-filter.active{background:#128747!important;color:#fff!important;border-color:#128747!important}
+html.aema-stock-light .markets-page .news-filter.active *{color:#fff!important}
+html.aema-stock-light .markets-page .news-link{color:#087c3c!important}
+html.aema-stock-light .markets-page .markets-search input{font-size:13px!important;min-height:42px!important}
+@media(max-width:760px){.markets-page .market-news-rail{max-height:none!important}.markets-page .markets-table-wrap{overscroll-behavior-x:contain}.markets-page .markets-header-actions{align-items:stretch!important}}

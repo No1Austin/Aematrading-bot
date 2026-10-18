@@ -2200,3 +2200,59 @@
   .dashboard-page .stock-analysis-progress__spinner,
   .dashboard-page .stock-analysis-progress__bar {animation:none}
 }
+
+
+/* =========================================================
+   AEMA STOCK DASHBOARD — TRUE LIGHT THEME
+   Follows the shared html.aema-stock-light toggle.
+   Scoped to stock Dashboard; does not affect crypto.
+   ========================================================= */
+html.aema-stock-light .dashboard-page {
+  --terminal-bg:#f3f8f4;--terminal-bg-2:#edf5ef;
+  --terminal-panel:#ffffff;--terminal-panel-2:#f8fcf9;--terminal-panel-3:#eef8f1;
+  --terminal-border:#d6e7da;--terminal-border-strong:#bcd8c5;--terminal-border-hot:#168a49;
+  --terminal-text:#142b1e;--terminal-text-soft:#294a36;
+  --terminal-muted:#526d5b;--terminal-faint:#657c6b;
+  --terminal-blue:#147c43;--terminal-blue-soft:#247e4b;
+  --terminal-cyan:#168a49;--terminal-green:#118b48;--terminal-green-soft:#159c53;
+  color:#142b1e;
+}
+html.aema-stock-light .dashboard-page::before,
+html.aema-stock-light .dashboard-page::after {opacity:0;pointer-events:none}
+html.aema-stock-light .dashboard-page :is(.panel,.stat-card,.status-strip,.status-strip > div,.authority-banner,.market-gauge-verdict) {
+  background:#fff; border-color:#d6e7da; box-shadow:0 5px 22px rgba(18,65,35,.055);
+}
+html.aema-stock-light .dashboard-page :is(.market-gauge-card,.institutional-panel,.engine-breakdown) {
+  background:#fff; border-color:#d6e7da;
+}
+html.aema-stock-light .dashboard-page :is(.panel,.stat-card,.market-gauge-card)::before,
+html.aema-stock-light .dashboard-page :is(.panel,.stat-card,.market-gauge-card)::after {
+  box-shadow:none;opacity:0;pointer-events:none;
+}
+html.aema-stock-light .dashboard-page :is(.status-strip,.status-strip > div,.stat-card,.panel,.authority-banner) {color:#294a36}
+html.aema-stock-light .dashboard-page .status-strip > div + div {border-left-color:#dcebe0}
+html.aema-stock-light .dashboard-page :is(.status-strip strong,.stat-card strong,.panel-heading h2,.market-gauge-symbol-row h2,.market-gauge-head-meta strong) {color:#152d1f}
+html.aema-stock-light .dashboard-page :is(.status-strip span,.stat-card span,.stat-card small,.eyebrow,.authority-banner span,.gauge-label,.market-gauge-head-meta span) {color:#526d5b}
+html.aema-stock-light .dashboard-page :is(.stat-icon,.panel-heading svg,.institutional-panel svg,.engine-breakdown svg) {color:#148747}
+html.aema-stock-light .dashboard-page .gauge-needle {stroke:#173a25}
+html.aema-stock-light .dashboard-page .gauge-needle-shadow {stroke:rgba(255,255,255,.85)}
+html.aema-stock-light .dashboard-page .gauge-hub-ring {fill:#fff;stroke:#173a25}
+html.aema-stock-light .dashboard-page .gauge-hub {fill:#168b49}
+html.aema-stock-light .dashboard-page .market-gauge-verdict {background:#f2faf4;border:1px solid #c8e3d1;color:#167e42}
+html.aema-stock-light .dashboard-page .market-gauge-verdict--sell,
+html.aema-stock-light .dashboard-page .market-gauge-verdict--strong-sell {color:#a73c49}
+html.aema-stock-light .dashboard-page :is(.market-gauge-market-data,.trade-plan,.trade-plan-grid > div) {color:#213c2a}
+html.aema-stock-light .dashboard-page :is(.market-gauge-market-data,.trade-plan) :is(span,small,p) {color:#526d5b}
+html.aema-stock-light .dashboard-page :is(.market-gauge-market-data,.trade-plan) strong {color:#142b1e}
+html.aema-stock-light .dashboard-page :is(.institutional-panel,.engine-breakdown) :is(h2,h3,h4,strong) {color:#142b1e}
+html.aema-stock-light .dashboard-page :is(.institutional-panel,.engine-breakdown) :is(p,span,small) {color:#496653}
+html.aema-stock-light .dashboard-page :is(.institutional-panel,.engine-breakdown) [class*="row"] {border-color:#dcebe0}
+html.aema-stock-light .dashboard-page :is(.institutional-panel,.engine-breakdown) [class*="row"]:hover {background:#f2f9f4}
+html.aema-stock-light .dashboard-page thead th {background:#edf7f0;color:#245a39;border-color:#cfe5d5}
+html.aema-stock-light .dashboard-page tbody td {color:#1e3c29;border-color:#e1ede4}
+html.aema-stock-light .dashboard-page tbody tr:hover {background:#f1f9f3}
+html.aema-stock-light .dashboard-page .dashboard-warning-panel {background:#fffaf1;border-color:#ead6a7;color:#503f23}
+html.aema-stock-light .dashboard-page :is(button,a):focus-visible {outline:2px solid #15974c;outline-offset:3px}
+@media(max-width:720px){
+  html.aema-stock-light .dashboard-page .status-strip > div + div {border-left:0;border-top:1px solid #dcebe0}
+}

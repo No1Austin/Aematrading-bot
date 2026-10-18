@@ -321,14 +321,39 @@ export function rankBotOpportunities(
     (row) => row.opportunity.qualified
   );
 
+  // Diversify research candidates without relaxing hard eligibility.
+  // Keep most slots score-ranked, reserve remaining slots for strong
+  // volatility, participation and tight-spread candidates.
+  const limit = Number.isFinite(topN) ? Math.max(0, Math.floor(topN)) : 20;
+  const diversify = options.diversify !== false;
+  const selected = [];
+  const seen = new Set();
+  const add = (row) => {
+    const key = row?.asset?.symbol;
+    if (selected.length < limit && key && !seen.has(key)) {
+      seen.add(key);
+      selected.push(row);
+    }
+  };
+  if (diversify && limit >= 4) {
+    const primarySlots = Math.max(1, Math.floor(limit * 0.7));
+    qualified.slice(0, primarySlots).forEach(add);
+    const dimension = (row, key) => row.opportunity.dimensions?.[key] ?? -1;
+    const diversified = ["volatility", "participation", "liquidity"];
+    for (const key of diversified) {
+      const candidate = [...qualified].sort((a,b) => dimension(b,key)-dimension(a,key))
+        .find(row => !seen.has(row.asset?.symbol) && dimension(row,key) >= 0);
+      if (candidate) add(candidate);
+    }
+  }
+  qualified.forEach(add);
+
   return {
     evaluated,
     qualified,
 
-    topCandidates: qualified.slice(
-      0,
-      topN
-    ),
+    topCandidates: selected,
+    diversification: { enabled: diversify, selected: selected.length },
 
     topN,
 

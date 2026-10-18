@@ -368,6 +368,7 @@ export default function TradingChart({
   symbol,
   candles = [],
   loading = false,
+  lightTheme = false,
 }) {
   const containerRef = useRef(null);
   const wrapperRef = useRef(null);
@@ -604,6 +605,29 @@ export default function TradingChart({
       };
     };
   }, []);
+
+  // Keep the actual canvas in sync with the Stock Scanner theme.
+  // Lightweight Charts renders its own canvas; CSS alone cannot recolour it.
+  useEffect(() => {
+    const chart = chartRef.current;
+    if (!chart) return;
+    chart.applyOptions({
+      layout: {
+        background: { type: ColorType.Solid, color: lightTheme ? "#ffffff" : "#07111f" },
+        textColor: lightTheme ? "#253d31" : "#c6d5e8",
+      },
+      grid: {
+        vertLines: { color: lightTheme ? "#eaf0eb" : "rgba(38, 59, 88, 0.42)" },
+        horzLines: { color: lightTheme ? "#eaf0eb" : "rgba(38, 59, 88, 0.42)" },
+      },
+      crosshair: {
+        vertLine: { color: lightTheme ? "#779e88" : "rgba(139, 169, 210, 0.45)", labelBackgroundColor: lightTheme ? "#177a42" : "#1b3353" },
+        horzLine: { color: lightTheme ? "#779e88" : "rgba(139, 169, 210, 0.45)", labelBackgroundColor: lightTheme ? "#177a42" : "#1b3353" },
+      },
+      rightPriceScale: { borderColor: lightTheme ? "#dce8df" : "#1d3049" },
+      timeScale: { borderColor: lightTheme ? "#dce8df" : "#1d3049" },
+    });
+  }, [lightTheme]);
 
   /* =======================================================
      09. UPDATE DATA WITHOUT REBUILDING THE CHART

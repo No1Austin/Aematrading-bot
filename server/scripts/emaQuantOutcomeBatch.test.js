@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';import {trackOutcome,summarizeOutcomes} from '../src/crypto/bot/quant/quantOutcomeTracking.js';
+const t=Date.parse('2026-10-18T20:00:00Z');const s={timestamp:new Date(t).toISOString(),symbol:'TEST_USDT',strategy:'BREAKOUT_RETEST',direction:'BULL',entry:100,stop:99,target:102};
+const b=(i,lo,hi)=>({openTime:t+i*300000,open:100,high:hi,low:lo,close:100});
+assert.equal(trackOutcome(s,[b(0,99.5,100.5),b(1,99.8,102.5)]).status,'TARGET_FIRST');
+assert.equal(trackOutcome(s,[b(0,99.5,100.5),b(1,98.5,101)]).status,'STOP_FIRST');
+assert.equal(trackOutcome(s,[b(0,98.5,102.5)]).status,'AMBIGUOUS_ENTRY_BAR');
+assert.equal(trackOutcome(s,[b(0,99.5,100.5),b(1,98.5,102.5)]).status,'AMBIGUOUS_BOTH_HIT');
+assert.equal(trackOutcome(s,[b(1,99.5,100.5)]).status,'DATA_GAP');
+assert.equal(trackOutcome(s,[b(0,103,104)]).status,'INVALID_CANDLES');
+assert.equal(trackOutcome(s,[{openTime:t,open:101,high:101.5,low:100.2,close:101}]).status,'NO_ENTRY');
+assert.equal(trackOutcome({...s,entry:null},[b(0,99.5,100.5)]).status,'INVALID_SETUP');
+assert.equal(summarizeOutcomes([trackOutcome(s,[b(0,99.5,100.5),b(1,99.8,102.5)])]).trainingReady,false);
+console.log('EMA quant offline outcome batch tests passed');

@@ -1,0 +1,42 @@
+/* Stock-only light mode. Does not affect cryptocurrency pages. */
+.aema-stock-light .engines-page,.aema-stock-light .research-page,.aema-stock-light .aema-rw-page{background:#f4f8f5!important;color:#17281c!important}
+.aema-stock-light .research-page{--research-bg:#f4f8f5;--research-surface:#fff;--research-surface-2:#edf5ef;--research-line:#d8e6db;--research-line-strong:#b9d6c0;--research-text:#17281c;--research-muted:#5a7061;--research-faint:#158447;--research-blue:#16894a;--research-green:#16894a;--research-amber:#b7791f}
+.aema-stock-light .research-page::before{opacity:.15}
+.aema-stock-light .engines-page :is(h1,h2,h3,h4),.aema-stock-light .research-page :is(h1,h2,h3,h4),.aema-stock-light .aema-rw-page :is(h1,h2,h3,h4){color:#152b1d}
+.aema-stock-light .engines-page :is(.engine-card,.research-summary-item,.engine-section,.engine-grid-hint,.research-score-card),
+.aema-stock-light .research-page :is(section,article,.research-card,.research-panel,.research-section,.research-metric,.research-summary-card),
+.aema-stock-light .aema-rw-page .aema-rw-card{background:#fff!important;color:#1a3022!important;border-color:#d7e5db!important;box-shadow:0 8px 30px rgba(18,57,29,.045)}
+.aema-stock-light .aema-rw-page :is(.aema-rw-subtitle,.aema-rw-notice,.aema-rw-empty){color:#526a5a}
+.aema-stock-light .engines-page :is(p,small,.engine-description,.engines-header-copy),.aema-stock-light .research-page :is(p,small){color:#526a5a}
+.aema-stock-light .engines-page :is(input,select,textarea),.aema-stock-light .research-page :is(input,select,textarea){background:#fff;color:#17301f;border-color:#c8dbcd}
+.aema-stock-page-theme-row{display:flex;align-items:center;justify-content:flex-end;gap:10px;margin:0 0 14px;position:relative;z-index:3}
+@media(max-width:640px){.aema-stock-page-theme-row{justify-content:flex-end;margin-bottom:12px}.aema-stock-light .research-page,.aema-stock-light .engines-page,.aema-stock-light .aema-rw-page{max-width:100%;overflow-x:clip}}
+
+/* 2026-10-18: contrast and mobile polish; stock pages only. */
+.aema-stock-light .engines-page .research-score-hero{background:linear-gradient(135deg,#14291c,#0d1c13)!important;color:#f5fff7!important;border:1px solid #31583b!important}
+.aema-stock-light .engines-page .research-score-hero :is(h1,h2,h3,p,span,small,strong){color:#f1fff4}
+.aema-stock-light .engines-page .research-score-hero .research-status-pill{color:#15311e!important;background:#e3f5e7!important}
+.aema-stock-light .engines-page .engine-card{background:#fff!important;color:#193322!important;border:1px solid #d4e4d8!important;box-shadow:0 4px 20px rgba(14,50,27,.04)}
+.aema-stock-light .engines-page .engine-card :is(h2,h3,strong){color:#193322!important}
+.aema-stock-light .engines-page .engine-card :is(p,small){color:#566b5c!important}
+.aema-stock-light .engines-page .engine-card :is(.engine-card__score,.engine-score-value){color:#fff!important}
+.aema-stock-light .research-page :is(.research-search-card,.research-card,.research-empty,.research-company-hero,.research-metric-card){background:#fff!important;border:1px solid #d4e5d9!important;box-shadow:0 5px 20px rgba(18,54,30,.045)}
+.aema-stock-light .research-page .research-search-input{background:#f6faf7!important;border:1px solid #c8dbce!important;color:#172b1e!important}
+.aema-stock-light .research-page .research-search-input input{background:transparent!important;color:#172b1e!important;opacity:1!important}
+.aema-stock-light .research-page .research-search-input input::placeholder{color:#6c8172!important;opacity:1}
+.aema-stock-light .research-page .research-run-button{background:#158947!important;color:#fff!important;border-color:#158947!important;opacity:1}
+.aema-stock-light .research-page .research-run-button:disabled{background:#e1eae3!important;color:#5c7463!important;border-color:#d1ded4!important;opacity:1}
+.aema-stock-light .research-page .research-empty :is(strong,h2,h3){color:#173321!important}
+.aema-stock-light .research-page .research-empty :is(p,span){color:#536b5b!important}
+.aema-stock-light .research-page .research-empty :is(.research-empty-icon,svg){color:#16884a!important}
+.aema-stock-light .research-page .research-empty :is(.research-metric-card,.research-empty-feature){background:#f1f7f3!important;color:#193a24!important;border-color:#d6e6da!important}
+.aema-stock-light .aema-rw-page :is(button,input){color:#173321}
+.aema-stock-light .aema-rw-page :is(.aema-rw-card,.aema-rw-feature){background:#fff!important;color:#193321!important}
+.aema-stock-light .aema-rw-page :is(.aema-rw-balance,h2,h3,strong){color:#173321!important}
+@media(max-width:768px){
+  .engines-page,.research-page,.aema-rw-page{min-width:0!important;padding-left:clamp(12px,3vw,20px)!important;padding-right:clamp(12px,3vw,20px)!important}
+  .engines-page .engine-grid,.engines-page .engines-grid,.research-page .research-summary-grid,.research-page .research-metrics-grid{grid-template-columns:minmax(0,1fr)!important}
+  .engines-page :is(.engine-card,.research-score-hero),.research-page :is(.research-card,.research-search-card),.aema-rw-page .aema-rw-card{min-width:0;max-width:100%;overflow-wrap:anywhere}
+  .research-page .research-search-form{display:flex;flex-direction:column;align-items:stretch;gap:10px}
+  .research-page .research-search-input,.research-page .research-run-button{width:100%;min-width:0}
+}

@@ -1909,7 +1909,7 @@ function getGaugeState(
 
       value,
 
-      label: "Strong sell",
+      label: "Strong bear",
 
       tone: "strong-sell",
 
@@ -1925,7 +1925,7 @@ function getGaugeState(
 
       value,
 
-      label: "Sell",
+      label: "Bear",
 
       tone: "sell",
 
@@ -1957,7 +1957,7 @@ function getGaugeState(
 
       value,
 
-      label: "Buy",
+      label: "Bull",
 
       tone: "buy",
 
@@ -1971,7 +1971,7 @@ function getGaugeState(
 
     value,
 
-    label: "Strong buy",
+    label: "Strong bull",
 
     tone: "strong-buy",
 
@@ -2165,15 +2165,15 @@ function MarketGauge({
 
         <div className="market-gauge-visual">
 
-          <span className="gauge-label gauge-label--strong-sell">Strong sell</span>
+          <span className="gauge-label gauge-label--strong-sell">Strong bear</span>
 
-          <span className="gauge-label gauge-label--sell">Sell</span>
+          <span className="gauge-label gauge-label--sell">Bear</span>
 
           <span className="gauge-label gauge-label--neutral">Neutral</span>
 
-          <span className="gauge-label gauge-label--buy">Buy</span>
+          <span className="gauge-label gauge-label--buy">Bull</span>
 
-          <span className="gauge-label gauge-label--strong-buy">Strong buy</span>
+          <span className="gauge-label gauge-label--strong-buy">Strong bull</span>
 
 
 

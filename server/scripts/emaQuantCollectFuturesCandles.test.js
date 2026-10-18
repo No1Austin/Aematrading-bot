@@ -1,0 +1,18 @@
+import assert from 'node:assert/strict';
+import {validateFuturesSetupIdentity,collectMatchedFuturesCandles} from '../src/crypto/bot/quant/quantFuturesCandleCollector.js';
+const start=Date.parse('2026-10-17T00:00:00Z');const now=start+3600000;
+const gate={symbol:'NEAR_USDT',exchange:'GATE',marketId:'NEAR_USDT',instrumentType:'FUTURES',timestamp:new Date(start).toISOString(),observationId:'test'};
+assert.equal(validateFuturesSetupIdentity(gate,{maxBars:2,nowMs:now}).ok,true);
+assert.equal(validateFuturesSetupIdentity({...gate,exchange:null},{maxBars:2,nowMs:now}).ok,false);
+assert.equal(validateFuturesSetupIdentity({...gate,marketId:'BTC_USDT'},{maxBars:2,nowMs:now}).ok,false);
+assert.equal(validateFuturesSetupIdentity(gate,{maxBars:72,nowMs:now}).reason,'OUTCOME_WINDOW_NOT_COMPLETE');
+const nextStart=now+300000;
+const recent={...gate,timestamp:new Date(nextStart).toISOString()};
+const pending=validateFuturesSetupIdentity(recent,{maxBars:72,nowMs:now});
+assert.equal(pending.reason,'OUTCOME_WINDOW_NOT_COMPLETE');
+assert.equal(pending.readyAt,new Date(nextStart+72*300000).toISOString());
+assert.equal(validateFuturesSetupIdentity({...gate,timestamp:'not-a-date'},{maxBars:2,nowMs:now}).reason,'INVALID_DECISION_WINDOW');
+const fetchJson=async url=>{assert.match(url,/gateio/);return [0,1].map(i=>({t:(start+i*300000)/1000,o:'1',h:'2',l:'0.5',c:'1.5',v:'100'}));};
+const r=await collectMatchedFuturesCandles([gate],{maxBars:2,nowMs:now,fetchJson});assert.equal(r.bundles.length,1);assert.equal(r.bundles[0].candles.length,2);
+const missing=await collectMatchedFuturesCandles([gate],{maxBars:2,nowMs:now,fetchJson:async()=>[]});assert.equal(missing.bundles.length,0);assert.equal(missing.skipped[0].reason,'MISSING_CANDLES');
+console.log('EMA futures collector tests passed');

@@ -1,0 +1,14 @@
+import assert from 'node:assert/strict';
+import { replaySnapshot, replayRecords, toCsv } from './emaQuantHistoricalSnapshotReplay.js';
+const t=Date.parse('2026-10-18T12:00:00Z');
+const record={timestamp:new Date(t).toISOString(),sourceType:'ARCHIVED_FUTURES_SNAPSHOT',pointInTimeVerified:true,candleInterval:'5m',candidate:{symbol:'TEST_USDT',directionDecision:{qualified:true,direction:'LONG'}},market:{symbol:'TEST_USDT',instrumentType:'PERPETUAL',approved:true,candles:Array.from({length:30},(_,i)=>({openTime:t-(30-i)*300000,open:100,high:101,low:99,close:100,volume:100}))}};
+const builder=(_c,_m,opts)=>{assert.equal(opts.replayNowMs,t+1000);return {setup:{approved:true,status:'SETUP_READY',researchDirection:'BULL',strategy:'TREND_PULLBACK',entry:100,stop:99,target:102}}};
+const result=replaySnapshot(record,builder);
+assert.equal(result.geometryAvailable,true);assert.equal(result.strategy,'TREND_PULLBACK');
+assert.equal(toCsv([result]).split('\n').length,3);
+assert.throws(()=>replaySnapshot({...record,pointInTimeVerified:false},builder),/UNVERIFIED/);
+assert.throws(()=>replaySnapshot({...record,market:{...record.market,candles:[...record.market.candles.slice(0,-1),{...record.market.candles.at(-1),openTime:t}] }},builder),/FUTURE_OR_OPEN/);
+assert.throws(()=>replaySnapshot({...record,market:{...record.market,candles:record.market.candles.slice(1)}},builder),/INSUFFICIENT/);
+assert.throws(()=>replaySnapshot({...record,market:{...record.market,instrumentType:'SPOT'}},builder),/FUTURES_MARKET_REQUIRED/);
+assert.equal(replayRecords([{...record,pointInTimeVerified:false}],builder)[0].status,'REPLAY_REJECTED');
+console.log('EMA historical snapshot replay tests passed');

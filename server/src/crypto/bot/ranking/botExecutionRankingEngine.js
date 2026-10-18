@@ -187,11 +187,8 @@ export function rankBotExecutionSetups(
    * these are now setup-quality ranking weights.
    */
   const weights = {
-    ...BOT_CONFIG
-      .executionRanking
-      .weights,
-
-    ...(options.weights || {}),
+    ...(BOT_CONFIG?.executionRanking?.weights || {}),
+    ...(options?.weights && typeof options.weights === "object" ? options.weights : {}),
   };
 
   /*
@@ -303,12 +300,17 @@ export function rankBotExecutionSetups(
               ?.ageMs
           );
 
+        // The setup builder exposes ageMs/stale, but does not attach a
+        // maximumAgeMs. Use the configured market-observation limit instead.
         const maximumAgeMs =
-          finiteOrNull(
-            setup
-              ?.freshness
-              ?.maximumAgeMs
-          );
+          finiteOrNull(setup?.freshness?.maximumAgeMs) ??
+          finiteOrNull(options?.maximumObservationAgeMs) ??
+          finiteOrNull(BOT_CONFIG?.setup?.maximumObservationAgeMs) ??
+          finiteOrNull(BOT_CONFIG?.execution?.maximumObservationAgeMs);
+
+        const freshnessStale =
+          setup?.freshness?.stale === true ||
+          setup?.freshness?.available === false;
 
         /*
          * -------------------------------------------------
@@ -381,6 +383,86 @@ export function rankBotExecutionSetups(
             "FRESHNESS"
           );
         }
+
+        // An observation can be complete yet stale. Never rank it as valid.
+        if (freshnessStale || (ageMs !== null && maximumAgeMs !== null && ageMs > maximumAgeMs)) {
+          return {
+            ...candidate,
+            executionRankScore: null,
+            executionQuality: null,
+            setupQualityScore: null,
+            setupQuality: null,
+            setupRankingDiagnostics: {
+              valid: false,
+              reason: "STALE_SETUP_MARKET_DATA",
+              ageMs,
+              maximumAgeMs,
+            },
+          };
+        }
+
+        // Never approve a malformed or inverted futures setup, even if the
+        // upstream builder accidentally marked it approved.
+        const entry = finiteOrNull(setup?.entry);
+        const stop = finiteOrNull(setup?.stop);
+        const target = finiteOrNull(setup?.target);
+        const side = String(setup?.direction || "").toUpperCase();
+        const validSide = side === "LONG" || side === "SHORT";
+        const validGeometry = entry !== null && entry > 0 &&
+          stop !== null && stop > 0 && target !== null && target > 0 &&
+          validSide && (side === "LONG"
+            ? stop < entry && target > entry
+            : stop > entry && target < entry);
+        if (!validGeometry) {
+          return {
+            ...candidate,
+            executionRankScore: null,
+            executionQuality: null,
+            setupQualityScore: null,
+            setupQuality: null,
+            setupRankingDiagnostics: {
+              valid: false,
+              reason: "INVALID_SETUP_GEOMETRY",
+              entry, stop, target, direction: side || null,
+            },
+          };
+        }
+
+        // Reject implausibly tight stops: an exaggerated R:R is not a
+        // substitute for an economically meaningful invalidation distance.
+        const entryPrice = finiteOrNull(setup?.entry);
+        const stopPrice = finiteOrNull(setup?.stop);
+        const stopDistancePercent = entryPrice > 0 && stopPrice !== null
+          ? Math.abs(stopPrice - entryPrice) / entryPrice * 100
+          : null;
+        const estimatedRoundTripCostPercent = spreadPercent !== null && slippagePercent !== null
+          ? spreadPercent + 2 * slippagePercent
+          : null;
+        const configuredFloor = finiteOrNull(options?.minimumStopDistancePercent);
+        const costMultiplier = finiteOrNull(options?.stopCostMultiplier);
+        const minimumStopDistancePercent = Math.max(
+          configuredFloor !== null && configuredFloor >= 0 ? configuredFloor : 0.15,
+          estimatedRoundTripCostPercent === null ? 0 :
+            (costMultiplier !== null && costMultiplier >= 1 ? costMultiplier : 2) * estimatedRoundTripCostPercent
+        );
+        if (stopDistancePercent !== null && estimatedRoundTripCostPercent !== null && stopDistancePercent < minimumStopDistancePercent) {
+          return {
+            ...candidate,
+            executionRankScore: null,
+            executionQuality: null,
+            setupQualityScore: null,
+            setupQuality: null,
+            setupRankingDiagnostics: {
+              valid: false,
+              reason: "STOP_DISTANCE_BELOW_COST_AND_NOISE_FLOOR",
+              stopDistancePercent,
+              minimumStopDistancePercent,
+              estimatedRoundTripCostPercent,
+            },
+          };
+        }
+
+        if (estimatedRoundTripCostPercent === null) missing.push("ESTIMATED_ROUND_TRIP_COST");
 
         if (
           missing.length > 0

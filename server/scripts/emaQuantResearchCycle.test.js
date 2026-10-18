@@ -1,0 +1,10 @@
+import assert from 'node:assert/strict';
+import { summarizeCycle } from './emaQuantResearchCycle.js';
+const result = summarizeCycle([{observationId:'a'}], [], {summary:{byStatus:{MISSING_MATCHED_FUTURES_CANDLES:1}}}, {skipped:[{reason:'OUTCOME_WINDOW_NOT_COMPLETE',readyAt:'2026-10-19T02:45:00.000Z'}]});
+assert.equal(result.setupsExported,1);
+assert.equal(result.candleBundles,0);
+assert.equal(result.collectorReasons.OUTCOME_WINDOW_NOT_COMPLETE,1);
+assert.deepEqual(result.pendingUntil,['2026-10-19T02:45:00.000Z']);
+assert.equal(result.trainingReady,false);
+assert.equal(result.executionAuthority,false);
+console.log('EMA research cycle tests passed');

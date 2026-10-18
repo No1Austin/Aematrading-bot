@@ -1,0 +1,11 @@
+import assert from 'node:assert/strict';
+import {observeQuantSetupEconomics} from '../src/crypto/bot/quant/quantSetupEconomics.js';
+const candidate={symbol:'BTC_USDT',asset:{instrumentType:'PERPETUAL'},executionMarket:{instrumentType:'PERPETUAL'},setup:{approved:true,direction:'LONG',entry:100,stop:99,target:102}};
+const run=o=>observeQuantSetupEconomics([candidate],o)[0];
+assert.equal(run({}).netExpectedReturn,null);
+assert.equal(run({roundTripCostBps:12,probabilitiesBySymbol:{BTC_USDT:{probabilityTargetFirst:.8,modelVersion:'spot-v1',instrumentType:'SPOT',validationStatus:'OUT_OF_SAMPLE_VALIDATED'}}}).netExpectedReturn,null);
+const r=run({roundTripCostBps:12,probabilitiesBySymbol:{BTC_USDT:{probabilityTargetFirst:.6,modelVersion:'futures-v1',instrumentType:'PERPETUAL',validationStatus:'OUT_OF_SAMPLE_VALIDATED'}}});
+assert.ok(Math.abs(r.netExpectedReturn-0.0068)<1e-10);
+assert.equal(r.executionAuthority,false);
+assert.equal(run({roundTripCostBps:12,probabilitiesBySymbol:{BTC_USDT:{probabilityTargetFirst:.6,modelVersion:'x',instrumentType:'PERPETUAL',validationStatus:'UNTRAINED'}}}).netExpectedReturn,null);
+console.log('EMA quant setup economics tests passed');

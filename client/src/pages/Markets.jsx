@@ -19,6 +19,8 @@ import {
   ExternalLink,
   Gauge,
   LoaderCircle,
+  Moon,
+  Sun,
   Newspaper,
   Radar,
   RefreshCw,
@@ -41,6 +43,7 @@ import {
 import "./Markets.css";
 
 
+import "../components/StockExecutiveFinish.css";
 /* ============================================================
  * 01. BASIC FORMATTERS
  * ============================================================
@@ -2517,38 +2520,50 @@ function NewsRail({
  * ============================================================
  */
 
+const MARKET_CACHE_KEY = "aema-stock-markets-v2";
+function readMarketsCache() {
+  try {
+    const data = JSON.parse(window.sessionStorage.getItem(MARKET_CACHE_KEY) || "null");
+    return data && typeof data === "object" ? data : null;
+  } catch { return null; }
+}
+
 export default function Markets() {
+  const [initialCache] = useState(readMarketsCache);
+
+  const [lightTheme, setLightTheme] = useState(() => {
+    try { return window.localStorage.getItem("aema-stock-theme") === "light"; } catch { return false; }
+  });
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("aema-stock-light", lightTheme);
+    window.dispatchEvent(new Event("aema-stock-theme-change"));
+    try { window.localStorage.setItem("aema-stock-theme", lightTheme ? "light" : "dark"); } catch {}
+  }, [lightTheme]);
+
   const [
     overview,
     setOverview,
   ] =
-    useState(
-      null,
-    );
+    useState(() => initialCache?.overview ?? null);
 
   const [
     scannerSnapshot,
     setScannerSnapshot,
   ] =
-    useState(
-      null,
-    );
+    useState(() => initialCache?.scannerSnapshot ?? null);
 
   const [
     marketNews,
     setMarketNews,
   ] =
-    useState(
-      [],
-    );
+    useState(() => initialCache?.marketNews ?? []);
 
   const [
     loading,
     setLoading,
   ] =
-    useState(
-      true,
-    );
+    useState(() => !initialCache);
 
   const [
     refreshing,
@@ -2572,9 +2587,7 @@ export default function Markets() {
     );
 
   const hasLoadedOnce =
-    useRef(
-      false,
-    );
+    useRef(Boolean(initialCache));
 
   const [
     error,
@@ -2718,7 +2731,7 @@ export default function Markets() {
           false,
       } = {}) => {
         /**
-         * Prevent overlapping 15-second polls. A slow upstream provider
+         * Prevent overlapping requests. A slow upstream provider
          * must never create a stack of concurrent market requests.
          */
         if (
@@ -2896,32 +2909,21 @@ export default function Markets() {
       [],
     );
 
-  useEffect(
-    () => {
-      void loadMarkets();
+  // Only fetch automatically when this browser session has no previous result.
+  // Navigating back to Markets never triggers another API request.
+  useEffect(() => {
+    if (!initialCache) void loadMarkets();
+  }, [initialCache, loadMarkets]);
 
-      /**
-       * Polling is intentionally slower than the UI animation cadence.
-       * The request-in-flight guard prevents overlap if an upstream call
-       * takes longer than the interval.
-       */
-      const timer =
-        setInterval(
-          () => {
-            void loadMarkets();
-          },
-          15_000,
-        );
-
-      return () =>
-        clearInterval(
-          timer,
-        );
-    },
-    [
-      loadMarkets,
-    ],
-  );
+  // Persist each successful view so the next visit restores it immediately.
+  useEffect(() => {
+    if (!hasLoadedOnce.current) return;
+    try {
+      window.sessionStorage.setItem(MARKET_CACHE_KEY, JSON.stringify({
+        overview, scannerSnapshot, marketNews, updatedAt: Date.now(),
+      }));
+    } catch { /* Cache may be unavailable or full; page still works. */ }
+  }, [overview, scannerSnapshot, marketNews, loading]);
 
 
   return (
@@ -2955,6 +2957,17 @@ export default function Markets() {
           </div>
 
           <div className="markets-header-actions">
+            <button
+              className="markets-theme-toggle"
+              type="button"
+              onClick={() => setLightTheme(current => !current)}
+              aria-label={lightTheme ? "Switch Markets to dark mode" : "Switch Markets to light mode"}
+              aria-pressed={lightTheme}
+              title={lightTheme ? "Switch to dark mode" : "Switch to light mode"}
+            >
+              {lightTheme ? <Moon size={17} /> : <Sun size={17} />}
+              <span>{lightTheme ? "Dark mode" : "Light mode"}</span>
+            </button>
             <label className="markets-search">
               <Search
                 size={15}

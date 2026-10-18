@@ -1,0 +1,12 @@
+{
+  "schemaVersion": "ema-spot-gaps-v1",
+  "symbol": "BTC-USD",
+  "marketType": "SPOT",
+  "expected": 43200,
+  "received": 43199,
+  "missingCount": 1,
+  "missingTimestamps": [
+    "2026-10-02T16:47:00.000Z"
+  ],
+  "complete": false
+}

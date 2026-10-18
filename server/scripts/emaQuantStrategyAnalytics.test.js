@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import {analyzeStrategyOutcomes} from '../src/crypto/bot/quant/quantStrategyAnalytics.js';
+const make=(id,status,netBps,strategy='TREND_PULLBACK')=>({observationId:id,status,netBps,strategy,pointInTimeVerified:true,direction:'BULL',entry:100,stop:99,target:102,decisionTimeMs:1000,outcomeTimeMs:2000,symbol:'BTCUSDT'});
+const empty=analyzeStrategyOutcomes({outcomes:[{status:'MISSING_MATCHED_FUTURES_CANDLES'}]});
+assert.equal(empty.eligible,0);assert.equal(empty.overall.winRate,null);assert.equal(empty.overall.profitFactor,null);
+const report=analyzeStrategyOutcomes({outcomes:[make('a','TARGET_FIRST',190),make('b','STOP_FIRST',-110),make('c','TARGET_FIRST',190,'BREAKOUT_RETEST'),make('d','TARGET_FIRST',190),{...make('e','TARGET_FIRST',190),pointInTimeVerified:false},make('a','TARGET_FIRST',190),{...make('f','AMBIGUOUS_BOTH_HIT',0)}]}, {minSample:2});
+assert.equal(report.eligible,4);assert.equal(report.overall.wins,3);assert.equal(report.overall.losses,1);
+assert.equal(report.overall.winRate,0.75);assert.equal(report.overall.averageNetR,1.15);
+assert.equal(report.overall.profitFactor,Number((5.7/1.1).toFixed(6)));
+assert.equal(report.byStrategy.TREND_PULLBACK.sampleSize,3);
+assert.equal(report.excluded.UNVERIFIED_POINT_IN_TIME,1);
+assert.equal(report.excluded.DUPLICATE_OBSERVATION_ID,1);
+assert.equal(report.excluded.NOT_RESOLVED_TARGET_OR_STOP,1);
+assert.equal(report.trainingReady,false);assert.equal(report.executionAuthority,false);
+console.log('EMA Phase 5C strategy analytics tests passed');

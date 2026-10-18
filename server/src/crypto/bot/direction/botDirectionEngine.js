@@ -405,6 +405,8 @@ export function determineBotDirection(candidate, options = {}) {
        * Preserve raw research direction for diagnostics.
        */
       rawDirection,
+      researchDirection: rawDirection,
+      strategyReviewAllowed: true,
 
       setupSignal:
         qualified

@@ -404,6 +404,10 @@ const closedSetupCandles =
 
       closeGraceMs:
         1_000,
+      // Historical replay must not use wall-clock Date.now().
+      nowMs: Number.isFinite(options?.replayNowMs)
+        ? options.replayNowMs
+        : Date.now(),
     }
   );
 
@@ -680,16 +684,28 @@ if (
           )
         : false;
 
+  // Never trust a quality engine's approved flag without independent geometry
+  // and economics checks. This is research qualification, not order approval.
+  const reportedRiskReward = finiteOrNull(setupQuality?.riskReward);
+  const calculatedRiskReward = validGeometry
+    ? Math.abs(target - entry) / Math.abs(entry - stop)
+    : null;
+  const minimumRiskReward = positiveOrNull(qualificationConfig.minimumRiskReward);
+  const normalizedTargets = Array.isArray(setupQuality?.targets)
+    ? setupQuality.targets.map(positiveOrNull).filter(value => value !== null)
+    : target !== null ? [target] : [];
+  const directionallyValidTargets = normalizedTargets.filter(value =>
+    direction === "LONG" ? value > entry : direction === "SHORT" ? value < entry : false
+  );
+  const targetListInvalid = normalizedTargets.length !== directionallyValidTargets.length;
   const geometryBlockers = [];
-
-  if (
-    setupQuality?.approved ===
-      true &&
-    !validGeometry
-  ) {
-    geometryBlockers.push(
-      "INVALID_SETUP_GEOMETRY"
-    );
+  if (setupQuality?.approved === true) {
+    if (!validGeometry) geometryBlockers.push("INVALID_SETUP_GEOMETRY");
+    if (targetListInvalid) geometryBlockers.push("TARGETS_ON_WRONG_SIDE_OF_ENTRY");
+    if (calculatedRiskReward !== null && minimumRiskReward !== null &&
+        calculatedRiskReward < minimumRiskReward) {
+      geometryBlockers.push("RISK_REWARD_BELOW_MINIMUM");
+    }
   }
 
   const stopDistance =
@@ -794,29 +810,11 @@ if (
    * on that type.
    */
 
-  const targets =
-    Array.isArray(
-      setupQuality?.targets
-    )
-      ? setupQuality.targets
-          .map(
-            positiveOrNull
-          )
-          .filter(
-            (value) =>
-              value !== null
-          )
-      : target !== null
-        ? [target]
-        : [];
+  const targets = directionallyValidTargets;
 
   const targetsDetailed =
-    Array.isArray(
-      setupQuality
-        ?.targetsDetailed
-    )
-      ? setupQuality
-          .targetsDetailed
+    Array.isArray(setupQuality?.targetsDetailed)
+      ? setupQuality.targetsDetailed
       : [];
 
   /*
@@ -1068,6 +1066,18 @@ if (
                 .risks
             : []
         ),
+
+      /*
+       * Independent safety diagnostics; does not authorize execution.
+       */
+      geometryDiagnostics: {
+        valid: validGeometry,
+        calculatedRiskReward,
+        reportedRiskReward,
+        minimumRiskReward,
+        rejectedTargetCount: normalizedTargets.length - directionallyValidTargets.length,
+        blockers: geometryBlockers,
+      },
 
       /*
        * Qualification result

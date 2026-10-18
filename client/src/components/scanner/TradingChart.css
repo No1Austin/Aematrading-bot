@@ -669,3 +669,19 @@
     animation:none;
   }
 }
+
+/* AEMA Scanner: readable chart chrome in light mode. Scoped to stock theme only. */
+html.aema-stock-light .scanner-advanced-chart { --chart-text:#153625;--chart-text-soft:#41614d;--chart-text-muted:#54735e;--chart-green:#087d3e;--chart-border:#d9e8dc;background:#fff!important;border-color:#d9e8dc!important;box-shadow:0 10px 28px rgba(12,58,28,.06)!important; }
+html.aema-stock-light .scanner-chart-header,html.aema-stock-light .scanner-chart-toolbar,html.aema-stock-light .scanner-chart-readout,html.aema-stock-light .scanner-chart-footer { background:#fff!important;color:#153625!important;border-color:#e2ece5!important; }
+html.aema-stock-light .scanner-chart-symbol-row>strong,html.aema-stock-light .scanner-chart-last-price,html.aema-stock-light .scanner-chart-readout strong {color:#173b27!important;}
+html.aema-stock-light .scanner-chart-kicker,html.aema-stock-light .scanner-chart-readout span {color:#54735e!important;}
+html.aema-stock-light .scanner-timeframes {background:#eef6f0!important;border:1px solid #d1e4d6!important;padding:4px!important;border-radius:12px!important;gap:4px!important;}
+html.aema-stock-light .scanner-timeframes button {color:#215c37!important;background:#fff!important;border:1px solid #d4e5d8!important;border-radius:8px!important;font-size:12px!important;font-weight:750!important;min-height:38px!important;min-width:43px!important;}
+html.aema-stock-light .scanner-timeframes button.active {color:#fff!important;background:#0c8c48!important;border-color:#0c8c48!important;box-shadow:0 2px 8px rgba(12,140,72,.2)!important;}
+html.aema-stock-light .scanner-timeframes button:disabled {color:#7f9888!important;background:#f3f6f3!important;opacity:.65!important;}
+html.aema-stock-light .scanner-chart-toolbar button {color:#166a3b!important;background:#f1f8f3!important;border:1px solid #cfe5d4!important;font-size:12px!important;font-weight:700!important;min-height:40px!important;}
+html.aema-stock-light .scanner-chart-toolbar button.active {color:#fff!important;background:#0c8c48!important;border-color:#0c8c48!important;}
+html.aema-stock-light .scanner-chart-toolbar button.active svg {color:#fff!important;stroke:#fff!important;}
+html.aema-stock-light .scanner-chart-toolbar button:not(.active) svg {color:#0b8b46!important;stroke:#0b8b46!important;}
+html.aema-stock-light .scanner-chart-container {background:#fff!important;}
+@media(max-width:600px){html.aema-stock-light .scanner-timeframes button{min-width:42px!important;min-height:40px!important;}html.aema-stock-light .scanner-chart-toolbar button{min-height:42px!important;}}

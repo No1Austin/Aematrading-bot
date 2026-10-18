@@ -1,0 +1,105 @@
+{
+  "summary": {
+    "total": 9,
+    "byStatus": {
+      "MISSING_MARKET_IDENTITY_OR_TIME": 4,
+      "MISSING_MATCHED_FUTURES_CANDLES": 5
+    },
+    "byStrategy": {
+      "UNKNOWN": {
+        "total": 9,
+        "byStatus": {
+          "MISSING_MARKET_IDENTITY_OR_TIME": 4,
+          "MISSING_MATCHED_FUTURES_CANDLES": 5
+        }
+      }
+    },
+    "trainingReady": false,
+    "reason": "REQUIRES_VERIFIED_POINT_IN_TIME_SETUPS_AND_MARKET_DATA"
+  },
+  "outcomes": [
+    {
+      "observationId": "37222cb7a4d0ad844b915a3f6aa72b3543d6b191618bd4791d864dd17dc4ed46",
+      "symbol": "BR_USDT",
+      "exchange": null,
+      "instrumentType": "FUTURES",
+      "pointInTimeVerified": false,
+      "status": "MISSING_MARKET_IDENTITY_OR_TIME",
+      "trainingReady": false
+    },
+    {
+      "observationId": "a947a850fbee6e4aecd1684632a8d9dd6717e6df28a4915f60bc36c5de447b06",
+      "symbol": "NEAR_USDT",
+      "exchange": null,
+      "instrumentType": "FUTURES",
+      "pointInTimeVerified": false,
+      "status": "MISSING_MARKET_IDENTITY_OR_TIME",
+      "trainingReady": false
+    },
+    {
+      "observationId": "e8cf4383026074b8cf2ccd677c694bdb07cbc88c4d90f58728aff94e38f65aa8",
+      "symbol": "TIA_USDT",
+      "exchange": null,
+      "instrumentType": "FUTURES",
+      "pointInTimeVerified": false,
+      "status": "MISSING_MARKET_IDENTITY_OR_TIME",
+      "trainingReady": false
+    },
+    {
+      "observationId": "059da06cb2f6e9f84dec58a88715d312b125ccdf267bc666f211a3055e6bb375",
+      "symbol": "AGT_USDT",
+      "exchange": null,
+      "instrumentType": "FUTURES",
+      "pointInTimeVerified": false,
+      "status": "MISSING_MARKET_IDENTITY_OR_TIME",
+      "trainingReady": false
+    },
+    {
+      "observationId": "e38c39156bdc8d2c266b326019d288efbe0b7f18439a2a0097f5bfcc7440445c",
+      "symbol": "BR_USDT",
+      "exchange": "GATE",
+      "instrumentType": "FUTURES",
+      "pointInTimeVerified": false,
+      "status": "MISSING_MATCHED_FUTURES_CANDLES",
+      "trainingReady": false
+    },
+    {
+      "observationId": "d2261f8d62bafba6d5459d1c3c39ea5eafca829122ec22737425d277c117ca8e",
+      "symbol": "PUMP_USDT",
+      "exchange": "GATE",
+      "instrumentType": "FUTURES",
+      "pointInTimeVerified": false,
+      "status": "MISSING_MATCHED_FUTURES_CANDLES",
+      "trainingReady": false
+    },
+    {
+      "observationId": "bb83e5d401a55709fb35bbfc9bb27910d28c45af90e9239971d94627c6c693a8",
+      "symbol": "AGT_USDT",
+      "exchange": "GATE",
+      "instrumentType": "FUTURES",
+      "pointInTimeVerified": false,
+      "status": "MISSING_MATCHED_FUTURES_CANDLES",
+      "trainingReady": false
+    },
+    {
+      "observationId": "f52061c0182b6460d5e53e18b4365320b2df908028443da728278e459dc84ba2",
+      "symbol": "NEAR_USDT",
+      "exchange": "GATE",
+      "instrumentType": "FUTURES",
+      "pointInTimeVerified": false,
+      "status": "MISSING_MATCHED_FUTURES_CANDLES",
+      "trainingReady": false
+    },
+    {
+      "observationId": "ce3e15caa5bcbfba9269296836339cb1436e5c0db68c378e2b7052c9b4a10d61",
+      "symbol": "USELESS_USDT",
+      "exchange": "GATE",
+      "instrumentType": "FUTURES",
+      "pointInTimeVerified": false,
+      "status": "MISSING_MATCHED_FUTURES_CANDLES",
+      "trainingReady": false
+    }
+  ],
+  "trainingReady": false,
+  "reason": "INDEPENDENT_POINT_IN_TIME_VALIDATION_AND_WALK_FORWARD_TESTS_REQUIRED"
+}

@@ -1,0 +1,44 @@
+{
+  "generatedAt": "2026-10-18T22:01:28.109Z",
+  "source": "quant-research/output/quant_outcomes.json",
+  "researchOnly": true,
+  "executionAuthority": false,
+  "liveExecution": false,
+  "trainingReady": false,
+  "methodology": {
+    "eligibleStatuses": [
+      "TARGET_FIRST",
+      "STOP_FIRST"
+    ],
+    "requiresPointInTimeVerified": true,
+    "netR": "netBps / (abs(entry-stop)/entry*10000)",
+    "minSample": 30,
+    "profitFactor": "null when no losing net-R observations",
+    "drawdown": "closed-trade cumulative net-R drawdown, not intratrade drawdown"
+  },
+  "observations": 9,
+  "eligible": 0,
+  "excluded": {
+    "NOT_RESOLVED_TARGET_OR_STOP": 9
+  },
+  "overall": {
+    "sampleSize": 0,
+    "wins": 0,
+    "losses": 0,
+    "winRate": null,
+    "averageNetR": null,
+    "totalNetR": null,
+    "profitFactor": null,
+    "maxClosedTradeDrawdownR": null,
+    "winRateWilson95": null,
+    "sufficientSample": false
+  },
+  "byStrategy": {},
+  "byDirection": {},
+  "bySymbol": {},
+  "notes": [
+    "Only completed, verified point-in-time setup outcomes are included.",
+    "Unresolved, ambiguous, missing-data and unverified observations are excluded, not counted as losses.",
+    "Statistics are descriptive and do not establish a profitable edge or authorize live trading."
+  ]
+}

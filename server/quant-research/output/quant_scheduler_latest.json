@@ -1,0 +1,14 @@
+{
+  "researchOnly": true,
+  "executionAuthority": false,
+  "liveExecution": false,
+  "cycles": 1,
+  "failures": 0,
+  "startedAt": "2026-10-18T21:53:43.151Z",
+  "finishedAt": "2026-10-18T21:53:43.243Z",
+  "success": true,
+  "exitCode": 0,
+  "error": null,
+  "stdout": "{\n  \"output\": \"/Users/no1austin/Desktop/Msc /MscSE-Day-4/trading-bot/server/quant-research/output/quant_research_cycle.json\",\n  \"generatedAt\": \"2026-10-18T21:53:43.241Z\",\n  \"researchOnly\": true,\n  \"executionAuthority\": false,\n  \"trainingReady\": false,\n  \"setupsExported\": 9,\n  \"candleBundles\": 0,\n  \"collectorSkipped\": 9,\n  \"collectorReasons\": {\n    \"MISSING_OR_UNSUPPORTED_FUTURES_EXCHANGE\": 4,\n    \"OUTCOME_WINDOW_NOT_COMPLETE\": 5\n  },\n  \"outcomeStatuses\": {\n    \"MISSING_MARKET_IDENTITY_OR_TIME\": 4,\n    \"MISSING_MATCHED_FUTURES_CANDLES\": 5\n  },\n  \"pendingUntil\": [\n    \"2026-10-19T02:45:00.000Z\"\n  ],\n  \"notes\": [\n    \"Historical outcomes and model readiness require verified point-in-time observations and market data.\",\n    \"Old observations with missing exchange identity are not backfilled.\"\n  ],\n  \"steps\": [\n    {\n      \"name\": \"export\",\n      \"exitCode\": 0\n    },\n    {\n      \"name\": \"collect\",\n      \"exitCode\": 0\n    },\n    {\n      \"name\": \"resolve\",\n      \"exitCode\": 0\n    }\n  ]\n}\n",
+  "stderr": ""
+}

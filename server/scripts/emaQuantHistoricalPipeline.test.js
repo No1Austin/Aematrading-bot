@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import crypto from 'node:crypto';
+import {archiveIntegrity,extractArchivedObservations,evaluateExternalOutcomes} from '../src/crypto/bot/quant/quantHistoricalPipeline.js';
+const r={timestamp:'2026-10-18T20:00:00.000Z',candleInterval:'5m',market:{symbol:'ETH_USDT',instrumentType:'PERPETUAL'},candidate:{symbol:'ETH_USDT'},pointInTimeVerified:false,archiveMetadata:{capturedAt:'2026-10-18T20:00:01.000Z',validation:'CANDLE_TIMESTAMPS_ONLY',requiresIndependentVerification:true}};
+r.archiveMetadata.sha256=crypto.createHash('sha256').update(JSON.stringify(r)).digest('hex');
+assert.equal(archiveIntegrity(r),'OK');
+const {observations,rejected}=extractArchivedObservations([r,r]);
+assert.equal(observations.length,1);assert.equal(rejected[0].reason,'DUPLICATE');
+assert.equal(observations[0].trainingReady,false);
+assert.equal(evaluateExternalOutcomes(observations,{}).rows[0].status,'UNVERIFIED_SETUP');
+const tampered=structuredClone(r);tampered.market.symbol='BTC_USDT';assert.equal(archiveIntegrity(tampered),'HASH_MISMATCH');
+console.log('EMA historical pipeline tests passed');

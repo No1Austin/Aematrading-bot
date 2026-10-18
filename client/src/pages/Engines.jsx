@@ -1,3 +1,6 @@
+import StockThemeToggle from "../components/StockThemeToggle.jsx";
+import "../components/StockPagesTheme.css";
+import "../components/StockExecutiveFinish.css";
 // client/src/pages/Engines.jsx
 
 import { useEffect, useMemo, useState } from "react";
@@ -766,6 +769,7 @@ export default function Engines() {
         <Sidebar />
 
         <main className="main-content engines-page">
+          <div className="aema-stock-page-theme-row"><StockThemeToggle /></div>
           <header className="engines-page-header">
             <div className="engines-header-copy">
               <div className="engines-kicker">
@@ -804,6 +808,7 @@ export default function Engines() {
       <Sidebar />
 
       <main className="main-content engines-page">
+          <div className="aema-stock-page-theme-row"><StockThemeToggle /></div>
         <header className="engines-page-header">
           <div className="engines-header-copy">
             <div className="engines-kicker">

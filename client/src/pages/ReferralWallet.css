@@ -211,3 +211,15 @@
 @media(max-width:900px){.aema-rw-grid{grid-template-columns:1fr;gap:12px}.aema-rw-card{padding:20px}}
 @media(max-width:760px){.aema-rw-page{padding-top:12px!important}.aema-rw-page h1{font-size:clamp(25px,7vw,36px)}.aema-rw-subtitle{font-size:13px;margin-bottom:20px}.aema-rw-card{padding:16px;border-radius:14px}.aema-rw-copy{min-width:0}.aema-rw-copy span{min-width:0}.aema-rw-copy button{min-height:44px;flex-shrink:0}}
 @media(max-width:380px){.aema-rw-copy{flex-wrap:wrap}.aema-rw-copy span{flex-basis:100%}.aema-rw-copy button{width:100%;justify-content:center}}
+
+.aema-stock-light .aema-rw-page{background:#f4f8f5!important;color:#17281c!important}
+.aema-stock-light .aema-rw-page .aema-rw-card{background:#fff!important;border-color:#d8e6db!important;color:#17281c!important}
+.aema-stock-light .aema-rw-page .aema-rw-card p{color:#526a5a}
+.aema-stock-light .aema-rw-page .aema-rw-balance{color:#173b25}
+
+
+html.aema-stock-light .aema-rw-page .aema-rw-card{background:#fff!important;border:1px solid #d4e5d9!important;box-shadow:0 10px 30px rgba(19,64,34,.045)!important}
+html.aema-stock-light .aema-rw-page .aema-rw-notice{background:#edf7f0!important;color:#2d6140!important;border:1px solid #d3e7d9!important}
+html.aema-stock-light .aema-rw-page .aema-rw-icon{background:#e6f6eb!important;color:#0b8840!important}
+html.aema-stock-light .aema-rw-page .aema-rw-icon svg{stroke:#0b8840!important}
+html.aema-stock-light .aema-rw-page :is(.aema-rw-balance,.aema-rw-card h2){color:#163b26!important}

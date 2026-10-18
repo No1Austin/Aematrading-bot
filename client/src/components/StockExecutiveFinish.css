@@ -1,0 +1,104 @@
+/* AEMA Equities | Executive finish pass. Scoped to stock pages only. */
+:root.aema-stock-light {
+  --aema-finish-ink:#15291c;
+  --aema-finish-green:#118544;
+  --aema-finish-muted:#536d5c;
+  --aema-finish-border:#d6e5da;
+  --aema-finish-surface:#fff;
+  --aema-finish-soft:#f2f8f4;
+}
+/* Standardized focus, touch targets and motion across the five stock workspaces. */
+:is(.markets-page,.stock-scanner-page,.engines-page,.research-page,.aema-rw-page) :is(button,[role="button"],input,select,textarea) {
+  font-family:inherit;
+  transition:background-color .16s ease,color .16s ease,border-color .16s ease,box-shadow .16s ease,transform .16s ease;
+}
+:is(.markets-page,.stock-scanner-page,.engines-page,.research-page,.aema-rw-page) :is(button,[role="button"],input,select,textarea):focus-visible {
+  outline:3px solid #26b65c!important;outline-offset:3px!important;
+}
+:is(.markets-page,.stock-scanner-page,.engines-page,.research-page,.aema-rw-page) button:not(:disabled){cursor:pointer}
+:is(.markets-page,.stock-scanner-page,.engines-page,.research-page,.aema-rw-page) button:disabled {cursor:not-allowed;opacity:.62}
+:is(.markets-page,.stock-scanner-page,.engines-page,.research-page,.aema-rw-page) button svg {width:18px;height:18px;flex-shrink:0}
+/* Light mode: icons are brand green, text is ink or green. Avoid recoloring chart data. */
+html.aema-stock-light :is(.markets-page,.stock-scanner-page,.engines-page,.research-page,.aema-rw-page) {
+  color:var(--aema-finish-ink)!important;
+  color-scheme:light;
+}
+html.aema-stock-light :is(.markets-page,.stock-scanner-page,.engines-page,.research-page,.aema-rw-page) :is(h1,h2,h3,h4,h5,h6,strong) {color:var(--aema-finish-ink)}
+/* UI icons only: never overwrite SVG data visualizations, gauges, status colours or charts. */
+html.aema-stock-light :is(.markets-page,.stock-scanner-page,.engines-page,.research-page,.aema-rw-page) :is(button,a,[class*="icon"]) > svg:not([class*="chart"]):not([class*="gauge"]) {color:#128846;stroke:currentColor}
+/* Controls should never be dark text on dark surfaces in light mode. */
+html.aema-stock-light :is(.markets-page,.stock-scanner-page,.engines-page,.research-page,.aema-rw-page) :is(input,select,textarea){background:#fff!important;color:var(--aema-finish-ink)!important;border:1px solid #c9dfd0!important;opacity:1!important}
+html.aema-stock-light :is(.markets-page,.stock-scanner-page,.engines-page,.research-page,.aema-rw-page) :is(input,textarea)::placeholder {color:#657f6d!important;opacity:1!important}
+html.aema-stock-light :is(.markets-page,.stock-scanner-page,.engines-page,.research-page,.aema-rw-page) :is(button,[role="button"]) {font-weight:700;letter-spacing:-.01em}
+html.aema-stock-light :is(.markets-page,.stock-scanner-page,.engines-page,.research-page,.aema-rw-page) button:not([class*="primary"]):not([class*="research-run"]):not([class*="scanner-button--primary"]):not([class*="active"]):not([aria-pressed="true"]):not([class*="score"]):not([class*="chart"]) {border-color:#c7dfcf;color:#17502c}
+html.aema-stock-light :is(.markets-page,.stock-scanner-page,.engines-page,.research-page,.aema-rw-page) button:not(:disabled):hover{filter:brightness(.97);box-shadow:0 3px 12px rgba(20,99,48,.11)}
+/* Explicit white icons/labels on solid green CTA buttons for contrast. */
+html.aema-stock-light :is(.markets-page,.stock-scanner-page,.engines-page,.research-page,.aema-rw-page) :is(.research-run-button,.aema-terminal__research,.scanner-button--primary){background:#138844!important;color:#fff!important;border-color:#138844!important}
+html.aema-stock-light :is(.markets-page,.stock-scanner-page,.engines-page,.research-page,.aema-rw-page) :is(.research-run-button,.aema-terminal__research,.scanner-button--primary) svg {color:#fff!important;stroke:#fff!important}
+/* Chart toolbar: unify the light theme without touching financial candle/indicator colors. */
+html.aema-stock-light .stock-scanner-page .aema-terminal__chart-pane,
+html.aema-stock-light .stock-scanner-page .aema-terminal__chart-header,
+html.aema-stock-light .stock-scanner-page .aema-terminal__chart-toolbar {background:#fff!important;color:#183320!important;border-color:#d7e7dc!important}
+html.aema-stock-light .stock-scanner-page :is(.aema-terminal__search,.aema-terminal__actions,.aema-terminal__depth-pane,.aema-terminal__depth-empty){color:#173321!important}
+html.aema-stock-light .stock-scanner-page :is(.aema-terminal__chart-toolbar,.aema-terminal__chart-header) button {background:#f1f8f3!important;color:#176438!important;border:1px solid #cfe5d5!important}
+html.aema-stock-light .stock-scanner-page :is(.aema-terminal__chart-toolbar,.aema-terminal__chart-header) button[aria-pressed="true"],
+html.aema-stock-light .stock-scanner-page :is(.aema-terminal__chart-toolbar,.aema-terminal__chart-header) button.active {background:#d9f3e1!important;color:#086e32!important;border-color:#83c99b!important}
+html.aema-stock-light .stock-scanner-page .aema-terminal__chart-toolbar button svg {stroke:#128646!important}
+/* Research: remove muddy dark search and placeholder feature tiles. */
+html.aema-stock-light .research-page .research-search-input {background:#fff!important;border:1px solid #c9dfd0!important;box-shadow:0 2px 8px rgba(20,66,34,.04)}
+html.aema-stock-light .research-page .research-search-input svg,
+html.aema-stock-light .research-page .research-welcome-grid svg,
+html.aema-stock-light .research-page .research-welcome-icon svg {color:#128845!important;stroke:#128845!important}
+html.aema-stock-light .research-page .research-welcome-grid > div {background:#f2f8f4!important;border:1px solid #d9e9de!important;color:#173321!important;border-radius:14px}
+html.aema-stock-light .research-page .research-welcome-grid :is(strong,span){color:#1d422a!important}
+html.aema-stock-light .research-page .research-search-card {border-radius:18px!important}
+/* Engines: retain meaningful dark gauge centers, but never use faded white on white cards. */
+html.aema-stock-light .engines-page .engine-card :is([class*="label"],[class*="weight"],[class*="status"]){opacity:1}
+html.aema-stock-light .engines-page .engine-card :is(button,[role="button"]) svg {stroke:#128845!important}
+html.aema-stock-light .engines-page .engine-card :is(p,small,[class*="caption"],[class*="muted"]){color:#536b5b!important}
+html.aema-stock-light .engines-page .engine-card {border-radius:18px!important}
+/* Wallet & markets use the same surface geometry and brand accents. */
+html.aema-stock-light .aema-rw-page :is(.aema-rw-card,.aema-rw-feature),
+html.aema-stock-light .markets-page :is(.market-card,.markets-card){background:#fff!important;border-color:#d8e7dd!important;box-shadow:0 6px 24px rgba(21,66,36,.045)}
+html.aema-stock-light .aema-rw-page :is([class*="icon"],button) svg,
+html.aema-stock-light .markets-page :is([class*="icon"],button) svg {stroke:#128845!important}
+/* Consistent density and comfortable touch targets. */
+@media(max-width:768px){
+  :is(.markets-page,.stock-scanner-page,.engines-page,.research-page,.aema-rw-page){min-width:0;max-width:100%;overflow-x:clip}
+  :is(.markets-page,.stock-scanner-page,.engines-page,.research-page,.aema-rw-page) button{min-height:40px}
+  :is(.markets-page,.stock-scanner-page,.engines-page,.research-page,.aema-rw-page) :is(input,select){min-height:44px}
+  .research-page .research-welcome-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
+@media(max-width:480px){
+  .research-page .research-welcome-grid{grid-template-columns:minmax(0,1fr)!important}
+  .aema-stock-page-theme-row{margin-bottom:10px!important}
+  .stock-scanner-page .scanner-executive-bar{border-radius:14px!important}
+}
+@media(prefers-reduced-motion:reduce){
+  :is(.markets-page,.stock-scanner-page,.engines-page,.research-page,.aema-rw-page) :is(button,input,select,textarea){transition:none!important}
+}
+
+/* AEMA Equities | coordinated light finish. The rules below are stock-only. */
+html.aema-stock-light :is(.markets-page,.stock-scanner-page,.engines-page,.research-page,.aema-rw-page) {
+  --aema-light-canvas:#f4f8f5;--aema-light-card:#fff;--aema-light-ink:#152b1d;
+  --aema-light-green:#138647;--aema-light-border:#d6e5da;
+  background:var(--aema-light-canvas)!important;color:var(--aema-light-ink)!important;
+}
+html.aema-stock-light :is(.markets-page,.stock-scanner-page,.engines-page,.research-page,.aema-rw-page) :is(button,a,input,select,textarea):focus-visible {outline:3px solid #15924b!important;outline-offset:3px}
+html.aema-stock-light :is(.markets-page,.stock-scanner-page,.engines-page,.research-page,.aema-rw-page) :is(button,input,select,textarea) {opacity:1}
+html.aema-stock-light :is(.markets-page,.stock-scanner-page,.engines-page,.research-page,.aema-rw-page) button:disabled {opacity:.62;cursor:not-allowed}
+html.aema-stock-light .research-page :is(.research-welcome-grid > div,.research-empty-feature) {background:#eff8f1!important;color:#173621!important;border:1px solid #cfe4d4!important}
+html.aema-stock-light .research-page :is(.research-welcome-grid > div,.research-empty-feature) :is(span,strong,p,small) {color:#23432e!important;opacity:1!important}
+html.aema-stock-light .research-page :is(.research-search-card,.research-empty,.research-card) {box-shadow:0 12px 38px rgba(18,67,34,.055)!important}
+html.aema-stock-light .engines-page .engine-card :is(.engine-card__score,.engine-score-value) {color:#fff!important}
+html.aema-stock-light .engines-page .engine-card :is([class*="icon"],button) > svg {color:#128846;stroke:currentColor}
+html.aema-stock-light .stock-scanner-page :is(.aema-terminal__depth-pane,.aema-terminal__depth-empty) {background:#fff!important;color:#183421!important;border-color:#d4e5d8!important}
+html.aema-stock-light .stock-scanner-page .aema-terminal__chart-toolbar button:not(.active):not([aria-pressed="true"]) {background:#edf6ef!important;color:#175c32!important}
+html.aema-stock-light .stock-scanner-page :is(.scanner-theme-toggle,.scanner-discovery-button) {background:#fff!important;color:#153d25!important;border-color:#c9dfcf!important}
+html.aema-stock-light .markets-page .markets-theme-toggle {background:#fff!important;color:#153d25!important}
+html.aema-stock-light :is(.markets-page,.stock-scanner-page,.engines-page,.research-page,.aema-rw-page) :is(.aema-stock-theme-button,.markets-theme-toggle,.scanner-theme-toggle) svg {color:#138647!important;stroke:#138647!important}
+@media(max-width:600px) {
+ :is(.markets-page,.stock-scanner-page,.engines-page,.research-page,.aema-rw-page) {padding-left:12px!important;padding-right:12px!important}
+ :is(.markets-page,.stock-scanner-page,.engines-page,.research-page,.aema-rw-page) :is(button,input,select) {min-height:44px}
+ .stock-scanner-page .aema-terminal__chart-pane {min-width:0;max-width:100%}
+}

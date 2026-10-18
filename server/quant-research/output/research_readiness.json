@@ -1,0 +1,196 @@
+{
+  "archive": {
+    "records": 10,
+    "validJson": 10,
+    "parseErrors": 0,
+    "hashMismatches": 0,
+    "unverified": 10,
+    "duplicates": 0,
+    "bySymbol": {
+      "PUMP_USDT": 1,
+      "ARIA_USDT": 1,
+      "SAND_USDT": 1,
+      "FARTCOIN_USDT": 1,
+      "ICNT_USDT": 1,
+      "USELESS_USDT": 1,
+      "WLD_USDT": 1,
+      "ETH_USDT": 1,
+      "AVA_USDT": 1,
+      "TIA_USDT": 1
+    },
+    "byInterval": {
+      "5m": 10
+    },
+    "errors": [],
+    "researchOnly": true,
+    "readyForTraining": false
+  },
+  "setups": {
+    "total": 10,
+    "validGeometry": 2,
+    "approved": 1,
+    "byStrategy": {
+      "UNKNOWN": {
+        "total": 8,
+        "approved": 0,
+        "validGeometry": 0,
+        "costExceedsReward": 0
+      },
+      "BREAKOUT_RETEST": {
+        "total": 2,
+        "approved": 1,
+        "validGeometry": 2,
+        "costExceedsReward": 0
+      }
+    },
+    "rows": [
+      {
+        "symbol": "PUMP_USDT",
+        "direction": "BEAR",
+        "strategy": null,
+        "setupApproved": false,
+        "geometryValid": false,
+        "assumedRoundTripCostBps": 12,
+        "probabilityTargetFirst": null,
+        "netExpectedR": null,
+        "executionAuthority": false,
+        "researchOnly": true,
+        "reason": "MISSING_OR_INVALID_GEOMETRY"
+      },
+      {
+        "symbol": "ARIA_USDT",
+        "direction": "BULL",
+        "strategy": null,
+        "setupApproved": false,
+        "geometryValid": false,
+        "assumedRoundTripCostBps": 12,
+        "probabilityTargetFirst": null,
+        "netExpectedR": null,
+        "executionAuthority": false,
+        "researchOnly": true,
+        "reason": "MISSING_OR_INVALID_GEOMETRY"
+      },
+      {
+        "symbol": "SAND_USDT",
+        "direction": "BEAR",
+        "strategy": null,
+        "setupApproved": false,
+        "geometryValid": false,
+        "assumedRoundTripCostBps": 12,
+        "probabilityTargetFirst": null,
+        "netExpectedR": null,
+        "executionAuthority": false,
+        "researchOnly": true,
+        "reason": "MISSING_OR_INVALID_GEOMETRY"
+      },
+      {
+        "symbol": "FARTCOIN_USDT",
+        "direction": "BEAR",
+        "strategy": null,
+        "setupApproved": false,
+        "geometryValid": false,
+        "assumedRoundTripCostBps": 12,
+        "probabilityTargetFirst": null,
+        "netExpectedR": null,
+        "executionAuthority": false,
+        "researchOnly": true,
+        "reason": "MISSING_OR_INVALID_GEOMETRY"
+      },
+      {
+        "symbol": "ICNT_USDT",
+        "direction": "BULL",
+        "strategy": null,
+        "setupApproved": false,
+        "geometryValid": false,
+        "assumedRoundTripCostBps": 12,
+        "probabilityTargetFirst": null,
+        "netExpectedR": null,
+        "executionAuthority": false,
+        "researchOnly": true,
+        "reason": "MISSING_OR_INVALID_GEOMETRY"
+      },
+      {
+        "symbol": "USELESS_USDT",
+        "direction": "BEAR",
+        "strategy": "BREAKOUT_RETEST",
+        "setupApproved": false,
+        "geometryValid": true,
+        "assumedRoundTripCostBps": 12,
+        "probabilityTargetFirst": null,
+        "netExpectedR": null,
+        "executionAuthority": false,
+        "researchOnly": true,
+        "riskBps": 17.539342837832567,
+        "rewardBps": 24.780355936021397,
+        "riskReward": 1.412844036697309,
+        "roundTripCostToRisk": 0.6841761467890268,
+        "breakEvenTargetProbability": 0.6980045627376398,
+        "reason": "PROBABILITY_NOT_VALIDATED"
+      },
+      {
+        "symbol": "WLD_USDT",
+        "direction": "BEAR",
+        "strategy": null,
+        "setupApproved": false,
+        "geometryValid": false,
+        "assumedRoundTripCostBps": 12,
+        "probabilityTargetFirst": null,
+        "netExpectedR": null,
+        "executionAuthority": false,
+        "researchOnly": true,
+        "reason": "MISSING_OR_INVALID_GEOMETRY"
+      },
+      {
+        "symbol": "ETH_USDT",
+        "direction": "BEAR",
+        "strategy": null,
+        "setupApproved": false,
+        "geometryValid": false,
+        "assumedRoundTripCostBps": 12,
+        "probabilityTargetFirst": null,
+        "netExpectedR": null,
+        "executionAuthority": false,
+        "researchOnly": true,
+        "reason": "MISSING_OR_INVALID_GEOMETRY"
+      },
+      {
+        "symbol": "AVA_USDT",
+        "direction": "BEAR",
+        "strategy": null,
+        "setupApproved": false,
+        "geometryValid": false,
+        "assumedRoundTripCostBps": 12,
+        "probabilityTargetFirst": null,
+        "netExpectedR": null,
+        "executionAuthority": false,
+        "researchOnly": true,
+        "reason": "MISSING_OR_INVALID_GEOMETRY"
+      },
+      {
+        "symbol": "TIA_USDT",
+        "direction": "BEAR",
+        "strategy": "BREAKOUT_RETEST",
+        "setupApproved": true,
+        "geometryValid": true,
+        "assumedRoundTripCostBps": 12,
+        "probabilityTargetFirst": null,
+        "netExpectedR": null,
+        "executionAuthority": false,
+        "researchOnly": true,
+        "riskBps": 4.147966004582201,
+        "rewardBps": 65.17379679144409,
+        "riskReward": 15.712230215832893,
+        "roundTripCostToRisk": 2.8929841726628824,
+        "breakEvenTargetProbability": 0.23294222987514457,
+        "reason": "PROBABILITY_NOT_VALIDATED"
+      }
+    ],
+    "status": "RESEARCH_ONLY_NO_PROBABILITY_MODEL"
+  },
+  "funnel": {
+    "qualifiedSetups": null
+  },
+  "trainingReady": false,
+  "reason": "POINT_IN_TIME_PROVENANCE_AND_FUTURE_OUTCOMES_NOT_VERIFIED",
+  "researchOnly": true
+}
