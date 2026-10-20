@@ -1,5 +1,6 @@
 import express from "express";
-import {botLogin,botLogout,botAuthStatus,requireBotAccess} from "../auth/botAccess.js";
+import {runStockResearch,listPublishedStockSetups} from "../stock/botStockResearchEngine.js";
+import {botLogin,botLogout,botAuthStatus} from "../auth/botAccess.js";
 import {getBotPaperAccount,setBotControls} from "../account/botPaperLedger.js";
 import {getTradeMemory} from "../learning/botTradeMemoryStore.js";
 import {manuallyCloseBotPosition,emergencyStopBot} from "../positions/botManualControls.js";
@@ -35,7 +36,6 @@ export default function createBotPrivateRoutes(){
   r.post("/auth/login",botLogin);
   r.post("/auth/logout",botLogout);
   r.get("/auth/status",botAuthStatus);
-  r.use(requireBotAccess);
   r.get("/dashboard",(_req,res)=>{
     const account=getBotPaperAccount(),memory=getTradeMemory();
     res.json({paperOnly:true,liveExecution:false,portfolioLimit:3,account,
@@ -110,6 +110,15 @@ export default function createBotPrivateRoutes(){
     const scenario=req.body?.capitalUsd?calculateBotPositionScenario(candidate.setup,{capitalUsd:req.body.capitalUsd,leverage:req.body?.leverage,feeRatePercent:req.body?.feeRatePercent}):null;
     res.json({monitor:createMonitoredSetup(candidate,scenario)});
   }));
+  // Stock research is read-only; never routes through paper/live position controls.
+  r.post("/stock/research",handle(async(req,res)=>{
+    res.set("Cache-Control","no-store");
+    res.json(await runStockResearch(req.body??{}));
+  }));
+  r.get("/stock/setups",(_req,res)=>{
+    res.set("Cache-Control","no-store");
+    res.json({assetClass:"STOCK",researchOnly:true,executionAuthority:false,liveExecution:false,setups:listPublishedStockSetups()});
+  });
   r.get("/monitoring",(_req,res)=>res.json({monitors:listMonitoredSetups()}));
   r.get("/monitoring/:id",(req,res)=>{const monitor=getMonitoredSetup(req.params.id);if(!monitor)return res.status(404).json({error:"MONITORED_SETUP_NOT_FOUND"});res.json({monitor});});
   r.post("/monitoring/:id/refresh",handle(async(req,res)=>res.json({monitor:await refreshMonitoredSetup(req.params.id,req.body?.options||{})})));

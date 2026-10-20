@@ -6,7 +6,8 @@ import "./BotSidebar.css";
 export default function BotSidebar(){
   const items=[
     ["Overview","/bot",LayoutDashboard,true],
-    ["Search Market","/bot/search",Radar,false],
+    ["Crypto Futures","/bot/search",Radar,false],
+    ["Stock Research","/bot/stocks",Activity,false],
     ["Monitoring","/bot/monitoring",Activity,false],
     ["Legacy Controls","/bot/controls",SlidersHorizontal,false],
     ["Legacy History","/bot/history",History,false],

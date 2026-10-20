@@ -138,6 +138,67 @@ function clearSetupUiState() {
 const count = (x, k) =>
   x?.counts?.[k] ?? "—";
 
+const STRATEGIES = [
+  "TREND_PULLBACK", "BREAKOUT_RETEST", "LIQUIDITY_SWEEP",
+  "MOMENTUM_BREAKOUT", "RANGE_ROTATION",
+];
+
+function readableReason(value) {
+  if (Array.isArray(value)) return value.map(readableReason).filter(Boolean).join(" · ");
+  if (typeof value === "string") return value;
+  if (value && typeof value === "object") return value.code || value.reason || value.message || JSON.stringify(value);
+  return "";
+}
+
+function candidateReasons(candidate) {
+  const sources = [
+    candidate?.blockers, candidate?.reasons, candidate?.rejectionReasons,
+    candidate?.directionDecision?.blockers,
+    candidate?.diagnosticSetup?.blockers,
+    candidate?.diagnosticSetup?.reasons,
+    candidate?.strategySelection?.reasons,
+  ];
+  return sources.map(readableReason).filter(Boolean).join(" · ") || "No rejection detail supplied by backend";
+}
+
+function ResearchDiagnostics({ result, setups, noSetup }) {
+  const [open, setOpen] = useState(false);
+  const candidates = [...setups, ...noSetup];
+  const observed = STRATEGIES.map(id => ({
+    id,
+    selected: candidates.filter(c => {
+      const s = c?.diagnosticSetup ?? c?.setup ?? c;
+      const strategy = s?.strategy?.id ?? s?.strategy ?? c?.strategy ?? s?.strategySelection?.selectedStrategy;
+      return strategy === id || strategy?.id === id;
+    }).length,
+    eligible: candidates.filter(c => {
+      const s = c?.diagnosticSetup ?? c?.setup ?? c;
+      const arr = s?.regime?.eligibleStrategies ?? c?.regime?.eligibleStrategies ?? c?.strategySelection?.eligibleStrategies;
+      return Array.isArray(arr) && arr.some(v => v === id || v?.id === id);
+    }).length,
+  }));
+  const counts = result?.counts || {};
+  return (
+    <section className="research-diagnostics">
+      <button type="button" className="research-diagnostics-toggle" onClick={() => setOpen(v => !v)} aria-expanded={open}>
+        <span><Activity size={17} /> <strong>Pipeline & strategy diagnostics</strong></span>
+        {open ? <ChevronUp size={17} /> : <ChevronDown size={17} />}
+      </button>
+      {open && <div className="research-diagnostics-content">
+        <p>Counts are reported by the backend. Strategy observations below reflect only candidates included in this response; zero does not mean a strategy was never evaluated.</p>
+        <div className="research-diagnostics-grid">
+          {Object.entries(counts).map(([key,value]) => <div key={key}><small>{key.replace(/([A-Z])/g," $1")}</small><strong>{typeof value === "number" || typeof value === "string" ? value : "—"}</strong></div>)}
+        </div>
+        <h3>Five-strategy visibility</h3>
+        <div className="research-strategy-grid">
+          {observed.map(item => <div key={item.id}><strong>{item.id.replaceAll("_", " ")}</strong><span>Eligible in returned candidates: {item.eligible}</span><span>Selected in returned candidates: {item.selected}</span></div>)}
+        </div>
+        <div className="research-diagnostics-footer">Returned: {setups.length} qualified · {noSetup.length} no-setup candidates. Full strategy evaluation requires backend diagnostics.</div>
+      </div>}
+    </section>
+  );
+}
+
 
 /* =========================================================
    MARKET SEARCH PAGE
@@ -466,6 +527,8 @@ export default function BotMarketSearch() {
             </section>
 
 
+            <ResearchDiagnostics result={result} setups={setups} noSetup={noSetup} />
+
             {/* =============================================
                 QUALIFIED RESULTS TITLE
                 ============================================= */}
@@ -530,10 +593,9 @@ export default function BotMarketSearch() {
                 </h3>
 
                 <p>
-                  This is a successful research outcome,
-                  not an engine failure. Review rejected
-                  candidates below without weakening
-                  thresholds yet.
+                  No qualified setup was returned. Check the pipeline
+                  diagnostics and candidate rejection reasons to determine
+                  whether this reflects market conditions or an engine issue.
                 </p>
 
               </section>
@@ -1150,6 +1212,21 @@ function Level({ l, v }) {
    V4 LIFECYCLE / DEVELOPING SETUP CARD
    ========================================================= */
 
+// Display only rejection evidence actually supplied by the search API.
+// Do not infer approval from lifecycle readiness or a high quality score.
+function setupBlockerLabels(candidate) {
+  const setup = candidate?.diagnosticSetup ?? candidate?.setup ?? {};
+  const raw = [candidate?.blockers, setup?.blockers, setup?.setupQuality?.blockers]
+    .flatMap(value => Array.isArray(value) ? value : value ? [value] : []);
+  return [...new Set(raw.map(value => {
+    if (typeof value === "string") return value;
+    if (value && typeof value === "object") {
+      return value.reason ?? value.code ?? value.message ?? null;
+    }
+    return null;
+  }).filter(value => typeof value === "string" && value.trim()))];
+}
+
 function LifecycleCard({ candidate }) {
   const setup = candidate?.diagnosticSetup ?? candidate?.setup ?? candidate;
   const lifecycle = setup?.lifecycle ?? candidate?.lifecycle ?? {};
@@ -1177,14 +1254,18 @@ function LifecycleCard({ candidate }) {
     candidate?.strategySelection?.eligibleStrategies ??
     [];
 
-  const statusText = status.replaceAll("_", " ");
+  const blockers = setupBlockerLabels(candidate);
+  // Lifecycle status describes entry timing, not final qualification.
+  // This card is sourced from noSetup, which contains unapproved candidates.
+  const qualification = "NOT QUALIFIED";
+  const statusText = String(status).replaceAll("_", " ");
   const explanation =
     status === "FORMING"
       ? "Potential setup conditions are developing, but a complete structural entry, stop and targets are not ready yet."
       : status === "PLANNED" || status === "WAITING_FOR_ENTRY"
-        ? "A structural setup exists. The market has not reached the planned entry yet."
+        ? "A structural entry is planned; the final research qualification has not passed."
         : status === "ENTRY_READY"
-          ? "Price has reached the planned entry area. The setup is ready for current revalidation/monitoring."
+          ? "Price has reached the planned entry area, but this candidate has not passed final research qualification."
           : lifecycle?.reason || "Setup Engine lifecycle update.";
 
   return (
@@ -1203,6 +1284,23 @@ function LifecycleCard({ candidate }) {
         </div>
       </div>
 
+      <div className="lifecycle-qualification" role="status">
+        <div className="lifecycle-qualification-head">
+          <span>FINAL QUALIFICATION</span>
+          <strong>{qualification}</strong>
+        </div>
+        {blockers.length ? (
+          <div className="lifecycle-blockers">
+            <span>BACKEND REJECTION REASONS</span>
+            <ul>{blockers.map(reason => <li key={reason}>{reason.replaceAll("_", " ")}</li>)}</ul>
+          </div>
+        ) : (
+          <p className="lifecycle-blockers-unavailable">
+            The backend did not return a specific blocker for this candidate.
+            Review the full rejection diagnostics; entry readiness is not approval.
+          </p>
+        )}
+      </div>
       <p className="lifecycle-explanation">{explanation}</p>
 
       {eligible.length > 0 && !setup?.strategy?.id && (
@@ -1318,16 +1416,7 @@ function Rejected({ rows }) {
 
                 <small>
 
-                  {(
-                    candidate?.blockers ||
-                    candidate?.reasons ||
-                    candidate
-                      ?.directionDecision
-                      ?.blockers ||
-                    [
-                      "Did not pass setup qualification",
-                    ]
-                  ).join(" · ")}
+                  {candidateReasons(candidate)}
 
                 </small>
 

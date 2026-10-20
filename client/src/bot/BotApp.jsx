@@ -6,6 +6,7 @@ import BotMarketSearch from "./pages/BotMarketSearch.jsx";
 import BotMonitoring from "./pages/BotMonitoring.jsx";
 import BotControls from "./pages/BotControls.jsx";
 import BotHistory from "./pages/BotHistory.jsx";
+import BotStockResearch from "./pages/BotStockResearch.jsx";
 import {getBotAuthStatus} from "./services/botApi.js";
 
 export default function BotApp(){
@@ -18,6 +19,7 @@ export default function BotApp(){
   return <Routes>
     <Route index element={<BotResearchDashboard/>}/>
     <Route path="search" element={<BotMarketSearch/>}/>
+    <Route path="stocks" element={<BotStockResearch/>}/>
     <Route path="monitoring" element={<BotMonitoring/>}/>
     <Route path="controls" element={<BotControls/>}/>
     <Route path="history" element={<BotHistory/>}/>

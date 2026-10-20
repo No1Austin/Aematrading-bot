@@ -46,3 +46,6 @@ export const pauseBot=()=>req("/controls/pause",{method:"POST"});
 export const resumeBot=()=>req("/controls/resume",{method:"POST"});
 export const closeBotPosition=id=>req(`/positions/${encodeURIComponent(id)}/close`,{method:"POST"});
 export const emergencyStopBot=()=>req("/controls/emergency-stop",{method:"POST"});
+
+export const runBotStockResearch=(payload)=>req("/stock/research",{method:"POST",body:JSON.stringify(payload)});
+export const getPublishedStockSetups=()=>req("/stock/setups");

@@ -2,3 +2,28 @@
 
 /* V4 setup lifecycle watchlist */
 .lifecycle-title svg{color:#f0b90b}.lifecycle-list{display:grid;gap:10px;margin-bottom:18px}.lifecycle-card{padding:18px;border:1px solid #20262e;border-radius:13px;background:#0f1318}.lifecycle-card.bull{border-left:3px solid #16c784}.lifecycle-card.bear{border-left:3px solid #ea3943}.lifecycle-card-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}.lifecycle-card-head h3{font-size:20px;margin:7px 0 2px}.lifecycle-card-head small{color:#69727d;font-size:9px;text-transform:uppercase}.lifecycle-badge{text-align:right;padding:8px 10px;border:1px solid #29313a;border-radius:8px;background:#0a0e12}.lifecycle-badge span{display:block;font-size:8px;font-weight:900;letter-spacing:.12em;color:#8993a0}.lifecycle-badge strong{display:block;margin-top:4px;font-size:11px;color:#f0b90b}.lifecycle-badge.entry-ready strong{color:#16c784}.lifecycle-explanation{margin:14px 0 0;color:#aeb7c2;font-size:11px;line-height:1.6}.lifecycle-mechanics{margin-top:12px;padding:10px;border:1px solid #20262e;border-radius:8px;background:#0a0e12}.lifecycle-mechanics span{display:block;font-size:8px;font-weight:900;letter-spacing:.12em;color:#8993a0}.lifecycle-mechanics strong{display:block;margin-top:5px;font-size:10px;color:#e9edf2}.lifecycle-levels{display:grid;grid-template-columns:repeat(6,1fr);gap:7px;margin-top:14px}.lifecycle-meta{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px;color:#69727d;font-size:9px}.lifecycle-meta strong{color:#e9edf2}.lifecycle-meta span:last-child{margin-left:auto;color:#8993a0}@media(max-width:1200px){.lifecycle-levels{grid-template-columns:repeat(3,1fr)}}@media(max-width:760px){.lifecycle-card-head{flex-direction:column}.lifecycle-badge{text-align:left}.lifecycle-levels{grid-template-columns:1fr 1fr}.lifecycle-meta span:last-child{margin-left:0;width:100%}}@media(max-width:430px){.lifecycle-levels{grid-template-columns:1fr}}
+
+/* Backend-grounded funnel diagnostics */
+.research-diagnostics{margin:14px 0 20px;border:1px solid #29313a;border-radius:13px;background:#0f1318;overflow:hidden}
+.research-diagnostics-toggle{width:100%;display:flex;align-items:center;justify-content:space-between;padding:15px 17px;background:transparent;border:0;color:#e9edf2;cursor:pointer;text-align:left}
+.research-diagnostics-toggle>span{display:flex;align-items:center;gap:10px}.research-diagnostics-toggle svg{color:#f0b90b}
+.research-diagnostics-content{padding:0 17px 17px;border-top:1px solid #20262e}
+.research-diagnostics-content p,.research-diagnostics-footer{font-size:11px;line-height:1.65;color:#aeb7c2}
+.research-diagnostics-grid,.research-strategy-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:9px;margin:12px 0}
+.research-diagnostics-grid>div,.research-strategy-grid>div{padding:12px;background:#0a0e12;border:1px solid #20262e;border-radius:9px;min-width:0}
+.research-diagnostics-grid small,.research-strategy-grid span{display:block;color:#8993a0;font-size:10px;overflow-wrap:anywhere}
+.research-diagnostics-grid strong{display:block;font-size:18px;margin-top:5px}
+.research-strategy-grid strong{display:block;font-size:11px;margin-bottom:8px;overflow-wrap:anywhere}
+.research-strategy-grid span+span{margin-top:4px}
+.research-diagnostics-content h3{font-size:13px;margin:18px 0 8px}
+@media(max-width:760px){.research-diagnostics-grid,.research-strategy-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:430px){.research-diagnostics-grid,.research-strategy-grid{grid-template-columns:1fr}}
+
+/* Entry readiness and final research qualification are separate states. */
+.lifecycle-qualification{margin-top:14px;padding:12px;border:1px solid rgba(234,57,67,.3);border-radius:9px;background:rgba(234,57,67,.045)}
+.lifecycle-qualification-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.lifecycle-qualification-head span,.lifecycle-blockers>span{font-size:9px;font-weight:850;letter-spacing:.09em;color:#aeb7c2}
+.lifecycle-qualification-head strong{font-size:11px;color:#ff858a}
+.lifecycle-blockers{margin-top:10px}
+.lifecycle-blockers ul{margin:7px 0 0;padding-left:18px;color:#f0c0c2;font-size:11px;line-height:1.6;overflow-wrap:anywhere}
+.lifecycle-blockers-unavailable{margin:9px 0 0;color:#aeb7c2;font-size:11px;line-height:1.6}
