@@ -1,0 +1,20 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+const path=new URL('../src/crypto/bot/stock/orchestration/botStockMarketSearchCycle.js',import.meta.url);
+const source=readFileSync(path,'utf8').replace(/^import .*;\s*$/gm,'');
+const {runStockMarketSearch}=await import('data:text/javascript,'+encodeURIComponent('const randomUUID = () => \"test-id\";\n'+source));
+const bars=Array.from({length:90},(_,i)=>({timestamp:new Date(Date.now()-(90-i)*300000).toISOString(),open:100,high:102,low:99,close:101,volume:10000}));
+let evaluated=0;
+const deps={discover:async()=>({scanned:30,rankedCount:25,candidates:Array.from({length:25},(_,i)=>({symbol:`S${i}`,score:100-i}))}),
+  fetchBars:async()=>({approved:true,bars}),evaluate:({symbol,direction})=>{evaluated++;return {setup:{approved:true,strategy:'TREND_PULLBACK',riskReward:2,setupQuality:{score:direction==='BULL'?80:70},blockers:[]}};}};
+const result=await runStockMarketSearch({symbols:['AAPL'],shortlist:25},deps);
+assert.equal(result.counts.researchCompleted,25);
+assert.equal(evaluated,50);
+assert.equal(result.setups.length,20);
+assert.equal(new Set(result.setups.map(x=>x.symbol)).size,20);
+assert.ok(result.setups.every(x=>x.researchOnly&&x.executionAuthority===false&&x.liveExecution===false&&x.setup.setupType==='BULL'));
+const none=await runStockMarketSearch({symbols:['AAPL']},{...deps,evaluate:()=>({setup:{approved:false,blockers:['QUALITY_TOO_LOW']}})});
+assert.equal(none.setups.length,0);
+assert.ok(none.noSetup.some(x=>x.blockers.includes('QUALITY_TOO_LOW')));
+await assert.rejects(()=>runStockMarketSearch({symbols:['AAPL'],shortlist:51},deps),/SHORTLIST/);
+console.log('PASS: stock fork integrated search, 20 ceiling, V2 evaluation, no-setup diagnostics, research-only');

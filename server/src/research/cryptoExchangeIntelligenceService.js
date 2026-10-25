@@ -6,10 +6,10 @@
  * Does not modify canonical research scoring.
  */
 
-import { getCexMarketsForAsset } from "./cryptoCexResearchProvider.js";
+import { getCexMarketsForAsset } from "../crypto/research/cryptoCexResearchProvider.js";
 import { getDexMarketsForAsset } from "./cryptoDexResearchProvider.js";
 import { dedupeMarkets, finite, upper } from "./cryptoMarketNormalizer.js";
-import { analyzeLiquidity } from "./cryptoLiquidityAnalyzer.js";
+import { analyzeLiquidity } from "../crypto/research/cryptoLiquidityAnalyzer.js";
 import { findArbitrage } from "./cryptoArbitrageEngine.js";
 import { attachMarketIdentity } from "./cryptoAssetIdentityResolver.js";
 

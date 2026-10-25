@@ -1,34 +1,20 @@
-import {Activity,ArrowRight,BrainCircuit,Radar,ShieldCheck} from "lucide-react";
+import {Activity,ArrowRight,BookOpenText,BrainCircuit,ChartCandlestick,LockKeyhole,Radar,ShieldCheck,TrendingUp} from "lucide-react";
 import {Link} from "react-router-dom";
 import BotSidebar from "../components/BotSidebar.jsx";
 import "./BotResearchDashboard.css";
 
+const modules=[
+ {Icon:Radar,number:"01",title:"Crypto discovery",desc:"Discover futures candidates, inspect BULL/BEAR setups and see the full research funnel.",to:"/bot/search",cta:"Open discovery"},
+ {Icon:ChartCandlestick,number:"02",title:"Stock intelligence",desc:"Independent equity research, strategy selection and evidence-based qualification.",to:"/bot/stocks",cta:"Explore stocks"},
+ {Icon:Activity,number:"03",title:"Thesis monitoring",desc:"Refresh saved setup evidence and compare it against the original research snapshot.",to:"/bot/monitoring",cta:"View monitors"},
+ {Icon:BookOpenText,number:"04",title:"Research history",desc:"Review records and outcomes exposed by the existing backend history service.",to:"/bot/history",cta:"Review history"},
+];
 export default function BotResearchDashboard(){
-  return <div className="bot-app"><BotSidebar/><main className="research-home">
-    <header className="research-home-head">
-      <div><span>AEMA PRIVATE FUTURES RESEARCH</span><h1>Research & Setup Workspace</h1>
-      <p>Search the futures market on demand, inspect qualified BULL/BEAR setups, model position scenarios, and monitor the thesis after selection.</p></div>
-      <div className="research-safe"><ShieldCheck size={16}/>NO AUTOMATIC ORDER EXECUTION</div>
-    </header>
-
-    <section className="research-hero">
-      <div><span>PRIMARY WORKFLOW</span><h2>Find the strongest setup available now.</h2>
-      <p>The private search pipeline is separate from the automatic discovery engine that feeds the existing AEMA research frontend.</p>
-      <Link to="/bot/search">Search Market <ArrowRight size={16}/></Link></div>
-      <Radar size={90}/>
-    </section>
-
-    <section className="research-flow">
-      <Flow icon={Radar} n="01" title="Market Search" text="Bybit perpetual universe → eligibility → opportunity ranking → Top 20."/>
-      <Flow icon={BrainCircuit} n="02" title="Research" text="Technical, derivatives participation, structure and liquidity evidence are evaluated."/>
-      <Flow icon={ShieldCheck} n="03" title="Setup Gate" text="A BULL or BEAR direction still has to pass setup quality, R:R, spread and freshness checks."/>
-      <Flow icon={Activity} n="04" title="Monitor" text="Save a setup and compare refreshed evidence against the original thesis."/>
-    </section>
-
-    <section className="research-notice">
-      <strong>NO SETUP is a valid result.</strong>
-      <p>The interface intentionally does not turn every directional reading into a trade setup. Missing evidence stays unavailable rather than being replaced with zero.</p>
-    </section>
-  </main></div>;
+ return <div className="bot-app"><BotSidebar/><main className="research-home aema-command-center">
+   <header className="research-home-head"><div><span>YOUR PRIVATE MARKET INTELLIGENCE WORKSPACE</span><h1>Command Center<span className="aema-title-dot">.</span></h1><p>One place to discover opportunities, understand strategy decisions, and monitor research evidence.</p></div><div className="research-safe"><ShieldCheck size={16}/> RESEARCH ONLY · EXECUTION DISABLED</div></header>
+   <section className="research-hero aema-command-hero"><div><span>RESEARCH OPERATIONS</span><h2>Every market move deserves <em>better evidence.</em></h2><p>Analyze crypto futures and equities in separate research pipelines. Review entry, stop, targets and risk before deciding whether to act manually.</p><div className="aema-hero-actions"><Link to="/bot/search">Explore crypto <ArrowRight size={16}/></Link><Link className="aema-hero-secondary" to="/bot/stocks">Stock research <ChartCandlestick size={16}/></Link></div></div><div className="aema-hero-orbit" aria-hidden="true"><div className="aema-orbit-ring"><Activity size={56}/></div><span>DISCOVER / ANALYZE / MONITOR</span></div></section>
+   <div className="aema-section-label"><span>WORKSPACE MODULES</span><small>Connected to existing AEMA routes</small></div>
+   <section className="research-flow aema-module-grid">{modules.map(({Icon,number,title,desc,to,cta})=><article key={to}><div><span>{number} / MODULE</span><Icon size={21}/></div><h3>{title}</h3><p>{desc}</p><Link to={to}>{cta}<ArrowRight size={15}/></Link></article>)}</section>
+   <section className="aema-insight-row"><div className="aema-insight-icon"><BrainCircuit size={23}/></div><div><strong>Performance learning — integration status</strong><p>The current frontend supports setup monitoring and backend history. Automatic trade closure, realized P&L journaling and validated model learning require dedicated backend persistence and outcome endpoints. No results are simulated here.</p></div><LockKeyhole size={20}/></section>
+ </main></div>
 }
-function Flow({icon:Icon,n,title,text}){return <article><div><span>{n}</span><Icon size={18}/></div><h3>{title}</h3><p>{text}</p></article>}

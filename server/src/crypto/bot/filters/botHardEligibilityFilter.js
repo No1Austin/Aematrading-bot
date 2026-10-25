@@ -7,6 +7,7 @@
  * It does NOT rank opportunities and does NOT decide LONG/SHORT.
  */
 import BOT_CONFIG from "../config/botConfig.js";
+import { assessSmartMarketQuality, buildMarketQualityContext } from "./botSmartMarketQuality.js";
 
 function positive(value) {
   const n = Number(value);
@@ -60,6 +61,43 @@ export function evaluateBotHardEligibility(asset, options = {}) {
     }
   }
 
+  // Dynamic pairlist is shadow-only by default: measure exclusions first.
+  const dynamic = config.dynamicPairlist ?? {};
+  const pairlistWarnings = [];
+  if (dynamic.enabled) {
+    const volume = positive(market.quoteVolume);
+    const spread = market.spreadPercent == null ? null : Number(market.spreadPercent);
+    const range = market.rangePercent == null ? null : Number(market.rangePercent);
+    const tick = positive(asset?.priceTick);
+    const price = positive(market.price);
+    const parseTime = value => {
+      if (value == null || value === "") return null;
+      const n = Number(value);
+      const ms = Number.isFinite(n) ? n * (n < 1e12 ? 1000 : 1) : Date.parse(String(value));
+      return Number.isFinite(ms) ? ms : null;
+    };
+    const listingMs = parseTime(asset?.listingTime);
+    const ageDays = listingMs == null ? null : (Date.now() - listingMs) / 86400000;
+    const delistMs = parseTime(asset?.delistingTime);
+    if (dynamic.minimumQuoteVolumeUsd > 0 && (volume === null || volume < dynamic.minimumQuoteVolumeUsd))
+      pairlistWarnings.push("PAIRLIST_VOLUME_BELOW_MINIMUM");
+    if (dynamic.maximumSpreadPercent != null && spread !== null && Number.isFinite(spread) && spread >= 0 && spread > dynamic.maximumSpreadPercent)
+      pairlistWarnings.push("PAIRLIST_SPREAD_TOO_WIDE");
+    if (dynamic.minimumMarketAgeDays > 0 && ageDays !== null && ageDays < dynamic.minimumMarketAgeDays)
+      pairlistWarnings.push("PAIRLIST_MARKET_TOO_NEW");
+    if (dynamic.minimumPriceTicks > 0 && tick !== null && price !== null && price / tick < dynamic.minimumPriceTicks)
+      pairlistWarnings.push("PAIRLIST_INSUFFICIENT_PRICE_PRECISION");
+    if (dynamic.maximumRangePercent24h != null && range !== null && Number.isFinite(range) && range > dynamic.maximumRangePercent24h)
+      pairlistWarnings.push("PAIRLIST_EXCESSIVE_24H_RANGE");
+    if (dynamic.excludeDelisting && delistMs !== null && delistMs > 0)
+      pairlistWarnings.push("PAIRLIST_DELISTING_SCHEDULED");
+    if (dynamic.enforce) blockers.push(...pairlistWarnings);
+  }
+
+  const smartConfig = config.smartMarketQuality ?? {};
+  const smartQuality = smartConfig.enabled === false ? null : assessSmartMarketQuality(asset, options.marketQualityContext ?? {}, smartConfig, options.now ?? Date.now());
+  // Smart classification is deliberately advisory. Never turn OBSERVE into a
+  // hard reject or waive existing hard safety checks to meet a quota.
   const approved = blockers.length === 0;
 
   return {
@@ -67,6 +105,9 @@ export function evaluateBotHardEligibility(asset, options = {}) {
     status: approved ? "HARD_ELIGIBLE" : "HARD_INELIGIBLE",
     symbol: asset?.symbol ?? null,
     blockers,
+    pairlistWarnings,
+    smartQuality,
+    pairlistMode: dynamic.enabled ? (dynamic.enforce ? "ENFORCED" : "SHADOW") : "DISABLED",
     evidence: {
       status: asset?.status ?? null,
       contractType: asset?.contractType ?? null,
@@ -80,12 +121,17 @@ export function evaluateBotHardEligibility(asset, options = {}) {
 }
 
 export function filterBotHardEligibleAssets(assets = [], options = {}) {
+  const marketQualityContext = buildMarketQualityContext(assets);
   const evaluations = assets.map((asset) => ({
     asset,
-    eligibility: evaluateBotHardEligibility(asset, options),
+    eligibility: evaluateBotHardEligibility(asset, {...options, marketQualityContext}),
   }));
 
+  const qualityCounts = { READY: 0, EMERGING: 0, OBSERVE: 0, EXCLUDE: 0, DISABLED: 0 };
+  for (const row of evaluations) qualityCounts[row.eligibility.smartQuality?.status ?? "DISABLED"]++;
   return {
+    marketQualityContext,
+    qualityCounts,
     evaluations,
     approved: evaluations
       .filter((row) => row.eligibility.approved)

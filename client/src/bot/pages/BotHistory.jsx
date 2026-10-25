@@ -5,6 +5,7 @@ import {getBotHistory, getTradeExplanation} from "../services/botApi.js";
 import {getDedicatedAlpacaOverview} from "../services/botAlpacaApi.js";
 import "./BotHistory.css";
 
+const Evidence = ({label,data}) => <details className="history-evidence"><summary>{label}</summary><pre>{JSON.stringify(data ?? null,null,2)}</pre></details>;
 const numeric = v => v !== null && v !== undefined && v !== "" && Number.isFinite(Number(v)) ? Number(v) : null;
 const money = (value, currency) => new Intl.NumberFormat("en-CA", {style:"currency", currency, maximumFractionDigits:2}).format(value);
 const direction = side => side === "LONG" ? "Bullish Direction" : side === "SHORT" ? "Bearish Direction" : "—";
@@ -34,13 +35,13 @@ function PerformanceChart({trades, convert, currency}) {
   return <div className="history-svg-wrap"><svg viewBox={`0 0 ${w} ${h}`} role="img" aria-label={`Cumulative realized P&L in ${currency} across ${points.length} trades`}>
     {ticks.map((v,i)=><g key={i}><line x1={pad.left} x2={w-pad.right} y1={y(v)} y2={y(v)} stroke="#26333e" strokeDasharray="3 5"/><text x={pad.left-10} y={y(v)+4} textAnchor="end" fill="#8e9aaa" fontSize="11">{Math.round(v).toLocaleString("en-CA")}</text></g>)}
     <line x1={pad.left} x2={w-pad.right} y1={y(0)} y2={y(0)} stroke="#8994a2" strokeDasharray="5 4"/>
-    {points.length>1?<polyline fill="none" stroke="#e0b94e" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" points={coords}/>:null}
-    {points.map((p,i)=><circle key={i} cx={x(i)} cy={y(p.value)} r={points.length>80?1.5:3} fill={p.value>=0?"#43cb9b":"#ef7777"}><title>{`Trade ${p.index}: ${p.symbol} — ${money(p.value,currency)}`}</title></circle>)}
+    {points.length>1?<polyline fill="none" stroke="#ff9b38" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" points={coords}/>:null}
+    {points.map((p,i)=><circle key={i} cx={x(i)} cy={y(p.value)} r={points.length>80?1.5:3} fill={p.value>=0?"#27d69a":"#fa6470"}><title>{`Trade ${p.index}: ${p.symbol} — ${money(p.value,currency)}`}</title></circle>)}
     <text x={pad.left} y={h-7} fill="#8e9aaa" fontSize="11">Trade 1</text><text x={w-pad.right} y={h-7} textAnchor="end" fill="#8e9aaa" fontSize="11">Trade {points.length}</text>
   </svg></div>;
 }
 function OutcomeChart({wins,losses,even}) {
-  const items=[{label:"Wins",value:wins,color:"#43cb9b"},{label:"Losses",value:losses,color:"#ef7777"},{label:"Breakeven",value:even,color:"#8e9aaa"}];
+  const items=[{label:"Wins",value:wins,color:"#27d69a"},{label:"Losses",value:losses,color:"#fa6470"},{label:"Breakeven",value:even,color:"#8e9aaa"}];
   const max=Math.max(1,...items.map(x=>x.value));
   return <div className="history-outcomes" role="img" aria-label={`${wins} wins, ${losses} losses and ${even} breakeven trades`}>
     {items.map(item=><div className="history-outcome" key={item.label}><div className="history-outcome-label"><span>{item.label}</span><strong>{item.value}</strong></div><div className="history-outcome-track"><div style={{width:`${item.value/max*100}%`,background:item.color}}/></div></div>)}
@@ -92,7 +93,7 @@ export default function BotHistory(){
     <nav className="history-source-tabs"><button className={source==="alpaca"?"active":""} onClick={()=>setSource("alpaca")}>Alpaca broker orders</button><button className={source==="internal"?"active":""} onClick={()=>setSource("internal")}>Internal simulator history</button></nav>
     {source==="alpaca" && <><p className="history-disclaimer">Broker-reported orders from the dedicated Alpaca crypto paper account. Orders are not the same as completed round-trip trades; no win rate or realized P&L is fabricated. Latest 100 orders only.</p>{brokerError&&<div className="bot-error">{brokerError}</div>}
       <section className="history-stats"><div><span>Broker equity</span><strong>{broker?.account?.equityUsd==null?"—":money(broker.account.equityUsd,"USD")}</strong></div><div><span>Broker cash</span><strong>{broker?.account?.cashUsd==null?"—":money(broker.account.cashUsd,"USD")}</strong></div><div><span>Open positions</span><strong>{broker?broker.positions.length:"—"}</strong></div><div><span>Recent orders</span><strong>{broker?broker.orders.length:"—"}</strong></div></section>
-      <section className="history-panel"><div className="panel-head"><div><span>BROKER ACTIVITY</span><h2>Recent Alpaca Crypto Orders</h2></div><button className="history-refresh" onClick={loadBroker}>Refresh</button></div>{broker?.orders?.length?<div className="history-broker-list">{broker.orders.map(o=><div className="history-broker-row" key={o.id}><strong>{o.symbol}</strong><span>{o.side?.toUpperCase()||"—"} · {o.type||"—"}</span><span>{o.status||"—"}</span><span>Filled: {o.filledQuantity??"—"}</span><span>{o.filledAveragePrice==null?"—":money(o.filledAveragePrice,"USD")}</span><span>{o.submittedAt?new Date(o.submittedAt).toLocaleString():"—"}</span></div>)}</div>:<div className="bot-empty">{broker?"No recent broker crypto orders.":"Waiting for broker data."}</div>}</section>
+      <section className="history-panel"><div className="panel-head"><div><span>BROKER ACTIVITY</span><h2>Recent Alpaca Crypto Orders</h2></div><button className="history-refresh" onClick={loadBroker}>Refresh</button></div>{broker?.orders?.length?<div className="history-broker-list">{broker.orders.map(o=><div className="history-broker-row" key={o.id}><strong>{o.symbol}</strong><span>{o.side?.toUpperCase()||"—"} · {o.type||"—"}</span><span>{o.status||"—"}</span><span>Filled: {o.filledQuantity??"—"}</span><span>{o.filledAveragePrice==null?"—":money(o.filledAveragePrice,"USD")}</span><span>{o.submittedAt?new Date(o.submittedAt).toLocaleString():"—"}</span></div>)}</div>:<div className="bot-empty">{broker?"No recent broker crypto orders.":"Waiting for broker data."}</div>}<div className="history-evidence-list"><Evidence label="Full broker account response" data={broker?.account}/><Evidence label={`Open broker positions (${broker?.positions?.length ?? 0})`} data={broker?.positions}/><Evidence label="Full broker order evidence" data={broker?.orders}/></div></section>
     </>}
     {source==="internal" && <>
     {err&&<div className="bot-error" role="alert">{err}</div>}
@@ -118,7 +119,7 @@ export default function BotHistory(){
       {filtered.length?<div className="history-table"><div className="history-row head"><span>Symbol</span><span>Direction</span><span>Entry</span><span>Exit</span><span>Realized P&L</span><span>Running P&L*</span><span>Reason</span><span>Details</span></div>
         {filtered.map((row,index)=><div className="history-row" key={row.id??`${row.symbol}-${index}`}><strong>{row.symbol}</strong><span className={row.direction==="LONG"?"bull":"bear"}>{direction(row.direction)}</span><span>{numeric(row.entryPrice)??"—"}</span><span>{numeric(row.exitPrice)??"—"}</span><b className={row.net===null?"":row.net>=0?"bull":"bear"}>{row.net===null?"—":display(row.net)}</b><span>{row.running===null?"—":display(row.running)}</span><span>{row.exitReason||"CLOSED"}</span><button type="button" onClick={()=>explain(row.id)} disabled={!row.id}><CircleHelp size={13}/> Explain</button></div>)}
       </div>:<div className="bot-empty">{loading?"Loading trade history…":rows.length?"No trades match this filter.":"No completed paper trades yet."}</div>}
-      <p className="history-disclaimer">*Running P&L includes all earlier known rows, even when a filter is active. It is not account equity.</p>
+      <Evidence label="Full simulator trade evidence (returned API rows)" data={filtered}/><p className="history-disclaimer">*Running P&L includes all earlier known rows, even when a filter is active. It is not account equity.</p>
     </section>
     {ex&&<div className="history-modal" onMouseDown={event=>event.target===event.currentTarget&&setEx(null)}><article role="dialog" aria-modal="true" aria-label="Trade explanation"><button type="button" className="history-close" onClick={()=>setEx(null)} aria-label="Close explanation">×</button><span>TRADE EXPLANATION</span><h2>{ex.symbol} · {direction(ex.direction)}</h2>{ex.evidenceMissing?<div className="history-warning">Original entry evidence is unavailable. No explanation has been invented.</div>:<><h3>Entry evidence</h3><pre>{JSON.stringify(ex.entrySnapshot,null,2)}</pre></>}<h3>Direction decision</h3><pre>{JSON.stringify(ex.entryDirectionDecision,null,2)}</pre><h3>Position management</h3><pre>{JSON.stringify(ex.consistencyHistory||[],null,2)}</pre><h3>Recorded result</h3><pre>{JSON.stringify(ex.result,null,2)}</pre></article></div>}
     </>}

@@ -40,7 +40,7 @@ const DEFAULT_CONFIG = Object.freeze({
 
   // Cheap first-stage snapshot screen. This prevents the historical
   // warmer from touching the entire 10k+ symbol universe.
-  enableSnapshotPrefilter: false,
+  enableSnapshotPrefilter: true,
   snapshotPrefilterLimitPerSide: 300,
   snapshotBatchSize: 200,
   snapshotConcurrency: 1,
@@ -690,6 +690,20 @@ export async function processUniverseMarketData({
       }
     }
 
+
+    console.log("[AEMA_SNAPSHOT_PREFILTER_DIAGNOSTICS]", {
+  approved: prefilter.approved,
+  status: prefilter.status,
+  provider: prefilter.provider,
+  universeSize: prefilter.universeSize,
+  usableCount: prefilter.usableCount,
+  eligibleCount: prefilter.eligibleCount,
+  selectedCount: prefilter.selectedCount,
+  errorsCount: prefilter.errors?.length ?? 0,
+  firstErrors: prefilter.errors?.slice(0, 5) ?? [],
+  firstWarnings: prefilter.warnings?.slice(0, 5) ?? [],
+});
+
     // ============================================================
     // ONE HISTORICAL WARM FOR THE ENTIRE SELECTED UNIVERSE
     // ============================================================
@@ -715,6 +729,23 @@ export async function processUniverseMarketData({
           warmResult?.warmed ??
           0,
       ) || 0;
+
+
+      console.log("[AEMA_HISTORICAL_WARM_DIAGNOSTICS]", {
+  requested: scanAssets.length,
+  warmProviderInvoked: true,
+  approved: warmResult?.approved ?? null,
+  warmed,
+  failedSymbols: warmResult?.failedSymbols?.length ?? 0,
+  warmError,
+  errorCount: warmResult?.errors?.length ?? 0,
+  firstErrors: Array.isArray(warmResult?.errors)
+    ? warmResult.errors.slice(0, 5)
+    : [],
+  firstWarnings: Array.isArray(warmResult?.warnings)
+    ? warmResult.warnings.slice(0, 5)
+    : [],
+});
 
     // Preserve local batching for CPU-side measurement/scanning and
     // deterministic global ranking. These batches make no provider calls.

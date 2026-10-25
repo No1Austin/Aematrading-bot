@@ -1,0 +1,869 @@
+===== MARKET SEARCH CYCLE =====
+import getBotFuturesUniverse from "../universe/botFuturesUniverseProvider.js";
+import filterBotHardEligibleAssets from "../filters/botHardEligibilityFilter.js";
+import rankBotOpportunities from "../filters/botOpportunityFilter.js";
+import { researchBotTop20 } from "../research/botResearchOrchestrator.js";
+import determineBotDirection from "../direction/botDirectionEngine.js";
+import rankBotResearchCandidates from "../ranking/botResearchRankingEngine.js";
+import getBotFuturesExecutionMarket from "../market/botFuturesExecutionMarketProvider.js";
+import buildBotFuturesSetup from "../setup/botFuturesStrategySetupBuilder.js";
+import rankBotExecutionSetups from "../ranking/botExecutionRankingEngine.js";
+import { observeQuantResearch } from "../quant/quantShadowEngine.js";
+import { observeQuantSetupEconomics } from "../quant/quantSetupEconomics.js";
+import { makeSetupCaptureRows, appendSetupCaptureRows } from "../quant/quantSetupCapture.js";
+import { archiveQuantSnapshot } from "../quant/quantSnapshotArchive.js";
+import { prepareArchiveCandles } from "../quant/quantCandleArchivePreparation.js";
+import { registerSearchSetups } from "../monitoring/botSearchResultStore.js";
+import { makePassiveSetupObservations, appendPassiveSetupObservations } from "../backtest/botVerifiedSetupCollector.js";
+import { a5CollectorConfig, persistA5Observations } from "../backtest/botA5ObservationStore.js";
+
+export async function runBotMarketSearch(options = {}) {
+  const startedAt = new Date().toISOString();
+
+  /*
+   * STEP 1
+   * Load genuine futures/perpetual universe.
+   */
+  const universe = await getBotFuturesUniverse(
+    options.universe
+  );
+
+  /*
+   * STEP 2
+   * Hard eligibility.
+   *
+   * Only valid perpetual futures instruments should survive.
+   */
+  const eligibility = filterBotHardEligibleAssets(
+    universe.assets,
+    options.eligibility
+  );
+
+  /*
+   * STEP 3
+   * Cheap opportunity ranking.
+   */
+  const opportunity = rankBotOpportunities(
+    eligibility.approved,
+    options.opportunity
+  );
+
+  /*
+   * STEP 4
+   * Select Top 20 for deeper research.
+   */
+  const top20 = opportunity.topCandidates.map(
+    (row, index) => ({
+      rank: index + 1,
+
+      symbol: row.asset.symbol,
+      baseAsset: row.asset.baseAsset,
+      quoteAsset: row.asset.quoteAsset,
+
+      opportunityScore:
+        row.opportunity.opportunityScore,
+
+      dimensions:
+        row.opportunity.dimensions,
+
+      market:
+        row.asset.market,
+
+      asset:
+        row.asset,
+
+      opportunity:
+        row.opportunity,
+    })
+  );
+
+  /*
+   * STEP 5
+   * Fire the deeper research engines.
+   */
+  const research = await researchBotTop20(
+    top20,
+    options.research
+  );
+
+  // Quant V1 shadow-only observation. It cannot approve, reject, or reorder setups.
+  // Explicit opt-in avoids changing API payloads or memory usage in production.
+  const quantShadow = options.quantShadow?.enabled === true
+    ? observeQuantResearch(research.researched, {
+        asOf: Date.now(),
+        onRecord: options.quantShadow?.onRecord,
+      })
+    : null;
+
+  /*
+   * STEP 6
+   * Determine directional evidence.
+   */
+  const directional = research.researched.map(
+    (row) =>
+      determineBotDirection(
+        row,
+        options.direction
+      )
+  );
+
+  /*
+   * STEP 7
+   * HARD DIRECTION GATE
+   *
+   * This is important:
+   *
+   * A candidate MUST explicitly pass the direction
+   * qualification before it can become a setup.
+   *
+   * Weak/conflicting direction becomes NO SETUP.
+   */
+  // Research-only: let strategy detectors inspect weak/conflicting direction.
+  const directionQualified = directional;
+
+  const rejectedDirection = []; // retained for response compatibility; strategy builder is final gate
+
+  /*
+   * STEP 8
+   * Rank ONLY direction-qualified candidates.
+   */
+  const ranking = rankBotResearchCandidates(
+    directionQualified,
+    options.ranking
+  );
+
+  /*
+   * STEP 9
+   * Build futures setups.
+   *
+   * Only Top 10 direction-qualified candidates
+   * can reach this stage.
+   */
+  const setups = [];
+  const setupFailures = [];
+  const quantArchive = {enabled: options.quantArchive?.enabled === true, saved: 0, rejected: 0, reasons: {}, records: []};
+
+  for (const candidate of ranking.top10) {
+    try {
+      const market =
+        await getBotFuturesExecutionMarket(
+          candidate,
+          options.setup
+        );
+
+      // Opt-in contemporaneous evidence archive, before setup construction.
+      // Never changes selection, ranking, or execution. An archived record is
+      // NOT automatically verified for historical replay.
+      if (quantArchive.enabled) {
+        try {
+          const captureMs = Date.now();
+          const interval = options.quantArchive.candleInterval || '5m';
+          const prepared = prepareArchiveCandles(market, {interval, capturedAtMs:captureMs});
+          if (!prepared.ok) {
+            quantArchive.rejected++;
+            for (const reason of prepared.errors) quantArchive.reasons[reason] = (quantArchive.reasons[reason] || 0) + 1;
+            if (options.quantArchive.includeDetails === true)
+              quantArchive.records.push({symbol:candidate.symbol,saved:false,errors:prepared.errors});
+          } else {
+          const record = {
+            timestamp: new Date(prepared.decisionMs).toISOString(),
+            candleInterval: interval,
+            market: {...market, candles:prepared.candles, symbol:market?.symbol || candidate.symbol},
+            candidate: {...candidate, symbol:candidate.symbol},
+          };
+          const archived = archiveQuantSnapshot(record, {
+            filePath: options.quantArchive.filePath,
+            capturedAtMs: captureMs,
+          });
+          if (archived.saved) quantArchive.saved++;
+          else {
+            quantArchive.rejected++;
+            for (const reason of archived.errors || []) quantArchive.reasons[reason] = (quantArchive.reasons[reason] || 0) + 1;
+          }
+          if (options.quantArchive.includeDetails === true)
+            quantArchive.records.push({symbol: candidate.symbol, saved: archived.saved, errors: archived.errors || [], excludedOpenCandles:prepared.excludedOpenCandles});
+          }
+        } catch (archiveError) {
+          quantArchive.rejected++;
+          const reason = 'ARCHIVE_ERROR';
+          quantArchive.reasons[reason] = (quantArchive.reasons[reason] || 0) + 1;
+          if (options.quantArchive.includeDetails === true)
+            quantArchive.records.push({symbol: candidate.symbol, saved: false, errors: [String(archiveError?.message || archiveError)]});
+        }
+      }
+
+      const setup =
+        buildBotFuturesSetup(
+          candidate,
+          market,
+          options.setup
+        );
+
+      setups.push(setup);
+    } catch (error) {
+      setupFailures.push({
+        symbol: candidate.symbol,
+        error:
+          error?.message ||
+          String(error),
+      });
+    }
+  }
+
+  /*
+   * STEP 10
+   * Setup-quality ranking.
+   *
+   * This does NOT execute anything.
+   */
+  const setupRanking =
+    rankBotExecutionSetups(
+      setups,
+      options.executionRanking
+    );
+
+  // Optional setup-level research observation. No ranking or qualification changes.
+  // Probabilities must be externally validated and explicitly supplied; never inferred.
+  const quantSetupShadow = options.quantSetupShadow?.enabled === true
+    ? observeQuantSetupEconomics(setups, options.quantSetupShadow)
+    : null;
+
+  // Optional research-only capture AFTER actual setup construction. Does not change ranking.
+  let quantSetupCapture = null;
+  if (options.quantSetupCapture?.enabled === true) {
+    try {
+      const captureRows = makeSetupCaptureRows(
+        observeQuantSetupEconomics(setups, {enabled:true}),
+        {interval: options.quantSetupCapture.candleInterval || '5m', marketIdentities: Object.fromEntries((universe.assets || []).filter(a => a.exchange === 'GATE' && a.instrumentType === 'PERPETUAL' && a.productId === a.symbol && /^[A-Z0-9]+_USDT$/.test(a.productId)).map(a => [a.symbol, {exchange:a.exchange,marketId:a.productId,source:'LIVE_FUTURES_UNIVERSE'}]))}
+      );
+      const saved = appendSetupCaptureRows(captureRows, {
+        filePath: options.quantSetupCapture.filePath || 'quant-research/data/setup_observations.jsonl'
+      });
+      quantSetupCapture = {enabled:true, saved:saved.saved, validGeometry:captureRows.filter(x=>x.geometryValid).length, researchOnly:true};
+    } catch (error) {
+      quantSetupCapture = {enabled:true,saved:0,error:String(error?.message || error),researchOnly:true};
+    }
+  }
+
+  /*
+   * STEP 11
+   * Convert internal LONG/SHORT terminology
+   * into private portal BUY/SELL setup terminology.
+   *
+   * LONG  -> BUY
+   * SHORT -> SELL
+   */
+const qualifiedSetups =
+  registerSearchSetups(
+    setupRanking.rankedSetups.map(
+      (candidate) => ({
+        ...candidate,
+
+        setup: {
+          ...candidate.setup,
+
+          setupType:
+            candidate.setup?.direction === "LONG"
+              ? "BUY"
+              : candidate.setup?.direction === "SHORT"
+                ? "SELL"
+                : "NONE",
+        },
+
+        executionAuthority: false,
+        liveExecution: false,
+      })
+    )
+  );
+
+  // A5 remains passive and qualified-only. Never promote rejected research to verified setups.
+  const collector = a5CollectorConfig();
+  const a5Diagnostics = {
+    enabled: collector.enabled === true,
+    destination: collector.enabled ? (collector.supabaseEnabled ? "SUPABASE" : "FILE") : "DISABLED",
+    qualifiedInputCount: qualifiedSetups.length,
+    observationCount: 0,
+    attempted: false,
+    outcome: collector.enabled ? "NOT_STARTED" : "DISABLED",
+    error: null,
+  };
+  if (collector.enabled) {
+    try {
+      const observations = makePassiveSetupObservations({
+        setups: qualifiedSetups, startedAt,
+        exchange: universe.exchange ?? null, marketType: universe.marketType ?? null,
+      });
+      a5Diagnostics.observationCount = observations.length;
+      if (observations.length === 0) {
+        a5Diagnostics.outcome = "NO_QUALIFIED_OBSERVATIONS";
+      } else {
+        a5Diagnostics.attempted = true;
+        if (collector.supabaseEnabled) {
+          await persistA5Observations(observations);
+        } else {
+          await appendPassiveSetupObservations({ filePath: collector.filePath, observations });
+        }
+        // This means the store call completed without throwing, not independently verified rows.
+        a5Diagnostics.outcome = "STORE_CALL_COMPLETED";
+      }
+    } catch (error) {
+      a5Diagnostics.outcome = "STORE_CALL_FAILED";
+      // Avoid returning credentials, request bodies, or provider error details to clients.
+      a5Diagnostics.error = "A5_STORE_FAILURE_CHECK_SERVER_LOGS";
+      console.warn("[EMA A5 collector]", String(error?.message ?? error));
+    }
+  }
+  console.info("[EMA_A5_DIAGNOSTICS]", a5Diagnostics);
+
+  /*
+   * STEP 12
+   * Build explicit NO SETUP explanations.
+   */
+  const noSetup = [
+    /*
+     * Failed direction qualification.
+     */
+    ...rejectedDirection.map(
+      (candidate) => ({
+        symbol:
+          candidate.symbol,
+
+        stage:
+          "DIRECTION",
+
+        reason:
+          candidate.directionDecision?.reason ||
+          "DIRECTION_NOT_QUALIFIED",
+
+        blockers:
+          candidate.directionDecision?.blockers ||
+          [],
+
+        direction:
+          candidate.directionDecision?.direction ||
+          null,
+
+        confidence:
+          candidate.directionDecision?.confidence ??
+          null,
+
+        separation:
+          candidate.directionDecision?.separation ??
+          null,
+      })
+    ),
+
+    /*
+     * Passed direction but failed setup qualification.
+     */
+    ...setups
+      .filter(
+        (candidate) =>
+          candidate.setup?.approved !== true
+      )
+      .map(
+  (candidate) => ({
+    symbol:
+      candidate.symbol,
+
+    stage:
+      "SETUP",
+
+    reason:
+      "SETUP_BLOCKED",
+
+    blockers:
+      candidate.setup?.blockers ||
+      [],
+
+    direction:
+      candidate.setup?.direction ||
+      null,
+
+    /*
+     * ---------------------------------------------------
+     * V2 SETUP DIAGNOSTICS
+     * ---------------------------------------------------
+     */
+
+    regime:
+      candidate.setup?.marketRegime ??
+      null,
+
+    strategy:
+      candidate.setup?.strategy ??
+      null,
+
+    strategySelection:
+      candidate.setup?.strategySelection ??
+      null,
+
+    marketStructure:
+      candidate.setup?.marketStructure ??
+      null,
+
+    setupQuality:
+      candidate.setup?.setupQuality ??
+      null,
+
+    candleAnalysis:
+      candidate.setup?.candleAnalysis ??
+      null,
+
+    /*
+     * ---------------------------------------------------
+     * SETUP GEOMETRY
+     * ---------------------------------------------------
+     */
+
+    entry:
+      candidate.setup?.entry ??
+      null,
+
+    entryZone:
+      candidate.setup?.entryZone ??
+      null,
+
+    stop:
+      candidate.setup?.stop ??
+      null,
+
+    invalidation:
+      candidate.setup?.invalidation ??
+      null,
+
+    target:
+      candidate.setup?.target ??
+      null,
+
+    targets:
+      candidate.setup?.targets ??
+      [],
+
+    targetsDetailed:
+      candidate.setup?.targetsDetailed ??
+      [],
+
+    riskReward:
+      candidate.setup?.riskReward ??
+      null,
+
+    /*
+     * Keep the complete setup temporarily while
+     * validating V2. This lets backend diagnostics
+     * inspect fields we have not explicitly surfaced.
+     *
+     * Remove this later if the API payload becomes
+     * unnecessarily large.
+     */
+    diagnosticSetup:
+      candidate.setup ??
+      null,
+  })
+),
+  ];
+
+  // Report root rejection causes and the complete seven-candidate accounting.
+  // These diagnostics are observational only; no scoring or gate is modified.
+  const setupRejectionCounts = {};
+  const strategyAttemptCounts = {};
+  const setupCandidateDiagnostics = setups.map((row) => {
+    const strategySelection = row?.setup?.strategySelection ?? {};
+    const blockers = [...new Set((Array.isArray(row?.setup?.blockers) ? row.setup.blockers : []).filter(Boolean))];
+    for (const reason of blockers) setupRejectionCounts[reason] = (setupRejectionCounts[reason] ?? 0) + 1;
+    for (const attempt of (Array.isArray(strategySelection.attemptedStrategies) ? strategySelection.attemptedStrategies : [])) {
+      const key = String(attempt?.strategy ?? "UNKNOWN");
+      const current = strategyAttemptCounts[key] ?? { attempted: 0, matched: 0, planned: 0 };
+      current.attempted += 1;
+      if (attempt?.matched === true) current.matched += 1;
+      if (attempt?.planned === true) current.planned += 1;
+      strategyAttemptCounts[key] = current;
+    }
+    return {
+      symbol: row?.symbol ?? null,
+      builderApproved: row?.setup?.approved === true,
+      selectedStrategy: strategySelection.selectedStrategy ?? row?.setup?.strategy ?? null,
+      strategyApproved: strategySelection.approved === true,
+      strategyBlockers: strategySelection.blockers ?? [],
+      attemptedStrategies: strategySelection.attemptedStrategies ?? [],
+      qualityScore: row?.setup?.setupQuality?.setupQualityScore ?? row?.setup?.setupQuality?.score ?? null,
+      blockers,
+      reachedRanking: Boolean(setupRanking.evaluated?.some(item => item?.symbol === row?.symbol)),
+      qualifiedByRanking: Boolean(setupRanking.rankedSetups?.some(item => item?.symbol === row?.symbol)),
+    };
+  });
+  const completedAt =
+    new Date().toISOString();
+
+  /*
+   * FINAL SEARCH RESPONSE
+   */
+  return {
+    system:
+      "AEMA_PRIVATE_MARKET_RESEARCH",
+
+    status:
+      qualifiedSetups.length > 0
+        ? "SETUPS_FOUND"
+        : "NO_SETUP",
+
+    startedAt,
+    completedAt,
+
+    /*
+     * Search is explicitly user initiated.
+     */
+    onDemand: true,
+
+    /*
+     * Research / monitoring system.
+     * No execution from this pipeline.
+     */
+    executionDisabled: true,
+    executionAuthority: false,
+    liveExecution: false,
+
+    /*
+     * Market integrity.
+     */
+    marketType:
+      universe.marketType,
+
+    exchange:
+      universe.exchange ??
+      null,
+
+    instrumentWarning:
+      universe.marketType !== "FUTURES" &&
+      universe.marketType !== "PERPETUAL"
+        ? "CURRENT_PROVIDER_IS_NOT_FUTURES"
+        : "NONE",
+
+    /*
+     * Pipeline diagnostics.
+     */
+    counts: {
+      universe:
+        universe.assets.length,
+
+      hardEligible:
+        eligibility.approved.length,
+
+      opportunityQualified:
+        opportunity.qualified.length,
+
+      top20:
+        top20.length,
+
+      researchCompleted:
+        research.completed,
+
+      researchFailed:
+        research.failed.length,
+
+      /*
+       * IMPORTANT:
+       * Actual number that passed
+       * the direction gate.
+       */
+      directionQualified:
+        directionQualified.length,
+
+      directionRejected:
+        rejectedDirection.length,
+
+      top10:
+        ranking.top10.length,
+
+      setupsBuilt:
+        setups.length,
+
+      qualifiedSetups:
+        qualifiedSetups.length,
+
+      noSetup:
+        noSetup.length,
+
+      setupFailures:
+        setupFailures.length,
+    },
+
+    /*
+     * These are the signals the future
+     * private frontend will display.
+     */
+    setups:
+      qualifiedSetups,
+
+    /*
+     * Useful for debugging why a market
+     * did not become a setup.
+     */
+    noSetup,
+
+    researchFailures:
+      research.failed,
+
+    setupFailures,
+    a5Diagnostics,
+    pipelineRejectionDiagnostics: {
+      blockerCounts: setupRejectionCounts,
+      strategyAttemptCounts,
+      builtCandidates: setupCandidateDiagnostics,
+      buildFailures: setupFailures.map(({ symbol, error }) => ({ symbol, error })),
+      rankingEvaluated: setupRanking.evaluated ?? [],
+    },
+    ...(quantShadow !== null ? {quantShadow} : {}),
+    ...(quantArchive.enabled ? {quantArchive} : {}),
+    ...(quantSetupCapture !== null ? {quantSetupCapture} : {}),
+    ...(quantSetupShadow !== null ? {quantSetupShadow} : {}),
+    // Stage 5 accounting: report every built candidate, including setups that
+    // passed the builder but were excluded by the comparative ranking engine.
+    setupAccounting: {
+      built: setups.length,
+      builderApproved: setups.filter(row => row?.setup?.approved === true).length,
+      builderRejected: setups.filter(row => row?.setup?.approved !== true).length,
+      rankingEvaluated: setupRanking.evaluated?.length ?? null,
+      rankingQualified: setupRanking.rankedSetups?.length ?? 0,
+      rankingExcluded: setups.filter(row => row?.setup?.approved === true &&
+        !setupRanking.rankedSetups?.some(ranked => ranked?.symbol === row?.symbol)).map(row => ({
+          symbol: row.symbol,
+          strategy: row.setup?.strategy ?? null,
+          riskReward: row.setup?.riskReward ?? null,
+          reason: "EXCLUDED_BY_COMPARATIVE_RANKING",
+          rankingDiagnostics: setupRanking.evaluated?.find(item => item.symbol === row.symbol) ?? null,
+        })),
+    },
+  };
+}
+
+export default runBotMarketSearch;===== TRADING CYCLE =====
+import getBotFuturesUniverse from "../universe/botFuturesUniverseProvider.js";
+import filterBotHardEligibleAssets from "../filters/botHardEligibilityFilter.js";
+import rankBotOpportunities from "../filters/botOpportunityFilter.js";
+import { researchBotTop20 } from "../research/botResearchOrchestrator.js";
+import determineBotDirection from "../direction/botDirectionEngine.js";
+import rankBotResearchCandidates from "../ranking/botResearchRankingEngine.js";
+import getBotFuturesExecutionMarket from "../market/botFuturesExecutionMarketProvider.js";
+import buildBotFuturesSetup from "../setup/botFuturesSetupBuilder.js";
+import rankBotExecutionSetups from "../ranking/botExecutionRankingEngine.js";
+import { getBotPaperAccount } from "../account/botPaperLedger.js";
+import buildBotAccountRiskPlan from "../risk/botAccountRiskManager.js";
+import revalidateBotOrder from "../revalidation/botFinalRevalidationEngine.js";
+import executeBotPaperOrder from "../execution/botPaperOrderExecutor.js";
+import applyTradeLearning from "../learning/botTradeLearningEngine.js";
+import PHASE7 from "../config/botPhase7Config.js";
+import recordBotShadowCycle from "../diagnostics/botShadowRecorder.js";
+import {assertInternalPaperMode} from "../config/botExecutionMode.js";
+
+export async function runBotTradingCycle(options={}){
+  assertInternalPaperMode();
+  const startedAt=new Date().toISOString();
+  console.log("[BOT_TRADING_CYCLE_STARTED]", {startedAt});
+  const initialAccount=getBotPaperAccount();
+  const portfolioCfg={...PHASE7.portfolio,...options.portfolio};
+  if(initialAccount.controls?.paused) return {status:"BOT_PAUSED",accountBefore:initialAccount,accountAfter:initialAccount,paperOnly:true,liveExecution:false};
+  if(initialAccount.openPositions>=portfolioCfg.maximumOpenPositions){
+    return {
+      system:"AEMA_INDEPENDENT_CRYPTO_BOT",phase:"PHASE_7",status:"POSITION_CAP_REACHED",
+      startedAt,completedAt:new Date().toISOString(),
+      counts:{universe:0,hardEligible:0,opportunityQualified:0,top20:0,researchCompleted:0,
+        researchFailed:0,top10:0,setupsBuilt:0,executableSetups:0,setupFailures:0},
+      top20:[],top10:[],executionCandidates:[],preLearningExecutionCandidates:[],
+      learningBest:null,blockedSetups:[],bestAvailableOrder:null,selectedOrderCandidate:null,
+      orderAttempts:[],paperExecution:null,accountBefore:initialAccount,accountAfter:initialAccount,
+      researchFailures:[],setupFailures:[],nextStage:"POSITION_MANAGEMENT",
+      portfolio:{maximumOpenPositions:portfolioCfg.maximumOpenPositions,slotAvailable:false},
+      executionAuthority:false,liveExecution:false,paperOnly:true
+    };
+  }
+  const universe=await getBotFuturesUniverse(options.universe);
+  const eligibility=filterBotHardEligibleAssets(universe.assets,options.eligibility);
+  const opportunity=rankBotOpportunities(eligibility.approved,options.opportunity);
+  const top20=opportunity.topCandidates.map((row,index)=>({
+    rank:index+1,symbol:row.asset.symbol,baseAsset:row.asset.baseAsset,
+    quoteAsset:row.asset.quoteAsset,opportunityScore:row.opportunity.opportunityScore,
+    dimensions:row.opportunity.dimensions,market:row.asset.market,
+    asset:row.asset,opportunity:row.opportunity,
+  }));
+  const research=await researchBotTop20(top20,options.research);
+  const directional=research.researched.map(row=>determineBotDirection(row,options.direction));
+  const researchRanking=rankBotResearchCandidates(directional,options.ranking);
+  const setups=[], setupFailures=[];
+  for(const candidate of researchRanking.top10){
+    try{
+      const market=await getBotFuturesExecutionMarket(candidate,options.setup);
+      setups.push(buildBotFuturesSetup(candidate,market,options.setup));
+    }catch(error){
+      setupFailures.push({symbol:candidate.symbol,error:error?.message||String(error)});
+    }
+  }
+  const executionRanking=rankBotExecutionSetups(setups,options.executionRanking);
+  const learningRanking=applyTradeLearning(executionRanking.executable,options.learning);
+  // Optional READ-ONLY Alpaca shadow preview. Never changes the internal order path.
+  if (process.env.AEMA_ALPACA_SHADOW_PREVIEW === "1") {
+    try {
+      const { previewExistingBotCandidatesForAlpaca } = await import("../alpaca/botAlpacaExistingBotBridge.js");
+      const shadow = await previewExistingBotCandidatesForAlpaca(learningRanking.ranked);
+      console.log("[ALPACA_SHADOW_PREVIEW]", JSON.stringify(shadow));
+    } catch (error) {
+      console.error("[ALPACA_SHADOW_PREVIEW_FAILED]", error?.message || String(error));
+    }
+  }
+  const accountBefore=getBotPaperAccount();
+  const orderAttempts=[];
+  let selected=null, execution=null;
+  for(const candidate of learningRanking.ranked){
+    try{
+      assertInternalPaperMode();
+      const currentAccount=getBotPaperAccount();
+      if(currentAccount.controls?.paused) break;
+      if(currentAccount.openPositions>=portfolioCfg.maximumOpenPositions){
+        orderAttempts.push({symbol:candidate.symbol,executionRank:candidate.executionRank,
+          stage:"PORTFOLIO",approved:false,blockers:["MAXIMUM_3_OPEN_POSITIONS"]});
+        break;
+      }
+      const duplicate=portfolioCfg.blockConcurrentSameSymbol &&
+        currentAccount.positions.some(p=>p.symbol===candidate.symbol);
+      if(duplicate){
+        orderAttempts.push({symbol:candidate.symbol,executionRank:candidate.executionRank,
+          stage:"PORTFOLIO",approved:false,blockers:["SYMBOL_ALREADY_OPEN"]});
+        continue;
+      }
+      const risked=buildBotAccountRiskPlan(candidate,currentAccount,options.account);
+      if(!risked.riskPlan.approved){
+        orderAttempts.push({symbol:candidate.symbol,executionRank:candidate.executionRank,
+          stage:"RISK",approved:false,blockers:risked.riskPlan.blockers});
+        continue;
+      }
+      const checked=await revalidateBotOrder(risked,options.revalidation);
+      if(!checked.revalidation.approved){
+        orderAttempts.push({symbol:candidate.symbol,executionRank:candidate.executionRank,
+          stage:"REVALIDATION",approved:false,blockers:checked.revalidation.blockers});
+        continue;
+      }
+      if(getBotPaperAccount().controls?.paused) break;
+      assertInternalPaperMode();
+      execution=executeBotPaperOrder(checked);
+      selected=checked;
+      orderAttempts.push({symbol:candidate.symbol,executionRank:candidate.executionRank,
+        stage:"PAPER_EXECUTION",approved:true,blockers:[]});
+      break;
+    }catch(error){
+      if(error?.message?.startsWith("ALPACA_EXECUTION_NOT_ENABLED") || error?.message==="INVALID_BOT_EXECUTION_MODE") throw error;
+      orderAttempts.push({symbol:candidate.symbol,executionRank:candidate.executionRank,
+        stage:"ERROR",approved:false,blockers:[error?.message||String(error)]});
+    }
+  }
+  const accountAfter=getBotPaperAccount();
+  console.log("[BOT_SHADOW_RECORDING]", {
+    startedAt,evaluated:executionRanking.evaluated?.length??0,attempts:orderAttempts.length,
+  });
+  recordBotShadowCycle({startedAt,candidates:executionRanking.evaluated,orderAttempts,selected,
+    status:execution?"PAPER_POSITION_OPEN":"NO_ORDER",
+    counts:{setupsBuilt:setups.length,executable:executionRanking.executable.length}});
+  return {
+    system:"AEMA_INDEPENDENT_CRYPTO_BOT",phase:"PHASE_7",
+    status:execution?"PAPER_POSITION_OPEN":(executionRanking.best?"NO_PAPER_ORDER_FILLED":"NO_EXECUTABLE_SETUP"),
+    startedAt,completedAt:new Date().toISOString(),
+    counts:{universe:universe.assets.length,hardEligible:eligibility.approved.length,
+      opportunityQualified:opportunity.qualified.length,top20:top20.length,
+      researchCompleted:research.completed,researchFailed:research.failed.length,
+      top10:researchRanking.top10.length,setupsBuilt:setups.length,
+      executableSetups:executionRanking.executable.length,setupFailures:setupFailures.length},
+    top20,top10:researchRanking.top10,
+    executionCandidates:learningRanking.ranked,
+    preLearningExecutionCandidates:executionRanking.executable,
+    learningBest:learningRanking.best,
+    blockedSetups:setups.filter(x=>!x.setup?.approved).map(x=>({
+      symbol:x.symbol,direction:x.setup?.direction,blockers:x.setup?.blockers||[],
+      freshness:x.setup?.freshness||null,entry:x.setup?.entry??null,
+      stop:x.setup?.stop??null,target:x.setup?.target??null,riskReward:x.setup?.riskReward??null,
+    })),
+    bestAvailableOrder:learningRanking.best,selectedOrderCandidate:selected,orderAttempts,
+    paperExecution:execution,accountBefore,accountAfter,
+    researchFailures:research.failed,setupFailures,
+    nextStage:execution?"POSITION_MANAGEMENT":"NO_ORDER_POSSIBLE",
+    portfolio:{maximumOpenPositions:portfolioCfg.maximumOpenPositions,
+      slotAvailable:accountAfter.openPositions<portfolioCfg.maximumOpenPositions},
+    executionAuthority:false,liveExecution:false,paperOnly:true,
+  };
+}
+export default runBotTradingCycle;
+===== FUNNEL DIAGNOSTIC =====
+import fs from "node:fs/promises";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import runBotMarketSearch from "../src/crypto/bot/orchestration/botMarketSearchCycle.js";
+
+const root=path.dirname(fileURLToPath(import.meta.url));
+const timestamp=new Date().toISOString().replace(/[:.]/g,"-");
+const output=path.join(root,`ema-v2-funnel-${timestamp}.json`);
+const summary=path.join(root,`ema-v2-funnel-${timestamp}.txt`);
+const tally=(values)=>Object.entries(values.reduce((acc,v)=>{
+  const k=String(v||"UNKNOWN");acc[k]=(acc[k]||0)+1;return acc;
+},{})).sort((a,b)=>b[1]-a[1]);
+
+try {
+  const result=await runBotMarketSearch({
+    quantShadow: { enabled: true },
+    quantSetupShadow: { enabled: true },
+    quantSetupCapture: { enabled: true, filePath: "quant-research/data/setup_observations.jsonl", candleInterval: "5m" },
+    quantArchive: {
+      enabled: true,
+      filePath: "quant-research/data/futures_snapshots.jsonl",
+      candleInterval: "5m",
+      includeDetails: true
+    }
+  });
+  const rejected=Array.isArray(result.noSetup)?result.noSetup:[];
+  const selected=Array.isArray(result.qualifiedSetups)?result.qualifiedSetups:[];
+  const failures=Array.isArray(result.setupFailures)?result.setupFailures:[];
+  const reasons=tally(rejected.flatMap(x=>x.blockers?.length?x.blockers:[x.reason]));
+  const strategies=tally([...rejected,...selected].map(x=>x.strategy||x.setup?.strategy||x.diagnosticSetup?.strategy));
+  const report={
+    generatedAt:new Date().toISOString(),researchOnly:true,
+    counts:result.counts||{},
+    rejectionReasons:reasons,strategies,
+    setupFailures:failures,
+    quantShadow: result.quantShadow ?? null,
+    quantSetupShadow: result.quantSetupShadow ?? null,
+    quantArchive: result.quantArchive ?? null,
+    quantSetupCapture: result.quantSetupCapture ?? null,
+    setups:selected.map(x=>({
+      symbol:x.symbol,strategy:x.setup?.strategy||x.strategy||null,
+      direction:x.setup?.direction||null,
+      entry:x.setup?.entry??null,stop:x.setup?.stop??null,
+      target:x.setup?.target??null,riskReward:x.setup?.riskReward??null
+    })),
+    rejected:rejected.map(x=>({
+      symbol:x.symbol,stage:x.stage,reason:x.reason,blockers:x.blockers,
+      strategy:x.strategy, direction:x.direction
+    })),
+    // Keep complete response locally for debugging. Contains research market data.
+    raw:result
+  };
+  await fs.writeFile(output,JSON.stringify(report,null,2));
+  const lines=[
+    "EMA v2 — research-only funnel diagnostic",
+    `Generated: ${report.generatedAt}`,
+    ...Object.entries(report.counts).map(([k,v])=>`${k}: ${v}`),
+    "", "Top rejection reasons:",
+    ...reasons.slice(0,25).map(([k,v])=>`${v} × ${k}`),
+    "", "Strategies:",...strategies.map(([k,v])=>`${v} × ${k}`),
+    "", `Quant shadow observations: ${Array.isArray(result.quantShadow) ? result.quantShadow.length : (result.quantShadow ? "present" : "none")}`,
+    `Quant setup shadow observations: ${Array.isArray(result.quantSetupShadow) ? result.quantSetupShadow.length : (result.quantSetupShadow ? "present" : "none")}`,
+    `Quant setup capture: ${JSON.stringify(result.quantSetupCapture ?? null)}`,
+    `Quant archive saved: ${result.quantArchive?.saved ?? "not enabled"}`,
+    `Quant archive rejected: ${result.quantArchive?.rejected ?? "not enabled"}`,
+    `Quant archive reasons: ${JSON.stringify(result.quantArchive?.reasons ?? {})}`,
+    "", `Full report: ${output}`
+  ];
+  await fs.writeFile(summary,lines.join("\n")+"\n");
+  console.log(lines.join("\n"));
+  console.log("QUANT ARCHIVE:", JSON.stringify(result.quantArchive ?? null, null, 2));
+  console.log("QUANT SETUP SHADOW:", JSON.stringify(result.quantSetupShadow ?? null, null, 2));
+} catch(err) {
+  console.error("Diagnostic failed:",err?.stack||String(err));
+  process.exitCode=1;
+}

@@ -1,0 +1,24 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import {mkdtempSync,cpSync,writeFileSync} from 'node:fs';
+import {tmpdir} from 'node:os';
+import {join,resolve} from 'node:path';
+import {pathToFileURL} from 'node:url';
+// Run as a standalone script from project root, with no package type assumption.
+const temp=mkdtempSync(join(tmpdir(),'ema-quality-'));
+const base=resolve('src/crypto/bot');
+cpSync(join(base,'config'),join(temp,'config'),{recursive:true});
+cpSync(join(base,'filters'),join(temp,'filters'),{recursive:true});
+writeFileSync(join(temp,'package.json'),'{"type":"module"}');
+const {filterBotHardEligibleAssets}=await import(pathToFileURL(join(temp,'filters/botHardEligibilityFilter.js')));
+const mk=(symbol,volume,spread,extra={})=>({symbol,status:'TRADING',contractType:'PERPETUAL',market:{price:1,quoteVolume:volume,priceChangePercent:0,spreadPercent:spread,rangePercent:4},...extra});
+const rows=[mk('A',1e7,.05),mk('B',1e5,.3),mk('C',2e6,null),mk('D',1e6,.1,{status:'SUSPENDED'}),mk('E',1e6,.1,{delistingTime:Date.now()+86400000})];
+const result=filterBotHardEligibleAssets(rows);
+assert.equal(result.approved.length,4);
+assert.equal(result.rejected.length,1);
+assert.equal(result.evaluations[3].eligibility.smartQuality.status!=='EXCLUDE',true);
+assert.equal(result.evaluations[4].eligibility.smartQuality.status,'EXCLUDE');
+assert.equal(result.evaluations[4].eligibility.approved,true,'shadow delisting must not change legacy eligibility');
+assert.equal(result.evaluations[2].eligibility.smartQuality.unknown.includes('SPREAD_UNKNOWN'),true);
+assert.equal(filterBotHardEligibleAssets([]).approved.length,0);
+console.log('EMA smart eligibility safety tests passed');

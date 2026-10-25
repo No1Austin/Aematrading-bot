@@ -5,7 +5,7 @@ import cors from "cors";
 
 import stripeWebhook from "../auth/stripeWebhook.js";
 import billingRoutes from "./billing/routes.js";
-
+import createStockResearchRoutes from "./stock/api/stockResearchRoutes.js";
 import createCryptoRuntimeRouter
   from "./routes/cryptoRuntimeRoutes.js";
 
@@ -1007,6 +1007,7 @@ app.use(
   botPrivateRoutes,
 );
 
+app.use("/api/stock", createStockResearchRoutes());
 
 /**
  * ============================================================

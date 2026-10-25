@@ -838,3 +838,9 @@
   }
 
 }
+/* AEMA compact evidence panels — controls only */
+.controls-page .control-grid{gap:12px}.controls-page .control-grid>article{min-width:0;padding:16px;border-radius:14px}.controls-page .allocation-stats{gap:7px}.controls-page .allocation-stats>div{min-width:0;padding:10px}.controls-page .allocation-stats b{font-size:clamp(13px,1.6vw,18px);overflow-wrap:anywhere}
+.aema-evidence,.history-evidence{margin-top:10px;border:1px solid #2c343e;border-radius:10px;background:#0a0e12;min-width:0;overflow:hidden}
+.aema-evidence summary,.history-evidence summary{padding:12px;color:#f1a63a;font-size:11px;font-weight:750;cursor:pointer;list-style-position:inside;min-height:44px;box-sizing:border-box}
+.aema-evidence pre,.history-evidence pre{margin:0;padding:12px;border-top:1px solid #252b34;color:#bac5d1;font-size:11px;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere;max-height:350px;overflow:auto}
+@media(max-width:760px){.bot-main.controls-page{width:100%;margin-left:0;padding:16px 12px 110px}.controls-page .control-grid{display:grid;grid-template-columns:minmax(0,1fr)}.controls-page .allocation-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.controls-page .control-actions{display:grid;grid-template-columns:minmax(0,1fr)}.controls-page .control-actions button,.controls-page .allocation-input button,.controls-page .bot-refresh{min-height:44px}.controls-page .allocation-input input{min-width:0;font-size:16px}}

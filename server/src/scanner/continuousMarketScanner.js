@@ -96,7 +96,7 @@ const DEFAULT_CONFIG =
      * Production discovery defaults.
      */
     maximumUniverseSymbols:
-      null,
+      2000,
 
     maximumCandidates:
       20,
@@ -110,8 +110,7 @@ const DEFAULT_CONFIG =
     maximumCandidatesPerBatch:
       20,
 
-    submitForDeepResearch:
-      true,
+    submitForDeepResearch: false,
 
     /**
      * Continuous scanning should not block waiting for every

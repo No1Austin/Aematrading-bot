@@ -1,3 +1,4 @@
+import "./AemaTerminal.css";
 import {useEffect,useState} from "react";
 import {Navigate,Route,Routes} from "react-router-dom";
 import BotLogin from "./pages/BotLogin.jsx";

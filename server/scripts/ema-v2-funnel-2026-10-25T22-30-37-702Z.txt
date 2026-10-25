@@ -1,0 +1,44 @@
+EMA v2 — research-only funnel diagnostic
+Generated: 2026-10-25T22:30:51.151Z
+universe: 1000
+hardEligible: 955
+opportunityQualified: 113
+top20: 20
+researchCompleted: 20
+researchFailed: 0
+directionQualified: 20
+directionRejected: 0
+top10: 5
+setupsBuilt: 5
+qualifiedSetups: 0
+noSetup: 5
+setupFailures: 0
+
+Top rejection reasons:
+4 × SETUP_QUALITY_SCORE_TOO_LOW
+3 × STRUCTURE_DIRECTION_CONFLICT
+3 × SETUP_STRATEGY_REGIME_NOT_READY
+3 × NO_SETUP_PATTERN_MATCHED
+3 × SETUP_STRATEGY_NOT_SELECTED
+3 × SETUP_REGIME_NOT_APPROVED
+3 × SETUP_ENTRY_UNAVAILABLE
+3 × SETUP_STOP_UNAVAILABLE
+3 × SETUP_STRUCTURAL_TARGETS_UNAVAILABLE
+3 × ENTRY_PRICE_UNAVAILABLE
+3 × REWARD_BELOW_MINIMUM_TRADABLE_THRESHOLD
+1 × SCALP_PATTERN_SCORE_TOO_LOW
+1 × RISK_REWARD_BELOW_MINIMUM
+
+Strategies:
+3 × UNKNOWN
+1 × TREND_PULLBACK
+1 × BREAKOUT_RETEST
+
+Quant shadow observations: 20
+Quant setup shadow observations: 5
+Quant setup capture: {"enabled":true,"saved":5,"validGeometry":2,"researchOnly":true}
+Quant archive saved: 5
+Quant archive rejected: 0
+Quant archive reasons: {}
+
+Full report: /Users/no1austin/Desktop/Msc /MscSE-Day-4/trading-bot/server/scripts/ema-v2-funnel-2026-10-25T22-30-37-702Z.json

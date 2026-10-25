@@ -1,0 +1,10 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {replayVolatilityStopComparison as run} from '../src/crypto/bot/backtest/botVolatilityStopReplay.js';
+const base={direction:'BULL',entry:100,existingStop:98,proposedStop:96,target:106,quantity:5,entryTime:1000,feePercent:0.1,slippagePercent:0.05,candles:[{time:2000,open:100,high:101,low:97,close:99},{time:3000,open:99,high:107,low:98,close:106}]};
+test('existing stop hit but proposed stop survives to target',()=>{const r=run(base);assert.equal(r.existing.reason,'STOP');assert.equal(r.proposed.reason,'TARGET');assert.ok(r.netPnlDifferenceUsd>0);assert.equal(r.executionAuthority,false);});
+test('same candle stop and target conservatively records stop',()=>{const r=run({...base,candles:[{time:2000,open:100,high:108,low:95,close:101}]});assert.equal(r.existing.reason,'AMBIGUOUS_STOP_FIRST');assert.equal(r.proposed.reason,'AMBIGUOUS_STOP_FIRST');});
+test('BEAR target and stop correctly inverted',()=>{const r=run({...base,direction:'BEAR',existingStop:102,proposedStop:104,target:94,candles:[{time:2000,open:100,high:103,low:99,close:101},{time:3000,open:101,high:102,low:93,close:94}]});assert.equal(r.existing.reason,'STOP');assert.equal(r.proposed.reason,'TARGET');});
+test('rejects pre-entry and unsorted candles',()=>assert.throws(()=>run({...base,candles:[{time:1000,open:100,high:101,low:99,close:100}]}),/NONCHRONOLOGICAL/));
+test('rejects invalid setup and missing cost assumptions',()=>{assert.throws(()=>run({...base,proposedStop:102}),/WRONG_SIDE/);assert.throws(()=>run({...base,feePercent:undefined}),/COST_ASSUMPTIONS/);});
+test('unresolved trade is marked to market, not a win',()=>{const r=run({...base,candles:[{time:2000,open:100,high:101,low:99,close:100.5}]});assert.equal(r.existing.reason,'MARK_TO_MARKET');});

@@ -1,0 +1,10 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {validateHistoricalStops} from '../src/crypto/bot/backtest/botHistoricalStopValidation.js';
+const setup={observationId:'obs1',pointInTimeVerified:true,timestamp:'2026-10-18T20:35:00Z',proposedStopVerifiedAt:'2026-10-18T20:34:00Z',exchange:'COINBASE',marketId:'BTC-USD',instrumentType:'SPOT',candleInterval:'1m',strategy:'TREND_PULLBACK',symbol:'BTC-USD',direction:'BULL',entry:100,stop:98,proposedStop:96,target:104,quantity:5};
+const candle={exchange:'COINBASE',marketId:'BTC-USD',instrumentType:'SPOT',candleInterval:'1m',pointInTimeVerified:true,rows:[{time:'2026-10-18T20:36:00Z',open:100,high:101,low:97,close:99},{time:'2026-10-18T20:37:00Z',open:99,high:105,low:99,close:104}]};
+test('replays verified identical market and strategy',()=>{const r=validateHistoricalStops({setups:[setup],candleSets:{obs1:candle},feePercent:.1,slippagePercent:.1});assert.equal(r.eligible,1);assert.equal(r.rows[0].replay.existing.reason,'STOP');assert.equal(r.rows[0].replay.proposed.reason,'TARGET');});
+test('unverified historical setups excluded',()=>{const r=validateHistoricalStops({setups:[{...setup,pointInTimeVerified:false}],candleSets:{obs1:candle},feePercent:.1,slippagePercent:.1});assert.equal(r.eligible,0);assert.equal(r.exclusionReasons.SETUP_NOT_POINT_IN_TIME_VERIFIED,1);});
+test('rejects mixing futures and spot',()=>{const r=validateHistoricalStops({setups:[{...setup,instrumentType:'FUTURES'}],candleSets:{obs1:candle},feePercent:.1,slippagePercent:.1});assert.equal(r.eligible,0);assert.equal(r.rows[0].reason,'CANDLE_MARKET_MISMATCH');});
+test('rejects future-known proposed stop',()=>{const r=validateHistoricalStops({setups:[{...setup,proposedStopVerifiedAt:'2026-10-18T20:36:00Z'}],candleSets:{obs1:candle},feePercent:.1,slippagePercent:.1});assert.equal(r.eligible,0);});
+test('rejects missing costs',()=>{const r=validateHistoricalStops({setups:[setup],candleSets:{obs1:candle}});assert.equal(r.eligible,0);});

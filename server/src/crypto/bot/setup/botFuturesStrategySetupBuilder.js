@@ -43,6 +43,8 @@ import selectBotSetupStrategy
 import evaluateBotSetupQuality
   from "./botSetupQualityEngine.js";
 
+import { buildVolatilityResearchDiagnostic } from "../risk/botVolatilityResearchDiagnostic.js";
+
 /*
  * ---------------------------------------------------------
  * BASIC HELPERS
@@ -655,10 +657,45 @@ if (
       setupQuality?.entry
     );
 
-  const stop =
+  const legacyStop =
     positiveOrNull(
       setupQuality?.stop
     );
+
+  // The ATR/structure planner can affect the published research stop.
+  // Preserve the old stop if inputs are missing; never tighten past the
+  // existing structural invalidation or pretend missing evidence is valid.
+  const volatilityResearch = buildVolatilityResearchDiagnostic({
+    direction: researchDirection, entry, currentStop: legacyStop, target: positiveOrNull(setupQuality?.target),
+    atr, support, resistance, spreadPercent,
+    slippagePercent: legacySlippagePercent,
+    config: options.volatilityResearch ?? {},
+  });
+  const stopActivation = {
+    enabled: options.volatilityResearch?.enabled !== false,
+    applied: false,
+    reason: null,
+    originalStop: legacyStop,
+    proposedStop: positiveOrNull(volatilityResearch?.proposedStop ?? volatilityResearch?.stop),
+  };
+  let stop = legacyStop;
+  const proposedStop = stopActivation.proposedStop;
+  const structureLevel = direction === "LONG" ? support : resistance;
+  const proposalValid = volatilityResearch?.status === "OBSERVED" &&
+    entry !== null && legacyStop !== null && proposedStop !== null &&
+    atr !== null && structureLevel !== null &&
+    spreadPercent !== null && spreadPercent >= 0 &&
+    legacySlippagePercent !== null && legacySlippagePercent >= 0 &&
+    (direction === "LONG" ? proposedStop < entry && proposedStop <= structureLevel :
+     direction === "SHORT" ? proposedStop > entry && proposedStop >= structureLevel : false);
+  if (!stopActivation.enabled) stopActivation.reason = "FEATURE_DISABLED";
+  else if (!proposalValid) stopActivation.reason = "INSUFFICIENT_VALIDATED_MARKET_INPUTS";
+  else {
+    // The new stop cannot be closer to entry than the old stop.
+    stop = direction === "LONG" ? Math.min(legacyStop, proposedStop) : Math.max(legacyStop, proposedStop);
+    stopActivation.applied = stop !== legacyStop;
+    stopActivation.reason = stopActivation.applied ? "ATR_STRUCTURE_STOP_APPLIED" : "EXISTING_STOP_ALREADY_WIDER";
+  }
 
   const target =
     positiveOrNull(
@@ -926,6 +963,9 @@ if (
           market?.depth
             ?.totalNotional
         ),
+
+      volatilityResearch,
+      stopActivation,
 
       /*
        * Legacy structural evidence

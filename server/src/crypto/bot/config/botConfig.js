@@ -43,7 +43,7 @@ export const BOT_CONFIG = Object.freeze({
 
     contractType: "PERPETUAL",
 
-    maximumSymbols: 1000,
+    maximumSymbols: null, // No arbitrary cap; full coverage depends on upstream provider pagination.
 
     timeoutMs: 12000,
   },
@@ -67,6 +67,28 @@ export const BOT_CONFIG = Object.freeze({
     requireMarketData: true,
 
     minimumPrice: 0,
+    smartMarketQuality: {
+      enabled: true,
+      // Advisory-only classifications. These are starting hypotheses, not
+      // validated performance thresholds.
+      minimumQuoteVolumeUsd: 0,
+      lowRelativeVolumeRatio: 0.1,
+      maximumSpreadPercent: 1,
+      highRelativeSpreadRatio: 5,
+      emergingAgeDays: 7,
+      maximumTickPercent: 0.2,
+      extremeRangePercent24h: 60,
+    },
+    dynamicPairlist: {
+      enabled: true,
+      enforce: false, // Observe first; do not unexpectedly starve the funnel.
+      minimumQuoteVolumeUsd: 0,
+      maximumSpreadPercent: 1.0,
+      minimumMarketAgeDays: 0,
+      minimumPriceTicks: 0,
+      maximumRangePercent24h: null,
+      excludeDelisting: true,
+    },
   },
 
   /*

@@ -13,6 +13,8 @@ import { makeSetupCaptureRows, appendSetupCaptureRows } from "../quant/quantSetu
 import { archiveQuantSnapshot } from "../quant/quantSnapshotArchive.js";
 import { prepareArchiveCandles } from "../quant/quantCandleArchivePreparation.js";
 import { registerSearchSetups } from "../monitoring/botSearchResultStore.js";
+import { makePassiveSetupObservations, appendPassiveSetupObservations } from "../backtest/botVerifiedSetupCollector.js";
+import { a5CollectorConfig, persistA5Observations } from "../backtest/botA5ObservationStore.js";
 
 export async function runBotMarketSearch(options = {}) {
   const startedAt = new Date().toISOString();
@@ -273,6 +275,45 @@ const qualifiedSetups =
     )
   );
 
+  // A5 remains passive and qualified-only. Never promote rejected research to verified setups.
+  const collector = a5CollectorConfig();
+  const a5Diagnostics = {
+    enabled: collector.enabled === true,
+    destination: collector.enabled ? (collector.supabaseEnabled ? "SUPABASE" : "FILE") : "DISABLED",
+    qualifiedInputCount: qualifiedSetups.length,
+    observationCount: 0,
+    attempted: false,
+    outcome: collector.enabled ? "NOT_STARTED" : "DISABLED",
+    error: null,
+  };
+  if (collector.enabled) {
+    try {
+      const observations = makePassiveSetupObservations({
+        setups: qualifiedSetups, startedAt,
+        exchange: universe.exchange ?? null, marketType: universe.marketType ?? null,
+      });
+      a5Diagnostics.observationCount = observations.length;
+      if (observations.length === 0) {
+        a5Diagnostics.outcome = "NO_QUALIFIED_OBSERVATIONS";
+      } else {
+        a5Diagnostics.attempted = true;
+        if (collector.supabaseEnabled) {
+          await persistA5Observations(observations);
+        } else {
+          await appendPassiveSetupObservations({ filePath: collector.filePath, observations });
+        }
+        // This means the store call completed without throwing, not independently verified rows.
+        a5Diagnostics.outcome = "STORE_CALL_COMPLETED";
+      }
+    } catch (error) {
+      a5Diagnostics.outcome = "STORE_CALL_FAILED";
+      // Avoid returning credentials, request bodies, or provider error details to clients.
+      a5Diagnostics.error = "A5_STORE_FAILURE_CHECK_SERVER_LOGS";
+      console.warn("[EMA A5 collector]", String(error?.message ?? error));
+    }
+  }
+  console.info("[EMA_A5_DIAGNOSTICS]", a5Diagnostics);
+
   /*
    * STEP 12
    * Build explicit NO SETUP explanations.
@@ -421,6 +462,44 @@ const qualifiedSetups =
 ),
   ];
 
+  // Report root rejection causes and the complete seven-candidate accounting.
+  // These diagnostics are observational only; no scoring or gate is modified.
+  const setupRejectionCounts = {};
+  const strategyAttemptCounts = {};
+  const setupCandidateDiagnostics = setups.map((row) => {
+    const strategySelection = row?.setup?.strategySelection ?? {};
+    const blockers = [...new Set((Array.isArray(row?.setup?.blockers) ? row.setup.blockers : []).filter(Boolean))];
+    for (const reason of blockers) setupRejectionCounts[reason] = (setupRejectionCounts[reason] ?? 0) + 1;
+    for (const attempt of (Array.isArray(strategySelection.attemptedStrategies) ? strategySelection.attemptedStrategies : [])) {
+      const key = String(attempt?.strategy ?? "UNKNOWN");
+      const current = strategyAttemptCounts[key] ?? { attempted: 0, matched: 0, planned: 0 };
+      current.attempted += 1;
+      if (attempt?.matched === true) current.matched += 1;
+      if (attempt?.planned === true) current.planned += 1;
+      strategyAttemptCounts[key] = current;
+    }
+    return {
+      symbol: row?.symbol ?? null,
+      builderApproved: row?.setup?.approved === true,
+      selectedStrategy: strategySelection.selectedStrategy ?? row?.setup?.strategy ?? null,
+      strategyApproved: strategySelection.approved === true,
+      strategyBlockers: strategySelection.blockers ?? [],
+      attemptedStrategies: strategySelection.attemptedStrategies ?? [],
+      qualityScore: row?.setup?.setupQuality?.setupQualityScore ?? row?.setup?.setupQuality?.score ?? null,
+      blockers,
+      reachedRanking: Boolean(setupRanking.evaluated?.some(item => item?.symbol === row?.symbol)),
+      qualifiedByRanking: Boolean(setupRanking.rankedSetups?.some(item => item?.symbol === row?.symbol)),
+      // Read-only stop activation visibility; never changes qualification or ranking.
+      stopActivation: row?.setup?.stopActivation ?? row?.setup?.diagnostics?.stopActivation ?? null,
+      volatilityResearch: {
+        status: row?.setup?.volatilityResearch?.status ?? row?.setup?.diagnostics?.volatilityResearch?.status ?? null,
+        proposedStop: row?.setup?.volatilityResearch?.proposedStop ?? row?.setup?.volatilityResearch?.stop ?? row?.setup?.diagnostics?.volatilityResearch?.proposedStop ?? null,
+        warnings: row?.setup?.volatilityResearch?.warnings ?? row?.setup?.diagnostics?.volatilityResearch?.warnings ?? [],
+      },
+      finalStop: row?.setup?.stop ?? null,
+      finalRiskReward: row?.setup?.riskReward ?? null,
+    };
+  });
   const completedAt =
     new Date().toISOString();
 
@@ -534,6 +613,14 @@ const qualifiedSetups =
       research.failed,
 
     setupFailures,
+    a5Diagnostics,
+    pipelineRejectionDiagnostics: {
+      blockerCounts: setupRejectionCounts,
+      strategyAttemptCounts,
+      builtCandidates: setupCandidateDiagnostics,
+      buildFailures: setupFailures.map(({ symbol, error }) => ({ symbol, error })),
+      rankingEvaluated: setupRanking.evaluated ?? [],
+    },
     ...(quantShadow !== null ? {quantShadow} : {}),
     ...(quantArchive.enabled ? {quantArchive} : {}),
     ...(quantSetupCapture !== null ? {quantSetupCapture} : {}),

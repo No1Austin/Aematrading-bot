@@ -12,7 +12,7 @@ import {
   searchDexPairs,
   getDexTokenPairs,
   normalizeDexPair,
-} from "../data/providers/dexScreenerProvider.js";
+} from "../crypto/data/providers/dexScreenerProvider.js";
 
 import { finite, upper } from "./cryptoMarketNormalizer.js";
 

@@ -3816,18 +3816,18 @@
       "id": "mon_1792465963575_8yas3iq",
       "setupId": "setup_1792465805910_0_rch02",
       "symbol": "WLD_USDT",
-      "status": "WAITING_ENTRY",
+      "status": "ACTIVE",
       "direction": "LONG",
       "entry": 0.5432989285714285,
       "stop": 0.5380017857142858,
       "target": 0.551325,
       "createdAt": "2026-10-20T03:12:43.575Z",
-      "updatedAt": "2026-10-20T03:12:43.575Z",
-      "entryTriggeredAt": null,
+      "updatedAt": "2026-10-20T04:08:09.861Z",
+      "entryTriggeredAt": "2026-10-20T04:00:00.000Z",
       "completedAt": null,
-      "lastPriceObservedAt": null,
-      "lastResearchObservedAt": null,
-      "lastProcessedCandleOpenTime": null,
+      "lastPriceObservedAt": "2026-10-20T04:08:09.860Z",
+      "lastResearchObservedAt": "2026-10-20T04:08:01.427Z",
+      "lastProcessedCandleOpenTime": 1792469280000,
       "result": null,
       "scenario": {
         "capitalUsd": 1000,
@@ -5111,6 +5111,3158 @@
         }
       },
       "tracking": {
+        "highestPrice": 0.5452,
+        "lowestPrice": 0.5414,
+        "maximumFavorableExcursionPercent": 0.3499126040189873,
+        "maximumAdverseExcursionPercent": -0.3495181881586992,
+        "observations": 2
+      },
+      "lastObservation": {
+        "observedAt": "2026-10-20T04:08:09.860Z",
+        "type": "MONITOR",
+        "status": "ACTIVE",
+        "thesisState": null,
+        "markPrice": 0.5427,
+        "lastPrice": 0.5424,
+        "indexPrice": 0.5431,
+        "entryTriggered": true,
+        "entryTriggeredAt": "2026-10-20T04:00:00.000Z",
+        "tracking": {
+          "highestPrice": 0.5452,
+          "lowestPrice": 0.5414,
+          "maximumFavorableExcursionPercent": 0.3499126040189873,
+          "maximumAdverseExcursionPercent": -0.3495181881586992,
+          "observations": 2
+        },
+        "changes": null,
+        "directionDecision": null,
+        "engines": null,
+        "source": "GATE_USDT_PERPETUAL",
+        "exchange": "GATE",
+        "executionAuthority": false
+      },
+      "history": [
+        {
+          "observedAt": "2026-10-20T04:08:01.427Z",
+          "type": "MONITOR",
+          "status": "ACTIVE",
+          "thesisState": "THESIS_WEAKENING",
+          "markPrice": 0.5428,
+          "lastPrice": 0.5424,
+          "indexPrice": 0.5432,
+          "entryTriggered": true,
+          "entryTriggeredAt": "2026-10-20T04:00:00.000Z",
+          "tracking": {
+            "highestPrice": 0.5452,
+            "lowestPrice": 0.5414,
+            "maximumFavorableExcursionPercent": 0.3499126040189873,
+            "maximumAdverseExcursionPercent": -0.3495181881586992,
+            "observations": 1
+          },
+          "changes": {
+            "confidence": -1.9440999999999917,
+            "separation": -1.7655999999999992,
+            "directionChanged": false,
+            "weakening": false
+          },
+          "directionDecision": {
+            "direction": null,
+            "rawDirection": "LONG",
+            "researchDirection": "LONG",
+            "strategyReviewAllowed": true,
+            "setupSignal": "NO_SETUP",
+            "qualified": false,
+            "longScore": 57.2415,
+            "shortScore": 42.7585,
+            "selectedScore": 57.2415,
+            "separation": 14.483,
+            "confidence": 69.2562,
+            "availableWeight": 0.7,
+            "reason": "DIRECTION_NOT_STRONG_ENOUGH",
+            "blockers": [
+              "DIRECTION_SCORE_TOO_LOW"
+            ],
+            "contributions": {
+              "technical": {
+                "available": true,
+                "weight": 0.2,
+                "long": 60.0853,
+                "short": 39.9147,
+                "confidence": 58.3431
+              },
+              "fundamental": {
+                "available": true,
+                "weight": 0.2,
+                "long": 55.04,
+                "short": 44.96,
+                "confidence": 63.9621
+              },
+              "narrative": {
+                "available": false,
+                "weight": 0.15
+              },
+              "news": {
+                "available": false,
+                "weight": 0.15
+              },
+              "marketStructure": {
+                "available": true,
+                "weight": 0.15,
+                "long": 72.6444,
+                "short": 27.3556,
+                "confidence": 76.0383
+              },
+              "liquidity": {
+                "available": true,
+                "weight": 0.15,
+                "long": 40.9823,
+                "short": 59.0177,
+                "confidence": 84.0836
+              }
+            },
+            "diagnostics": {
+              "technical": {
+                "selected": 60.0853,
+                "opposite": 39.9147,
+                "agrees": true,
+                "separation": 20.1706
+              },
+              "marketStructure": {
+                "selected": 72.6444,
+                "opposite": 27.3556,
+                "agrees": true,
+                "separation": 45.2888
+              },
+              "technicalStrongAgreement": true,
+              "structureStrongAgreement": true,
+              "minimumIndependentSeparation": 5,
+              "independentAgreement": true,
+              "unavailable": [
+                "narrative",
+                "news"
+              ]
+            },
+            "executionAuthority": false,
+            "liveExecution": false
+          },
+          "engines": {
+            "technical": {
+              "engine": "TECHNICAL",
+              "available": true,
+              "long": 60.0853,
+              "short": 39.9147,
+              "confidence": 58.3431,
+              "evidence": {
+                "m1": 0.2958032908115982,
+                "m2": 3.5502958579881563,
+                "m3": 1.8014636892475024,
+                "turnoverExpansion": 0.5954359172549781,
+                "recentTurnover": 283693.00362499995,
+                "priorTurnover": 476445.90358750004,
+                "lastPrice": 0.5425
+              },
+              "executionAuthority": false,
+              "liveExecution": false
+            },
+            "fundamental": {
+              "engine": "FUNDAMENTAL",
+              "available": true,
+              "long": 55.04,
+              "short": 44.96,
+              "confidence": 63.9621,
+              "evidence": {
+                "quoteVolume": 27160629,
+                "openInterest": 48479942.8332,
+                "openInterestValue": null,
+                "openInterestChangePercent": -0.6592936059072991,
+                "priceChangePercent": 11.18,
+                "oiRelationship": "PRICE_UP_OI_DOWN",
+                "fundingRate": 0.000011,
+                "fundingState": "LONGS_PAYING",
+                "fundingAdjustment": -1.0999999999999999,
+                "derivativesBias": 11.18,
+                "volumeParticipation": 0.35848495583571305,
+                "openInterestParticipation": null
+              },
+              "executionAuthority": false,
+              "liveExecution": false
+            },
+            "narrative": {
+              "engine": "NARRATIVE",
+              "available": false,
+              "long": null,
+              "short": null,
+              "confidence": 0,
+              "evidence": {
+                "reason": "EXTERNAL_NARRATIVE_FEED_NOT_CONFIGURED",
+                "symbol": "WLD_USDT"
+              },
+              "executionAuthority": false,
+              "liveExecution": false
+            },
+            "news": {
+              "engine": "NEWS",
+              "available": false,
+              "long": null,
+              "short": null,
+              "confidence": 0,
+              "evidence": {
+                "reason": "EXTERNAL_NEWS_FEED_NOT_CONFIGURED",
+                "symbol": "WLD_USDT"
+              },
+              "executionAuthority": false,
+              "liveExecution": false
+            },
+            "marketStructure": {
+              "engine": "MARKET_STRUCTURE",
+              "available": true,
+              "long": 72.6444,
+              "short": 27.3556,
+              "confidence": 76.0383,
+              "evidence": {
+                "structureMovePercent": 2.125258604476183,
+                "closeLocation": 0.7602996254681625,
+                "locationBias": 10.4119850187265,
+                "structuralBias": 20,
+                "higherHigh": true,
+                "higherLow": true,
+                "lowerHigh": false,
+                "lowerLow": false,
+                "high": 0.5489,
+                "low": 0.5222
+              },
+              "executionAuthority": false,
+              "liveExecution": false
+            },
+            "liquidity": {
+              "engine": "LIQUIDITY",
+              "available": true,
+              "long": 40.9823,
+              "short": 59.0177,
+              "confidence": 84.0836,
+              "evidence": {
+                "spreadPercent": 0.03686635944700055,
+                "bestBid": 0.5424,
+                "bestAsk": 0.5426,
+                "bidNotional": 3199490.9708999996,
+                "askNotional": 4607518.642700001,
+                "totalNotional": 7807009.613600001,
+                "imbalance": -0.18035428947688018,
+                "spreadQuality": 96.48617511520821,
+                "depthQuality": 68.92484769786716
+              },
+              "executionAuthority": false,
+              "liveExecution": false
+            }
+          },
+          "source": "GATE_USDT_PERPETUAL",
+          "exchange": "GATE",
+          "executionAuthority": false
+        },
+        {
+          "observedAt": "2026-10-20T04:08:09.860Z",
+          "type": "MONITOR",
+          "status": "ACTIVE",
+          "thesisState": null,
+          "markPrice": 0.5427,
+          "lastPrice": 0.5424,
+          "indexPrice": 0.5431,
+          "entryTriggered": true,
+          "entryTriggeredAt": "2026-10-20T04:00:00.000Z",
+          "tracking": {
+            "highestPrice": 0.5452,
+            "lowestPrice": 0.5414,
+            "maximumFavorableExcursionPercent": 0.3499126040189873,
+            "maximumAdverseExcursionPercent": -0.3495181881586992,
+            "observations": 2
+          },
+          "changes": null,
+          "directionDecision": null,
+          "engines": null,
+          "source": "GATE_USDT_PERPETUAL",
+          "exchange": "GATE",
+          "executionAuthority": false
+        }
+      ],
+      "learningRecorded": false,
+      "learningRecordedAt": null,
+      "executionAuthority": false,
+      "liveExecution": false
+    },
+    {
+      "id": "mon_1792944172923_20dw007",
+      "setupId": "setup_1792943061224_0_c5epi",
+      "symbol": "SKYAI_USDT",
+      "status": "WAITING_ENTRY",
+      "direction": "LONG",
+      "entry": 0.03653820000000001,
+      "stop": 0.035996071428571426,
+      "target": 0.03813,
+      "createdAt": "2026-10-25T16:02:52.923Z",
+      "updatedAt": "2026-10-25T16:03:01.182Z",
+      "entryTriggeredAt": null,
+      "completedAt": null,
+      "lastPriceObservedAt": "2026-10-25T16:03:01.181Z",
+      "lastResearchObservedAt": "2026-10-25T16:03:01.181Z",
+      "lastProcessedCandleOpenTime": 1792944180000,
+      "result": null,
+      "scenario": {
+        "capitalUsd": 1000,
+        "leverage": 2,
+        "exposureUsd": 2000,
+        "quantity": 54737.23390862,
+        "entry": 0.0365382,
+        "stop": {
+          "price": 0.03599607,
+          "grossPnlUsd": -29.67,
+          "estimatedFeesUsd": 0,
+          "netPnlUsd": -29.67,
+          "capitalImpactPercent": -2.97
+        },
+        "targets": [
+          {
+            "label": "T1",
+            "price": 0.03667,
+            "grossPnlUsd": 7.21,
+            "estimatedFeesUsd": 0,
+            "netPnlUsd": 7.21,
+            "capitalImpactPercent": 0.72
+          },
+          {
+            "label": "T2",
+            "price": 0.03697,
+            "grossPnlUsd": 23.64,
+            "estimatedFeesUsd": 0,
+            "netPnlUsd": 23.64,
+            "capitalImpactPercent": 2.36
+          },
+          {
+            "label": "T3",
+            "price": 0.03813,
+            "grossPnlUsd": 87.13,
+            "estimatedFeesUsd": 0,
+            "netPnlUsd": 87.13,
+            "capitalImpactPercent": 8.71
+          }
+        ],
+        "feeRatePercent": 0,
+        "liquidationPrice": null,
+        "liquidationNote": "Requires the connected futures venue margin model; not guessed.",
+        "executionAuthority": false
+      },
+      "original": {
+        "asset": {
+          "symbol": "SKYAI_USDT",
+          "productId": "SKYAI_USDT",
+          "baseAsset": "SKYAI",
+          "quoteAsset": "USDT",
+          "status": "TRADING",
+          "contractType": "PERPETUAL",
+          "instrumentType": "PERPETUAL",
+          "exchange": "GATE",
+          "settleCoin": "USDT",
+          "market": {
+            "price": 0.03789,
+            "markPrice": 0.03789,
+            "indexPrice": 0.037871,
+            "bid": 0.03789,
+            "ask": 0.03793,
+            "spreadPercent": 0.10551305724082925,
+            "quoteVolume": 2029112,
+            "baseVolume": 56808980,
+            "priceChangePercent": 22.58,
+            "high24h": 0.03977,
+            "low24h": 0.0304,
+            "rangePercent": 24.729480073898124,
+            "tradeCount24h": null,
+            "openInterest": null,
+            "openInterestValue": null,
+            "fundingRate": 0.00005,
+            "nextFundingTime": 1792944000
+          },
+          "derivativesEvidenceAvailable": true,
+          "executionAuthority": false,
+          "liveExecution": false
+        },
+        "directionDecision": {
+          "direction": "LONG",
+          "rawDirection": "LONG",
+          "researchDirection": "LONG",
+          "strategyReviewAllowed": true,
+          "setupSignal": "BUY_SETUP",
+          "qualified": true,
+          "longScore": 64.4693,
+          "shortScore": 35.5307,
+          "selectedScore": 64.4693,
+          "separation": 28.9385,
+          "confidence": 69.9997,
+          "availableWeight": 0.7,
+          "reason": "DIRECTION_QUALIFIED",
+          "blockers": [],
+          "contributions": {
+            "technical": {
+              "available": true,
+              "weight": 0.2,
+              "long": 73.564,
+              "short": 26.436,
+              "confidence": 74.6024
+            },
+            "fundamental": {
+              "available": true,
+              "weight": 0.2,
+              "long": 55,
+              "short": 45,
+              "confidence": 56.9207
+            },
+            "narrative": {
+              "available": false,
+              "weight": 0.15
+            },
+            "news": {
+              "available": false,
+              "weight": 0.15
+            },
+            "marketStructure": {
+              "available": true,
+              "weight": 0.15,
+              "long": 73.9067,
+              "short": 26.0933,
+              "confidence": 83.2432
+            },
+            "liquidity": {
+              "available": true,
+              "weight": 0.15,
+              "long": 55.5312,
+              "short": 44.4688,
+              "confidence": 68.0578
+            }
+          },
+          "diagnostics": {
+            "technical": {
+              "selected": 73.564,
+              "opposite": 26.436,
+              "agrees": true,
+              "separation": 47.128
+            },
+            "marketStructure": {
+              "selected": 73.9067,
+              "opposite": 26.0933,
+              "agrees": true,
+              "separation": 47.8134
+            },
+            "technicalStrongAgreement": true,
+            "structureStrongAgreement": true,
+            "minimumIndependentSeparation": 5,
+            "independentAgreement": true,
+            "unavailable": [
+              "narrative",
+              "news"
+            ]
+          },
+          "executionAuthority": false,
+          "liveExecution": false
+        },
+        "researchRankScore": 70.8742,
+        "engines": {
+          "technical": {
+            "engine": "TECHNICAL",
+            "available": true,
+            "long": 73.564,
+            "short": 26.436,
+            "confidence": 74.6024,
+            "evidence": {
+              "m1": 3.8113517959966967,
+              "m2": 1.9386106623586388,
+              "m3": 4.4413793103448285,
+              "turnoverExpansion": 0.8335568532620725,
+              "recentTurnover": 13126.1456875,
+              "priorTurnover": 15747.1510625,
+              "lastPrice": 0.03786
+            },
+            "executionAuthority": false,
+            "liveExecution": false
+          },
+          "fundamental": {
+            "engine": "FUNDAMENTAL",
+            "available": true,
+            "long": 55,
+            "short": 45,
+            "confidence": 56.9207,
+            "evidence": {
+              "quoteVolume": 2029112,
+              "openInterest": 1803360.4704,
+              "openInterestValue": null,
+              "openInterestChangePercent": -0.034796535889844875,
+              "priceChangePercent": 22.58,
+              "oiRelationship": "PRICE_UP_OI_DOWN",
+              "fundingRate": 0.00005,
+              "fundingState": "LONGS_PAYING",
+              "fundingAdjustment": -5,
+              "derivativesBias": 15,
+              "volumeParticipation": 0.07682650481397246,
+              "openInterestParticipation": null
+            },
+            "executionAuthority": false,
+            "liveExecution": false
+          },
+          "narrative": {
+            "engine": "NARRATIVE",
+            "available": false,
+            "long": null,
+            "short": null,
+            "confidence": 0,
+            "evidence": {
+              "reason": "EXTERNAL_NARRATIVE_FEED_NOT_CONFIGURED",
+              "symbol": "SKYAI_USDT"
+            },
+            "executionAuthority": false,
+            "liveExecution": false
+          },
+          "news": {
+            "engine": "NEWS",
+            "available": false,
+            "long": null,
+            "short": null,
+            "confidence": 0,
+            "evidence": {
+              "reason": "EXTERNAL_NEWS_FEED_NOT_CONFIGURED",
+              "symbol": "SKYAI_USDT"
+            },
+            "executionAuthority": false,
+            "liveExecution": false
+          },
+          "marketStructure": {
+            "engine": "MARKET_STRUCTURE",
+            "available": true,
+            "long": 73.9067,
+            "short": 26.0933,
+            "confidence": 83.2432,
+            "evidence": {
+              "structureMovePercent": 4.785088329392105,
+              "closeLocation": 0.8579439252336442,
+              "locationBias": 14.317757009345765,
+              "structuralBias": 0,
+              "higherHigh": false,
+              "higherLow": true,
+              "lowerHigh": true,
+              "lowerLow": false,
+              "high": 0.03862,
+              "low": 0.03327
+            },
+            "executionAuthority": false,
+            "liveExecution": false
+          },
+          "liquidity": {
+            "engine": "LIQUIDITY",
+            "available": true,
+            "long": 55.5312,
+            "short": 44.4688,
+            "confidence": 68.0578,
+            "evidence": {
+              "spreadPercent": 0.1057361882104107,
+              "bestBid": 0.03781,
+              "bestAsk": 0.03785,
+              "bidNotional": 67508.0918,
+              "askNotional": 54059.83589999999,
+              "totalNotional": 121567.92769999999,
+              "imbalance": 0.11062338689516055,
+              "spreadQuality": 82.1382941228311,
+              "depthQuality": 50.84822586015301
+            },
+            "executionAuthority": false,
+            "liveExecution": false
+          }
+        },
+        "setup": {
+          "approved": true,
+          "status": "SETUP_READY",
+          "setupType": "BUY",
+          "symbol": "SKYAI_USDT",
+          "direction": "LONG",
+          "researchDirection": "BULL",
+          "entry": 0.03653820000000001,
+          "stop": 0.035996071428571426,
+          "target": 0.03813,
+          "targets": [
+            0.03667,
+            0.03697,
+            0.03813
+          ],
+          "stopDistance": 0.0005421285714285809,
+          "targetDistance": 0.0015917999999999904,
+          "stopDistancePercent": 1.4837309211416567,
+          "targetDistancePercent": 4.356536446787171,
+          "riskReward": 2.9362038525388647,
+          "minimumRiskReward": 1.5,
+          "spreadPercent": 0.13239772275915396,
+          "maximumSpreadPercent": 0.5,
+          "slippagePercent": 0.04157242876345805,
+          "depthNotional": 120627.5116,
+          "atr": 0.0004971428571428567,
+          "support": 0.03565,
+          "resistance": 0.03813,
+          "freshness": {
+            "available": true,
+            "stale": false,
+            "ageMs": 0
+          },
+          "instrumentType": "PERPETUAL",
+          "futuresValidated": true,
+          "strategy": "TREND_PULLBACK",
+          "lifecycleStatus": "WAITING_FOR_ENTRY",
+          "lifecycle": {
+            "status": "WAITING_FOR_ENTRY",
+            "entryReached": false,
+            "currentPrice": 0.03779,
+            "reason": "VALID_SETUP_WAITING_FOR_PLANNED_ENTRY"
+          },
+          "marketRegime": "TRENDING",
+          "regimeScore": 85,
+          "entryZone": {
+            "available": true,
+            "low": 0.036443,
+            "high": 0.036715000000000005,
+            "preferred": 0.03653820000000001,
+            "atr": 0.0004957142857142853
+          },
+          "invalidation": {
+            "available": true,
+            "price": 0.035996071428571426,
+            "structuralLevel": 0.03612,
+            "buffer": 0.00012392857142857133,
+            "reason": "BULLISH_HIGHER_LOW_INVALIDATED"
+          },
+          "targetsDetailed": [
+            {
+              "price": 0.03667,
+              "label": "TP1",
+              "reason": "PREVIOUS_SWING_HIGH",
+              "rewardDistance": 0.00013179999999999442,
+              "riskReward": 0.24311576062608892,
+              "qualifies": false,
+              "setupClass": null,
+              "classApproved": false,
+              "primary": false
+            },
+            {
+              "price": 0.03697,
+              "label": "TP2",
+              "reason": "LATEST_SWING_HIGH",
+              "rewardDistance": 0.0004317999999999961,
+              "riskReward": 0.7964900260876228,
+              "qualifies": true,
+              "setupClass": "SCALP",
+              "classApproved": false,
+              "primary": false
+            },
+            {
+              "price": 0.03813,
+              "label": "TP3",
+              "reason": "RANGE_HIGH",
+              "rewardDistance": 0.0015917999999999904,
+              "riskReward": 2.9362038525388647,
+              "qualifies": true,
+              "setupClass": "ASYMMETRIC",
+              "classApproved": true,
+              "primary": true
+            }
+          ],
+          "setupQualityScore": 80.52344462304663,
+          "minimumSetupQualityScore": 70,
+          "qualityComponents": {
+            "strategy": {
+              "score": 69.5,
+              "weight": 0.4
+            },
+            "entry": {
+              "score": 70,
+              "weight": 0.2
+            },
+            "reward": {
+              "score": 93.61722311523319,
+              "weight": 0.2,
+              "riskReward": 2.9362038525388647,
+              "setupClass": "ASYMMETRIC"
+            },
+            "execution": {
+              "score": 100,
+              "weight": 0.2
+            }
+          },
+          "entryQuality": {
+            "approved": true,
+            "score": 70,
+            "currentPrice": 0.03779,
+            "preferredEntry": 0.03653820000000001,
+            "chaseState": null,
+            "evidence": [
+              "STRUCTURAL_ENTRY_ZONE_DEFINED"
+            ],
+            "risks": [
+              "WAITING_FOR_ENTRY_ZONE"
+            ],
+            "blockers": []
+          },
+          "executionQuality": {
+            "approved": true,
+            "score": 100,
+            "spreadPercent": 0.13239772275915396,
+            "maximumSpreadPercent": 0.5,
+            "slippagePercent": 0.04157242876345805,
+            "maximumSlippagePercent": 0.5,
+            "freshness": {
+              "available": true,
+              "stale": false,
+              "ageMs": 0
+            },
+            "evidence": [
+              "SPREAD_ACCEPTABLE",
+              "SLIPPAGE_ACCEPTABLE",
+              "MARKET_DATA_FRESH"
+            ],
+            "risks": [],
+            "blockers": []
+          },
+          "structure": {
+            "approved": true,
+            "status": "MARKET_STRUCTURE_READY",
+            "candleCount": 99,
+            "current": {
+              "openTime": 1792942500000,
+              "open": 0.03776,
+              "high": 0.03813,
+              "low": 0.03767,
+              "close": 0.0378,
+              "changePercent": 0.10593220338982619
+            },
+            "atr": 0.0004957142857142853,
+            "trend": "BULLISH",
+            "structurePattern": "HH_HL",
+            "highStructure": "HIGHER_HIGH",
+            "lowStructure": "HIGHER_LOW",
+            "swingHighs": [
+              {
+                "index": 27,
+                "openTime": 1792921200000,
+                "price": 0.03977
+              },
+              {
+                "index": 30,
+                "openTime": 1792922100000,
+                "price": 0.03961
+              },
+              {
+                "index": 39,
+                "openTime": 1792924800000,
+                "price": 0.03918
+              },
+              {
+                "index": 50,
+                "openTime": 1792928100000,
+                "price": 0.03632
+              },
+              {
+                "index": 54,
+                "openTime": 1792929300000,
+                "price": 0.03705
+              },
+              {
+                "index": 59,
+                "openTime": 1792930800000,
+                "price": 0.03668
+              },
+              {
+                "index": 64,
+                "openTime": 1792932300000,
+                "price": 0.03758
+              },
+              {
+                "index": 69,
+                "openTime": 1792933800000,
+                "price": 0.03695
+              },
+              {
+                "index": 74,
+                "openTime": 1792935300000,
+                "price": 0.03667
+              },
+              {
+                "index": 88,
+                "openTime": 1792939500000,
+                "price": 0.03697
+              }
+            ],
+            "swingLows": [
+              {
+                "index": 41,
+                "openTime": 1792925400000,
+                "price": 0.03327
+              },
+              {
+                "index": 45,
+                "openTime": 1792926600000,
+                "price": 0.03552
+              },
+              {
+                "index": 48,
+                "openTime": 1792927500000,
+                "price": 0.03508
+              },
+              {
+                "index": 57,
+                "openTime": 1792930200000,
+                "price": 0.03537
+              },
+              {
+                "index": 61,
+                "openTime": 1792931400000,
+                "price": 0.0357
+              },
+              {
+                "index": 64,
+                "openTime": 1792932300000,
+                "price": 0.03615
+              },
+              {
+                "index": 70,
+                "openTime": 1792934100000,
+                "price": 0.03587
+              },
+              {
+                "index": 79,
+                "openTime": 1792936800000,
+                "price": 0.03547
+              },
+              {
+                "index": 86,
+                "openTime": 1792938900000,
+                "price": 0.03574
+              },
+              {
+                "index": 91,
+                "openTime": 1792940400000,
+                "price": 0.03612
+              }
+            ],
+            "latestSwingHigh": {
+              "index": 88,
+              "openTime": 1792939500000,
+              "price": 0.03697
+            },
+            "previousSwingHigh": {
+              "index": 74,
+              "openTime": 1792935300000,
+              "price": 0.03667
+            },
+            "latestSwingLow": {
+              "index": 91,
+              "openTime": 1792940400000,
+              "price": 0.03612
+            },
+            "previousSwingLow": {
+              "index": 86,
+              "openTime": 1792938900000,
+              "price": 0.03574
+            },
+            "range": {
+              "high": 0.03813,
+              "low": 0.03547,
+              "midpoint": 0.0368,
+              "widthPercent": 7.228260869565206
+            },
+            "volatility": {
+              "regime": "NORMAL",
+              "atrPercent": 1.3114134542705962,
+              "recentRangeRatio": 1.2528548123980396
+            },
+            "breakout": {
+              "detected": true,
+              "direction": "BULL",
+              "level": 0.03769,
+              "displacementAtr": 0.08069164265129361
+            },
+            "liquiditySweep": {
+              "detected": false,
+              "direction": null,
+              "level": null,
+              "extreme": null,
+              "reclaimed": false
+            },
+            "volume": {
+              "available": true,
+              "ratio": 0.8651210173585078,
+              "state": "NORMAL"
+            },
+            "blockers": [],
+            "observedAt": "2026-10-25T15:44:20.773Z",
+            "executionAuthority": false,
+            "liveExecution": false
+          },
+          "regime": {
+            "approved": true,
+            "status": "MARKET_REGIME_READY",
+            "regime": "TRENDING",
+            "regimeScore": 85,
+            "researchDirection": "BULL",
+            "structuralDirection": "BULL",
+            "alignment": {
+              "aligned": true,
+              "state": "ALIGNED",
+              "reason": "RESEARCH_AND_STRUCTURE_AGREE"
+            },
+            "scores": {
+              "TRENDING": {
+                "score": 85,
+                "reasons": [
+                  "HIGHER_HIGH_HIGHER_LOW_STRUCTURE",
+                  "DIRECTIONAL_SWING_STRUCTURE",
+                  "NORMAL_VOLATILITY"
+                ]
+              },
+              "COMPRESSION": {
+                "score": 15,
+                "reasons": [
+                  "RELATIVELY_TIGHT_RANGE"
+                ]
+              },
+              "EXPANSION": {
+                "score": 35,
+                "reasons": [
+                  "STRUCTURAL_BREAKOUT"
+                ]
+              },
+              "LIQUIDITY_SWEEP": {
+                "score": 0,
+                "reasons": []
+              },
+              "RANGING": {
+                "score": 35,
+                "reasons": [
+                  "STABLE_RANGE_VOLATILITY",
+                  "DEFINED_RANGE_BOUNDARIES"
+                ]
+              }
+            },
+            "competingRegimes": [
+              "TRENDING",
+              "EXPANSION"
+            ],
+            "eligibleStrategies": [
+              "TREND_PULLBACK",
+              "BREAKOUT_RETEST",
+              "MOMENTUM_BREAKOUT"
+            ],
+            "eligibilityDiagnostics": {
+              "registeredStrategies": [
+                "TREND_PULLBACK",
+                "BREAKOUT_RETEST",
+                "LIQUIDITY_SWEEP",
+                "MOMENTUM_BREAKOUT",
+                "RANGE_ROTATION"
+              ],
+              "primaryRegime": "TRENDING",
+              "competingRegimes": [
+                "TRENDING",
+                "EXPANSION"
+              ],
+              "minimumCompetingScore": 60,
+              "eligibleStrategies": [
+                "TREND_PULLBACK",
+                "BREAKOUT_RETEST",
+                "MOMENTUM_BREAKOUT"
+              ],
+              "skippedStrategies": [
+                "LIQUIDITY_SWEEP",
+                "RANGE_ROTATION"
+              ],
+              "upstreamReady": true
+            },
+            "context": {
+              "structurePattern": "HH_HL",
+              "volatility": "NORMAL",
+              "breakout": {
+                "detected": true,
+                "direction": "BULL",
+                "level": 0.03769,
+                "displacementAtr": 0.08069164265129361
+              },
+              "liquiditySweep": {
+                "detected": false,
+                "direction": null,
+                "level": null,
+                "extreme": null,
+                "reclaimed": false
+              },
+              "range": {
+                "high": 0.03813,
+                "low": 0.03547,
+                "midpoint": 0.0368,
+                "widthPercent": 7.228260869565206
+              },
+              "volume": {
+                "available": true,
+                "ratio": 0.8651210173585078,
+                "state": "NORMAL"
+              }
+            },
+            "blockers": [],
+            "observedAt": "2026-10-25T15:44:20.773Z",
+            "executionAuthority": false,
+            "liveExecution": false
+          },
+          "strategySelection": {
+            "approved": true,
+            "status": "SETUP_STRATEGY_PLANNED",
+            "direction": "BULL",
+            "researchDirection": "BULL",
+            "directionConflict": false,
+            "marketRegime": "TRENDING",
+            "eligibleStrategies": [
+              "TREND_PULLBACK",
+              "BREAKOUT_RETEST",
+              "MOMENTUM_BREAKOUT"
+            ],
+            "registeredStrategies": [
+              "TREND_PULLBACK",
+              "BREAKOUT_RETEST",
+              "LIQUIDITY_SWEEP",
+              "MOMENTUM_BREAKOUT",
+              "RANGE_ROTATION"
+            ],
+            "skippedStrategies": [
+              "LIQUIDITY_SWEEP",
+              "RANGE_ROTATION"
+            ],
+            "unknownEligibleStrategies": [],
+            "evaluationSkipped": false,
+            "evaluationSkipReasons": [],
+            "attemptedStrategies": [
+              {
+                "strategy": "TREND_PULLBACK",
+                "matched": false,
+                "planned": true,
+                "lifecycleStatus": "PLANNED",
+                "status": "PATTERN_REJECTED",
+                "patternScore": 65,
+                "blockers": [
+                  "TREND_PULLBACK_NOT_PRESENT"
+                ],
+                "evidence": [
+                  "BULLISH_HH_HL_STRUCTURE",
+                  "TRENDING_REGIME",
+                  "SUITABLE_VOLATILITY",
+                  "ADEQUATE_MARKET_PARTICIPATION"
+                ],
+                "risks": [
+                  "PRICE_EXTENDED_NO_PULLBACK",
+                  "PRICE_OUTSIDE_PREFERRED_ENTRY_ZONE"
+                ]
+              },
+              {
+                "strategy": "BREAKOUT_RETEST",
+                "matched": false,
+                "planned": true,
+                "lifecycleStatus": "PLANNED",
+                "status": "PATTERN_REJECTED",
+                "patternScore": 45,
+                "blockers": [
+                  "BREAKOUT_RETEST_WAITING_FOR_RETEST",
+                  "BREAKOUT_RETEST_PATTERN_SCORE_TOO_LOW"
+                ],
+                "evidence": [
+                  "DIRECTIONAL_BREAKOUT_CONFIRMED",
+                  "REGIME_SUPPORTS_BREAKOUT_SETUP",
+                  "PRICE_NEAR_RETEST_ENTRY"
+                ],
+                "risks": []
+              },
+              {
+                "strategy": "MOMENTUM_BREAKOUT",
+                "matched": false,
+                "planned": false,
+                "lifecycleStatus": "REJECTED",
+                "status": "PATTERN_REJECTED",
+                "patternScore": 30,
+                "blockers": [
+                  "MOMENTUM_DISPLACEMENT_TOO_WEAK",
+                  "BREAKOUT_CANDLE_BODY_TOO_WEAK",
+                  "MOMENTUM_BREAKOUT_PATTERN_SCORE_TOO_LOW"
+                ],
+                "evidence": [
+                  "DIRECTIONAL_BREAKOUT_CONFIRMED",
+                  "PRICE_INSIDE_MOMENTUM_ENTRY_ZONE"
+                ],
+                "risks": []
+              }
+            ],
+            "matchedStrategies": [
+              {
+                "strategy": "TREND_PULLBACK",
+                "selectionScore": 69.5,
+                "patternScore": 65,
+                "bestRiskReward": 2.9362038525388647,
+                "selectionComponents": {
+                  "pattern": {
+                    "score": 65,
+                    "weight": 0.7
+                  },
+                  "geometry": {
+                    "score": 95,
+                    "weight": 0.2,
+                    "bestRiskReward": 2.9362038525388647,
+                    "validTargetCount": 3
+                  },
+                  "entry": {
+                    "score": 50,
+                    "weight": 0.1
+                  }
+                }
+              },
+              {
+                "strategy": "BREAKOUT_RETEST",
+                "selectionScore": 55.5,
+                "patternScore": 45,
+                "bestRiskReward": 12.668587896253412,
+                "selectionComponents": {
+                  "pattern": {
+                    "score": 45,
+                    "weight": 0.7
+                  },
+                  "geometry": {
+                    "score": 85,
+                    "weight": 0.2,
+                    "bestRiskReward": 12.668587896253412,
+                    "validTargetCount": 2
+                  },
+                  "entry": {
+                    "score": 70,
+                    "weight": 0.1
+                  }
+                }
+              }
+            ],
+            "selectedStrategy": "TREND_PULLBACK",
+            "selectionScore": 69.5,
+            "minimumSelectionScore": 60,
+            "selectionComponents": {
+              "pattern": {
+                "score": 65,
+                "weight": 0.7
+              },
+              "geometry": {
+                "score": 95,
+                "weight": 0.2,
+                "bestRiskReward": 2.9362038525388647,
+                "validTargetCount": 3
+              },
+              "entry": {
+                "score": 50,
+                "weight": 0.1
+              }
+            },
+            "selectedResult": {
+              "strategy": "TREND_PULLBACK",
+              "matched": false,
+              "status": "PATTERN_REJECTED",
+              "direction": "BULL",
+              "patternScore": 65,
+              "minimumPatternScore": 65,
+              "retracement": {
+                "available": true,
+                "percent": -96.47058823529305,
+                "zone": "NO_PULLBACK",
+                "impulseStart": 0.03612,
+                "impulseEnd": 0.03697,
+                "impulseSize": 0.0008500000000000035
+              },
+              "entryZone": {
+                "available": true,
+                "low": 0.036443,
+                "high": 0.036715000000000005,
+                "preferred": 0.03653820000000001,
+                "atr": 0.0004957142857142853
+              },
+              "preferredEntry": 0.03653820000000001,
+              "invalidation": {
+                "available": true,
+                "price": 0.035996071428571426,
+                "structuralLevel": 0.03612,
+                "buffer": 0.00012392857142857133,
+                "reason": "BULLISH_HIGHER_LOW_INVALIDATED"
+              },
+              "stop": 0.035996071428571426,
+              "targets": [
+                {
+                  "price": 0.03667,
+                  "reason": "PREVIOUS_SWING_HIGH",
+                  "label": "TP1",
+                  "rewardDistance": 0.00013179999999999442,
+                  "riskReward": 0.24311576062608892
+                },
+                {
+                  "price": 0.03697,
+                  "reason": "LATEST_SWING_HIGH",
+                  "label": "TP2",
+                  "rewardDistance": 0.0004317999999999961,
+                  "riskReward": 0.7964900260876228
+                },
+                {
+                  "price": 0.03813,
+                  "reason": "RANGE_HIGH",
+                  "label": "TP3",
+                  "rewardDistance": 0.0015917999999999904,
+                  "riskReward": 2.9362038525388647
+                }
+              ],
+              "evidence": [
+                "BULLISH_HH_HL_STRUCTURE",
+                "TRENDING_REGIME",
+                "SUITABLE_VOLATILITY",
+                "ADEQUATE_MARKET_PARTICIPATION"
+              ],
+              "risks": [
+                "PRICE_EXTENDED_NO_PULLBACK",
+                "PRICE_OUTSIDE_PREFERRED_ENTRY_ZONE"
+              ],
+              "blockers": [
+                "TREND_PULLBACK_NOT_PRESENT"
+              ],
+              "diagnostics": {
+                "currentPrice": 0.03779,
+                "structurePattern": "HH_HL",
+                "marketRegime": "TRENDING",
+                "volatilityRegime": "NORMAL",
+                "volumeRatio": 0.8651210173585078,
+                "averageTargetRiskReward": 1.3252698797508586
+              },
+              "executionAuthority": false,
+              "liveExecution": false,
+              "planned": true,
+              "lifecycleStatus": "PLANNED"
+            },
+            "runnerUp": {
+              "strategy": "BREAKOUT_RETEST",
+              "selectionScore": 55.5,
+              "patternScore": 45
+            },
+            "ambiguity": {
+              "ambiguous": false,
+              "scoreDifference": 14,
+              "maximumScoreDifference": 5,
+              "entryDifferencePercent": 3.0446735395188855,
+              "maximumEntryDifferencePercent": 0.5,
+              "stopDifferencePercent": 4.150145387258794,
+              "maximumStopDifferencePercent": 0.75,
+              "reasons": []
+            },
+            "blockers": [],
+            "observedAt": "2026-10-25T15:44:20.776Z",
+            "executionAuthority": false,
+            "liveExecution": false
+          },
+          "quality": {
+            "lifecycleStatus": "WAITING_FOR_ENTRY",
+            "lifecycle": {
+              "status": "WAITING_FOR_ENTRY",
+              "entryReached": false,
+              "currentPrice": 0.03779,
+              "reason": "VALID_SETUP_WAITING_FOR_PLANNED_ENTRY"
+            },
+            "approved": true,
+            "status": "SETUP_QUALITY_APPROVED",
+            "symbol": "SKYAI_USDT",
+            "direction": "BULL",
+            "strategy": {
+              "id": "TREND_PULLBACK",
+              "selectionScore": 69.5,
+              "patternScore": 65,
+              "marketRegime": "TRENDING"
+            },
+            "setupClass": "ASYMMETRIC",
+            "expectancyMode": "BOOTSTRAP",
+            "rewardProfile": {
+              "bestRiskReward": 2.9362038525388647,
+              "selectedRiskReward": 2.9362038525388647,
+              "minimumTradableRiskReward": 0.5,
+              "standardRiskReward": 1,
+              "asymmetricRiskReward": 1.5,
+              "structuralTargetCount": 3,
+              "tradableTargetCount": 2
+            },
+            "entry": 0.03653820000000001,
+            "entryZone": {
+              "available": true,
+              "low": 0.036443,
+              "high": 0.036715000000000005,
+              "preferred": 0.03653820000000001,
+              "atr": 0.0004957142857142853
+            },
+            "stop": 0.035996071428571426,
+            "invalidation": {
+              "available": true,
+              "price": 0.035996071428571426,
+              "structuralLevel": 0.03612,
+              "buffer": 0.00012392857142857133,
+              "reason": "BULLISH_HIGHER_LOW_INVALIDATED"
+            },
+            "target": 0.03813,
+            "targets": [
+              0.03667,
+              0.03697,
+              0.03813
+            ],
+            "targetsDetailed": [
+              {
+                "price": 0.03667,
+                "label": "TP1",
+                "reason": "PREVIOUS_SWING_HIGH",
+                "rewardDistance": 0.00013179999999999442,
+                "riskReward": 0.24311576062608892,
+                "qualifies": false,
+                "setupClass": null,
+                "classApproved": false,
+                "primary": false
+              },
+              {
+                "price": 0.03697,
+                "label": "TP2",
+                "reason": "LATEST_SWING_HIGH",
+                "rewardDistance": 0.0004317999999999961,
+                "riskReward": 0.7964900260876228,
+                "qualifies": true,
+                "setupClass": "SCALP",
+                "classApproved": false,
+                "primary": false
+              },
+              {
+                "price": 0.03813,
+                "label": "TP3",
+                "reason": "RANGE_HIGH",
+                "rewardDistance": 0.0015917999999999904,
+                "riskReward": 2.9362038525388647,
+                "qualifies": true,
+                "setupClass": "ASYMMETRIC",
+                "classApproved": true,
+                "primary": true
+              }
+            ],
+            "riskDistance": 0.0005421285714285809,
+            "targetDistance": 0.0015917999999999904,
+            "riskReward": 2.9362038525388647,
+            "minimumRiskReward": 1.5,
+            "minimumTradableRiskReward": 0.5,
+            "setupQualityScore": 80.52344462304663,
+            "minimumSetupQualityScore": 70,
+            "qualityComponents": {
+              "strategy": {
+                "score": 69.5,
+                "weight": 0.4
+              },
+              "entry": {
+                "score": 70,
+                "weight": 0.2
+              },
+              "reward": {
+                "score": 93.61722311523319,
+                "weight": 0.2,
+                "riskReward": 2.9362038525388647,
+                "setupClass": "ASYMMETRIC"
+              },
+              "execution": {
+                "score": 100,
+                "weight": 0.2
+              }
+            },
+            "entryQuality": {
+              "approved": true,
+              "score": 70,
+              "currentPrice": 0.03779,
+              "preferredEntry": 0.03653820000000001,
+              "chaseState": null,
+              "evidence": [
+                "STRUCTURAL_ENTRY_ZONE_DEFINED"
+              ],
+              "risks": [
+                "WAITING_FOR_ENTRY_ZONE"
+              ],
+              "blockers": []
+            },
+            "executionQuality": {
+              "approved": true,
+              "score": 100,
+              "spreadPercent": 0.13239772275915396,
+              "maximumSpreadPercent": 0.5,
+              "slippagePercent": 0.04157242876345805,
+              "maximumSlippagePercent": 0.5,
+              "freshness": {
+                "available": true,
+                "stale": false,
+                "ageMs": 0
+              },
+              "evidence": [
+                "SPREAD_ACCEPTABLE",
+                "SLIPPAGE_ACCEPTABLE",
+                "MARKET_DATA_FRESH"
+              ],
+              "risks": [],
+              "blockers": []
+            },
+            "spreadPercent": 0.13239772275915396,
+            "maximumSpreadPercent": 0.5,
+            "slippagePercent": 0.04157242876345805,
+            "maximumSlippagePercent": 0.5,
+            "freshness": {
+              "available": true,
+              "stale": false,
+              "ageMs": 0
+            },
+            "learningContext": {
+              "strategy": "TREND_PULLBACK",
+              "regime": "TRENDING",
+              "direction": "BULL",
+              "patternScore": 65,
+              "selectionScore": 69.5,
+              "entryScore": 70,
+              "executionScore": 100,
+              "riskReward": 2.9362038525388647,
+              "setupClass": "ASYMMETRIC"
+            },
+            "evidence": [
+              "STRUCTURAL_ENTRY_ZONE_DEFINED",
+              "SPREAD_ACCEPTABLE",
+              "SLIPPAGE_ACCEPTABLE",
+              "MARKET_DATA_FRESH",
+              "BULLISH_HH_HL_STRUCTURE",
+              "TRENDING_REGIME",
+              "SUITABLE_VOLATILITY",
+              "ADEQUATE_MARKET_PARTICIPATION"
+            ],
+            "risks": [
+              "WAITING_FOR_ENTRY_ZONE",
+              "PRICE_EXTENDED_NO_PULLBACK",
+              "PRICE_OUTSIDE_PREFERRED_ENTRY_ZONE"
+            ],
+            "blockers": [],
+            "researchDiagnostics": {
+              "selectedStrategy": "TREND_PULLBACK",
+              "rejectionDetails": [],
+              "candidateForWatchlist": false,
+              "strategyRequirements": {
+                "SCALP": {
+                  "pattern": 90,
+                  "entry": 70,
+                  "execution": 85
+                },
+                "STANDARD": {
+                  "pattern": 75,
+                  "entry": 60,
+                  "execution": 75
+                },
+                "ASYMMETRIC": {
+                  "pattern": 65,
+                  "entry": 50,
+                  "execution": 70
+                }
+              }
+            },
+            "observedAt": "2026-10-25T15:44:20.776Z",
+            "executionAuthority": false,
+            "liveExecution": false
+          },
+          "evidence": [
+            "STRUCTURAL_ENTRY_ZONE_DEFINED",
+            "SPREAD_ACCEPTABLE",
+            "SLIPPAGE_ACCEPTABLE",
+            "MARKET_DATA_FRESH",
+            "BULLISH_HH_HL_STRUCTURE",
+            "TRENDING_REGIME",
+            "SUITABLE_VOLATILITY",
+            "ADEQUATE_MARKET_PARTICIPATION"
+          ],
+          "risks": [
+            "WAITING_FOR_ENTRY_ZONE",
+            "PRICE_EXTENDED_NO_PULLBACK",
+            "PRICE_OUTSIDE_PREFERRED_ENTRY_ZONE"
+          ],
+          "geometryDiagnostics": {
+            "valid": true,
+            "calculatedRiskReward": 2.9362038525388647,
+            "reportedRiskReward": 2.9362038525388647,
+            "minimumRiskReward": 1.5,
+            "rejectedTargetCount": 0,
+            "blockers": []
+          },
+          "blockers": [],
+          "executionAuthority": false,
+          "liveExecution": false
+        }
+      },
+      "tracking": {
+        "highestPrice": 0.03746,
+        "lowestPrice": 0.03713,
+        "maximumFavorableExcursionPercent": 2.522839110848354,
+        "maximumAdverseExcursionPercent": 0,
+        "observations": 1
+      },
+      "lastObservation": {
+        "observedAt": "2026-10-25T16:03:01.181Z",
+        "type": "MONITOR",
+        "status": "WAITING_ENTRY",
+        "thesisState": "STABLE",
+        "markPrice": 0.03713,
+        "lastPrice": 0.03713,
+        "indexPrice": 0.037128,
+        "entryTriggered": false,
+        "entryTriggeredAt": null,
+        "tracking": {
+          "highestPrice": 0.03746,
+          "lowestPrice": 0.03713,
+          "maximumFavorableExcursionPercent": 2.522839110848354,
+          "maximumAdverseExcursionPercent": 0,
+          "observations": 1
+        },
+        "changes": {
+          "confidence": -5.136800000000008,
+          "separation": 3.0508999999999986,
+          "directionChanged": false,
+          "weakening": false
+        },
+        "directionDecision": {
+          "direction": "LONG",
+          "rawDirection": "LONG",
+          "researchDirection": "LONG",
+          "strategyReviewAllowed": true,
+          "setupSignal": "BUY_SETUP",
+          "qualified": true,
+          "longScore": 65.9947,
+          "shortScore": 34.0053,
+          "selectedScore": 65.9947,
+          "separation": 31.9894,
+          "confidence": 64.8629,
+          "availableWeight": 0.7,
+          "reason": "DIRECTION_QUALIFIED",
+          "blockers": [],
+          "contributions": {
+            "technical": {
+              "available": true,
+              "weight": 0.2,
+              "long": 60.7114,
+              "short": 39.2886,
+              "confidence": 59.663
+            },
+            "fundamental": {
+              "available": true,
+              "weight": 0.2,
+              "long": 65,
+              "short": 35,
+              "confidence": 56.9207
+            },
+            "narrative": {
+              "available": false,
+              "weight": 0.15
+            },
+            "news": {
+              "available": false,
+              "weight": 0.15
+            },
+            "marketStructure": {
+              "available": true,
+              "weight": 0.15,
+              "long": 78.3397,
+              "short": 21.6603,
+              "confidence": 82.9229
+            },
+            "liquidity": {
+              "available": true,
+              "weight": 0.15,
+              "long": 62.0204,
+              "short": 37.9796,
+              "confidence": 64.3258
+            }
+          },
+          "diagnostics": {
+            "technical": {
+              "selected": 60.7114,
+              "opposite": 39.2886,
+              "agrees": true,
+              "separation": 21.4228
+            },
+            "marketStructure": {
+              "selected": 78.3397,
+              "opposite": 21.6603,
+              "agrees": true,
+              "separation": 56.6794
+            },
+            "technicalStrongAgreement": true,
+            "structureStrongAgreement": true,
+            "minimumIndependentSeparation": 5,
+            "independentAgreement": true,
+            "unavailable": [
+              "narrative",
+              "news"
+            ]
+          },
+          "executionAuthority": false,
+          "liveExecution": false
+        },
+        "engines": {
+          "technical": {
+            "engine": "TECHNICAL",
+            "available": true,
+            "long": 60.7114,
+            "short": 39.2886,
+            "confidence": 59.663,
+            "evidence": {
+              "m1": -0.13448090371165816,
+              "m2": 2.8531855955678758,
+              "m3": 5.542922114837976,
+              "turnoverExpansion": 1.0355330616288676,
+              "recentTurnover": 14004.166612500001,
+              "priorTurnover": 13523.6306125,
+              "lastPrice": 0.03713
+            },
+            "executionAuthority": false,
+            "liveExecution": false
+          },
+          "fundamental": {
+            "engine": "FUNDAMENTAL",
+            "available": true,
+            "long": 65,
+            "short": 35,
+            "confidence": 56.9207,
+            "evidence": {
+              "quoteVolume": 2029112,
+              "openInterest": 1793953.224,
+              "openInterestValue": null,
+              "openInterestChangePercent": 0.272776048437424,
+              "priceChangePercent": 22.58,
+              "oiRelationship": "PRICE_UP_OI_UP",
+              "fundingRate": 0.00005,
+              "fundingState": "LONGS_PAYING",
+              "fundingAdjustment": -5,
+              "derivativesBias": 35,
+              "volumeParticipation": 0.07682650481397246,
+              "openInterestParticipation": null
+            },
+            "executionAuthority": false,
+            "liveExecution": false
+          },
+          "narrative": {
+            "engine": "NARRATIVE",
+            "available": false,
+            "long": null,
+            "short": null,
+            "confidence": 0,
+            "evidence": {
+              "reason": "EXTERNAL_NARRATIVE_FEED_NOT_CONFIGURED",
+              "symbol": "SKYAI_USDT"
+            },
+            "executionAuthority": false,
+            "liveExecution": false
+          },
+          "news": {
+            "engine": "NEWS",
+            "available": false,
+            "long": null,
+            "short": null,
+            "confidence": 0,
+            "evidence": {
+              "reason": "EXTERNAL_NEWS_FEED_NOT_CONFIGURED",
+              "symbol": "SKYAI_USDT"
+            },
+            "executionAuthority": false,
+            "liveExecution": false
+          },
+          "marketStructure": {
+            "engine": "MARKET_STRUCTURE",
+            "available": true,
+            "long": 78.3397,
+            "short": 21.6603,
+            "confidence": 82.9229,
+            "evidence": {
+              "structureMovePercent": 4.378234718142389,
+              "closeLocation": 0.6507936507936518,
+              "locationBias": 6.0317460317460725,
+              "structuralBias": 20,
+              "higherHigh": true,
+              "higherLow": true,
+              "lowerHigh": false,
+              "lowerLow": false,
+              "high": 0.03823,
+              "low": 0.03508
+            },
+            "executionAuthority": false,
+            "liveExecution": false
+          },
+          "liquidity": {
+            "engine": "LIQUIDITY",
+            "available": true,
+            "long": 62.0204,
+            "short": 37.9796,
+            "confidence": 64.3258,
+            "evidence": {
+              "spreadPercent": 0.13475272874276092,
+              "bestBid": 0.03708,
+              "bestAsk": 0.03713,
+              "bidNotional": 61218.08009999999,
+              "askNotional": 37488.33249999998,
+              "totalNotional": 98706.41259999998,
+              "imbalance": 0.24040735525626847,
+              "spreadQuality": 76.09318151192481,
+              "depthQuality": 49.94349767972534
+            },
+            "executionAuthority": false,
+            "liveExecution": false
+          }
+        },
+        "source": "GATE_USDT_PERPETUAL",
+        "exchange": "GATE",
+        "executionAuthority": false
+      },
+      "history": [
+        {
+          "observedAt": "2026-10-25T16:03:01.181Z",
+          "type": "MONITOR",
+          "status": "WAITING_ENTRY",
+          "thesisState": "STABLE",
+          "markPrice": 0.03713,
+          "lastPrice": 0.03713,
+          "indexPrice": 0.037128,
+          "entryTriggered": false,
+          "entryTriggeredAt": null,
+          "tracking": {
+            "highestPrice": 0.03746,
+            "lowestPrice": 0.03713,
+            "maximumFavorableExcursionPercent": 2.522839110848354,
+            "maximumAdverseExcursionPercent": 0,
+            "observations": 1
+          },
+          "changes": {
+            "confidence": -5.136800000000008,
+            "separation": 3.0508999999999986,
+            "directionChanged": false,
+            "weakening": false
+          },
+          "directionDecision": {
+            "direction": "LONG",
+            "rawDirection": "LONG",
+            "researchDirection": "LONG",
+            "strategyReviewAllowed": true,
+            "setupSignal": "BUY_SETUP",
+            "qualified": true,
+            "longScore": 65.9947,
+            "shortScore": 34.0053,
+            "selectedScore": 65.9947,
+            "separation": 31.9894,
+            "confidence": 64.8629,
+            "availableWeight": 0.7,
+            "reason": "DIRECTION_QUALIFIED",
+            "blockers": [],
+            "contributions": {
+              "technical": {
+                "available": true,
+                "weight": 0.2,
+                "long": 60.7114,
+                "short": 39.2886,
+                "confidence": 59.663
+              },
+              "fundamental": {
+                "available": true,
+                "weight": 0.2,
+                "long": 65,
+                "short": 35,
+                "confidence": 56.9207
+              },
+              "narrative": {
+                "available": false,
+                "weight": 0.15
+              },
+              "news": {
+                "available": false,
+                "weight": 0.15
+              },
+              "marketStructure": {
+                "available": true,
+                "weight": 0.15,
+                "long": 78.3397,
+                "short": 21.6603,
+                "confidence": 82.9229
+              },
+              "liquidity": {
+                "available": true,
+                "weight": 0.15,
+                "long": 62.0204,
+                "short": 37.9796,
+                "confidence": 64.3258
+              }
+            },
+            "diagnostics": {
+              "technical": {
+                "selected": 60.7114,
+                "opposite": 39.2886,
+                "agrees": true,
+                "separation": 21.4228
+              },
+              "marketStructure": {
+                "selected": 78.3397,
+                "opposite": 21.6603,
+                "agrees": true,
+                "separation": 56.6794
+              },
+              "technicalStrongAgreement": true,
+              "structureStrongAgreement": true,
+              "minimumIndependentSeparation": 5,
+              "independentAgreement": true,
+              "unavailable": [
+                "narrative",
+                "news"
+              ]
+            },
+            "executionAuthority": false,
+            "liveExecution": false
+          },
+          "engines": {
+            "technical": {
+              "engine": "TECHNICAL",
+              "available": true,
+              "long": 60.7114,
+              "short": 39.2886,
+              "confidence": 59.663,
+              "evidence": {
+                "m1": -0.13448090371165816,
+                "m2": 2.8531855955678758,
+                "m3": 5.542922114837976,
+                "turnoverExpansion": 1.0355330616288676,
+                "recentTurnover": 14004.166612500001,
+                "priorTurnover": 13523.6306125,
+                "lastPrice": 0.03713
+              },
+              "executionAuthority": false,
+              "liveExecution": false
+            },
+            "fundamental": {
+              "engine": "FUNDAMENTAL",
+              "available": true,
+              "long": 65,
+              "short": 35,
+              "confidence": 56.9207,
+              "evidence": {
+                "quoteVolume": 2029112,
+                "openInterest": 1793953.224,
+                "openInterestValue": null,
+                "openInterestChangePercent": 0.272776048437424,
+                "priceChangePercent": 22.58,
+                "oiRelationship": "PRICE_UP_OI_UP",
+                "fundingRate": 0.00005,
+                "fundingState": "LONGS_PAYING",
+                "fundingAdjustment": -5,
+                "derivativesBias": 35,
+                "volumeParticipation": 0.07682650481397246,
+                "openInterestParticipation": null
+              },
+              "executionAuthority": false,
+              "liveExecution": false
+            },
+            "narrative": {
+              "engine": "NARRATIVE",
+              "available": false,
+              "long": null,
+              "short": null,
+              "confidence": 0,
+              "evidence": {
+                "reason": "EXTERNAL_NARRATIVE_FEED_NOT_CONFIGURED",
+                "symbol": "SKYAI_USDT"
+              },
+              "executionAuthority": false,
+              "liveExecution": false
+            },
+            "news": {
+              "engine": "NEWS",
+              "available": false,
+              "long": null,
+              "short": null,
+              "confidence": 0,
+              "evidence": {
+                "reason": "EXTERNAL_NEWS_FEED_NOT_CONFIGURED",
+                "symbol": "SKYAI_USDT"
+              },
+              "executionAuthority": false,
+              "liveExecution": false
+            },
+            "marketStructure": {
+              "engine": "MARKET_STRUCTURE",
+              "available": true,
+              "long": 78.3397,
+              "short": 21.6603,
+              "confidence": 82.9229,
+              "evidence": {
+                "structureMovePercent": 4.378234718142389,
+                "closeLocation": 0.6507936507936518,
+                "locationBias": 6.0317460317460725,
+                "structuralBias": 20,
+                "higherHigh": true,
+                "higherLow": true,
+                "lowerHigh": false,
+                "lowerLow": false,
+                "high": 0.03823,
+                "low": 0.03508
+              },
+              "executionAuthority": false,
+              "liveExecution": false
+            },
+            "liquidity": {
+              "engine": "LIQUIDITY",
+              "available": true,
+              "long": 62.0204,
+              "short": 37.9796,
+              "confidence": 64.3258,
+              "evidence": {
+                "spreadPercent": 0.13475272874276092,
+                "bestBid": 0.03708,
+                "bestAsk": 0.03713,
+                "bidNotional": 61218.08009999999,
+                "askNotional": 37488.33249999998,
+                "totalNotional": 98706.41259999998,
+                "imbalance": 0.24040735525626847,
+                "spreadQuality": 76.09318151192481,
+                "depthQuality": 49.94349767972534
+              },
+              "executionAuthority": false,
+              "liveExecution": false
+            }
+          },
+          "source": "GATE_USDT_PERPETUAL",
+          "exchange": "GATE",
+          "executionAuthority": false
+        }
+      ],
+      "learningRecorded": false,
+      "learningRecordedAt": null,
+      "executionAuthority": false,
+      "liveExecution": false
+    },
+    {
+      "id": "mon_1792952609616_b77fxry",
+      "setupId": "setup_1792952319080_0_28y4q",
+      "symbol": "BMT_USDT",
+      "status": "WAITING_ENTRY",
+      "direction": "LONG",
+      "entry": 0.03133,
+      "stop": 0.03088875,
+      "target": 0.03262999999999999,
+      "createdAt": "2026-10-25T18:23:29.616Z",
+      "updatedAt": "2026-10-25T18:23:29.616Z",
+      "entryTriggeredAt": null,
+      "completedAt": null,
+      "lastPriceObservedAt": null,
+      "lastResearchObservedAt": null,
+      "lastProcessedCandleOpenTime": null,
+      "result": null,
+      "scenario": {
+        "capitalUsd": 1000,
+        "leverage": 2,
+        "exposureUsd": 2000,
+        "quantity": 63836.5783594,
+        "entry": 0.03133,
+        "stop": {
+          "price": 0.03088875,
+          "grossPnlUsd": -28.17,
+          "estimatedFeesUsd": 0,
+          "netPnlUsd": -28.17,
+          "capitalImpactPercent": -2.82
+        },
+        "targets": [
+          {
+            "label": "T1",
+            "price": 0.03169,
+            "grossPnlUsd": 22.98,
+            "estimatedFeesUsd": 0,
+            "netPnlUsd": 22.98,
+            "capitalImpactPercent": 2.3
+          },
+          {
+            "label": "T2",
+            "price": 0.03263,
+            "grossPnlUsd": 82.99,
+            "estimatedFeesUsd": 0,
+            "netPnlUsd": 82.99,
+            "capitalImpactPercent": 8.3
+          }
+        ],
+        "feeRatePercent": 0,
+        "liquidationPrice": null,
+        "liquidationNote": "Requires the connected futures venue margin model; not guessed.",
+        "executionAuthority": false
+      },
+      "original": {
+        "asset": {
+          "symbol": "BMT_USDT",
+          "productId": "BMT_USDT",
+          "baseAsset": "BMT",
+          "quoteAsset": "USDT",
+          "status": "TRADING",
+          "contractType": "PERPETUAL",
+          "instrumentType": "PERPETUAL",
+          "exchange": "GATE",
+          "settleCoin": "USDT",
+          "market": {
+            "price": 0.03151,
+            "markPrice": 0.03151,
+            "indexPrice": 0.03158,
+            "bid": 0.03149,
+            "ask": 0.03151,
+            "spreadPercent": 0.06349206349208293,
+            "quoteVolume": 5110414,
+            "baseVolume": 153623000,
+            "priceChangePercent": -13.81,
+            "high24h": 0.04068,
+            "low24h": 0.02869,
+            "rangePercent": 38.05141225007934,
+            "tradeCount24h": null,
+            "openInterest": null,
+            "openInterestValue": null,
+            "fundingRate": -0.000334,
+            "nextFundingTime": 1792954800
+          },
+          "derivativesEvidenceAvailable": true,
+          "executionAuthority": false,
+          "liveExecution": false
+        },
+        "directionDecision": {
+          "direction": "LONG",
+          "rawDirection": "LONG",
+          "researchDirection": "LONG",
+          "strategyReviewAllowed": true,
+          "setupSignal": "BUY_SETUP",
+          "qualified": true,
+          "longScore": 70.7866,
+          "shortScore": 29.2134,
+          "selectedScore": 70.7866,
+          "separation": 41.5732,
+          "confidence": 76.3416,
+          "availableWeight": 0.7,
+          "reason": "DIRECTION_QUALIFIED",
+          "blockers": [],
+          "contributions": {
+            "technical": {
+              "available": true,
+              "weight": 0.2,
+              "long": 78.8736,
+              "short": 21.1264,
+              "confidence": 74.5343
+            },
+            "fundamental": {
+              "available": true,
+              "weight": 0.2,
+              "long": 49.095,
+              "short": 50.905,
+              "confidence": 59.4279
+            },
+            "narrative": {
+              "available": false,
+              "weight": 0.15
+            },
+            "news": {
+              "available": false,
+              "weight": 0.15
+            },
+            "marketStructure": {
+              "available": true,
+              "weight": 0.15,
+              "long": 92.186,
+              "short": 7.814,
+              "confidence": 100
+            },
+            "liquidity": {
+              "available": true,
+              "weight": 0.15,
+              "long": 67.5266,
+              "short": 32.4734,
+              "confidence": 77.6447
+            }
+          },
+          "diagnostics": {
+            "technical": {
+              "selected": 78.8736,
+              "opposite": 21.1264,
+              "agrees": true,
+              "separation": 57.7472
+            },
+            "marketStructure": {
+              "selected": 92.186,
+              "opposite": 7.814,
+              "agrees": true,
+              "separation": 84.372
+            },
+            "technicalStrongAgreement": true,
+            "structureStrongAgreement": true,
+            "minimumIndependentSeparation": 5,
+            "independentAgreement": true,
+            "unavailable": [
+              "narrative",
+              "news"
+            ]
+          },
+          "executionAuthority": false,
+          "liveExecution": false
+        },
+        "researchRankScore": 77.6223,
+        "engines": {
+          "technical": {
+            "engine": "TECHNICAL",
+            "available": true,
+            "long": 78.8736,
+            "short": 21.1264,
+            "confidence": 74.5343,
+            "evidence": {
+              "m1": 3.142389525368257,
+              "m2": 5.033333333333348,
+              "m3": 6.237356709372908,
+              "turnoverExpansion": 0.46945713955775764,
+              "recentTurnover": 14619.7596375,
+              "priorTurnover": 31141.8410875,
+              "lastPrice": 0.03151
+            },
+            "executionAuthority": false,
+            "liveExecution": false
+          },
+          "fundamental": {
+            "engine": "FUNDAMENTAL",
+            "available": true,
+            "long": 49.095,
+            "short": 50.905,
+            "confidence": 59.4279,
+            "evidence": {
+              "quoteVolume": 5110414,
+              "openInterest": 1026867.92,
+              "openInterestValue": null,
+              "openInterestChangePercent": -0.10228623580522625,
+              "priceChangePercent": -13.81,
+              "oiRelationship": "PRICE_DOWN_OI_DOWN",
+              "fundingRate": -0.000334,
+              "fundingState": "SHORTS_PAYING",
+              "fundingAdjustment": 12,
+              "derivativesBias": -13.81,
+              "volumeParticipation": 0.17711402105288077,
+              "openInterestParticipation": null
+            },
+            "executionAuthority": false,
+            "liveExecution": false
+          },
+          "narrative": {
+            "engine": "NARRATIVE",
+            "available": false,
+            "long": null,
+            "short": null,
+            "confidence": 0,
+            "evidence": {
+              "reason": "EXTERNAL_NARRATIVE_FEED_NOT_CONFIGURED",
+              "symbol": "BMT_USDT"
+            },
+            "executionAuthority": false,
+            "liveExecution": false
+          },
+          "news": {
+            "engine": "NEWS",
+            "available": false,
+            "long": null,
+            "short": null,
+            "confidence": 0,
+            "evidence": {
+              "reason": "EXTERNAL_NEWS_FEED_NOT_CONFIGURED",
+              "symbol": "BMT_USDT"
+            },
+            "executionAuthority": false,
+            "liveExecution": false
+          },
+          "marketStructure": {
+            "engine": "MARKET_STRUCTURE",
+            "available": true,
+            "long": 92.186,
+            "short": 7.814,
+            "confidence": 100,
+            "evidence": {
+              "structureMovePercent": 6.725543478260879,
+              "closeLocation": 0.9323308270676693,
+              "locationBias": 17.293233082706774,
+              "structuralBias": 20,
+              "higherHigh": true,
+              "higherLow": true,
+              "lowerHigh": false,
+              "lowerLow": false,
+              "high": 0.03169,
+              "low": 0.02903
+            },
+            "executionAuthority": false,
+            "liveExecution": false
+          },
+          "liquidity": {
+            "engine": "LIQUIDITY",
+            "available": true,
+            "long": 67.5266,
+            "short": 32.4734,
+            "confidence": 77.6447,
+            "evidence": {
+              "spreadPercent": 0.03176115610606995,
+              "bestBid": 0.03148,
+              "bestAsk": 0.03149,
+              "bidNotional": 144911.49649999998,
+              "askNotional": 69687.76689999999,
+              "totalNotional": 214599.26339999997,
+              "imbalance": 0.3505311640319452,
+              "spreadQuality": 97.54975914456875,
+              "depthQuality": 53.316302506825714
+            },
+            "executionAuthority": false,
+            "liveExecution": false
+          }
+        },
+        "setup": {
+          "approved": true,
+          "status": "SETUP_READY",
+          "setupType": "BUY",
+          "symbol": "BMT_USDT",
+          "direction": "LONG",
+          "researchDirection": "BULL",
+          "entry": 0.03133,
+          "stop": 0.03088875,
+          "target": 0.03262999999999999,
+          "targets": [
+            0.03169,
+            0.03262999999999999
+          ],
+          "stopDistance": 0.0004412499999999972,
+          "targetDistance": 0.0012999999999999956,
+          "stopDistancePercent": 1.4083945100542523,
+          "targetDistancePercent": 4.149377593360983,
+          "riskReward": 2.9461756373937766,
+          "minimumRiskReward": 1.5,
+          "spreadPercent": 0.031751071598676184,
+          "maximumSpreadPercent": 0.5,
+          "slippagePercent": 0.21435978411441797,
+          "depthNotional": 231227.7182,
+          "volatilityResearch": {
+            "status": "OBSERVED",
+            "shadowOnly": true,
+            "source": "ATR_STRUCTURE_RESEARCH",
+            "existingStop": 0.03088875,
+            "proposedStop": 0.02999,
+            "stopDifferencePercent": -2.8686562400255355,
+            "direction": "BULL",
+            "entry": 0.03133,
+            "stop": 0.02999,
+            "target": 0.03262999999999999,
+            "atr": 0.00035500000000000017,
+            "stopMethod": "ATR_AND_STRUCTURE",
+            "atrMultiplier": 2,
+            "stopPercent": 4.2770507500797885,
+            "quantity": 15959.144589849986,
+            "notionalUsd": 500,
+            "estimatedMarginUsd": 250,
+            "requestedMarginUsd": 250,
+            "leverage": 2,
+            "maxLossUsd": 25,
+            "plannedLossUsd": 22.615808028964416,
+            "costsPercent": 0.24611085571309416,
+            "grossRewardUsd": 20.746887966804913,
+            "netRewardUsd": 19.516333688239442,
+            "netRiskReward": 0.8629509793877173,
+            "resizedForRisk": false,
+            "warnings": [
+              "LIQUIDATION_PRICE_NOT_VERIFIED",
+              "STOP_FILL_AND_SLIPPAGE_NOT_GUARANTEED",
+              "NOT_A_LIVE_EXCHANGE_ORDER"
+            ],
+            "evidenceWarnings": [
+              "FEES_NOT_VERIFIED",
+              "LIQUIDATION_DISTANCE_NOT_VERIFIED",
+              "ATR_TIMEFRAME_NOT_VERIFIED"
+            ]
+          },
+          "atr": 0.00035500000000000017,
+          "support": 0.02999,
+          "resistance": 0.03169,
+          "freshness": {
+            "available": true,
+            "stale": false,
+            "ageMs": 0
+          },
+          "instrumentType": "PERPETUAL",
+          "futuresValidated": true,
+          "strategy": "BREAKOUT_RETEST",
+          "lifecycleStatus": "WAITING_FOR_ENTRY",
+          "lifecycle": {
+            "status": "WAITING_FOR_ENTRY",
+            "entryReached": false,
+            "currentPrice": 0.0315,
+            "reason": "VALID_SETUP_WAITING_FOR_PLANNED_ENTRY"
+          },
+          "marketRegime": "TRENDING",
+          "regimeScore": 80,
+          "entryZone": {
+            "available": true,
+            "low": 0.031238749999999996,
+            "high": 0.03142125,
+            "preferred": 0.03133,
+            "structuralLevel": 0.03133,
+            "atrWidth": 0.00009125,
+            "direction": "BULL"
+          },
+          "invalidation": {
+            "available": true,
+            "price": 0.03088875,
+            "structuralLevel": 0.03098,
+            "buffer": 0.00009125,
+            "reason": "BREAKOUT_RETEST_SUPPORT_FAILURE"
+          },
+          "targetsDetailed": [
+            {
+              "price": 0.03169,
+              "label": "TP1",
+              "reason": "STRUCTURAL_SWING_HIGH",
+              "rewardDistance": 0.00036000000000000615,
+              "riskReward": 0.8158640226629086,
+              "qualifies": true,
+              "setupClass": "SCALP",
+              "classApproved": false,
+              "primary": false
+            },
+            {
+              "price": 0.03262999999999999,
+              "label": "TP2",
+              "reason": "BREAKOUT_RANGE_PROJECTION",
+              "rewardDistance": 0.0012999999999999956,
+              "riskReward": 2.9461756373937766,
+              "qualifies": true,
+              "setupClass": "ASYMMETRIC",
+              "classApproved": true,
+              "primary": true
+            }
+          ],
+          "setupQualityScore": 85.33541076487253,
+          "minimumSetupQualityScore": 70,
+          "qualityComponents": {
+            "strategy": {
+              "score": 81.5,
+              "weight": 0.4
+            },
+            "entry": {
+              "score": 70,
+              "weight": 0.2
+            },
+            "reward": {
+              "score": 93.67705382436266,
+              "weight": 0.2,
+              "riskReward": 2.9461756373937766,
+              "setupClass": "ASYMMETRIC"
+            },
+            "execution": {
+              "score": 100,
+              "weight": 0.2
+            }
+          },
+          "entryQuality": {
+            "approved": true,
+            "score": 70,
+            "currentPrice": 0.0315,
+            "preferredEntry": 0.03133,
+            "chaseState": null,
+            "evidence": [
+              "STRUCTURAL_ENTRY_ZONE_DEFINED"
+            ],
+            "risks": [
+              "WAITING_FOR_ENTRY_ZONE"
+            ],
+            "blockers": []
+          },
+          "executionQuality": {
+            "approved": true,
+            "score": 100,
+            "spreadPercent": 0.031751071598676184,
+            "maximumSpreadPercent": 0.5,
+            "slippagePercent": 0.21435978411441797,
+            "maximumSlippagePercent": 0.5,
+            "freshness": {
+              "available": true,
+              "stale": false,
+              "ageMs": 0
+            },
+            "evidence": [
+              "SPREAD_ACCEPTABLE",
+              "SLIPPAGE_ACCEPTABLE",
+              "MARKET_DATA_FRESH"
+            ],
+            "risks": [],
+            "blockers": []
+          },
+          "structure": {
+            "approved": true,
+            "status": "MARKET_STRUCTURE_READY",
+            "candleCount": 99,
+            "current": {
+              "openTime": 1792951800000,
+              "open": 0.03139,
+              "high": 0.03162,
+              "low": 0.03127,
+              "close": 0.03136,
+              "changePercent": -0.09557183816502786
+            },
+            "atr": 0.000365,
+            "trend": "BULLISH",
+            "structurePattern": "HH_HL",
+            "highStructure": "HIGHER_HIGH",
+            "lowStructure": "HIGHER_LOW",
+            "swingHighs": [
+              {
+                "index": 40,
+                "openTime": 1792934400000,
+                "price": 0.02963
+              },
+              {
+                "index": 46,
+                "openTime": 1792936200000,
+                "price": 0.03123
+              },
+              {
+                "index": 55,
+                "openTime": 1792938900000,
+                "price": 0.02972
+              },
+              {
+                "index": 58,
+                "openTime": 1792939800000,
+                "price": 0.02957
+              },
+              {
+                "index": 62,
+                "openTime": 1792941000000,
+                "price": 0.02946
+              },
+              {
+                "index": 67,
+                "openTime": 1792942500000,
+                "price": 0.03073
+              },
+              {
+                "index": 74,
+                "openTime": 1792944600000,
+                "price": 0.03028
+              },
+              {
+                "index": 82,
+                "openTime": 1792947000000,
+                "price": 0.03064
+              },
+              {
+                "index": 88,
+                "openTime": 1792948800000,
+                "price": 0.03081
+              },
+              {
+                "index": 96,
+                "openTime": 1792951200000,
+                "price": 0.03169
+              }
+            ],
+            "swingLows": [
+              {
+                "index": 33,
+                "openTime": 1792932300000,
+                "price": 0.02878
+              },
+              {
+                "index": 36,
+                "openTime": 1792933200000,
+                "price": 0.02869
+              },
+              {
+                "index": 48,
+                "openTime": 1792936800000,
+                "price": 0.02982
+              },
+              {
+                "index": 55,
+                "openTime": 1792938900000,
+                "price": 0.02919
+              },
+              {
+                "index": 60,
+                "openTime": 1792940400000,
+                "price": 0.02903
+              },
+              {
+                "index": 64,
+                "openTime": 1792941600000,
+                "price": 0.02912
+              },
+              {
+                "index": 71,
+                "openTime": 1792943700000,
+                "price": 0.0296
+              },
+              {
+                "index": 76,
+                "openTime": 1792945200000,
+                "price": 0.02979
+              },
+              {
+                "index": 84,
+                "openTime": 1792947600000,
+                "price": 0.02999
+              },
+              {
+                "index": 93,
+                "openTime": 1792950300000,
+                "price": 0.03003
+              }
+            ],
+            "latestSwingHigh": {
+              "index": 96,
+              "openTime": 1792951200000,
+              "price": 0.03169
+            },
+            "previousSwingHigh": {
+              "index": 88,
+              "openTime": 1792948800000,
+              "price": 0.03081
+            },
+            "latestSwingLow": {
+              "index": 93,
+              "openTime": 1792950300000,
+              "price": 0.03003
+            },
+            "previousSwingLow": {
+              "index": 84,
+              "openTime": 1792947600000,
+              "price": 0.02999
+            },
+            "range": {
+              "high": 0.03169,
+              "low": 0.02999,
+              "midpoint": 0.03084,
+              "widthPercent": 5.512321660181594
+            },
+            "volatility": {
+              "regime": "EXTREME",
+              "atrPercent": 1.1639030612244896,
+              "recentRangeRatio": 2.154255319148932
+            },
+            "breakout": {
+              "detected": false,
+              "direction": null,
+              "level": null,
+              "displacementAtr": 0.08219178082192397
+            },
+            "liquiditySweep": {
+              "detected": false,
+              "direction": null,
+              "level": null,
+              "extreme": null,
+              "reclaimed": false
+            },
+            "volume": {
+              "available": true,
+              "ratio": 1.1991444152767834,
+              "state": "NORMAL"
+            },
+            "blockers": [],
+            "observedAt": "2026-10-25T18:18:37.437Z",
+            "executionAuthority": false,
+            "liveExecution": false
+          },
+          "regime": {
+            "approved": true,
+            "status": "MARKET_REGIME_READY",
+            "regime": "TRENDING",
+            "regimeScore": 80,
+            "researchDirection": "BULL",
+            "structuralDirection": "BULL",
+            "alignment": {
+              "aligned": true,
+              "state": "ALIGNED",
+              "reason": "RESEARCH_AND_STRUCTURE_AGREE"
+            },
+            "scores": {
+              "TRENDING": {
+                "score": 80,
+                "reasons": [
+                  "HIGHER_HIGH_HIGHER_LOW_STRUCTURE",
+                  "DIRECTIONAL_SWING_STRUCTURE",
+                  "PARTICIPATION_SUPPORTS_TREND"
+                ]
+              },
+              "COMPRESSION": {
+                "score": 15,
+                "reasons": [
+                  "RELATIVELY_TIGHT_RANGE"
+                ]
+              },
+              "EXPANSION": {
+                "score": 30,
+                "reasons": [
+                  "EXTREME_VOLATILITY"
+                ]
+              },
+              "LIQUIDITY_SWEEP": {
+                "score": 10,
+                "reasons": [
+                  "SWEEP_WITH_VOLATILITY"
+                ]
+              },
+              "RANGING": {
+                "score": 35,
+                "reasons": [
+                  "NO_ACTIVE_BREAKOUT_OR_SWEEP",
+                  "DEFINED_RANGE_BOUNDARIES"
+                ]
+              }
+            },
+            "competingRegimes": [
+              "TRENDING"
+            ],
+            "eligibleStrategies": [
+              "TREND_PULLBACK",
+              "BREAKOUT_RETEST"
+            ],
+            "eligibilityDiagnostics": {
+              "registeredStrategies": [
+                "TREND_PULLBACK",
+                "BREAKOUT_RETEST",
+                "LIQUIDITY_SWEEP",
+                "MOMENTUM_BREAKOUT",
+                "RANGE_ROTATION"
+              ],
+              "primaryRegime": "TRENDING",
+              "competingRegimes": [
+                "TRENDING"
+              ],
+              "minimumCompetingScore": 60,
+              "eligibleStrategies": [
+                "TREND_PULLBACK",
+                "BREAKOUT_RETEST"
+              ],
+              "skippedStrategies": [
+                "LIQUIDITY_SWEEP",
+                "MOMENTUM_BREAKOUT",
+                "RANGE_ROTATION"
+              ],
+              "upstreamReady": true
+            },
+            "context": {
+              "structurePattern": "HH_HL",
+              "volatility": "EXTREME",
+              "breakout": {
+                "detected": false,
+                "direction": null,
+                "level": null,
+                "displacementAtr": 0.08219178082192397
+              },
+              "liquiditySweep": {
+                "detected": false,
+                "direction": null,
+                "level": null,
+                "extreme": null,
+                "reclaimed": false
+              },
+              "range": {
+                "high": 0.03169,
+                "low": 0.02999,
+                "midpoint": 0.03084,
+                "widthPercent": 5.512321660181594
+              },
+              "volume": {
+                "available": true,
+                "ratio": 1.1991444152767834,
+                "state": "NORMAL"
+              }
+            },
+            "blockers": [],
+            "observedAt": "2026-10-25T18:18:37.438Z",
+            "executionAuthority": false,
+            "liveExecution": false
+          },
+          "strategySelection": {
+            "approved": true,
+            "status": "SETUP_STRATEGY_SELECTED",
+            "direction": "BULL",
+            "researchDirection": "BULL",
+            "directionConflict": false,
+            "marketRegime": "TRENDING",
+            "eligibleStrategies": [
+              "TREND_PULLBACK",
+              "BREAKOUT_RETEST"
+            ],
+            "registeredStrategies": [
+              "TREND_PULLBACK",
+              "BREAKOUT_RETEST",
+              "LIQUIDITY_SWEEP",
+              "MOMENTUM_BREAKOUT",
+              "RANGE_ROTATION"
+            ],
+            "skippedStrategies": [
+              "LIQUIDITY_SWEEP",
+              "MOMENTUM_BREAKOUT",
+              "RANGE_ROTATION"
+            ],
+            "unknownEligibleStrategies": [],
+            "evaluationSkipped": false,
+            "evaluationSkipReasons": [],
+            "attemptedStrategies": [
+              {
+                "strategy": "TREND_PULLBACK",
+                "matched": false,
+                "planned": true,
+                "lifecycleStatus": "PLANNED",
+                "status": "PATTERN_REJECTED",
+                "patternScore": 55,
+                "blockers": [
+                  "TREND_PULLBACK_PATTERN_SCORE_TOO_LOW"
+                ],
+                "evidence": [
+                  "BULLISH_HH_HL_STRUCTURE",
+                  "TRENDING_REGIME",
+                  "ADEQUATE_MARKET_PARTICIPATION"
+                ],
+                "risks": [
+                  "EXTREME_VOLATILITY",
+                  "PRICE_OUTSIDE_PREFERRED_ENTRY_ZONE"
+                ]
+              },
+              {
+                "strategy": "BREAKOUT_RETEST",
+                "matched": true,
+                "planned": false,
+                "lifecycleStatus": "ENTRY_CANDIDATE",
+                "status": "PATTERN_MATCHED",
+                "patternScore": 85,
+                "blockers": [],
+                "evidence": [
+                  "DIRECTIONAL_BREAKOUT_CONFIRMED",
+                  "MEANINGFUL_BREAKOUT_DISPLACEMENT",
+                  "BROKEN_LEVEL_RETESTED",
+                  "RETEST_HELD",
+                  "REGIME_SUPPORTS_BREAKOUT_SETUP"
+                ],
+                "risks": [
+                  "PRICE_AWAY_FROM_RETEST_ENTRY",
+                  "EXTREME_VOLATILITY"
+                ]
+              }
+            ],
+            "matchedStrategies": [
+              {
+                "strategy": "BREAKOUT_RETEST",
+                "selectionScore": 81.5,
+                "patternScore": 85,
+                "bestRiskReward": 2.9461756373937766,
+                "selectionComponents": {
+                  "pattern": {
+                    "score": 85,
+                    "weight": 0.7
+                  },
+                  "geometry": {
+                    "score": 85,
+                    "weight": 0.2,
+                    "bestRiskReward": 2.9461756373937766,
+                    "validTargetCount": 2
+                  },
+                  "entry": {
+                    "score": 50,
+                    "weight": 0.1
+                  }
+                }
+              },
+              {
+                "strategy": "TREND_PULLBACK",
+                "selectionScore": 57.5,
+                "patternScore": 55,
+                "bestRiskReward": 0.9287531526372026,
+                "selectionComponents": {
+                  "pattern": {
+                    "score": 55,
+                    "weight": 0.7
+                  },
+                  "geometry": {
+                    "score": 70,
+                    "weight": 0.2,
+                    "bestRiskReward": 0.9287531526372026,
+                    "validTargetCount": 1
+                  },
+                  "entry": {
+                    "score": 50,
+                    "weight": 0.1
+                  }
+                }
+              }
+            ],
+            "selectedStrategy": "BREAKOUT_RETEST",
+            "selectionScore": 81.5,
+            "minimumSelectionScore": 60,
+            "selectionComponents": {
+              "pattern": {
+                "score": 85,
+                "weight": 0.7
+              },
+              "geometry": {
+                "score": 85,
+                "weight": 0.2,
+                "bestRiskReward": 2.9461756373937766,
+                "validTargetCount": 2
+              },
+              "entry": {
+                "score": 50,
+                "weight": 0.1
+              }
+            },
+            "selectedResult": {
+              "strategy": "BREAKOUT_RETEST",
+              "matched": true,
+              "status": "PATTERN_MATCHED",
+              "direction": "BULL",
+              "patternScore": 85,
+              "minimumPatternScore": 70,
+              "breakout": {
+                "detected": true,
+                "direction": "BULL",
+                "candleIndex": 96,
+                "candle": {
+                  "openTime": 1792951200000,
+                  "open": 0.03106,
+                  "high": 0.03169,
+                  "low": 0.03106,
+                  "close": 0.0314,
+                  "volume": 41739
+                },
+                "level": 0.03133,
+                "priorRangeHigh": 0.03133,
+                "priorRangeLow": 0.03003,
+                "displacementAtr": 0.9315068493150591
+              },
+              "retest": {
+                "detected": true,
+                "held": true,
+                "candle": {
+                  "openTime": 1792951500000,
+                  "open": 0.03139,
+                  "high": 0.03154,
+                  "low": 0.03098,
+                  "close": 0.03144,
+                  "volume": 17139
+                },
+                "distanceToLevel": 0.00011000000000000593,
+                "tolerance": 0.00012775,
+                "reason": "BROKEN_RESISTANCE_HELD_AS_SUPPORT"
+              },
+              "entryZone": {
+                "available": true,
+                "low": 0.031238749999999996,
+                "high": 0.03142125,
+                "preferred": 0.03133,
+                "structuralLevel": 0.03133,
+                "atrWidth": 0.00009125,
+                "direction": "BULL"
+              },
+              "preferredEntry": 0.03133,
+              "invalidation": {
+                "available": true,
+                "price": 0.03088875,
+                "structuralLevel": 0.03098,
+                "buffer": 0.00009125,
+                "reason": "BREAKOUT_RETEST_SUPPORT_FAILURE"
+              },
+              "stop": 0.03088875,
+              "targets": [
+                {
+                  "price": 0.03169,
+                  "reason": "STRUCTURAL_SWING_HIGH",
+                  "label": "TP1",
+                  "rewardDistance": 0.00036000000000000615,
+                  "riskReward": 0.8158640226629086
+                },
+                {
+                  "price": 0.03262999999999999,
+                  "reason": "BREAKOUT_RANGE_PROJECTION",
+                  "label": "TP2",
+                  "rewardDistance": 0.0012999999999999956,
+                  "riskReward": 2.9461756373937766
+                }
+              ],
+              "evidence": [
+                "DIRECTIONAL_BREAKOUT_CONFIRMED",
+                "MEANINGFUL_BREAKOUT_DISPLACEMENT",
+                "BROKEN_LEVEL_RETESTED",
+                "RETEST_HELD",
+                "REGIME_SUPPORTS_BREAKOUT_SETUP"
+              ],
+              "risks": [
+                "PRICE_AWAY_FROM_RETEST_ENTRY",
+                "EXTREME_VOLATILITY"
+              ],
+              "blockers": [],
+              "diagnostics": {
+                "currentPrice": 0.0315,
+                "candleCount": 99,
+                "marketRegime": "TRENDING",
+                "structurePattern": "HH_HL",
+                "volatilityRegime": "EXTREME",
+                "breakoutDisplacementAtr": 0.9315068493150591,
+                "retestReason": "BROKEN_RESISTANCE_HELD_AS_SUPPORT"
+              },
+              "executionAuthority": false,
+              "liveExecution": false,
+              "planned": false,
+              "lifecycleStatus": "ENTRY_CANDIDATE"
+            },
+            "runnerUp": {
+              "strategy": "TREND_PULLBACK",
+              "selectionScore": 57.5,
+              "patternScore": 55
+            },
+            "ambiguity": {
+              "ambiguous": false,
+              "scoreDifference": 24,
+              "maximumScoreDifference": 5,
+              "entryDifferencePercent": 1.5332487309644534,
+              "maximumEntryDifferencePercent": 0.5,
+              "stopDifferencePercent": 3.0139593908629423,
+              "maximumStopDifferencePercent": 0.75,
+              "reasons": []
+            },
+            "blockers": [],
+            "observedAt": "2026-10-25T18:18:37.441Z",
+            "executionAuthority": false,
+            "liveExecution": false
+          },
+          "quality": {
+            "lifecycleStatus": "WAITING_FOR_ENTRY",
+            "lifecycle": {
+              "status": "WAITING_FOR_ENTRY",
+              "entryReached": false,
+              "currentPrice": 0.0315,
+              "reason": "VALID_SETUP_WAITING_FOR_PLANNED_ENTRY"
+            },
+            "approved": true,
+            "status": "SETUP_QUALITY_APPROVED",
+            "symbol": "BMT_USDT",
+            "direction": "BULL",
+            "strategy": {
+              "id": "BREAKOUT_RETEST",
+              "selectionScore": 81.5,
+              "patternScore": 85,
+              "marketRegime": "TRENDING"
+            },
+            "setupClass": "ASYMMETRIC",
+            "expectancyMode": "BOOTSTRAP",
+            "rewardProfile": {
+              "bestRiskReward": 2.9461756373937766,
+              "selectedRiskReward": 2.9461756373937766,
+              "minimumTradableRiskReward": 0.5,
+              "standardRiskReward": 1,
+              "asymmetricRiskReward": 1.5,
+              "structuralTargetCount": 2,
+              "tradableTargetCount": 2
+            },
+            "entry": 0.03133,
+            "entryZone": {
+              "available": true,
+              "low": 0.031238749999999996,
+              "high": 0.03142125,
+              "preferred": 0.03133,
+              "structuralLevel": 0.03133,
+              "atrWidth": 0.00009125,
+              "direction": "BULL"
+            },
+            "stop": 0.03088875,
+            "invalidation": {
+              "available": true,
+              "price": 0.03088875,
+              "structuralLevel": 0.03098,
+              "buffer": 0.00009125,
+              "reason": "BREAKOUT_RETEST_SUPPORT_FAILURE"
+            },
+            "target": 0.03262999999999999,
+            "targets": [
+              0.03169,
+              0.03262999999999999
+            ],
+            "targetsDetailed": [
+              {
+                "price": 0.03169,
+                "label": "TP1",
+                "reason": "STRUCTURAL_SWING_HIGH",
+                "rewardDistance": 0.00036000000000000615,
+                "riskReward": 0.8158640226629086,
+                "qualifies": true,
+                "setupClass": "SCALP",
+                "classApproved": false,
+                "primary": false
+              },
+              {
+                "price": 0.03262999999999999,
+                "label": "TP2",
+                "reason": "BREAKOUT_RANGE_PROJECTION",
+                "rewardDistance": 0.0012999999999999956,
+                "riskReward": 2.9461756373937766,
+                "qualifies": true,
+                "setupClass": "ASYMMETRIC",
+                "classApproved": true,
+                "primary": true
+              }
+            ],
+            "riskDistance": 0.0004412499999999972,
+            "targetDistance": 0.0012999999999999956,
+            "riskReward": 2.9461756373937766,
+            "minimumRiskReward": 1.5,
+            "minimumTradableRiskReward": 0.5,
+            "setupQualityScore": 85.33541076487253,
+            "minimumSetupQualityScore": 70,
+            "qualityComponents": {
+              "strategy": {
+                "score": 81.5,
+                "weight": 0.4
+              },
+              "entry": {
+                "score": 70,
+                "weight": 0.2
+              },
+              "reward": {
+                "score": 93.67705382436266,
+                "weight": 0.2,
+                "riskReward": 2.9461756373937766,
+                "setupClass": "ASYMMETRIC"
+              },
+              "execution": {
+                "score": 100,
+                "weight": 0.2
+              }
+            },
+            "entryQuality": {
+              "approved": true,
+              "score": 70,
+              "currentPrice": 0.0315,
+              "preferredEntry": 0.03133,
+              "chaseState": null,
+              "evidence": [
+                "STRUCTURAL_ENTRY_ZONE_DEFINED"
+              ],
+              "risks": [
+                "WAITING_FOR_ENTRY_ZONE"
+              ],
+              "blockers": []
+            },
+            "executionQuality": {
+              "approved": true,
+              "score": 100,
+              "spreadPercent": 0.031751071598676184,
+              "maximumSpreadPercent": 0.5,
+              "slippagePercent": 0.21435978411441797,
+              "maximumSlippagePercent": 0.5,
+              "freshness": {
+                "available": true,
+                "stale": false,
+                "ageMs": 0
+              },
+              "evidence": [
+                "SPREAD_ACCEPTABLE",
+                "SLIPPAGE_ACCEPTABLE",
+                "MARKET_DATA_FRESH"
+              ],
+              "risks": [],
+              "blockers": []
+            },
+            "spreadPercent": 0.031751071598676184,
+            "maximumSpreadPercent": 0.5,
+            "slippagePercent": 0.21435978411441797,
+            "maximumSlippagePercent": 0.5,
+            "freshness": {
+              "available": true,
+              "stale": false,
+              "ageMs": 0
+            },
+            "learningContext": {
+              "strategy": "BREAKOUT_RETEST",
+              "regime": "TRENDING",
+              "direction": "BULL",
+              "patternScore": 85,
+              "selectionScore": 81.5,
+              "entryScore": 70,
+              "executionScore": 100,
+              "riskReward": 2.9461756373937766,
+              "setupClass": "ASYMMETRIC"
+            },
+            "evidence": [
+              "STRUCTURAL_ENTRY_ZONE_DEFINED",
+              "SPREAD_ACCEPTABLE",
+              "SLIPPAGE_ACCEPTABLE",
+              "MARKET_DATA_FRESH",
+              "DIRECTIONAL_BREAKOUT_CONFIRMED",
+              "MEANINGFUL_BREAKOUT_DISPLACEMENT",
+              "BROKEN_LEVEL_RETESTED",
+              "RETEST_HELD",
+              "REGIME_SUPPORTS_BREAKOUT_SETUP"
+            ],
+            "risks": [
+              "WAITING_FOR_ENTRY_ZONE",
+              "PRICE_AWAY_FROM_RETEST_ENTRY",
+              "EXTREME_VOLATILITY"
+            ],
+            "blockers": [],
+            "researchDiagnostics": {
+              "selectedStrategy": "BREAKOUT_RETEST",
+              "rejectionDetails": [],
+              "candidateForWatchlist": false,
+              "strategyRequirements": {
+                "SCALP": {
+                  "pattern": 90,
+                  "entry": 70,
+                  "execution": 85
+                },
+                "STANDARD": {
+                  "pattern": 75,
+                  "entry": 60,
+                  "execution": 75
+                },
+                "ASYMMETRIC": {
+                  "pattern": 65,
+                  "entry": 50,
+                  "execution": 70
+                }
+              }
+            },
+            "observedAt": "2026-10-25T18:18:37.441Z",
+            "executionAuthority": false,
+            "liveExecution": false
+          },
+          "evidence": [
+            "STRUCTURAL_ENTRY_ZONE_DEFINED",
+            "SPREAD_ACCEPTABLE",
+            "SLIPPAGE_ACCEPTABLE",
+            "MARKET_DATA_FRESH",
+            "DIRECTIONAL_BREAKOUT_CONFIRMED",
+            "MEANINGFUL_BREAKOUT_DISPLACEMENT",
+            "BROKEN_LEVEL_RETESTED",
+            "RETEST_HELD",
+            "REGIME_SUPPORTS_BREAKOUT_SETUP"
+          ],
+          "risks": [
+            "WAITING_FOR_ENTRY_ZONE",
+            "PRICE_AWAY_FROM_RETEST_ENTRY",
+            "EXTREME_VOLATILITY"
+          ],
+          "geometryDiagnostics": {
+            "valid": true,
+            "calculatedRiskReward": 2.9461756373937766,
+            "reportedRiskReward": 2.9461756373937766,
+            "minimumRiskReward": 1.5,
+            "rejectedTargetCount": 0,
+            "blockers": []
+          },
+          "blockers": [],
+          "executionAuthority": false,
+          "liveExecution": false
+        }
+      },
+      "tracking": {
         "highestPrice": null,
         "lowestPrice": null,
         "maximumFavorableExcursionPercent": null,
@@ -5125,5 +8277,5 @@
       "liveExecution": false
     }
   ],
-  "updatedAt": "2026-10-20T03:12:43.575Z"
+  "updatedAt": "2026-10-25T18:23:29.617Z"
 }

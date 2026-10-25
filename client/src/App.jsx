@@ -23,6 +23,7 @@ import History from "./pages/History.jsx";
 import Referrals from "./pages/Referrals.jsx";
 import Wallet from "./pages/Wallet.jsx";
 
+
 export default function App() {
   return (
     <BrowserRouter>

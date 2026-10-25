@@ -1,0 +1,30 @@
+/* AEMA Intelligence: isolated private terminal theme, never alters crypto public pages. */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
+.bot-app{--aema-bg:#090f16;--aema-panel:#111b25;--aema-panel-raised:#15222e;--aema-border:#273642;--aema-text:#edf4f8;--aema-muted:#9aabb9;--aema-green:#43dfa5;--aema-red:#f16b7b;display:block;min-height:100vh;background:var(--aema-bg);color:var(--aema-text);font-family:Inter,system-ui,sans-serif;letter-spacing:-.01em}
+.bot-app *, .bot-app *::before,.bot-app *::after{box-sizing:border-box}
+.bot-app :is(h1,h2,h3,h4){font-family:Manrope,Inter,sans-serif;letter-spacing:-.045em;line-height:1.25}
+.bot-app :is(button,input,select,textarea){font-family:Inter,system-ui,sans-serif}
+.bot-app :is(button,a,input,select,textarea):focus-visible{outline:2px solid var(--aema-green);outline-offset:3px}
+.bot-app :is(.research-home,.market-search,.monitoring-page,.history-page,.bot-dashboard,.bot-controls){background:radial-gradient(ellipse 65% 35% at 88% -8%,#1b49311c,transparent),#090f16;color:var(--aema-text)}
+.bot-app :is(.research-home,.market-search,.monitoring-page,.history-page){margin-left:252px;padding:clamp(20px,3vw,42px);min-width:0;width:auto;max-width:none;min-height:100vh}
+.bot-app :is(.research-home,.market-search,.monitoring-page,.history-page) h1{font-size:clamp(26px,3vw,38px);font-weight:800;color:#f5f9fb}
+.bot-app :is(.research-home,.market-search,.monitoring-page,.history-page) :is(p,small){line-height:1.65}
+.bot-app :is(.research-hero,.research-flow article,.research-notice,.search-empty,.search-progress,.no-qualified,.monitor-card,.monitor-empty,.history-panel,.aema-stock-panel){background:#111b25;border-color:#283744;border-radius:17px;box-shadow:0 14px 38px #00000016}
+.bot-app :is(.research-hero,.research-flow article,.monitor-card,.history-panel,.aema-stock-panel){transition:border-color .2s ease,transform .2s ease}
+.bot-app :is(.research-flow article,.monitor-card):hover{border-color:#365f56}
+.bot-app :is(.research-home-head>div>span,.research-hero span,.research-flow article>div span,.market-search-head>div>span,.search-section-title span,.search-progress span,.search-summary span,.setup-score span,.setup-level span,.rejected>button span,.monitoring-page>header span,.history-header>div>span,.history-panel .panel-head span){color:#52dca8}
+.bot-app :is(.research-hero>svg,.research-flow svg,.search-empty svg,.no-qualified svg,.monitor-empty svg,.monitor-head svg){color:#47dba4}
+.bot-app :is(.research-hero a,.search-market-button){background:linear-gradient(125deg,#35d59a,#5de5b3);color:#07231a;border:0;border-radius:11px;box-shadow:0 8px 24px #2dd49a24;font-weight:800}
+.bot-app :is(.research-hero a,.search-market-button):hover{filter:brightness(1.08);transform:translateY(-1px)}
+.bot-app :is(.monitoring-page>header button,.monitor-card>button){background:#16232e;border-color:#30404d;border-radius:10px;color:#d9e5eb}
+.bot-app :is(.bull,[class*="bullish"]){color:#48e0a6}.bot-app :is(.bear,[class*="bearish"]){color:#f16b7b}
+.bot-app :is(.research-home,.market-search,.monitoring-page,.history-page) :is(input,select,textarea){background:#0e1923;border:1px solid #354653;border-radius:10px;color:#eaf4f6;min-height:40px}
+.bot-app :is(.research-home,.market-search,.monitoring-page,.history-page) :is(button,a){transition:background .18s ease,border-color .18s ease,transform .18s ease}
+.bot-app :is(.research-home,.market-search,.monitoring-page,.history-page) :is(button,a):disabled{cursor:not-allowed;opacity:.6}
+.bot-app :is(.monitor-metrics,.search-summary,.research-flow){min-width:0}
+.bot-app :is(.monitor-metrics,.search-summary) strong{font-variant-numeric:tabular-nums}
+.bot-app .aema-stock-shell{background:#090f16;color:#eef5f8;min-height:100vh}.bot-app .aema-stock-main{margin-left:252px;max-width:none;width:calc(100% - 252px);padding:clamp(20px,3vw,42px)}
+.bot-app .aema-stock-panel{background:#111b25;border-color:#283744}.bot-app .aema-stock-toolbar :is(input,select){background:#101b26;color:#f1f6f9;border-color:#334654}.bot-app .aema-stock-toolbar button{background:#21a979}
+@media(max-width:850px){.bot-app :is(.research-home,.market-search,.monitoring-page,.history-page){margin-left:0!important;width:100%!important;padding:22px 16px 40px!important}.bot-app .aema-stock-main{margin-left:0;width:100%;padding:22px 16px 40px}.bot-app :is(.research-home-head,.market-search-head,.monitoring-page>header,.history-header){flex-wrap:wrap}.bot-app .research-flow{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.bot-app .research-flow{grid-template-columns:1fr}.bot-app :is(.research-hero,.monitor-card,.history-panel){padding:18px}.bot-app :is(.research-home,.market-search,.monitoring-page,.history-page) h1{font-size:26px}}
+@media(prefers-reduced-motion:reduce){.bot-app *{animation-duration:.01ms!important;transition-duration:.01ms!important}}

@@ -161,6 +161,42 @@ function candidateReasons(candidate) {
   return sources.map(readableReason).filter(Boolean).join(" · ") || "No rejection detail supplied by backend";
 }
 
+function strategyDetails(candidate) {
+  const setup = candidate?.setup ?? candidate?.diagnosticSetup ?? candidate ?? {};
+  const selection = setup?.strategySelection ?? candidate?.strategySelection ?? {};
+  const raw = setup?.strategy ?? candidate?.strategy ?? selection?.selectedStrategy ?? selection?.strategy ?? null;
+  const id = typeof raw === "string" ? raw : raw?.id ?? raw?.name ?? raw?.key ?? null;
+  const name = id ? String(id).replaceAll("_", " ").replace(/\b\w/g, c => c.toUpperCase()) : "Not supplied by backend";
+  const regimeRaw = setup?.marketRegime ?? setup?.regime?.name ?? setup?.regime?.type ?? candidate?.marketRegime ?? candidate?.regime?.name ?? candidate?.regime?.type;
+  const regime = typeof regimeRaw === "string" ? regimeRaw.replaceAll("_", " ") : null;
+  const rawReasons = [selection?.reasons, selection?.reason, raw?.reasons, raw?.reason, setup?.strategyReason].flatMap(x => Array.isArray(x) ? x : x ? [x] : []);
+  const reasons = [...new Set(rawReasons.map(readableReason).filter(Boolean))];
+  const eligibleRaw = selection?.eligibleStrategies ?? setup?.regime?.eligibleStrategies ?? candidate?.regime?.eligibleStrategies ?? [];
+  const eligible = Array.isArray(eligibleRaw) ? eligibleRaw.map(x => typeof x === "string" ? x : x?.id ?? x?.name).filter(Boolean) : [];
+  return { name, regime, reasons, eligible };
+}
+
+function StrategyExplanation({ candidate }) {
+  const [open, setOpen] = useState(false);
+  const { name, regime, reasons, eligible } = strategyDetails(candidate);
+  return (
+    <section className="setup-strategy">
+      <div className="setup-strategy-heading">
+        <div><span>STRATEGY EMPLOYED</span><strong>{name}</strong></div>
+        <button type="button" onClick={() => setOpen(v => !v)} aria-expanded={open}>
+          {open ? "Hide explanation" : "Strategy explanation"} {open ? <ChevronUp size={14}/> : <ChevronDown size={14}/>}
+        </button>
+      </div>
+      {open && <div className="setup-strategy-details">
+        <p><b>Market regime:</b> {regime ?? "Not supplied by backend"}</p>
+        <b>Selection reasoning</b>
+        {reasons.length ? <ul>{reasons.map((reason, i) => <li key={i}>{reason}</li>)}</ul> : <p>Selection reasoning not supplied by backend.</p>}
+        <p><b>Eligible strategies:</b> {eligible.length ? eligible.map(x => String(x).replaceAll("_", " ")).join(", ") : "Not supplied by backend"}</p>
+      </div>}
+    </section>
+  );
+}
+
 function ResearchDiagnostics({ result, setups, noSetup }) {
   const [open, setOpen] = useState(false);
   const candidates = [...setups, ...noSetup];
@@ -315,12 +351,13 @@ export default function BotMarketSearch() {
 
       <BotSidebar />
 
-      <main className="market-search">
+      <main className="market-search aema-crypto-terminal">
 
         {/* =================================================
             HEADER
             ================================================= */}
 
+        <div className="crypto-terminal-topline"><span className="crypto-terminal-mark">◈</span><span>AEMA <b>CRYPTO</b></span><span className="crypto-terminal-separator"/><span className="crypto-terminal-topline-label">FUTURES INTELLIGENCE TERMINAL</span><span className="crypto-terminal-topline-right"><span className="crypto-live-dot"/> RESEARCH MODE</span></div>
         <header className="market-search-head">
 
           <div>
@@ -330,12 +367,11 @@ export default function BotMarketSearch() {
             </span>
 
             <h1>
-              Search Market
+              Crypto <em>Market Intelligence</em>
             </h1>
 
             <p>
-              Searches only when you request it.
-              It does not place an order.
+              Discover high-conviction BULL / BEAR futures setups. On-demand research only — no orders or execution.
             </p>
 
           </div>
@@ -348,10 +384,7 @@ export default function BotMarketSearch() {
           >
 
             {busy ? (
-              <RefreshCw
-                className="spin"
-                size={18}
-              />
+              <span className="aema-search-button-wave" aria-hidden="true"><span/><span/><span/></span>
             ) : (
               <Radar size={18} />
             )}
@@ -425,12 +458,15 @@ export default function BotMarketSearch() {
 
         {busy && (
 
-          <section className="search-progress">
+          <section className="search-progress" role="status" aria-live="polite">
 
-            <div className="search-pulse">
-
-              <Radar size={30} />
-
+            <div className="aema-scan-radar" aria-hidden="true">
+              <div className="aema-scan-radar-grid"/>
+              <div className="aema-scan-radar-sweep"/>
+              <span className="aema-scan-radar-center"/>
+              <span className="aema-scan-blip blip-one"/>
+              <span className="aema-scan-blip blip-two"/>
+              <span className="aema-scan-blip blip-three"/>
             </div>
 
             <div>
@@ -440,12 +476,11 @@ export default function BotMarketSearch() {
               </span>
 
               <h2>
-                Evaluating futures opportunities
+                Scanning crypto markets
               </h2>
 
               <p>
-                Universe → eligibility → Top 20 →
-                engines → direction → setup quality.
+                Searching for BULL and BEAR research opportunities. Results will appear when the market scan finishes.
               </p>
 
               {result && (
@@ -943,6 +978,8 @@ function SetupCard({ candidate }) {
 
       </div>
 
+
+      <StrategyExplanation candidate={candidate} />
 
       {/* ===============================================
           SETUP LEVELS

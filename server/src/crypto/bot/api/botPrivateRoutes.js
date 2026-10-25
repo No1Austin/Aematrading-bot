@@ -1,4 +1,6 @@
+import runStockMarketSearch from "../stock/orchestration/botStockMarketSearchCycle.js";
 import express from "express";
+import runBotStockMarketSearch from "../stock/orchestration/botStockMarketSearchCycle.js";
 import {runStockResearch,listPublishedStockSetups} from "../stock/botStockResearchEngine.js";
 import {botLogin,botLogout,botAuthStatus} from "../auth/botAccess.js";
 import {getBotPaperAccount,setBotControls} from "../account/botPaperLedger.js";
@@ -109,6 +111,11 @@ export default function createBotPrivateRoutes(){
     if(!candidate)throw new Error("SETUP_NOT_FOUND");
     const scenario=req.body?.capitalUsd?calculateBotPositionScenario(candidate.setup,{capitalUsd:req.body.capitalUsd,leverage:req.body?.leverage,feeRatePercent:req.body?.feeRatePercent}):null;
     res.json({monitor:createMonitoredSetup(candidate,scenario)});
+  }));
+  // Independent stock market search; does not invoke the crypto futures search engine.
+  r.post("/stock/market/search",handle(async(req,res)=>{
+    res.set("Cache-Control","no-store");
+    res.json(await runBotStockMarketSearch(req.body?.options??req.body??{}));
   }));
   // Stock research is read-only; never routes through paper/live position controls.
   r.post("/stock/research",handle(async(req,res)=>{
