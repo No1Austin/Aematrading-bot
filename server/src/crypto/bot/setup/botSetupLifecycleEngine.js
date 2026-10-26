@@ -17,7 +17,13 @@ function positiveOrNull(value) {
   return n !== null && n > 0 ? n : null;
 }
 
-export function resolveSetupLifecycle({ selectedResult, market, qualityApproved = false } = {}) {
+export function resolveSetupLifecycle({ selectedResult, market, qualityApproved = false, priceGuard = null } = {}) {
+  if (priceGuard?.blockers?.includes('SETUP_INVALIDATED_BY_CURRENT_PRICE')) {
+    return { status: 'INVALIDATED', entryReached: false, currentPrice: priceGuard.currentPrice, reason: 'PRICE_CROSSED_STRUCTURAL_STOP' };
+  }
+  if (priceGuard?.blockers?.includes('SETUP_ALL_TARGETS_ALREADY_PASSED') || priceGuard?.blockers?.includes('SETUP_ENTRY_CHASE_EXCEEDS_RISK_BUDGET')) {
+    return { status: 'EXPIRED', entryReached: false, currentPrice: priceGuard.currentPrice, reason: 'ENTRY_NO_LONGER_ACTIONABLE' };
+  }
   if (!selectedResult) {
     return {
       status: "FORMING",

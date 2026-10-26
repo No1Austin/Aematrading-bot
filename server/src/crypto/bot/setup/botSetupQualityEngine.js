@@ -20,6 +20,7 @@
  */
 
 import resolveSetupLifecycle from "./botSetupLifecycleEngine.js";
+import evaluateEntryStopTargetGuard from "./botEntryStopTargetGuard.js";
 
 import BOT_CONFIG from "../config/botConfig.js";
 
@@ -127,8 +128,6 @@ function resolveConfig(options = {}) {
 
     minimumTradableRiskReward:
       finiteOrNull(options.minimumTradableRiskReward) ?? 0.50,
-
-    strategyClassRequirements: options.strategyClassRequirements ?? {},
 
     classRequirements: {
       SCALP: { pattern: 90, entry: 70, execution: 85 },
@@ -412,32 +411,8 @@ function evaluateTargets({ targets, direction, entry, risk, config }) {
   }).filter(Boolean).sort((x,y)=>x.rewardDistance-y.rewardDistance);
 }
 
-// Research-only strategy profiles. Defaults preserve the original thresholds;
-// callers may supply measured, strategy-specific overrides after backtesting.
-function resolveStrategyRequirements(config, strategySelection, setupClass) {
-  const base = config.classRequirements?.[setupClass];
-  if (!base) return null;
-  const id = String(strategySelection?.selectedStrategy ?? "").toUpperCase();
-  const override = config.strategyClassRequirements?.[id]?.[setupClass] ?? {};
-  return {
-    pattern: Math.max(0, Math.min(100, finiteOrNull(override.pattern) ?? base.pattern)),
-    entry: Math.max(0, Math.min(100, finiteOrNull(override.entry) ?? base.entry)),
-    execution: Math.max(0, Math.min(100, finiteOrNull(override.execution) ?? base.execution)),
-  };
-}
-
-function classifyResearchBlockers(blockers) {
-  const safetyWords = /SPREAD|SLIPPAGE|STALE|FRESH|LIQUID|MARKET_NOT_APPROVED|EXECUTION|GEOMETRY|STOP|INVALID/;
-  const timingWords = /ENTRY|LIFECYCLE|TRIGGER|DISTANCE|CHASE/;
-  const economicsWords = /REWARD|RISK_REWARD|TARGET|CLASS/;
-  return blockers.map(code => ({
-    code,
-    category: safetyWords.test(code) ? "SAFETY_OR_DATA" : timingWords.test(code) ? "ENTRY_TIMING" : economicsWords.test(code) ? "ECONOMICS_OR_CLASS" : "RESEARCH_QUALITY",
-  }));
-}
-
 function classRequirementsMet(setupClass, strategySelection, entryQuality, executionQuality, config) {
-  const req = resolveStrategyRequirements(config, strategySelection, setupClass);
+  const req = config.classRequirements?.[setupClass];
   if (!req) return { approved: false, blockers: ["SETUP_CLASS_UNAVAILABLE"] };
   const pattern = finiteOrNull(strategySelection?.selectedResult?.patternScore) ?? 0;
   const blockers = [];
@@ -939,9 +914,9 @@ export function evaluateBotSetupQuality(
 
   const direction =
     normalizeDirection(
-      selectedResult
-        ?.direction ??
       strategySelection
+        ?.direction ??
+      selectedResult
         ?.direction ??
       candidate
         ?.directionDecision
@@ -1154,6 +1129,11 @@ export function evaluateBotSetupQuality(
     );
   }
 
+  // Independently validate the published entry/stop/target plan against live price.
+  // A planned entry is allowed; a chased, invalidated or already-completed plan is not.
+  const priceGuard = evaluateEntryStopTargetGuard({ selectedResult, market, direction });
+  blockers.push(...priceGuard.blockers);
+
   /*
    * -------------------------------------------------------
    * 7. QUALITY SCORE
@@ -1206,6 +1186,7 @@ export function evaluateBotSetupQuality(
     selectedResult,
     market,
     qualityApproved: approved,
+    priceGuard,
   });
 
   /*
@@ -1215,6 +1196,7 @@ export function evaluateBotSetupQuality(
    */
 
   return {
+    priceGuard,
     lifecycleStatus: lifecycle.status,
     lifecycle,
     approved,
@@ -1407,18 +1389,6 @@ export function evaluateBotSetupQuality(
 
     blockers:
       finalBlockers,
-
-    researchDiagnostics: {
-      selectedStrategy: strategySelection?.selectedStrategy ?? null,
-      rejectionDetails: classifyResearchBlockers(finalBlockers),
-      candidateForWatchlist: !approved && finalBlockers.length > 0 &&
-        finalBlockers.every(code => !/SPREAD|SLIPPAGE|STALE|FRESH|LIQUID|GEOMETRY|STOP|INVALID/.test(code)),
-      strategyRequirements: {
-        SCALP: resolveStrategyRequirements(config, strategySelection, "SCALP"),
-        STANDARD: resolveStrategyRequirements(config, strategySelection, "STANDARD"),
-        ASYMMETRIC: resolveStrategyRequirements(config, strategySelection, "ASYMMETRIC"),
-      },
-    },
 
     observedAt:
       new Date()

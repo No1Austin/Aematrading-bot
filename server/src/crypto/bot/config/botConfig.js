@@ -43,7 +43,7 @@ export const BOT_CONFIG = Object.freeze({
 
     contractType: "PERPETUAL",
 
-    maximumSymbols: null, // No arbitrary cap; full coverage depends on upstream provider pagination.
+    maximumSymbols: 1000,
 
     timeoutMs: 12000,
   },
@@ -67,28 +67,6 @@ export const BOT_CONFIG = Object.freeze({
     requireMarketData: true,
 
     minimumPrice: 0,
-    smartMarketQuality: {
-      enabled: true,
-      // Advisory-only classifications. These are starting hypotheses, not
-      // validated performance thresholds.
-      minimumQuoteVolumeUsd: 0,
-      lowRelativeVolumeRatio: 0.1,
-      maximumSpreadPercent: 1,
-      highRelativeSpreadRatio: 5,
-      emergingAgeDays: 7,
-      maximumTickPercent: 0.2,
-      extremeRangePercent24h: 60,
-    },
-    dynamicPairlist: {
-      enabled: true,
-      enforce: false, // Observe first; do not unexpectedly starve the funnel.
-      minimumQuoteVolumeUsd: 0,
-      maximumSpreadPercent: 1.0,
-      minimumMarketAgeDays: 0,
-      minimumPriceTicks: 0,
-      maximumRangePercent24h: null,
-      excludeDelisting: true,
-    },
   },
 
   /*
@@ -183,18 +161,18 @@ export const BOT_CONFIG = Object.freeze({
     /*
      * Winning aggregate direction must score at least 58.
      */
-    minimumDirectionalScore: 58,
+    minimumDirectionalScore: 60,
 
     /*
      * Minimum difference between competing directional
      * aggregate scores.
      */
-    minimumSeparation: 12,
+    minimumSeparation: 14,
 
     /*
      * Weighted confidence requirement.
      */
-    minimumConfidence: 55,
+    minimumConfidence: 58,
 
     /*
      * At least 45% of configured research weight must
@@ -209,7 +187,10 @@ export const BOT_CONFIG = Object.freeze({
      * Prevents something like 50.1 / 49.9 from counting as
      * meaningful independent confirmation.
      */
-    minimumIndependentSeparation: 5,
+    minimumIndependentSeparation: 8,
+
+    minimumEvidenceCoverage: 0.65,
+    minimumConfidenceCoverage: 0.75,
 
     requireTechnical: true,
 

@@ -16,6 +16,7 @@ import BotSidebar from "../components/BotSidebar.jsx";
 import {
   getBotMonitors,
   refreshBotMonitor,
+  saveBotManualResult,
 } from "../services/botApi.js";
 
 import {
@@ -191,6 +192,7 @@ export default function BotMonitoring() {
                 m={monitor}
                 busy={busy}
                 refresh={refresh}
+                onSaved={load}
               />
 
             ))}
@@ -215,7 +217,32 @@ function MonitorCard({
   m,
   busy,
   refresh,
+  onSaved,
 }) {
+
+  const [showResult,setShowResult]=useState(false);
+  const [outcome,setOutcome]=useState("WIN");
+  const [actualEntry,setActualEntry]=useState("");
+  const [actualExit,setActualExit]=useState("");
+  const [netPnlUsd,setNetPnlUsd]=useState("");
+  const [notes,setNotes]=useState("");
+  const [resultError,setResultError]=useState("");
+  const [saved,setSaved]=useState(false);
+  const [saving,setSaving]=useState(false);
+  const saveResult=async(e)=>{
+    e.preventDefault();setSaving(true);setResultError("");
+    try {
+      await saveBotManualResult(id,{
+        outcome,
+        actualEntry:outcome==="NOT_TAKEN"?null:actualEntry,
+        actualExit:outcome==="NOT_TAKEN"?null:actualExit,
+        netPnlUsd:netPnlUsd===""?null:netPnlUsd,
+        occurredAt:new Date().toISOString(),notes
+      });
+      setSaved(true);setShowResult(false);onSaved?.();
+    }catch(error){setResultError(error?.message||"Unable to save result");}
+    finally{setSaving(false);}
+  };
 
   const id =
     m?.id ??
@@ -520,6 +547,26 @@ function MonitorCard({
             : "Refresh evidence"}
 
       </button>
+
+      <div style={{marginTop:16}}>
+        <button type="button" onClick={()=>setShowResult(v=>!v)} disabled={saved}>
+          {saved?"Result saved":"Enter trade result"}
+        </button>
+        {showResult && <form onSubmit={saveResult} style={{display:"grid",gap:10,marginTop:12}}>
+          <label>Outcome <select value={outcome} onChange={e=>setOutcome(e.target.value)}>
+            <option value="WIN">Win</option><option value="LOSS">Loss</option>
+            <option value="BREAKEVEN">Breakeven</option><option value="NOT_TAKEN">Not taken</option>
+          </select></label>
+          {outcome!=="NOT_TAKEN" && <>
+            <label>Actual entry <input type="number" step="any" min="0.00000001" required value={actualEntry} onChange={e=>setActualEntry(e.target.value)}/></label>
+            <label>Actual exit <input type="number" step="any" min="0.00000001" required value={actualExit} onChange={e=>setActualExit(e.target.value)}/></label>
+          </>}
+          <label>Net P&amp;L (USD, optional) <input type="number" step="any" value={netPnlUsd} onChange={e=>setNetPnlUsd(e.target.value)}/></label>
+          <label>Notes <textarea value={notes} onChange={e=>setNotes(e.target.value)} maxLength={3000}/></label>
+          {resultError && <p role="alert">{resultError}</p>}
+          <button type="submit" disabled={saving}>{saving?"Saving…":"Save to history"}</button>
+        </form>}
+      </div>
 
     </article>
 

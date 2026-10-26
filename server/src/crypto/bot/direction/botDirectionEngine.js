@@ -40,6 +40,11 @@ export function determineBotDirection(candidate, options = {}) {
   let shortWeighted = 0;
   let confidenceWeighted = 0;
   let weightUsed = 0;
+  let confidenceWeightUsed = 0;
+  const configuredWeight = Object.values(weights).reduce((sum, w) => {
+    if (!finite(w) || w < 0) throw new Error("INVALID_DIRECTION_WEIGHT");
+    return sum + w;
+  }, 0);
 
   const contributions = {};
 
@@ -79,6 +84,7 @@ export function determineBotDirection(candidate, options = {}) {
     if (finite(engine.confidence)) {
       confidenceWeighted +=
         engine.confidence * weight;
+      confidenceWeightUsed += weight;
     }
 
     weightUsed += weight;
@@ -172,8 +178,12 @@ export function determineBotDirection(candidate, options = {}) {
       longScore - shortScore
     );
 
-  const confidence =
-    confidenceWeighted / weightUsed;
+  // Missing confidence is unknown, not zero. Measure its coverage separately.
+  const confidence = confidenceWeightUsed > 0
+    ? confidenceWeighted / confidenceWeightUsed
+    : null;
+  const evidenceCoverage = configuredWeight > 0 ? weightUsed / configuredWeight : 0;
+  const confidenceCoverage = weightUsed > 0 ? confidenceWeightUsed / weightUsed : 0;
 
   /*
    * ---------------------------------------------------------
@@ -239,7 +249,7 @@ export function determineBotDirection(candidate, options = {}) {
       ? Number(
           gate.minimumIndependentSeparation
         )
-      : 5;
+      : 8;
 
   const technicalStrongAgreement =
     technical?.agrees === true &&
@@ -263,6 +273,18 @@ export function determineBotDirection(candidate, options = {}) {
 
   const blockers = [];
 
+  // Conservative defaults; tune against archived, out-of-sample outcomes.
+  // Normalized coverage avoids treating 0.45 as meaningful when weights change.
+  if (evidenceCoverage < (gate.minimumEvidenceCoverage ?? 0.65)) {
+    blockers.push("DIRECTION_EVIDENCE_COVERAGE_TOO_LOW");
+  }
+  if (confidenceCoverage < (gate.minimumConfidenceCoverage ?? 0.75)) {
+    blockers.push("DIRECTION_CONFIDENCE_COVERAGE_TOO_LOW");
+  }
+  if (confidence === null) {
+    blockers.push("DIRECTION_CONFIDENCE_UNAVAILABLE");
+  }
+
   if (
     selectedScore <
     gate.minimumDirectionalScore
@@ -282,7 +304,7 @@ export function determineBotDirection(candidate, options = {}) {
   }
 
   if (
-    confidence <
+    confidence === null || confidence <
     gate.minimumConfidence
   ) {
     blockers.push(
@@ -405,8 +427,6 @@ export function determineBotDirection(candidate, options = {}) {
        * Preserve raw research direction for diagnostics.
        */
       rawDirection,
-      researchDirection: rawDirection,
-      strategyReviewAllowed: true,
 
       setupSignal:
         qualified
@@ -430,10 +450,12 @@ export function determineBotDirection(candidate, options = {}) {
         round(separation),
 
       confidence:
-        round(confidence),
+        confidence === null ? null : round(confidence),
 
       availableWeight:
         round(weightUsed),
+      evidenceCoverage: round(evidenceCoverage),
+      confidenceCoverage: round(confidenceCoverage),
 
       reason:
         qualified
@@ -452,6 +474,8 @@ export function determineBotDirection(candidate, options = {}) {
         structureStrongAgreement,
 
         minimumIndependentSeparation,
+        configuredWeight: round(configuredWeight),
+        confidenceWeightUsed: round(confidenceWeightUsed),
 
         independentAgreement,
 

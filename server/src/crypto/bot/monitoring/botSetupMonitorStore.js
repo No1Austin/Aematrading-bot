@@ -203,8 +203,12 @@ export function isTerminalMonitorStatus(
 
 export function createMonitoredSetup(
   candidate,
-  scenario = null
+  scenario = null,
+  { userId } = {}
 ) {
+  if (typeof userId !== "string" || !/^[0-9a-f]{8}-[0-9a-f-]{27,}$/i.test(userId)) {
+    throw new Error("SUPABASE_USER_REQUIRED");
+  }
   if (!candidate?.setup?.approved) {
     throw new Error(
       "ONLY_APPROVED_SETUP_CAN_BE_MONITORED"
@@ -285,6 +289,8 @@ export function createMonitoredSetup(
   const monitor = {
     id:
       createId(),
+
+    userId,
 
     setupId:
       candidate.setupId ??

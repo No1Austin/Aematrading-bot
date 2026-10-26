@@ -47,8 +47,5 @@ export const resumeBot=()=>req("/controls/resume",{method:"POST"});
 export const closeBotPosition=id=>req(`/positions/${encodeURIComponent(id)}/close`,{method:"POST"});
 export const emergencyStopBot=()=>req("/controls/emergency-stop",{method:"POST"});
 
-export const runBotStockResearch=(payload)=>req("/stock/research",{method:"POST",body:JSON.stringify(payload)});
-export const getPublishedStockSetups=()=>req("/stock/setups");
-
-// Independent stock fork; deliberately separate from crypto /market/search.
-export const searchBotStockMarket=(options={})=>req("/stock/market/search",{method:"POST",body:JSON.stringify({options})});
+export const getBotManualHistory=()=>req("/manual-history");
+export const saveBotManualResult=(monitorId,data)=>req(`/manual-history/${encodeURIComponent(monitorId)}/result`,{method:"POST",body:JSON.stringify(data)});

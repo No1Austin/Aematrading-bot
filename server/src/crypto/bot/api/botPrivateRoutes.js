@@ -1,15 +1,15 @@
-import runStockMarketSearch from "../stock/orchestration/botStockMarketSearchCycle.js";
 import express from "express";
-import runBotStockMarketSearch from "../stock/orchestration/botStockMarketSearchCycle.js";
 import {runStockResearch,listPublishedStockSetups} from "../stock/botStockResearchEngine.js";
-import {botLogin,botLogout,botAuthStatus} from "../auth/botAccess.js";
+import {runStockDiscoveryResearch} from "../stock/botStockDiscoveryWorkflow.js";
+import analyzeBotSingleSetup from "../orchestration/botSingleSetupAnalysis.js";
+import createBotManualHistoryRoutes from "./botManualHistoryRoutes.js";
+import {botLogin,botLogout,botAuthStatus,requireBotAccess} from "../auth/botAccess.js";
 import {getBotPaperAccount,setBotControls} from "../account/botPaperLedger.js";
 import {getTradeMemory} from "../learning/botTradeMemoryStore.js";
 import {manuallyCloseBotPosition,emergencyStopBot} from "../positions/botManualControls.js";
 import {isBotRuntimeBusy,isBotRuntimeRunning} from "../runtime/botRuntime.js";
 import getDedicatedAlpacaOverview from "../alpaca/botDedicatedAlpacaOverview.js";
 import runBotMarketSearch from "../orchestration/botMarketSearchCycle.js";
-import analyzeBotSingleSetup from "../orchestration/botSingleSetupAnalysis.js";
 import calculateBotPositionScenario from "../setup/botPositionScenarioCalculator.js";
 import {getSearchSetup} from "../monitoring/botSearchResultStore.js";
 import {createMonitoredSetup,listMonitoredSetups,getMonitoredSetup} from "../monitoring/botSetupMonitorStore.js";
@@ -33,11 +33,15 @@ const completeClosedTrade=(position)=>{
   };
 };
 
+const requireSupabaseIdentity=(req,res,next)=> req.botAuthMethod === "supabase" && req.botUser?.id ? next() : res.status(403).json({error:"SUPABASE_USER_REQUIRED"});
+const belongs=(m,id)=>Boolean(m?.userId && m.userId===id);
 export default function createBotPrivateRoutes(){
   const r=express.Router();
   r.post("/auth/login",botLogin);
   r.post("/auth/logout",botLogout);
   r.get("/auth/status",botAuthStatus);
+  r.use(requireBotAccess);
+  r.use("/manual-history",requireSupabaseIdentity,createBotManualHistoryRoutes({getMonitoredSetup}));
   r.get("/dashboard",(_req,res)=>{
     const account=getBotPaperAccount(),memory=getTradeMemory();
     res.json({paperOnly:true,liveExecution:false,portfolioLimit:3,account,
@@ -92,42 +96,25 @@ export default function createBotPrivateRoutes(){
     res.json(await runBotMarketSearch(req.body?.options||{}));
   }));
 
-  // Single-symbol private Setup Engine. Reuses the same V4 setup builder as
-  // Search Market and never places an order.
-  r.post("/setup/analyze",handle(async(req,res)=>{
-    if(isBotRuntimeBusy())throw new Error("BOT_RUNTIME_BUSY_RETRY");
-    res.set("Cache-Control","no-store");
-    res.json(await analyzeBotSingleSetup(req.body?.symbol,req.body?.options||{}));
-  }));
-
   r.post("/setups/:setupId/scenario",handle((req,res)=>{
     const candidate=getSearchSetup(req.params.setupId);
     if(!candidate)throw new Error("SETUP_NOT_FOUND");
     res.json({setupId:req.params.setupId,scenario:calculateBotPositionScenario(candidate.setup,{capitalUsd:req.body?.capitalUsd,leverage:req.body?.leverage,feeRatePercent:req.body?.feeRatePercent})});
   }));
 
-  r.post("/setups/:setupId/monitor",handle((req,res)=>{
+  r.post("/setups/:setupId/monitor",requireSupabaseIdentity,handle((req,res)=>{
     const candidate=getSearchSetup(req.params.setupId);
     if(!candidate)throw new Error("SETUP_NOT_FOUND");
     const scenario=req.body?.capitalUsd?calculateBotPositionScenario(candidate.setup,{capitalUsd:req.body.capitalUsd,leverage:req.body?.leverage,feeRatePercent:req.body?.feeRatePercent}):null;
-    res.json({monitor:createMonitoredSetup(candidate,scenario)});
+    res.json({monitor:createMonitoredSetup(candidate,scenario,{userId:req.botUser.id})});
   }));
-  // Independent stock market search; does not invoke the crypto futures search engine.
-  r.post("/stock/market/search",handle(async(req,res)=>{
-    res.set("Cache-Control","no-store");
-    res.json(await runBotStockMarketSearch(req.body?.options??req.body??{}));
-  }));
-  // Stock research is read-only; never routes through paper/live position controls.
-  r.post("/stock/research",handle(async(req,res)=>{
-    res.set("Cache-Control","no-store");
-    res.json(await runStockResearch(req.body??{}));
-  }));
-  r.get("/stock/setups",(_req,res)=>{
-    res.set("Cache-Control","no-store");
-    res.json({assetClass:"STOCK",researchOnly:true,executionAuthority:false,liveExecution:false,setups:listPublishedStockSetups()});
-  });
-  r.get("/monitoring",(_req,res)=>res.json({monitors:listMonitoredSetups()}));
-  r.get("/monitoring/:id",(req,res)=>{const monitor=getMonitoredSetup(req.params.id);if(!monitor)return res.status(404).json({error:"MONITORED_SETUP_NOT_FOUND"});res.json({monitor});});
-  r.post("/monitoring/:id/refresh",handle(async(req,res)=>res.json({monitor:await refreshMonitoredSetup(req.params.id,req.body?.options||{})})));
+  // Stock research is separate from crypto signal monitoring.
+  r.post("/stock/research",handle(async(req,res)=>{res.set("Cache-Control","no-store");res.json(await runStockResearch(req.body??{}));}));
+  r.post("/stock/discover",handle(async(req,res)=>{res.set("Cache-Control","no-store");res.json(await runStockDiscoveryResearch(req.body??{}));}));
+  r.get("/stock/setups",(_req,res)=>{res.set("Cache-Control","no-store");res.json({assetClass:"STOCK",researchOnly:true,executionAuthority:false,liveExecution:false,setups:listPublishedStockSetups()});});
+  r.post("/setup/analyze",handle(async(req,res)=>{if(isBotRuntimeBusy())throw new Error("BOT_RUNTIME_BUSY_RETRY");res.set("Cache-Control","no-store");res.json(await analyzeBotSingleSetup(req.body?.symbol,req.body?.options||{}));}));
+  r.get("/monitoring",requireSupabaseIdentity,(req,res)=>res.json({monitors:listMonitoredSetups().filter(m=>belongs(m,req.botUser.id))}));
+  r.get("/monitoring/:id",requireSupabaseIdentity,(req,res)=>{const monitor=getMonitoredSetup(req.params.id);if(!belongs(monitor,req.botUser.id))return res.status(404).json({error:"MONITORED_SETUP_NOT_FOUND"});res.json({monitor});});
+  r.post("/monitoring/:id/refresh",requireSupabaseIdentity,handle(async(req,res)=>{const monitor=getMonitoredSetup(req.params.id);if(!belongs(monitor,req.botUser.id))return res.status(404).json({error:"MONITORED_SETUP_NOT_FOUND"});res.json({monitor:await refreshMonitoredSetup(req.params.id,req.body?.options||{})});}));
   return r;
 }
