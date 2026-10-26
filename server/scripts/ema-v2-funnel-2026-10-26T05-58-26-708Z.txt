@@ -1,0 +1,46 @@
+EMA v2 — research-only funnel diagnostic
+Generated: 2026-10-26T05:58:40.537Z
+universe: 1057
+hardEligible: 1033
+opportunityQualified: 133
+top20: 20
+researchCompleted: 20
+researchFailed: 0
+directionQualified: 20
+directionRejected: 0
+top10: 8
+setupsBuilt: 8
+qualifiedSetups: 0
+noSetup: 8
+setupFailures: 0
+
+Top rejection reasons:
+6 × SETUP_QUALITY_SCORE_TOO_LOW
+5 × SETUP_STRATEGY_NOT_SELECTED
+5 × SETUP_ENTRY_UNAVAILABLE
+5 × SETUP_STOP_UNAVAILABLE
+5 × SETUP_STRUCTURAL_TARGETS_UNAVAILABLE
+5 × ENTRY_PRICE_UNAVAILABLE
+5 × REWARD_BELOW_MINIMUM_TRADABLE_THRESHOLD
+4 × SETUP_STRATEGY_REGIME_NOT_READY
+4 × NO_SETUP_PATTERN_MATCHED
+4 × SETUP_REGIME_NOT_APPROVED
+3 × STRUCTURE_DIRECTION_CONFLICT
+2 × RISK_REWARD_BELOW_MINIMUM
+1 × LIQUIDITY_SWEEP_OPPOSES_RESEARCH_DIRECTION
+1 × SCALP_PATTERN_SCORE_TOO_LOW
+1 × BEST_SETUP_SELECTION_SCORE_TOO_LOW
+
+Strategies:
+5 × UNKNOWN
+2 × TREND_PULLBACK
+1 × BREAKOUT_RETEST
+
+Quant shadow observations: 20
+Quant setup shadow observations: 8
+Quant setup capture: {"enabled":true,"saved":8,"validGeometry":3,"researchOnly":true}
+Quant archive saved: 8
+Quant archive rejected: 0
+Quant archive reasons: {}
+
+Full report: /Users/no1austin/Desktop/Msc /MscSE-Day-4/trading-bot/server/scripts/ema-v2-funnel-2026-10-26T05-58-26-708Z.json

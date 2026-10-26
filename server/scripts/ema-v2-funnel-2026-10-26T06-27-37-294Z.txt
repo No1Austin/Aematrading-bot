@@ -1,0 +1,49 @@
+EMA v2 — research-only funnel diagnostic
+Generated: 2026-10-26T06:27:52.160Z
+universe: 1057
+hardEligible: 1033
+opportunityQualified: 134
+top20: 20
+researchCompleted: 20
+researchFailed: 0
+directionQualified: 20
+directionRejected: 0
+top10: 8
+setupsBuilt: 8
+qualifiedSetups: 1
+noSetup: 7
+setupFailures: 0
+
+Top rejection reasons:
+4 × SETUP_QUALITY_SCORE_TOO_LOW
+3 × RISK_REWARD_BELOW_MINIMUM
+2 × SETUP_STRATEGY_NOT_SELECTED
+2 × SETUP_ENTRY_UNAVAILABLE
+2 × SETUP_STOP_UNAVAILABLE
+2 × SETUP_STRUCTURAL_TARGETS_UNAVAILABLE
+2 × ENTRY_PRICE_UNAVAILABLE
+2 × REWARD_BELOW_MINIMUM_TRADABLE_THRESHOLD
+1 × SCALP_PATTERN_SCORE_TOO_LOW
+1 × STRUCTURE_DIRECTION_CONFLICT
+1 × SETUP_STRATEGY_REGIME_NOT_READY
+1 × NO_SETUP_PATTERN_MATCHED
+1 × SETUP_REGIME_NOT_APPROVED
+1 × BEST_SETUP_SELECTION_SCORE_TOO_LOW
+1 × ENTRY_TOO_EXTENDED
+1 × STANDARD_ENTRY_SCORE_TOO_LOW
+1 × ASYMMETRIC_ENTRY_SCORE_TOO_LOW
+
+Strategies:
+3 × TREND_PULLBACK
+2 × UNKNOWN
+1 × LIQUIDITY_SWEEP
+1 × MOMENTUM_BREAKOUT
+
+Quant shadow observations: 20
+Quant setup shadow observations: 8
+Quant setup capture: {"enabled":true,"saved":8,"validGeometry":6,"researchOnly":true}
+Quant archive saved: 8
+Quant archive rejected: 0
+Quant archive reasons: {}
+
+Full report: /Users/no1austin/Desktop/Msc /MscSE-Day-4/trading-bot/server/scripts/ema-v2-funnel-2026-10-26T06-27-37-294Z.json

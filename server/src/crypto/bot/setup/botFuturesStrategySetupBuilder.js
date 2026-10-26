@@ -44,6 +44,7 @@ import evaluateBotSetupQuality
   from "./botSetupQualityEngine.js";
 
 import { buildVolatilityResearchDiagnostic } from "../risk/botVolatilityResearchDiagnostic.js";
+import analyzeAdaptiveStopGeometry from "./botAdaptiveStopGeometryEngine.js";
 
 /*
  * ---------------------------------------------------------
@@ -671,31 +672,21 @@ if (
     slippagePercent: legacySlippagePercent,
     config: options.volatilityResearch ?? {},
   });
+  // The volatility planner is an observational position-sizing scenario.
+  // It must not override the strategy-quality engine's structural stop.
   const stopActivation = {
-    enabled: options.volatilityResearch?.enabled !== false,
+    enabled: false,
     applied: false,
-    reason: null,
+    reason: "VOLATILITY_PLANNER_SHADOW_ONLY",
     originalStop: legacyStop,
-    proposedStop: positiveOrNull(volatilityResearch?.proposedStop ?? volatilityResearch?.stop),
+    proposedStop: positiveOrNull(
+      volatilityResearch?.proposedStop ?? volatilityResearch?.stop
+    ),
   };
-  let stop = legacyStop;
+
+  // Preserve the strategy stop for published research geometry.
+  const stop = legacyStop;
   const proposedStop = stopActivation.proposedStop;
-  const structureLevel = direction === "LONG" ? support : resistance;
-  const proposalValid = volatilityResearch?.status === "OBSERVED" &&
-    entry !== null && legacyStop !== null && proposedStop !== null &&
-    atr !== null && structureLevel !== null &&
-    spreadPercent !== null && spreadPercent >= 0 &&
-    legacySlippagePercent !== null && legacySlippagePercent >= 0 &&
-    (direction === "LONG" ? proposedStop < entry && proposedStop <= structureLevel :
-     direction === "SHORT" ? proposedStop > entry && proposedStop >= structureLevel : false);
-  if (!stopActivation.enabled) stopActivation.reason = "FEATURE_DISABLED";
-  else if (!proposalValid) stopActivation.reason = "INSUFFICIENT_VALIDATED_MARKET_INPUTS";
-  else {
-    // The new stop cannot be closer to entry than the old stop.
-    stop = direction === "LONG" ? Math.min(legacyStop, proposedStop) : Math.max(legacyStop, proposedStop);
-    stopActivation.applied = stop !== legacyStop;
-    stopActivation.reason = stopActivation.applied ? "ATR_STRUCTURE_STOP_APPLIED" : "EXISTING_STOP_ALREADY_WIDER";
-  }
 
   const target =
     positiveOrNull(
@@ -727,6 +718,68 @@ if (
   const calculatedRiskReward = validGeometry
     ? Math.abs(target - entry) / Math.abs(entry - stop)
     : null;
+  // Shadow-only comparison: explain whether volatility widening changes R:R.
+  // This never replaces the published stop or bypasses qualification.
+  const structuralStopValid = direction === "LONG"
+    ? entry !== null && legacyStop !== null && legacyStop < entry
+    : direction === "SHORT"
+      ? entry !== null && legacyStop !== null && legacyStop > entry
+      : false;
+  const originalGeometryValid = structuralStopValid && target !== null &&
+    (direction === "LONG" ? target > entry : target < entry);
+  const originalRiskReward = originalGeometryValid
+    ? Math.abs(target - entry) / Math.abs(entry - legacyStop)
+    : null;
+  const finalRiskReward = calculatedRiskReward;
+  const stopWideningAbsolute = legacyStop !== null && stop !== null
+    ? Math.abs(stop - entry) - Math.abs(legacyStop - entry)
+    : null;
+  const stopWideningPercent = originalGeometryValid && stopWideningAbsolute !== null
+    ? (stopWideningAbsolute / Math.abs(entry - legacyStop)) * 100
+    : null;
+  const minimumRiskRewardForComparison = positiveOrNull(qualificationConfig.minimumRiskReward);
+  const volatilityStopComparison = {
+    advisoryOnly: true,
+    originalStop: legacyStop,
+    proposedStop,
+    finalStop: stop,
+    activationApplied: stopActivation.applied,
+    activationReason: stopActivation.reason,
+    originalRiskReward,
+    finalRiskReward,
+    riskRewardChange: originalRiskReward !== null && finalRiskReward !== null
+      ? finalRiskReward - originalRiskReward : null,
+    stopWideningAbsolute,
+    stopWideningPercent,
+    minimumRiskReward: minimumRiskRewardForComparison,
+    originalMeetsMinimum: originalRiskReward !== null && minimumRiskRewardForComparison !== null
+      ? originalRiskReward >= minimumRiskRewardForComparison : null,
+    finalMeetsMinimum: finalRiskReward !== null && minimumRiskRewardForComparison !== null
+      ? finalRiskReward >= minimumRiskRewardForComparison : null,
+    lostMinimumDueToWidening: stopActivation.applied && originalRiskReward !== null &&
+      finalRiskReward !== null && minimumRiskRewardForComparison !== null &&
+      originalRiskReward >= minimumRiskRewardForComparison &&
+      finalRiskReward < minimumRiskRewardForComparison,
+  };
+  // Shadow-only geometry research. Never changes the published stop or qualification.
+  const adaptiveStopGeometry = safeRun("ADAPTIVE_STOP_GEOMETRY", () => analyzeAdaptiveStopGeometry({
+    direction: researchDirection,
+    strategy: strategySelection?.selectedStrategy,
+    entry,
+    originalStop: legacyStop,
+    publishedStop: stop,
+    target,
+    atr,
+    support,
+    resistance,
+    invalidation: setupQuality?.invalidation ?? strategySelection?.selectedResult?.invalidation,
+    entryZone: setupQuality?.entryZone ?? strategySelection?.selectedResult?.entryZone,
+    spreadPercent,
+    slippagePercent: legacySlippagePercent,
+    closedCandles: closedSetupCandles,
+    minimumRiskReward: qualificationConfig.minimumRiskReward,
+  }), { researchOnly: true, advisoryOnly: true, executionAuthority: false, liveExecution: false, candidates: [], blockers: ["ADAPTIVE_STOP_GEOMETRY_UNAVAILABLE"] });
+
   const minimumRiskReward = positiveOrNull(qualificationConfig.minimumRiskReward);
   const normalizedTargets = Array.isArray(setupQuality?.targets)
     ? setupQuality.targets.map(positiveOrNull).filter(value => value !== null)
@@ -964,9 +1017,10 @@ if (
             ?.totalNotional
         ),
 
-      volatilityResearch,
-      stopActivation,
-
+   volatilityResearch,
+stopActivation,
+volatilityStopComparison,
+       adaptiveStopGeometry,
       /*
        * Legacy structural evidence
        */
