@@ -42,7 +42,7 @@
    AEMA CRYPTO TERMINAL — PREMIUM BLACK / ORANGE / BULL GREEN / BEAR RED
    Scoped to this page. Does not alter crypto engines or shared UI.
    =============================================================== */
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+   @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 .aema-crypto-terminal{--ct-bg:#07090a;--ct-card:#111415;--ct-raised:#181b1d;--ct-border:#2a2e2e;--ct-orange:#ff9b38;--ct-orange-soft:#ffbc77;--ct-green:#28d694;--ct-red:#ff5966;--ct-text:#f4f4f1;--ct-muted:#939a99;position:relative;min-width:0;box-sizing:border-box;margin-left:252px;min-height:100vh;padding:30px clamp(20px,3vw,48px) 80px;background:radial-gradient(ellipse 55% 35% at 85% -10%,rgba(255,140,35,.065),transparent 85%),var(--ct-bg);color:var(--ct-text);font-family:'DM Sans',sans-serif;letter-spacing:-.012em}
 .aema-crypto-terminal *, .aema-crypto-terminal *::before,.aema-crypto-terminal *::after{box-sizing:border-box}
 .aema-crypto-terminal h1,.aema-crypto-terminal h2,.aema-crypto-terminal h3{font-family:Manrope,sans-serif;letter-spacing:-.045em}
