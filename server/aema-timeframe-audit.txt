@@ -1,0 +1,523 @@
+src/crypto/research/cryptoSupportingIntelligenceContext.js:569:  const vals=[finite(m.change1hPercent),finite(m.change24hPercent),finite(m.change7dPercent)].filter(v=>v!==null);
+src/crypto/opportunity/cryptoOpportunityRankingEngine.js:194: * 1h  = 20%
+src/crypto/opportunity/cryptoOpportunityRankingEngine.js:234:  const change1h =
+src/crypto/opportunity/cryptoOpportunityRankingEngine.js:237:      "change1hPercent",
+src/crypto/opportunity/cryptoOpportunityRankingEngine.js:238:      "change1hPct",
+src/crypto/opportunity/cryptoOpportunityRankingEngine.js:239:      "priceChange1hPercent",
+src/crypto/opportunity/cryptoOpportunityRankingEngine.js:240:      "priceChange1hPct",
+src/crypto/opportunity/cryptoOpportunityRankingEngine.js:241:      "change1h",
+src/crypto/opportunity/cryptoOpportunityRankingEngine.js:242:      "priceChange1h",
+src/crypto/opportunity/cryptoOpportunityRankingEngine.js:269:      source: "PRICE_CHANGE_1H",
+src/crypto/opportunity/cryptoOpportunityRankingEngine.js:270:      value: change1h,
+src/crypto/analysis/cryptoEmergingProjectEngine.js:71:  const change1h =
+src/crypto/analysis/cryptoEmergingProjectEngine.js:74:        ?.change1hPercent,
+src/crypto/analysis/cryptoEmergingProjectEngine.js:146:    change1h >=
+src/crypto/analysis/cryptoTechnicalEngine.js:32:  { key:"1h", field:"change1hPercent", scoreMultiplier:3, directionalWeight:0.35 },
+src/crypto/analysis/cryptoTechnicalEngine.js:112:      change1hPercent:m.change1hPercent ?? null,
+src/crypto/runtime/cryptoRuntimeContainer.js:95:    periodicIntervalMs: 60_000,
+src/crypto/discovery/cryptoDexDiscoveryService.js:522:    volume5mUsd:
+src/crypto/discovery/cryptoDexDiscoveryService.js:524:        pool?.volume5mUsd,
+src/crypto/discovery/cryptoDexDiscoveryService.js:527:    volume1hUsd:
+src/crypto/discovery/cryptoDexDiscoveryService.js:529:        pool?.volume1hUsd,
+src/crypto/discovery/cryptoDexDiscoveryService.js:708:    "volume5mUsd",
+src/crypto/discovery/cryptoDexDiscoveryService.js:709:    "volume1hUsd",
+src/crypto/discovery/cryptoDexDiscoveryService.js:713:    "buys5m",
+src/crypto/discovery/cryptoDexDiscoveryService.js:714:    "sells5m",
+src/crypto/discovery/cryptoDexDiscoveryService.js:715:    "transactions5m",
+src/crypto/discovery/cryptoDexDiscoveryService.js:717:    "buys1h",
+src/crypto/discovery/cryptoDexDiscoveryService.js:718:    "sells1h",
+src/crypto/discovery/cryptoDexDiscoveryService.js:719:    "transactions1h",
+src/crypto/discovery/cryptoDexDiscoveryService.js:729:    "change5mPercent",
+src/crypto/discovery/cryptoDexDiscoveryService.js:730:    "change1hPercent",
+src/crypto/discovery/cryptoDexDiscoveryService.js:1192:  const buys1h =
+src/crypto/discovery/cryptoDexDiscoveryService.js:1194:      pool?.buys1h,
+src/crypto/discovery/cryptoDexDiscoveryService.js:1197:  const sells1h =
+src/crypto/discovery/cryptoDexDiscoveryService.js:1199:      pool?.sells1h,
+src/crypto/discovery/cryptoDexDiscoveryService.js:1235:    buys1h !== null &&
+src/crypto/discovery/cryptoDexDiscoveryService.js:1236:    sells1h !== null &&
+src/crypto/discovery/cryptoDexDiscoveryService.js:1237:    buys1h > sells1h
+src/crypto/discovery/cryptoDexDiscoveryService.js:1240:      "BUY_PRESSURE_1H",
+src/crypto/discovery/cryptoDexDiscoveryService.js:1310:      pool?.change5mPercent,
+src/crypto/discovery/cryptoDexDiscoveryService.js:1313:      pool?.change1hPercent,
+src/crypto/discovery/cryptoDexDiscoveryService.js:1494:    volume5mUsd:
+src/crypto/discovery/cryptoDexDiscoveryService.js:1496:        pool?.volume5mUsd,
+src/crypto/discovery/cryptoDexDiscoveryService.js:1499:    volume1hUsd:
+src/crypto/discovery/cryptoDexDiscoveryService.js:1501:        pool?.volume1hUsd,
+src/crypto/discovery/cryptoDexDiscoveryService.js:1511:    buys5m:
+src/crypto/discovery/cryptoDexDiscoveryService.js:1513:        pool?.buys5m,
+src/crypto/discovery/cryptoDexDiscoveryService.js:1516:    sells5m:
+src/crypto/discovery/cryptoDexDiscoveryService.js:1518:        pool?.sells5m,
+src/crypto/discovery/cryptoDexDiscoveryService.js:1521:    transactions5m:
+src/crypto/discovery/cryptoDexDiscoveryService.js:1523:        pool?.transactions5m,
+src/crypto/discovery/cryptoDexDiscoveryService.js:1526:    buys1h:
+src/crypto/discovery/cryptoDexDiscoveryService.js:1528:        pool?.buys1h,
+src/crypto/discovery/cryptoDexDiscoveryService.js:1531:    sells1h:
+src/crypto/discovery/cryptoDexDiscoveryService.js:1533:        pool?.sells1h,
+src/crypto/discovery/cryptoDexDiscoveryService.js:1536:    transactions1h:
+src/crypto/discovery/cryptoDexDiscoveryService.js:1538:        pool?.transactions1h,
+src/crypto/discovery/cryptoDexDiscoveryService.js:1571:    change5mPercent:
+src/crypto/discovery/cryptoDexDiscoveryService.js:1573:        pool?.change5mPercent,
+src/crypto/discovery/cryptoDexDiscoveryService.js:1576:    change1hPercent:
+src/crypto/discovery/cryptoDexDiscoveryService.js:1578:        pool?.change1hPercent,
+src/crypto/discovery/cryptoDexDiscoveryService.js:1730:          volume5mUsd:
+src/crypto/discovery/cryptoDexDiscoveryService.js:1732:              pool?.volume5mUsd,
+src/crypto/discovery/cryptoDexDiscoveryService.js:1735:          volume1hUsd:
+src/crypto/discovery/cryptoDexDiscoveryService.js:1737:              pool?.volume1hUsd,
+src/crypto/discovery/cryptoDexDiscoveryService.js:1747:          buys5m:
+src/crypto/discovery/cryptoDexDiscoveryService.js:1749:              pool?.buys5m,
+src/crypto/discovery/cryptoDexDiscoveryService.js:1752:          sells5m:
+src/crypto/discovery/cryptoDexDiscoveryService.js:1754:              pool?.sells5m,
+src/crypto/discovery/cryptoDexDiscoveryService.js:1757:          transactions5m:
+src/crypto/discovery/cryptoDexDiscoveryService.js:1759:              pool?.transactions5m,
+src/crypto/discovery/cryptoDexDiscoveryService.js:1762:          buys1h:
+src/crypto/discovery/cryptoDexDiscoveryService.js:1764:              pool?.buys1h,
+src/crypto/discovery/cryptoDexDiscoveryService.js:1767:          sells1h:
+src/crypto/discovery/cryptoDexDiscoveryService.js:1769:              pool?.sells1h,
+src/crypto/discovery/cryptoDexDiscoveryService.js:1772:          transactions1h:
+src/crypto/discovery/cryptoDexDiscoveryService.js:1774:              pool?.transactions1h,
+src/crypto/engines/emergingDexEngine.js:38:  minimumTransactions5m: 2,
+src/crypto/engines/emergingDexEngine.js:39:  minimumTransactions1h: 3,
+src/crypto/engines/emergingDexEngine.js:137:  const a5 = activity(asset, "5m");
+src/crypto/engines/emergingDexEngine.js:138:  const a1 = activity(asset, "1h");
+src/crypto/engines/emergingDexEngine.js:154:  const a5 = activity(asset, "5m");
+src/crypto/engines/emergingDexEngine.js:155:  const a1 = activity(asset, "1h");
+src/crypto/engines/emergingDexEngine.js:164:  const v5 = num(asset?.volume5mUsd);
+src/crypto/engines/emergingDexEngine.js:165:  const v1 = num(asset?.volume1hUsd);
+src/crypto/engines/emergingDexEngine.js:176:  const effective1hMinutes = Math.min(60, age);
+src/crypto/engines/emergingDexEngine.js:177:  if (effective1hMinutes <= 5) return 50;
+src/crypto/engines/emergingDexEngine.js:180:  const olderMinutes = effective1hMinutes - 5;
+src/crypto/engines/emergingDexEngine.js:256:  const p5 = num(asset?.change5mPercent);
+src/crypto/engines/emergingDexEngine.js:257:  const p1 = num(asset?.change1hPercent);
+src/crypto/engines/emergingDexEngine.js:302:    asset?.volume1hUsd,
+src/crypto/engines/emergingDexEngine.js:327:  const tx5 = int(asset?.transactions5m);
+src/crypto/engines/emergingDexEngine.js:328:  const tx1 = int(asset?.transactions1h);
+src/crypto/engines/emergingDexEngine.js:329:  const change5 = num(asset?.change5mPercent);
+src/crypto/engines/emergingDexEngine.js:330:  const change1 = num(asset?.change1hPercent);
+src/crypto/engines/emergingDexEngine.js:529:        buySellRatio5m:
+src/crypto/engines/emergingDexEngine.js:532:              asset?.buys5m,
+src/crypto/engines/emergingDexEngine.js:533:              asset?.sells5m,
+src/crypto/engines/emergingDexEngine.js:538:        buySellRatio1h:
+src/crypto/engines/emergingDexEngine.js:541:              asset?.buys1h,
+src/crypto/engines/emergingDexEngine.js:542:              asset?.sells1h,
+src/crypto/engines/emergingDexEngine.js:582:  const tx5 = int(asset?.transactions5m);
+src/crypto/engines/emergingDexEngine.js:583:  const tx1 = int(asset?.transactions1h);
+src/crypto/engines/emergingDexEngine.js:593:    (tx5 !== null && tx5 >= options.minimumTransactions5m) ||
+src/crypto/engines/emergingDexEngine.js:594:    (tx1 !== null && tx1 >= options.minimumTransactions1h);
+src/crypto/bot/research/botResearchMarketProvider.js:56: * INTERVALS
+src/crypto/bot/research/botResearchMarketProvider.js:60:const intervalMap = {
+src/crypto/bot/research/botResearchMarketProvider.js:63:  "5m": "5",
+src/crypto/bot/research/botResearchMarketProvider.js:64:  "15m": "15",
+src/crypto/bot/research/botResearchMarketProvider.js:66:  "1h": "60",
+src/crypto/bot/research/botResearchMarketProvider.js:74:const intervalMilliseconds = {
+src/crypto/bot/research/botResearchMarketProvider.js:77:  "5m": 300_000,
+src/crypto/bot/research/botResearchMarketProvider.js:78:  "15m": 900_000,
+src/crypto/bot/research/botResearchMarketProvider.js:80:  "1h": 3_600_000,
+src/crypto/bot/research/botResearchMarketProvider.js:96:  interval
+src/crypto/bot/research/botResearchMarketProvider.js:98:  const intervalMs =
+src/crypto/bot/research/botResearchMarketProvider.js:99:    intervalMilliseconds[interval] ??
+src/crypto/bot/research/botResearchMarketProvider.js:111:       * the configured interval, but it should not be
+src/crypto/bot/research/botResearchMarketProvider.js:116:        intervalMs !== null
+src/crypto/bot/research/botResearchMarketProvider.js:117:          ? openTime + intervalMs
+src/crypto/bot/research/botResearchMarketProvider.js:406:        interval:
+src/crypto/bot/research/botResearchMarketProvider.js:407:          intervalMap[
+src/crypto/bot/research/botResearchMarketProvider.js:408:            cfg.candleInterval
+src/crypto/bot/research/botResearchMarketProvider.js:447:        intervalTime:
+src/crypto/bot/research/botResearchMarketProvider.js:448:          "5min",
+src/crypto/bot/research/botResearchMarketProvider.js:467:      cfg.candleInterval
+src/crypto/bot/quant/quantOutcomeDataset.js:3:export function evaluateMatchedOutcomes(setups, candleBundles, {interval='5m',maxBars=72,costBps=12}={}) {
+src/crypto/bot/quant/quantOutcomeDataset.js:8:  const key=[b.exchange,b.instrumentType,b.symbol,interval].join('|');
+src/crypto/bot/quant/quantOutcomeDataset.js:16:  const bundle=lookup.get([s.exchange,s.instrumentType,s.symbol,interval].join('|'));
+src/crypto/bot/quant/quantOutcomeDataset.js:20:  const result=trackOutcome(s,bundle.candles,{interval,maxBars,costBps});
+src/crypto/bot/quant/quantSnapshotArchive.js:9:const INTERVALS = { '1m':60000,'3m':180000,'5m':300000,'15m':900000,'30m':1800000,'1h':3600000,'4h':14400000,'1d':86400000 };
+src/crypto/bot/quant/quantSnapshotArchive.js:20:  const interval=record?.candleInterval || '5m';
+src/crypto/bot/quant/quantSnapshotArchive.js:21:  const ms=INTERVALS[interval];
+src/crypto/bot/quant/quantSnapshotArchive.js:24:  if (!ms) errors.push('UNSUPPORTED_INTERVAL');
+src/crypto/bot/quant/quantHistoricalPipeline.js:22:  const key=`${symbol}|${decision}|${r.candleInterval}`;
+src/crypto/bot/quant/quantHistoricalPipeline.js:25:  observations.push({timestamp:decision,symbol,instrumentType:r.market?.instrumentType||null,interval:r.candleInterval,strategy:s?.strategy||null,direction:s?.researchDirection||r.candidate?.directionDecision?.direction||null,entry:s?.entry??null,stop:s?.stop??null,target:s?.target??null,setupApproved:s?.approved===true,source:'CONTEMPORANEOUS_ARCHIVE',pointInTimeVerified:r.pointInTimeVerified===true,archiveHash:r.archiveMetadata.sha256,trainingReady:false});
+src/crypto/bot/quant/quantHistoricalPipeline.js:29:export function evaluateExternalOutcomes(setups,markets,{interval='5m',costBps=12,maxBars=72}={}){
+src/crypto/bot/quant/quantHistoricalPipeline.js:33:  if(!match || match.instrumentType!==s.instrumentType || match.interval!==interval || match.sourceVerified!==true)
+src/crypto/bot/quant/quantHistoricalPipeline.js:35:  return trackOutcome(s,match.candles,{interval,costBps,maxBars});
+src/crypto/bot/quant/quantSetupCapture.js:7:export function makeSetupCaptureRows(shadows, {capturedAtMs=Date.now(), interval='5m', marketIdentities={}}={}) {
+src/crypto/bot/quant/quantSetupCapture.js:8:  const intervals={'1m':60000,'3m':180000,'5m':300000,'15m':900000,'30m':1800000,'1h':3600000};
+src/crypto/bot/quant/quantSetupCapture.js:9:  const duration=intervals[interval];
+src/crypto/bot/quant/quantSetupCapture.js:10:  if(!duration || !Number.isFinite(capturedAtMs) || capturedAtMs>Date.now()+1000) throw Error('INVALID_CAPTURE_TIME_OR_INTERVAL');
+src/crypto/bot/quant/quantSetupCapture.js:12:  // First possible complete future bar begins at the NEXT interval boundary.
+src/crypto/bot/quant/quantSetupCapture.js:20:    return {schemaVersion:'ema-quant-setup-observation-v1',observationId:crypto.createHash('sha256').update(`${capturedAt}|${index}|${s.symbol||''}|${direction}`).digest('hex'),capturedAt, outcomeStart:new Date(outcomeStartMs).toISOString(),symbol:String(s.symbol||''),instrumentType:'FUTURES',exchange:identity?.exchange||null,marketId:identity?.marketId||null,marketIdentitySource:identity?.source||null,candleInterval:interval,strategy:s.strategy||null,direction,entry,stop,target,setupApproved:s.setupApproved===true,geometryValid,reason:geometryValid?'AWAITING_MATCHED_FUTURES_OUTCOME':'NO_VALID_SETUP_GEOMETRY',pointInTimeVerified:false,trainingReady:false,executionAuthority:false,liveExecution:false};
+src/crypto/bot/quant/quantArchiveResearchReport.js:6:  const summary={records:0,validJson:0,parseErrors:0,hashMismatches:0,unverified:0,duplicates:0,bySymbol:{},byInterval:{},errors:[],researchOnly:true,readyForTraining:false};
+src/crypto/bot/quant/quantArchiveResearchReport.js:21:    const interval=String(r.candleInterval||'UNKNOWN');
+src/crypto/bot/quant/quantArchiveResearchReport.js:22:    summary.byInterval[interval]=(summary.byInterval[interval]||0)+1;
+src/crypto/bot/quant/quantArchiveResearchReport.js:23:    const key=`${r.timestamp}|${symbol}|${interval}`;
+src/crypto/bot/quant/quantCandleArchivePreparation.js:2:export const INTERVAL_MS = Object.freeze({'1m':60000,'3m':180000,'5m':300000,'15m':900000,'30m':1800000,'1h':3600000,'4h':14400000,'1d':86400000});
+src/crypto/bot/quant/quantCandleArchivePreparation.js:9:export function prepareArchiveCandles(market,{interval='5m',capturedAtMs=Date.now(),minimumCandles=30}={}) {
+src/crypto/bot/quant/quantCandleArchivePreparation.js:10:  const duration=INTERVAL_MS[interval];
+src/crypto/bot/quant/quantCandleArchivePreparation.js:11:  if(!duration) return {ok:false,errors:['UNSUPPORTED_INTERVAL']};
+src/crypto/bot/quant/quantCandleArchivePreparation.js:15:  if(times.some(t=>t%duration!==0)) return {ok:false,errors:['INTERVAL_MISMATCH']};
+src/crypto/bot/quant/quantShadowEngine.js:8:      const record={schemaVersion:'ema-quant-shadow-v1',symbol:candidate?.symbol??null,observedAt:new Date(asOf).toISOString(),features,predictions:{'5m':null,'15m':null,'60m':null},modelVersion:null,validationStatus:'UNTRAINED',decision:'SHADOW_ONLY',executionAuthority:false,liveExecution:false};
+src/crypto/bot/quant/quantStrategyAnalytics.js:24:    // Wilson 95% interval describes uncertainty in the observed binary outcome rate, not future performance.
+src/crypto/bot/quant/quantOutcomeTracking.js:4:export const INTERVAL_MS={'1m':60000,'3m':180000,'5m':300000,'15m':900000,'30m':1800000,'1h':3600000};
+src/crypto/bot/quant/quantOutcomeTracking.js:5:export function trackOutcome(setup,candles,{interval='5m',maxBars=72,costBps=12}={}){
+src/crypto/bot/quant/quantOutcomeTracking.js:6: const duration=INTERVAL_MS[interval];if(!duration||!Number.isInteger(maxBars)||maxBars<1||!Number.isFinite(costBps)||costBps<0)throw Error('INVALID_OPTIONS');
+src/crypto/bot/quant/quantFuturesCandleCollector.js:2:import {INTERVAL_MS} from './quantOutcomeTracking.js';
+src/crypto/bot/quant/quantFuturesCandleCollector.js:6:export function validateFuturesSetupIdentity(s,{interval='5m',maxBars=72,nowMs=Date.now()}={}){
+src/crypto/bot/quant/quantFuturesCandleCollector.js:7: const ms=INTERVAL_MS[interval];if(!ms||!Number.isInteger(maxBars)||maxBars<1||maxBars>200)throw Error('INVALID_WINDOW');
+src/crypto/bot/quant/quantFuturesCandleCollector.js:26:export function validateFetchedCandles(rows,{start,end,interval='5m'}={}){
+src/crypto/bot/quant/quantFuturesCandleCollector.js:27: const ms=INTERVAL_MS[interval];if(!ms||!Array.isArray(rows))throw Error('INVALID_CANDLES');
+src/crypto/bot/quant/quantFuturesCandleCollector.js:35:export async function collectMatchedFuturesCandles(setups,{interval='5m',maxBars=72,nowMs=Date.now(),fetchJson=defaultFetch}={}){
+src/crypto/bot/quant/quantFuturesCandleCollector.js:39:  const v=validateFuturesSetupIdentity(s,{interval,maxBars,nowMs});if(!v.ok){skipped.push({observationId:s?.observationId??null,symbol:s?.symbol??null,reason:v.reason,...(v.readyAt?{readyAt:v.readyAt}:{})});continue;}
+src/crypto/bot/quant/quantFuturesCandleCollector.js:40:  const ms=INTERVAL_MS[interval],raw=[];
+src/crypto/bot/quant/quantFuturesCandleCollector.js:46:    Object.entries({contract:v.marketId,interval,from:Math.floor(v.start/1000),to:Math.floor((v.end-ms)/1000)}).forEach(([k,val])=>url.searchParams.set(k,String(val)));
+src/crypto/bot/quant/quantFuturesCandleCollector.js:49:    Object.entries({category:'linear',symbol:v.marketId,interval:String(ms/60000),start:v.start,end:v.end-ms,limit:maxBars}).forEach(([k,val])=>url.searchParams.set(k,String(val)));
+src/crypto/bot/quant/quantFuturesCandleCollector.js:56:   const check=validateFetchedCandles(parseRows(parsed,s.exchange),{start:v.start,end:v.end,interval});
+src/crypto/bot/quant/quantFuturesCandleCollector.js:58:   bundles.push({exchange:s.exchange,instrumentType:'FUTURES',symbol:s.symbol,marketId:v.marketId,interval,observationId:s.observationId??null,capturedThrough:new Date(v.end).toISOString(),provenanceVerified:true,provenanceMethod:'DIRECT_PUBLIC_FUTURES_API_NOT_INDEPENDENTLY_AUDITED',candles:check.candles,researchOnly:true,trainingReady:false});
+src/crypto/bot/config/botConfig.js:120:    candleInterval: "15m",
+src/crypto/bot/config/botConfig.js:208:    candleInterval: "15m",
+src/crypto/bot/config/botConfig.js:351:    intervalMs:
+src/crypto/bot/config/botConfig.js:360:    priceMonitorCandleInterval:
+src/crypto/bot/config/botConfig.js:381:    researchRefreshIntervalMs:
+src/crypto/bot/config/botPhase5Config.js:6:    intervalMs: 60_000,
+src/crypto/bot/runtime/botRuntime.js:152:  const intervalMs = Number(
+src/crypto/bot/runtime/botRuntime.js:153:    options.intervalMs ||
+src/crypto/bot/runtime/botRuntime.js:154:      PHASE5.consistency.intervalMs
+src/crypto/bot/runtime/botRuntime.js:236:   * interval, but never automatically generate/open another one.
+src/crypto/bot/runtime/botRuntime.js:238:  timer = setInterval(
+src/crypto/bot/runtime/botRuntime.js:240:    intervalMs
+src/crypto/bot/runtime/botRuntime.js:250:    intervalMs,
+src/crypto/bot/runtime/botRuntime.js:268:    clearInterval(timer);
+src/crypto/bot/runtime/cexDiscoveryRuntime.js:49:const DEFAULT_INTERVAL_MS =
+src/crypto/bot/runtime/cexDiscoveryRuntime.js:52:      .AEMA_CEX_DISCOVERY_INTERVAL_MS ??
+src/crypto/bot/runtime/cexDiscoveryRuntime.js:449:  intervalMs,
+src/crypto/bot/runtime/cexDiscoveryRuntime.js:454:      intervalMs,
+src/crypto/bot/runtime/cexDiscoveryRuntime.js:1017:      intervalMs:
+src/crypto/bot/runtime/cexDiscoveryRuntime.js:1018:        DEFAULT_INTERVAL_MS,
+src/crypto/bot/runtime/cexDiscoveryRuntime.js:1025:  const requestedInterval =
+src/crypto/bot/runtime/cexDiscoveryRuntime.js:1027:      options.intervalMs ??
+src/crypto/bot/runtime/cexDiscoveryRuntime.js:1028:      DEFAULT_INTERVAL_MS,
+src/crypto/bot/runtime/cexDiscoveryRuntime.js:1031:  const intervalMs =
+src/crypto/bot/runtime/cexDiscoveryRuntime.js:1033:      requestedInterval,
+src/crypto/bot/runtime/cexDiscoveryRuntime.js:1035:    requestedInterval >=
+src/crypto/bot/runtime/cexDiscoveryRuntime.js:1037:      ? requestedInterval
+src/crypto/bot/runtime/cexDiscoveryRuntime.js:1038:      : DEFAULT_INTERVAL_MS;
+src/crypto/bot/runtime/cexDiscoveryRuntime.js:1072:          intervalMs,
+src/crypto/bot/runtime/cexDiscoveryRuntime.js:1096:            intervalMs,
+src/crypto/bot/runtime/cexDiscoveryRuntime.js:1103:    setInterval(
+src/crypto/bot/runtime/cexDiscoveryRuntime.js:1107:      intervalMs,
+src/crypto/bot/runtime/cexDiscoveryRuntime.js:1111:    intervalMs,
+src/crypto/bot/runtime/cexDiscoveryRuntime.js:1121:    intervalMs,
+src/crypto/bot/runtime/cexDiscoveryRuntime.js:1145:    clearInterval(
+src/crypto/bot/discovery/cexDiscoveryRuntime.js:55:  const intervalMs=Math.max(60000,Number(options.intervalMs||process.env.AEMA_CEX_DISCOVERY_INTERVAL_MS||120000));
+src/crypto/bot/discovery/cexDiscoveryRuntime.js:56:  state.running=true;const tick=()=>runCexDiscoveryCycle(options).catch(()=>{});timer=setInterval(tick,intervalMs);tick();
+src/crypto/bot/discovery/cexDiscoveryRuntime.js:57:  return {started:true,intervalMs};
+src/crypto/bot/discovery/cexDiscoveryRuntime.js:59:export function stopCexDiscoveryRuntime(){if(timer)clearInterval(timer);timer=null;state.running=false;return {stopped:true}}
+src/crypto/bot/setup/bot15mPredictionPlanner.js:17:export function plan15mScenario({candles=[], direction, strategyEntry, strategyStop, strategyTarget, currentPrice, minimumRiskReward=1.5, interval="15m"}={}) {
+src/crypto/bot/setup/bot15mPredictionPlanner.js:18:  const unavailable=(reason)=>({status:"UNAVAILABLE",reason,interval:"15m",researchOnly:true,executionAuthority:false,liveExecution:false,applied:false});
+src/crypto/bot/setup/bot15mPredictionPlanner.js:19:  if(interval!=="15m") return unavailable("TIMEFRAME_NOT_15M");
+src/crypto/bot/setup/bot15mPredictionPlanner.js:20:  if(!Array.isArray(candles)||candles.length<30) return unavailable("INSUFFICIENT_CLOSED_15M_CANDLES");
+src/crypto/bot/setup/bot15mPredictionPlanner.js:37:    interval:"15m",researchOnly:true,executionAuthority:false,liveExecution:false,applied:false,
+src/crypto/bot/setup/bot15mPredictionPlanner.js:58:    status:"SCENARIO_READY", interval:"15m",researchOnly:true,executionAuthority:false,liveExecution:false,applied:false,
+src/crypto/bot/setup/bot15mPredictionPlanner.js:69:export default plan15mScenario;
+src/crypto/bot/setup/botFuturesStrategySetupBuilder.js:48:import plan15mScenario from "./bot15mPredictionPlanner.js";
+src/crypto/bot/setup/botFuturesStrategySetupBuilder.js:393:const setupCandleInterval =
+src/crypto/bot/setup/botFuturesStrategySetupBuilder.js:394:  setupConfig.candleInterval ??
+src/crypto/bot/setup/botFuturesStrategySetupBuilder.js:395:  "5m";
+src/crypto/bot/setup/botFuturesStrategySetupBuilder.js:406:      interval:
+src/crypto/bot/setup/botFuturesStrategySetupBuilder.js:407:        setupCandleInterval,
+src/crypto/bot/setup/botFuturesStrategySetupBuilder.js:425:    interval:
+src/crypto/bot/setup/botFuturesStrategySetupBuilder.js:426:      setupCandleInterval,
+src/crypto/bot/setup/botFuturesStrategySetupBuilder.js:474:            candleInterval:
+src/crypto/bot/setup/botFuturesStrategySetupBuilder.js:475:  setupCandleInterval,
+src/crypto/bot/setup/botFuturesStrategySetupBuilder.js:697:  // Point-in-time 15m scenario research. Keep the strategy geometry published
+src/crypto/bot/setup/botFuturesStrategySetupBuilder.js:699:  const prediction15m = plan15mScenario({
+src/crypto/bot/setup/botFuturesStrategySetupBuilder.js:701:    interval: setupCandleInterval,
+src/crypto/bot/setup/botFuturesStrategySetupBuilder.js:1034:   prediction15m,
+src/crypto/bot/setup/botSetupCandleUtils.js:7: * - Determine candle interval duration.
+src/crypto/bot/setup/botSetupCandleUtils.js:16:const INTERVAL_MS = Object.freeze({
+src/crypto/bot/setup/botSetupCandleUtils.js:19:  "5m": 5 * 60_000,
+src/crypto/bot/setup/botSetupCandleUtils.js:20:  "15m": 15 * 60_000,
+src/crypto/bot/setup/botSetupCandleUtils.js:22:  "1h": 60 * 60_000,
+src/crypto/bot/setup/botSetupCandleUtils.js:43:export function getCandleIntervalMs(interval) {
+src/crypto/bot/setup/botSetupCandleUtils.js:44:  return INTERVAL_MS[
+src/crypto/bot/setup/botSetupCandleUtils.js:45:    String(interval || "")
+src/crypto/bot/setup/botSetupCandleUtils.js:72:    interval = "5m",
+src/crypto/bot/setup/botSetupCandleUtils.js:82:  const intervalMs =
+src/crypto/bot/setup/botSetupCandleUtils.js:83:    getCandleIntervalMs(
+src/crypto/bot/setup/botSetupCandleUtils.js:84:      interval
+src/crypto/bot/setup/botSetupCandleUtils.js:89:    intervalMs === null
+src/crypto/bot/setup/botSetupCandleUtils.js:95:    openTime + intervalMs;
+src/crypto/bot/setup/botSetupCandleUtils.js:106:    interval = "5m",
+src/crypto/bot/setup/botSetupCandleUtils.js:141:          interval,
+src/crypto/bot/backtest/botHistoricalStopValidation.js:11:  if (!s.exchange || !s.marketId || !s.instrumentType || !s.candleInterval) return 'MARKET_IDENTITY_MISSING';
+src/crypto/bot/backtest/botHistoricalStopValidation.js:15:  if (candles.exchange!==s.exchange || candles.marketId!==s.marketId || candles.instrumentType!==s.instrumentType || candles.candleInterval!==s.candleInterval) return 'CANDLE_MARKET_MISMATCH';
+src/crypto/bot/backtest/botVerifiedSetupCollector.js:25:    if(!s.candleInterval) warnings.push('CANDLE_INTERVAL_UNVERIFIED');
+src/crypto/bot/backtest/botVerifiedSetupCollector.js:37:      marketId:s.marketId ?? null, candleInterval:s.candleInterval ?? null,
+src/crypto/bot/orchestration/botMarketSearchCycle.js:109:  const directionQualified = directional.filter(
+src/crypto/bot/orchestration/botMarketSearchCycle.js:124:    directionQualified,
+src/crypto/bot/orchestration/botMarketSearchCycle.js:432:      directionQualified:
+src/crypto/bot/orchestration/botMarketSearchCycle.js:433:        directionQualified.length,
+src/crypto/bot/market/botFuturesExecutionMarketProvider.js:62: * BYBIT INTERVAL MAPPING
+src/crypto/bot/market/botFuturesExecutionMarketProvider.js:66:const intervalMap = {
+src/crypto/bot/market/botFuturesExecutionMarketProvider.js:69:  "5m": "5",
+src/crypto/bot/market/botFuturesExecutionMarketProvider.js:70:  "15m": "15",
+src/crypto/bot/market/botFuturesExecutionMarketProvider.js:72:  "1h": "60",
+src/crypto/bot/market/botFuturesExecutionMarketProvider.js:75:const intervalMilliseconds = {
+src/crypto/bot/market/botFuturesExecutionMarketProvider.js:78:  "5m": 300_000,
+src/crypto/bot/market/botFuturesExecutionMarketProvider.js:79:  "15m": 900_000,
+src/crypto/bot/market/botFuturesExecutionMarketProvider.js:81:  "1h": 3_600_000,
+src/crypto/bot/market/botFuturesExecutionMarketProvider.js:502:        interval:
+src/crypto/bot/market/botFuturesExecutionMarketProvider.js:503:          intervalMap[
+src/crypto/bot/market/botFuturesExecutionMarketProvider.js:504:            cfg.candleInterval
+src/crypto/bot/market/botFuturesExecutionMarketProvider.js:672:   * openTime + interval
+src/crypto/bot/market/botFuturesExecutionMarketProvider.js:679:  const intervalMs =
+src/crypto/bot/market/botFuturesExecutionMarketProvider.js:680:    intervalMilliseconds[
+src/crypto/bot/market/botFuturesExecutionMarketProvider.js:681:      cfg.candleInterval
+src/crypto/bot/market/botFuturesExecutionMarketProvider.js:687:        intervalMs
+src/crypto/bot/market/botFuturesExecutionMarketProvider.js:907:      candleInterval:
+src/crypto/bot/market/botFuturesExecutionMarketProvider.js:908:        cfg.candleInterval,
+src/crypto/bot/monitoring/botSetupMonitoringEngine.js:939:    cfg.researchRefreshIntervalMs
+src/crypto/bot/monitoring/botSetupMonitoringEngine.js:959:   * Use the normal research timeframe here.
+src/crypto/bot/monitoring/botSetupMonitoringEngine.js:1132:        candleInterval:
+src/crypto/bot/monitoring/botSetupMonitoringEngine.js:1133:          cfg.priceMonitorCandleInterval,
+src/crypto/bot/stock/setup/botStockMarketAdapter.js:3:const INTERVAL = Object.freeze({'1Min':'1m','5Min':'5m','15Min':'15m','1Hour':'1h','1Day':'1d'});
+src/crypto/bot/stock/setup/botStockMarketAdapter.js:4:const MS = Object.freeze({'1Min':60000,'5Min':300000,'15Min':900000,'1Hour':3600000,'1Day':86400000});
+src/crypto/bot/stock/setup/botStockMarketAdapter.js:5:export function adaptAlpacaBarsToStockSetup({symbol,bars,timeframe='5Min',asOf=Date.now(),spreadPercent=null,slippagePercent=null}={}) {
+src/crypto/bot/stock/setup/botStockMarketAdapter.js:7:  if (!INTERVAL[timeframe]) throw new Error('UNSUPPORTED_STOCK_TIMEFRAME');
+src/crypto/bot/stock/setup/botStockMarketAdapter.js:14:    if(t+MS[timeframe]+1000>asOf||seen.has(t))continue;
+src/crypto/bot/stock/setup/botStockMarketAdapter.js:32:    candleInterval:INTERVAL[timeframe],asOf,source:'ALPACA_HISTORICAL',executionAuthority:false,liveExecution:false};
+src/crypto/bot/stock/setup/botStockStrategySetupBuilder.js:389:const setupCandleInterval =
+src/crypto/bot/stock/setup/botStockStrategySetupBuilder.js:390:  setupConfig.candleInterval ??
+src/crypto/bot/stock/setup/botStockStrategySetupBuilder.js:391:  "5m";
+src/crypto/bot/stock/setup/botStockStrategySetupBuilder.js:402:      interval:
+src/crypto/bot/stock/setup/botStockStrategySetupBuilder.js:403:        setupCandleInterval,
+src/crypto/bot/stock/setup/botStockStrategySetupBuilder.js:421:    interval:
+src/crypto/bot/stock/setup/botStockStrategySetupBuilder.js:422:      setupCandleInterval,
+src/crypto/bot/stock/setup/botStockStrategySetupBuilder.js:470:            candleInterval:
+src/crypto/bot/stock/setup/botStockStrategySetupBuilder.js:471:  setupCandleInterval,
+src/crypto/bot/stock/setup/botStockSetupConfig.js:120:    candleInterval: "15m",
+src/crypto/bot/stock/setup/botStockSetupConfig.js:205:    candleInterval: "5m",
+src/crypto/bot/stock/setup/botStockSetupConfig.js:348:    intervalMs:
+src/crypto/bot/stock/setup/botStockSetupConfig.js:357:    priceMonitorCandleInterval:
+src/crypto/bot/stock/setup/botStockSetupConfig.js:378:    researchRefreshIntervalMs:
+src/crypto/bot/stock/setup/botStockStrategyFork.js:3:const MAP=Object.freeze({'1Min':'1m','5Min':'5m','15Min':'15m','1Hour':'1h','1Day':'1d'});
+src/crypto/bot/stock/setup/botStockStrategyFork.js:5:export function evaluateStockStrategyFork({symbol,bars,timeframe='5Min',direction,asOf=Date.now(),options={}}={}){
+src/crypto/bot/stock/setup/botStockStrategyFork.js:6:  const market=adaptAlpacaBarsToStockSetup({symbol,bars,timeframe,asOf,spreadPercent:options.spreadPercent,slippagePercent:options.slippagePercent});
+src/crypto/bot/stock/setup/botStockStrategyFork.js:12:  const built=buildBotStockStrategySetup(candidate,market,{...options,candleInterval:MAP[timeframe],replayNowMs:asOf});
+src/crypto/bot/stock/setup/botSetupCandleUtils.js:7: * - Determine candle interval duration.
+src/crypto/bot/stock/setup/botSetupCandleUtils.js:16:const INTERVAL_MS = Object.freeze({
+src/crypto/bot/stock/setup/botSetupCandleUtils.js:19:  "5m": 5 * 60_000,
+src/crypto/bot/stock/setup/botSetupCandleUtils.js:20:  "15m": 15 * 60_000,
+src/crypto/bot/stock/setup/botSetupCandleUtils.js:22:  "1h": 60 * 60_000,
+src/crypto/bot/stock/setup/botSetupCandleUtils.js:43:export function getCandleIntervalMs(interval) {
+src/crypto/bot/stock/setup/botSetupCandleUtils.js:44:  return INTERVAL_MS[
+src/crypto/bot/stock/setup/botSetupCandleUtils.js:45:    String(interval || "")
+src/crypto/bot/stock/setup/botSetupCandleUtils.js:72:    interval = "5m",
+src/crypto/bot/stock/setup/botSetupCandleUtils.js:82:  const intervalMs =
+src/crypto/bot/stock/setup/botSetupCandleUtils.js:83:    getCandleIntervalMs(
+src/crypto/bot/stock/setup/botSetupCandleUtils.js:84:      interval
+src/crypto/bot/stock/setup/botSetupCandleUtils.js:89:    intervalMs === null
+src/crypto/bot/stock/setup/botSetupCandleUtils.js:95:    openTime + intervalMs;
+src/crypto/bot/stock/setup/botSetupCandleUtils.js:106:    interval = "5m",
+src/crypto/bot/stock/setup/botSetupCandleUtils.js:141:          interval,
+src/crypto/bot/stock/orchestration/botStockMarketSearchCycle.js:22:  const timeframe=options.timeframe??'5Min',feed=options.feed??'iex';
+src/crypto/bot/stock/orchestration/botStockMarketSearchCycle.js:26:  const discovered=await discover({symbols:universe,timeframe,feed,lookbackDays,topN:shortlist});
+src/crypto/bot/stock/orchestration/botStockMarketSearchCycle.js:34:      const data=await fetchBars({symbol:candidate.symbol,timeframe,feed,start,end});
+src/crypto/bot/stock/orchestration/botStockMarketSearchCycle.js:41:          const result=evaluate({symbol:candidate.symbol,bars:data.bars,timeframe,direction,asOf,options:options.setup??{}});
+src/crypto/bot/stock/orchestration/botStockMarketSearchCycle.js:69:      directionQualified:researchCompleted*2,directionRejected:0,top10:Math.min(ranked.length,10),
+src/crypto/bot/stock/botStockResearchEngine.js:55:export function evaluateStockBars({symbol,bars,asOf=Date.now(),timeframe='5Min',minRiskReward=1.5}={}){
+src/crypto/bot/stock/botStockResearchEngine.js:56:  const candles=normalizeBars(bars);const base={assetClass:'STOCK',symbol,timeframe,executionAuthority:false,liveExecution:false,researchOnly:true,marketDataType:'HISTORICAL_BARS',generatedAt:new Date(asOf).toISOString()};
+src/crypto/bot/stock/botStockResearchEngine.js:83:export async function runStockResearch({symbols,timeframe='5Min',lookbackDays=20,feed='iex',minRiskReward=1.5}={}){
+src/crypto/bot/stock/botStockResearchEngine.js:85:  if(!['1Min','5Min','15Min','1Hour','1Day'].includes(timeframe))throw new Error('STOCK_TIMEFRAME_INVALID');
+src/crypto/bot/stock/botStockResearchEngine.js:91:      const data=await getHistoricalBars({symbol,start:start.toISOString(),end:end.toISOString(),timeframe,feed,maximumBars:5000});
+src/crypto/bot/stock/botStockResearchEngine.js:93:      const result=evaluateStockBars({symbol,bars:data.bars,timeframe,asOf:end.getTime(),minRiskReward});
+src/crypto/bot/stock/botStockDiscoveryEngine.js:5:const TIMEFRAMES = new Set(['1Min', '5Min', '15Min', '1Hour', '1Day']);
+src/crypto/bot/stock/botStockDiscoveryEngine.js:70:export async function discoverStockCandidates({symbols,timeframe='5Min',lookbackDays=10,feed='iex',topN=12,
+src/crypto/bot/stock/botStockDiscoveryEngine.js:75:  if (!TIMEFRAMES.has(timeframe) || !FEEDS.has(feed)) throw new Error('STOCK_DISCOVERY_MARKET_DATA_OPTIONS_INVALID');
+src/crypto/bot/stock/botStockDiscoveryEngine.js:86:      const result = await fetchBatch({symbols:chunk,timeframe,start,end,feed,maximumBars: 250_000});
+src/crypto/bot/stock/botStockDiscoveryEngine.js:103:    provider:'ALPACA_HISTORICAL',generatedAt:end,timeframe,feed,universeSize:universe.length,
+src/crypto/bot/stock/botStockDiscoveryWorkflow.js:14:  symbols, timeframe='5Min', lookbackDays=10, feed='iex',
+src/crypto/bot/stock/botStockDiscoveryWorkflow.js:23:  const discovery = await discover({symbols:universe,timeframe,lookbackDays,feed,topN:limit});
+src/crypto/bot/stock/botStockDiscoveryWorkflow.js:26:    ? await research({symbols:shortlisted,timeframe,lookbackDays,feed,minRiskReward})
+src/crypto/bot/risk/botVolatilityResearchDiagnostic.js:45:        'ATR_TIMEFRAME_NOT_VERIFIED',
+src/crypto/universe/cryptoDexDiscoveryService.js:114:            volume1hUsd:
+src/crypto/universe/cryptoDexDiscoveryService.js:115:              pool?.volume1hUsd,
+src/crypto/universe/cryptoDexDiscoveryService.js:117:            change1hPercent:
+src/crypto/universe/cryptoDexDiscoveryService.js:118:              pool?.change1hPercent,
+src/crypto/universe/cryptoDexDiscoveryService.js:188:                  volume1hUsd:
+src/crypto/universe/cryptoDexDiscoveryService.js:189:                    pool?.volume1hUsd,
+src/crypto/universe/cryptoUniverseProvider.js:341:    change1hPercent:
+src/crypto/universe/cryptoUniverseProvider.js:869:      change1hPercent:
+src/crypto/universe/cryptoUniverseProvider.js:870:        finiteOrNull(coinLore?.change1hPercent) ??
+src/crypto/universe/cryptoUniverseProvider.js:871:        finiteOrNull(market?.change1hPercent),
+src/crypto/universe/cryptoUniverseProvider.js:1019:    fallback.change1hPercent =
+src/crypto/universe/cryptoUniverseProvider.js:1021:        coinLore.change1hPercent,
+src/crypto/data/providers/geckoTerminalProvider.js:17: * - Exposes 5m/1h/6h/24h activity where available.
+src/crypto/data/providers/geckoTerminalProvider.js:542:  const tx5m =
+src/crypto/data/providers/geckoTerminalProvider.js:548:  const tx1h =
+src/crypto/data/providers/geckoTerminalProvider.js:652:    volume5mUsd:
+src/crypto/data/providers/geckoTerminalProvider.js:659:    volume1hUsd:
+src/crypto/data/providers/geckoTerminalProvider.js:680:    change5mPercent:
+src/crypto/data/providers/geckoTerminalProvider.js:687:    change1hPercent:
+src/crypto/data/providers/geckoTerminalProvider.js:708:    transactions5m:
+src/crypto/data/providers/geckoTerminalProvider.js:709:      tx5m.transactions,
+src/crypto/data/providers/geckoTerminalProvider.js:711:    buys5m:
+src/crypto/data/providers/geckoTerminalProvider.js:712:      tx5m.buys,
+src/crypto/data/providers/geckoTerminalProvider.js:714:    sells5m:
+src/crypto/data/providers/geckoTerminalProvider.js:715:      tx5m.sells,
+src/crypto/data/providers/geckoTerminalProvider.js:717:    buyers5m:
+src/crypto/data/providers/geckoTerminalProvider.js:718:      tx5m.buyers,
+src/crypto/data/providers/geckoTerminalProvider.js:720:    sellers5m:
+src/crypto/data/providers/geckoTerminalProvider.js:721:      tx5m.sellers,
+src/crypto/data/providers/geckoTerminalProvider.js:723:    transactions1h:
+src/crypto/data/providers/geckoTerminalProvider.js:724:      tx1h.transactions,
+src/crypto/data/providers/geckoTerminalProvider.js:726:    buys1h:
+src/crypto/data/providers/geckoTerminalProvider.js:727:      tx1h.buys,
+src/crypto/data/providers/geckoTerminalProvider.js:729:    sells1h:
+src/crypto/data/providers/geckoTerminalProvider.js:730:      tx1h.sells,
+src/crypto/data/providers/geckoTerminalProvider.js:732:    buyers1h:
+src/crypto/data/providers/geckoTerminalProvider.js:733:      tx1h.buyers,
+src/crypto/data/providers/geckoTerminalProvider.js:735:    sellers1h:
+src/crypto/data/providers/geckoTerminalProvider.js:736:      tx1h.sellers,
+src/crypto/data/providers/dexScreenerProvider.js:1028:  const tx5m =
+src/crypto/data/providers/dexScreenerProvider.js:1034:  const tx1h =
+src/crypto/data/providers/dexScreenerProvider.js:1175:    volume5mUsd:
+src/crypto/data/providers/dexScreenerProvider.js:1181:    volume1hUsd:
+src/crypto/data/providers/dexScreenerProvider.js:1199:    buys5m:
+src/crypto/data/providers/dexScreenerProvider.js:1200:      tx5m.buys,
+src/crypto/data/providers/dexScreenerProvider.js:1202:    sells5m:
+src/crypto/data/providers/dexScreenerProvider.js:1203:      tx5m.sells,
+src/crypto/data/providers/dexScreenerProvider.js:1205:    transactions5m:
+src/crypto/data/providers/dexScreenerProvider.js:1206:      tx5m.transactions,
+src/crypto/data/providers/dexScreenerProvider.js:1208:    buys1h:
+src/crypto/data/providers/dexScreenerProvider.js:1209:      tx1h.buys,
+src/crypto/data/providers/dexScreenerProvider.js:1211:    sells1h:
+src/crypto/data/providers/dexScreenerProvider.js:1212:      tx1h.sells,
+src/crypto/data/providers/dexScreenerProvider.js:1214:    transactions1h:
+src/crypto/data/providers/dexScreenerProvider.js:1215:      tx1h.transactions,
+src/crypto/data/providers/dexScreenerProvider.js:1235:    change5mPercent:
+src/crypto/data/providers/dexScreenerProvider.js:1241:    change1hPercent:
+src/crypto/data/providers/coinMarketCapDexProvider.js:302:    volume1hUsd:
+src/crypto/data/providers/coinMarketCapDexProvider.js:305:    change1hPercent:
+src/crypto/data/providers/coinMarketCapDexProvider.js:308:          ?.percent_change_price_1h,
+src/crypto/data/providers/cryptoFundamentalEvidenceProvider.js:1018:    change1h: finite(e.change1hPercent),
+src/crypto/data/providers/coinGeckoProvider.js:6:export async function getCoinGeckoMarkets({currency='usd',perPage=250,pages=3,order='volume_desc'}={}){const all=[];for(let page=1;page<=pages;page+=1){const p=new URLSearchParams({vs_currency:currency,order,per_page:String(Math.min(250,Math.max(1,perPage))),page:String(page),sparkline:'false',price_change_percentage:'1h,24h,7d'});const rows=await fetchJson(`${baseUrl()}/coins/markets?${p}`);if(!Array.isArray(rows))break;all.push(...rows);if(rows.length<perPage)break;}return all;}
+src/crypto/data/providers/coinGeckoProvider.js:7:export function normalizeCoinGeckoMarket(row){return {assetId:row?.id??null,symbol:String(row?.symbol??'').trim().toUpperCase(),name:row?.name??null,priceUsd:Number(row?.current_price),marketCapUsd:Number(row?.market_cap),marketCapRank:Number(row?.market_cap_rank),fdvUsd:Number(row?.fully_diluted_valuation),volume24hUsd:Number(row?.total_volume),high24hUsd:Number(row?.high_24h),low24hUsd:Number(row?.low_24h),change1hPercent:Number(row?.price_change_percentage_1h_in_currency),change24hPercent:Number(row?.price_change_percentage_24h_in_currency??row?.price_change_percentage_24h),change7dPercent:Number(row?.price_change_percentage_7d_in_currency),circulatingSupply:Number(row?.circulating_supply),totalSupply:Number(row?.total_supply),maxSupply:Number(row?.max_supply),lastUpdated:row?.last_updated??null,source:'COINGECKO'};}
+src/crypto/data/providers/cryptoFuturesExecutionMarketProvider.js:7:const D={interval:"5m",candleLimit:100,atrPeriod:14,structureLookback:20,depthLimit:100,slippageNotionalUsd:1000,timeoutMs:12000,maximumObservationAgeMs:30000,minimumDepthLevelsPerSide:5};
+src/crypto/data/providers/cryptoFuturesExecutionMarketProvider.js:13:export async function getCryptoFuturesExecutionMarket(candidate={},options={}){const o={...D,...options},raw=candidate?.asset?.productId??candidate?.productId??candidate?.symbol??candidate?.asset?.symbol;if(!raw)throw new Error("CANDIDATE_SYMBOL_REQUIRED");const productId=await resolveCoinbaseProductId(raw,{timeoutMs:o.timeoutMs});const[p,b,c]=await Promise.all([getCoinbaseProduct(productId,{timeoutMs:o.timeoutMs}),getCoinbaseProductBook(productId,{level:2,timeoutMs:o.timeoutMs}),getCoinbaseCandles(productId,{interval:o.interval,limit:o.candleLimit,timeoutMs:o.timeoutMs})]),ticker=p?.ticker??{},candles=cs(c),d=depth(b),bestBid=d.bids[0]?.price??finite(ticker.bid),bestAsk=d.asks[0]?.price??finite(ticker.ask),markPrice=finite(ticker.price)??(bestBid>0&&bestAsk>0?(bestBid+bestAsk)/2:null),indexPrice=markPrice,mid=bestBid>0&&bestAsk>0?(bestBid+bestAsk)/2:null,spreadPercent=mid>0?((bestAsk-bestBid)/mid)*100:null,a=atr(candles,o.atrPeriod),atrPercent=a>0&&markPrice>0?a/markPrice*100:null,look=candles.slice(-o.structureLookback),structuralHigh=look.length?Math.max(...look.map(x=>x.high)):null,structuralLow=look.length?Math.min(...look.map(x=>x.low)):null,support=structuralLow,resistance=structuralHigh,buySlippage=slip(d.asks,"BUY",o.slippageNotionalUsd),sellSlippage=slip(d.bids,"SELL",o.slippageNotionalUsd),failures=[];if(!(markPrice>0))failures.push({code:"MARK_PRICE_REQUIRED"});if(!(bestBid>0&&bestAsk>0))failures.push({code:"BOOK_TICKER_REQUIRED"});if(!(d.bidLevels>=o.minimumDepthLevelsPerSide&&d.askLevels>=o.minimumDepthLevelsPerSide))failures.push({code:"DEPTH_REQUIRED"});if(!(a>0))failures.push({code:"ATR_REQUIRED"});if(!(support>0&&resistance>support))failures.push({code:"STRUCTURE_REQUIRED"});const approved=failures.length===0,liquidityScore=d.totalDepthUsd>0?Math.min(100,Math.log10(1+d.totalDepthUsd)*12):null;return{approved,status:approved?"EXECUTION_MARKET_EVIDENCE_READY":"EXECUTION_MARKET_EVIDENCE_BLOCKED",symbol:upper(candidate?.symbol??productId),productId,market:{symbol:productId,markPrice,indexPrice,bestBid,bestAsk,atr:a,atrPercent,support,resistance,structuralHigh,structuralLow,fundingRate:null,openInterest:null},setupEvidence:{atr:a,atrPercent,support,resistance,structuralHigh,structuralLow},executionContext:{spreadPercent,liquidityScore,buySlippageEstimatePercent:buySlippage,sellSlippageEstimatePercent:sellSlippage,slippageEstimatePercent:buySlippage??sellSlippage,bidLevels:d.bidLevels,askLevels:d.askLevels,bidDepthUsd:d.bidDepthUsd,askDepthUsd:d.askDepthUsd,totalDepthUsd:d.totalDepthUsd,imbalance:d.imbalance,slippageNotionalUsd:o.slippageNotionalUsd,buySlippage,sellSlippage},evidence:{available:approved,markPriceAvailable:markPrice>0,bookTickerAvailable:bestBid>0&&bestAsk>0,depthAvailable:d.totalDepthUsd>0,candlesAvailable:candles.length>0,atrAvailable:a>0,structureAvailable:support>0&&resistance>support,derivativesEvidenceAvailable:false,fundingRateAvailable:false,openInterestAvailable:false,failures,observedAt:new Date().toISOString()},metadata:{provider:"COINBASE_EXCHANGE_PUBLIC",instrumentType:"SPOT",productId,interval:o.interval,candleLimit:o.candleLimit,atrPeriod:o.atrPeriod,structureLookback:o.structureLookback,depthLimit:o.depthLimit,slippageNotionalUsd:o.slippageNotionalUsd,evidenceOnly:true,missingEvidenceReceivesNeutralScore:false,executionAuthority:false,liveExecution:false},executionAuthority:false,liveExecution:false}}
+src/crypto/data/providers/solanaFreeWalletHistoryProvider.js:5:const INTERVAL = Math.max(110, Number(process.env.SOLANA_RPC_MIN_INTERVAL_MS) || 110);
+src/crypto/data/providers/solanaFreeWalletHistoryProvider.js:13:  const wait = INTERVAL - (Date.now() - lastAt);
+src/crypto/data/providers/gateFuturesProvider.js:43:const interval = v => { const m={"1":"1m","3":"3m","5":"5m","15":"15m","30":"30m","60":"1h","240":"4h","D":"1d"};return m[String(v)] || "15m"; };
+src/crypto/data/providers/gateFuturesProvider.js:44:export async function getGateLinearKlines(symbol,{interval:iv="15",limit=96,from=null,to=null,timeoutMs=12000}={}) {
+src/crypto/data/providers/gateFuturesProvider.js:46:  const rows=await request("/candlesticks",{contract:symbol,interval:interval(iv),limit:Math.min(1000,Math.max(2,limit)),...(from!==null?{from}:{}),...(to!==null?{to}:{})},timeoutMs);
+src/crypto/data/providers/gateFuturesProvider.js:62:  const rows=await request("/contract_stats",{contract:symbol,limit:Math.min(100,Math.max(2,limit)),interval:"5m"},timeoutMs);
+src/crypto/data/providers/coinLoreProvider.js:18: * - 1h / 24h / 7d change
+src/crypto/data/providers/coinLoreProvider.js:233:    change1hPercent:
+src/crypto/data/providers/coinLoreProvider.js:235:        row.percent_change_1h,
+src/crypto/data/providers/bybitFuturesProvider.js:669:    interval = "15",
+src/crypto/data/providers/bybitFuturesProvider.js:691:        interval,
+src/crypto/data/providers/bybitFuturesProvider.js:754:    intervalTime = "5min",
+src/crypto/data/providers/bybitFuturesProvider.js:776:        intervalTime,
+src/crypto/data/providers/cryptoFundamentalSnapshotProvider.js:157:    change1hPercent: num(x.price_change_percentage_1h_in_currency),
+src/crypto/data/providers/cryptoFundamentalSnapshotProvider.js:439:        price_change_percentage: "1h,24h,7d",
+src/crypto/data/providers/solanaTokenSafetyProvider.js:10:const INTERVAL=Math.max(110,Number(process.env.SOLANA_RPC_MIN_INTERVAL_MS)||110);
+src/crypto/data/providers/solanaTokenSafetyProvider.js:14:async function throttle(){const w=INTERVAL-(Date.now()-lastAt);if(w>0)await sleep(w);lastAt=Date.now();}
+src/crypto/data/providers/defiLlamaFundamentalProvider.js:203:        change1hPercent: finiteOrNull(protocol?.change_1h),
+src/crypto/data/providers/coinbaseProvider.js:1108:  "5m": 300,
+src/crypto/data/providers/coinbaseProvider.js:1109:  "15m": 900,
+src/crypto/data/providers/coinbaseProvider.js:1111:  "1h": 3600,
+src/crypto/data/providers/coinbaseProvider.js:1121:    interval = "5m",
+src/crypto/data/providers/coinbaseProvider.js:1135:      interval
+src/crypto/scanner/cryptoScannerConfig.js:238:      intervalMs:
+src/crypto/scanner/continuousCryptoScanner.js:2:export class ContinuousCryptoScanner{constructor({intervalMs=CRYPTO_SCANNER_CONFIG.cycle.intervalMs,runImmediately=CRYPTO_SCANNER_CONFIG.cycle.runImmediately,discoveryOptions={}}={}){this.intervalMs=intervalMs;this.runImmediately=runImmediately;this.discoveryOptions=discoveryOptions;this.status='STOPPED';this.timer=null;this.inFlight=null;this.cycleCount=0;this.skippedCycles=0;this.startedAt=null;this.lastCycleStartedAt=null;this.lastCycleCompletedAt=null;this.nextCycleAt=null;this.lastError=null;this.lastResult=null;}getState(){return {status:this.status,cycleCount:this.cycleCount,skippedCycles:this.skippedCycles,startedAt:this.startedAt,lastCycleStartedAt:this.lastCycleStartedAt,lastCycleCompletedAt:this.lastCycleCompletedAt,nextCycleAt:this.nextCycleAt,lastError:this.lastError,lastResult:this.lastResult};}async start(){if(this.status==='RUNNING')return this.getState();this.status='STARTING';this.startedAt=new Date().toISOString();this.lastError=null;this.status='RUNNING';if(this.runImmediately)await this.runCycle();this.scheduleNext();return this.getState();}async runCycle(){if(this.inFlight){this.skippedCycles+=1;return this.inFlight;}this.lastCycleStartedAt=new Date().toISOString();const operation=runCryptoDiscoveryCycle(this.discoveryOptions);this.inFlight=operation;try{const result=await operation;this.cycleCount+=1;this.lastResult=result;this.lastError=null;return result;}catch(e){this.lastError=e instanceof Error?e.message:String(e);throw e;}finally{this.lastCycleCompletedAt=new Date().toISOString();this.inFlight=null;}}scheduleNext(){if(this.status!=='RUNNING')return;if(this.timer)clearTimeout(this.timer);this.nextCycleAt=new Date(Date.now()+this.intervalMs).toISOString();this.timer=setTimeout(async()=>{try{await this.runCycle();}catch(e){console.error('[CRYPTO_SCANNER_CYCLE_ERROR]',e);}finally{this.scheduleNext();}},this.intervalMs);}async stop(){this.status='STOPPING';if(this.timer){clearTimeout(this.timer);this.timer=null;}if(this.inFlight){try{await this.inFlight;}catch{}}this.nextCycleAt=null;this.status='STOPPED';return this.getState();}}
+src/crypto/scanner/cryptoCandidateQualificationEngine.js:138:      input?.change1hPercent,
+src/crypto/scanner/cryptoCandidateQualificationEngine.js:249:      input?.change1hPercent,
+src/crypto/scanner/cryptoMeasurementProvider.js:81:    volume1hUsd: finite(asset?.volume1hUsd),
+src/crypto/scanner/cryptoMeasurementProvider.js:88:    change1hPercent: finite(asset?.change1hPercent),
+src/crypto/trading/runtime/cryptoContinuousPaperRuntime.js:122:  scanIntervalMs = 30_000,
+src/crypto/trading/runtime/cryptoContinuousPaperRuntime.js:124:  positionMonitorIntervalMs = 10_000,
+src/crypto/trading/runtime/cryptoContinuousPaperRuntime.js:126:  reconciliationIntervalMs = 30_000,
+src/crypto/trading/runtime/cryptoContinuousPaperRuntime.js:680:      scanIntervalMs,
+src/crypto/trading/runtime/cryptoContinuousPaperRuntime.js:682:      positionMonitorIntervalMs,
+src/crypto/trading/runtime/cryptoContinuousPaperRuntime.js:684:      reconciliationIntervalMs,
+src/crypto/trading/engines/cryptoTradingMomentumEngine.js:53:  const h1 = finite(m.change1hPercent);
+src/crypto/trading/engines/cryptoTradingMomentumEngine.js:67:      reasons: ["INSUFFICIENT_MULTI_TIMEFRAME_MOMENTUM"],
+src/crypto/trading/engines/cryptoTradingMomentumEngine.js:69:        change1hPercent: h1,
+src/crypto/trading/engines/cryptoTradingMomentumEngine.js:94:      name: "1H",
+src/crypto/trading/engines/cryptoTradingMomentumEngine.js:135:   * 2. TIMEFRAME ALIGNMENT
+src/crypto/trading/engines/cryptoTradingMomentumEngine.js:148:    reasons.push("FULL_BULLISH_TIMEFRAME_ALIGNMENT");
+src/crypto/trading/engines/cryptoTradingMomentumEngine.js:151:    reasons.push("FULL_BEARISH_TIMEFRAME_ALIGNMENT");
+src/crypto/trading/engines/cryptoTradingMomentumEngine.js:154:    reasons.push("BROAD_BULLISH_TIMEFRAME_ALIGNMENT");
+src/crypto/trading/engines/cryptoTradingMomentumEngine.js:157:    reasons.push("BROAD_BEARISH_TIMEFRAME_ALIGNMENT");
+src/crypto/trading/engines/cryptoTradingMomentumEngine.js:159:    risks.push("MOMENTUM_TIMEFRAME_CONFLICT");
+src/crypto/trading/engines/cryptoTradingMomentumEngine.js:171:  const velocity1h =
+src/crypto/trading/engines/cryptoTradingMomentumEngine.js:183:    velocity1h !== null &&
+src/crypto/trading/engines/cryptoTradingMomentumEngine.js:186:    acceleration = velocity1h - velocity4h;
+src/crypto/trading/engines/cryptoTradingMomentumEngine.js:189:      velocity1h > 0 &&
+src/crypto/trading/engines/cryptoTradingMomentumEngine.js:192:      if (velocity1h > velocity4h * 1.25) {
+src/crypto/trading/engines/cryptoTradingMomentumEngine.js:195:      } else if (velocity1h < velocity4h * 0.50) {
+src/crypto/trading/engines/cryptoTradingMomentumEngine.js:201:      velocity1h < 0 &&
+src/crypto/trading/engines/cryptoTradingMomentumEngine.js:205:        Math.abs(velocity1h) >
+src/crypto/trading/engines/cryptoTradingMomentumEngine.js:211:        Math.abs(velocity1h) <
+src/crypto/trading/engines/cryptoTradingMomentumEngine.js:326:    risks.push("EXTREME_1H_MOVE");
+src/crypto/trading/engines/cryptoTradingMomentumEngine.js:392:      change1hPercent: h1,
+src/crypto/trading/engines/cryptoTradingMomentumEngine.js:397:      velocity1h,
+src/crypto/trading/engines/cryptoTradingMomentumEngine.js:402:      bullishTimeframes: bullish,
+src/crypto/trading/engines/cryptoTradingMomentumEngine.js:403:      bearishTimeframes: bearish,
+src/crypto/trading/engines/cryptoTradingMomentumEngine.js:404:      availableTimeframes: available,
+src/crypto/trading/engines/cryptoTradingMarketStructureEngine.js:19:  const a=move(m.change1hPercent,4),b=move(m.change4hPercent,7),c=move(m.change24hPercent,12);
+src/crypto/trading/engines/cryptoTradingMarketStructureEngine.js:29:  const signs=[m.change1hPercent,m.change4hPercent,m.change24hPercent].filter(v=>n(v)!==null).map(v=>Number(v)>0?1:Number(v)<0?-1:0);
+src/crypto/trading/engines/cryptoTradingMarketStructureEngine.js:33:  else if(bull&&bear)risks.push("MIXED_TIMEFRAME_STRUCTURE");
+src/crypto/trading/engines/cryptoTradingMarketStructureEngine.js:41:    evidence:{priceUsd:p,high24h:h,low24h:l,intradayRangePercent:range,rangePositionPercent:rangePosition,change1hPercent:n(m.change1hPercent),change4hPercent:n(m.change4hPercent),change24hPercent:n(m.change24hPercent)}
+src/crypto/trading/engines/cryptoTradingTechnicalEngine.js:21:    component(m.change1hPercent,4,.30),
+src/crypto/trading/engines/cryptoTradingTechnicalEngine.js:29:  const signs=[m.change1hPercent,m.change4hPercent,m.change24hPercent,m.change7dPercent].filter(v=>finite(v)!==null).map(v=>Number(v)>0?"LONG":Number(v)<0?"SHORT":"NEUTRAL");
+src/crypto/trading/engines/cryptoTradingTechnicalEngine.js:39:    reasons:[longSupport>shortSupport?"MULTI_TIMEFRAME_MOMENTUM_FAVOURS_LONG":shortSupport>longSupport?"MULTI_TIMEFRAME_MOMENTUM_FAVOURS_SHORT":"MOMENTUM_BALANCED"],
+src/crypto/trading/engines/cryptoTradingTechnicalEngine.js:40:    evidence:{change1hPercent:m.change1hPercent??null,change4hPercent:m.change4hPercent??null,change24hPercent:m.change24hPercent??null,change7dPercent:m.change7dPercent??null}
+src/crypto/trading/engines/cryptoTradingMarketRegimeEngine.js:108: *     change1hPercent,
+src/crypto/trading/engines/cryptoTradingMarketRegimeEngine.js:115: *     change1hPercent,
+src/crypto/trading/engines/cryptoTradingMarketRegimeEngine.js:230:  const btc1h =
+src/crypto/trading/engines/cryptoTradingMarketRegimeEngine.js:232:      btc.change1hPercent,
+src/crypto/trading/engines/cryptoTradingMarketRegimeEngine.js:256:  const eth1h =
+src/crypto/trading/engines/cryptoTradingMarketRegimeEngine.js:258:      eth.change1hPercent,
+src/crypto/trading/engines/cryptoTradingMarketRegimeEngine.js:332:      btc1h,
+src/crypto/trading/engines/cryptoTradingMarketRegimeEngine.js:337:      eth1h,
+src/crypto/trading/engines/cryptoTradingMarketRegimeEngine.js:428:      btc1h ??
+src/crypto/trading/engines/cryptoTradingMarketRegimeEngine.js:486:      eth1h ??
+src/crypto/trading/engines/cryptoTradingMarketRegimeEngine.js:655:      btc1h,
+src/crypto/trading/engines/cryptoTradingMarketRegimeEngine.js:657:      eth1h,
+src/crypto/trading/engines/cryptoTradingMarketRegimeEngine.js:1258:        change1hPercent:
+src/crypto/trading/engines/cryptoTradingMarketRegimeEngine.js:1259:          btc1h,
+src/crypto/trading/engines/cryptoTradingMarketRegimeEngine.js:1280:        change1hPercent:
+src/crypto/trading/engines/cryptoTradingMarketRegimeEngine.js:1281:          eth1h,
+src/crypto/trading/engines/cryptoTradingBtcEthDependencyEngine.js:85:const TIMEFRAMES = Object.freeze([
+src/crypto/trading/engines/cryptoTradingBtcEthDependencyEngine.js:87:    key: "change1hPercent",
+src/crypto/trading/engines/cryptoTradingBtcEthDependencyEngine.js:114:  for (const timeframe of TIMEFRAMES) {
+src/crypto/trading/engines/cryptoTradingBtcEthDependencyEngine.js:116:      measurements?.[timeframe.key],
+src/crypto/trading/engines/cryptoTradingBtcEthDependencyEngine.js:123:    score += value * timeframe.weight;
+src/crypto/trading/engines/cryptoTradingBtcEthDependencyEngine.js:124:    availableWeight += timeframe.weight;
+src/crypto/trading/engines/cryptoTradingBtcEthDependencyEngine.js:205:  let alignedTimeframes = 0;
+src/crypto/trading/engines/cryptoTradingBtcEthDependencyEngine.js:206:  let opposedTimeframes = 0;
+src/crypto/trading/engines/cryptoTradingBtcEthDependencyEngine.js:210:  for (const timeframe of TIMEFRAMES) {
+src/crypto/trading/engines/cryptoTradingBtcEthDependencyEngine.js:212:      candidateMeasurements?.[timeframe.key],
+src/crypto/trading/engines/cryptoTradingBtcEthDependencyEngine.js:216:      leaderMeasurements?.[timeframe.key],
+src/crypto/trading/engines/cryptoTradingBtcEthDependencyEngine.js:240:      alignedWeight += timeframe.weight;
+src/crypto/trading/engines/cryptoTradingBtcEthDependencyEngine.js:241:      alignedTimeframes += 1;
+src/crypto/trading/engines/cryptoTradingBtcEthDependencyEngine.js:245:      opposedWeight += timeframe.weight;
+src/crypto/trading/engines/cryptoTradingBtcEthDependencyEngine.js:246:      opposedTimeframes += 1;
+src/crypto/trading/engines/cryptoTradingBtcEthDependencyEngine.js:257:      timeframe.weight;
+src/crypto/trading/engines/cryptoTradingBtcEthDependencyEngine.js:259:    availableWeight += timeframe.weight;
+src/crypto/trading/engines/cryptoTradingBtcEthDependencyEngine.js:262:      timeframe: timeframe.key,
+src/crypto/trading/engines/cryptoTradingBtcEthDependencyEngine.js:286:      alignedTimeframes: 0,
+src/crypto/trading/engines/cryptoTradingBtcEthDependencyEngine.js:287:      opposedTimeframes: 0,
+src/crypto/trading/engines/cryptoTradingBtcEthDependencyEngine.js:331:    alignedTimeframes,
+src/crypto/trading/engines/cryptoTradingBtcEthDependencyEngine.js:332:    opposedTimeframes,
+src/crypto/trading/persistence/cryptoPaperAutoCheckpointManager.js:76:  periodicIntervalMs = 0,
+src/crypto/trading/persistence/cryptoPaperAutoCheckpointManager.js:575:    const interval =
+src/crypto/trading/persistence/cryptoPaperAutoCheckpointManager.js:579:          periodicIntervalMs,
+src/crypto/trading/persistence/cryptoPaperAutoCheckpointManager.js:585:      interval <= 0
+src/crypto/trading/persistence/cryptoPaperAutoCheckpointManager.js:594:        intervalMs:
+src/crypto/trading/persistence/cryptoPaperAutoCheckpointManager.js:614:        intervalMs:
+src/crypto/trading/persistence/cryptoPaperAutoCheckpointManager.js:615:          interval,
+src/crypto/trading/persistence/cryptoPaperAutoCheckpointManager.js:627:      setInterval(
+src/crypto/trading/persistence/cryptoPaperAutoCheckpointManager.js:641:        interval,
+src/crypto/trading/persistence/cryptoPaperAutoCheckpointManager.js:661:      intervalMs:
+src/crypto/trading/persistence/cryptoPaperAutoCheckpointManager.js:662:        interval,
+src/crypto/trading/persistence/cryptoPaperAutoCheckpointManager.js:675:      clearInterval(
+src/crypto/trading/persistence/cryptoPaperAutoCheckpointManager.js:783:      periodicIntervalMs:
+src/crypto/trading/persistence/cryptoPaperAutoCheckpointManager.js:787:            periodicIntervalMs,

@@ -1,0 +1,70 @@
+src/crypto/bot/orchestration/botSingleSetupAnalysis.js:24:  const decision = candidate?.directionDecision ?? null;
+src/crypto/bot/orchestration/botSingleSetupAnalysis.js:25:  const researchDirection = decision?.direction === "LONG"
+src/crypto/bot/orchestration/botSingleSetupAnalysis.js:37:    researchDirection,
+src/crypto/bot/orchestration/botSingleSetupAnalysis.js:95:  if (directional?.directionDecision?.qualified === true) {
+src/crypto/bot/orchestration/botSingleSetupAnalysis.js:116:    directionDecision: directional?.directionDecision ?? null,
+src/crypto/bot/orchestration/botMarketSearchCycle.js:109:  const directionQualified = directional.filter(
+src/crypto/bot/orchestration/botMarketSearchCycle.js:111:      row.directionDecision?.qualified === true
+src/crypto/bot/orchestration/botMarketSearchCycle.js:116:      row.directionDecision?.qualified !== true
+src/crypto/bot/orchestration/botMarketSearchCycle.js:124:    directionQualified,
+src/crypto/bot/orchestration/botMarketSearchCycle.js:224:          candidate.directionDecision?.reason ||
+src/crypto/bot/orchestration/botMarketSearchCycle.js:228:          candidate.directionDecision?.blockers ||
+src/crypto/bot/orchestration/botMarketSearchCycle.js:232:          candidate.directionDecision?.direction ||
+src/crypto/bot/orchestration/botMarketSearchCycle.js:236:          candidate.directionDecision?.confidence ??
+src/crypto/bot/orchestration/botMarketSearchCycle.js:240:          candidate.directionDecision?.separation ??
+src/crypto/bot/orchestration/botMarketSearchCycle.js:432:      directionQualified:
+src/crypto/bot/orchestration/botMarketSearchCycle.js:433:        directionQualified.length,
+src/crypto/bot/research/botResearchMarketProvider.js:408:            cfg.candleInterval
+src/crypto/bot/research/botResearchMarketProvider.js:467:      cfg.candleInterval
+src/crypto/bot/setup/strategies/breakoutRetestSetup.js:53:    candidate?.directionDecision?.direction ??
+src/crypto/bot/setup/strategies/rangeRotationSetup.js:60:    candidate?.directionDecision?.direction ??
+src/crypto/bot/setup/strategies/momentumBreakoutSetup.js:56:    candidate?.directionDecision?.direction ??
+src/crypto/bot/setup/strategies/trendPullbackSetup.js:58:    candidate?.directionDecision?.direction ??
+src/crypto/bot/setup/strategies/liquiditySweepSetup.js:57:    candidate?.directionDecision?.direction ??
+src/crypto/bot/setup/botFuturesSetupBuilder.js:83:    candidate?.directionDecision?.direction ??
+src/crypto/bot/setup/botFuturesSetupBuilder.js:99:    candidate?.directionDecision?.qualified !== true
+src/crypto/bot/setup/botSetupQualityEngine.js:922:        ?.directionDecision
+src/crypto/bot/setup/botSetupStrategyEngine.js:79:    candidate?.directionDecision?.direction ??
+src/crypto/bot/setup/botSetupStrategyEngine.js:80:    candidate?.researchDirection ??
+src/crypto/bot/setup/botSetupStrategyEngine.js:961:    researchDirection: direction,
+src/crypto/bot/setup/botMarketRegimeEngine.js:56:function normalizeResearchDirection(candidate) {
+src/crypto/bot/setup/botMarketRegimeEngine.js:58:    candidate?.directionDecision?.direction ?? candidate?.researchDirection ?? candidate?.direction
+src/crypto/bot/setup/botMarketRegimeEngine.js:433:  researchDirection,
+src/crypto/bot/setup/botMarketRegimeEngine.js:436:  if (!researchDirection) {
+src/crypto/bot/setup/botMarketRegimeEngine.js:463:    researchDirection
+src/crypto/bot/setup/botMarketRegimeEngine.js:490:  researchDirection
+src/crypto/bot/setup/botMarketRegimeEngine.js:526:      researchDirection
+src/crypto/bot/setup/botMarketRegimeEngine.js:541:      researchDirection
+src/crypto/bot/setup/botMarketRegimeEngine.js:556:      researchDirection
+src/crypto/bot/setup/botMarketRegimeEngine.js:637:  const researchDirection =
+src/crypto/bot/setup/botMarketRegimeEngine.js:638:    normalizeResearchDirection(
+src/crypto/bot/setup/botMarketRegimeEngine.js:642:  if (!researchDirection) {
+src/crypto/bot/setup/botMarketRegimeEngine.js:695:      researchDirection,
+src/crypto/bot/setup/botMarketRegimeEngine.js:719:    normalizeDirectionValue(structure.breakout.direction) !== researchDirection
+src/crypto/bot/setup/botMarketRegimeEngine.js:731:    normalizeDirectionValue(structure.liquiditySweep.direction) !== researchDirection
+src/crypto/bot/setup/botMarketRegimeEngine.js:759:  const eligibleStrategies = structure?.approved === true && researchDirection
+src/crypto/bot/setup/botMarketRegimeEngine.js:761:        strategiesForRegime(name, structure, researchDirection)
+src/crypto/bot/setup/botMarketRegimeEngine.js:797:    researchDirection,
+src/crypto/bot/setup/botMarketRegimeEngine.js:820:      upstreamReady: structure?.approved === true && Boolean(researchDirection),
+src/crypto/bot/setup/botFuturesStrategySetupBuilder.js:148:function normalizeResearchDirection(
+src/crypto/bot/setup/botFuturesStrategySetupBuilder.js:255:      ?.directionDecision
+src/crypto/bot/setup/botFuturesStrategySetupBuilder.js:265:  const researchDirection =
+src/crypto/bot/setup/botFuturesStrategySetupBuilder.js:266:    normalizeResearchDirection(
+src/crypto/bot/setup/botFuturesStrategySetupBuilder.js:282:      ?.directionDecision
+src/crypto/bot/setup/botFuturesStrategySetupBuilder.js:393:const setupCandleInterval =
+src/crypto/bot/setup/botFuturesStrategySetupBuilder.js:394:  setupConfig.candleInterval ??
+src/crypto/bot/setup/botFuturesStrategySetupBuilder.js:407:        setupCandleInterval,
+src/crypto/bot/setup/botFuturesStrategySetupBuilder.js:426:      setupCandleInterval,
+src/crypto/bot/setup/botFuturesStrategySetupBuilder.js:474:            candleInterval:
+src/crypto/bot/setup/botFuturesStrategySetupBuilder.js:475:  setupCandleInterval,
+src/crypto/bot/setup/botFuturesStrategySetupBuilder.js:671:    direction: researchDirection, entry, currentStop: legacyStop, target: positiveOrNull(setupQuality?.target),
+src/crypto/bot/setup/botFuturesStrategySetupBuilder.js:701:    interval: setupCandleInterval,
+src/crypto/bot/setup/botFuturesStrategySetupBuilder.js:702:    direction: researchDirection,
+src/crypto/bot/setup/botFuturesStrategySetupBuilder.js:780:    direction: researchDirection,
+src/crypto/bot/setup/botFuturesStrategySetupBuilder.js:893:      ?.directionDecision
+src/crypto/bot/setup/botFuturesStrategySetupBuilder.js:971:      researchDirection,
+src/crypto/bot/setup/botSetupCandleUtils.js:43:export function getCandleIntervalMs(interval) {
+src/crypto/bot/setup/botSetupCandleUtils.js:83:    getCandleIntervalMs(
+src/crypto/bot/config/botConfig.js:120:    candleInterval: "15m",
+src/crypto/bot/config/botConfig.js:208:    candleInterval: "15m",
+src/crypto/bot/config/botConfig.js:360:    priceMonitorCandleInterval:

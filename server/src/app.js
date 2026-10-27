@@ -47,6 +47,14 @@ import createCexDiscoveryRoutes
 import createBotPrivateRoutes
   from "./crypto/bot/api/botPrivateRoutes.js";
 
+
+import aemaV2Routes from "../aemaV2/routes.js";
+
+import {
+  requireBotAccess,
+} from "./crypto/bot/auth/botAccess.js";
+
+
 import {
   startBotPositionRuntime,
   stopBotPositionRuntime,
@@ -1002,10 +1010,41 @@ app.use(
  * GET  /api/crypto/bot/dashboard
  */
 
+
+/**
+ * ============================================================
+ * AEMA V2 — INDEPENDENT RESEARCH ENGINE
+ * ============================================================
+ *
+ * Crypto:
+ * - 1H market context
+ * - 15M primary direction
+ * - 5M entry confirmation
+ *
+ * Stocks:
+ * - Independent Alpaca research
+ *
+ * Protected by existing bot authentication.
+ * No live execution authority.
+ */
+
+app.use(
+  "/api/crypto/bot/v2",
+  requireBotAccess,
+  aemaV2Routes,
+);
+
+/**
+ * ============================================================
+ * EXISTING PRIVATE AEMA BOT — UNCHANGED
+ * ============================================================
+ */
+
 app.use(
   "/api/crypto/bot",
   botPrivateRoutes,
 );
+
 
 app.use("/api/stock", createStockResearchRoutes());
 
