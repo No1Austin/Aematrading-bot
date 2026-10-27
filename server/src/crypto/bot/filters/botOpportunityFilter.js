@@ -2,7 +2,7 @@
  * Phase 1 — Cheap comparative FUTURES opportunity filter.
  *
  * Objective:
- * Reduce the hard-eligible perpetual futures universe to the TOP 20
+ * Reduce the hard-eligible perpetual futures universe to the TOP 50
  * candidates worth spending deeper research resources on.
  *
  * Uses:
@@ -321,10 +321,9 @@ export function rankBotOpportunities(
     (row) => row.opportunity.qualified
   );
 
-  // Diversify research candidates without relaxing hard eligibility.
-  // Keep most slots score-ranked, reserve remaining slots for strong
-  // volatility, participation and tight-spread candidates.
-  const limit = Number.isFinite(topN) ? Math.max(0, Math.floor(topN)) : 20;
+  // Research shortlist is diversified by liquidity, balanced opportunity,
+  // momentum and a small volatility sleeve. Never select ineligible assets.
+  const limit = Number.isFinite(topN) ? Math.max(0, Math.floor(topN)) : 50;
   const diversify = options.diversify !== false;
   const selected = [];
   const seen = new Set();
@@ -336,14 +335,32 @@ export function rankBotOpportunities(
     }
   };
   if (diversify && limit >= 4) {
-    const primarySlots = Math.max(1, Math.floor(limit * 0.7));
-    qualified.slice(0, primarySlots).forEach(add);
-    const dimension = (row, key) => row.opportunity.dimensions?.[key] ?? -1;
-    const diversified = ["volatility", "participation", "liquidity"];
-    for (const key of diversified) {
-      const candidate = [...qualified].sort((a,b) => dimension(b,key)-dimension(a,key))
-        .find(row => !seen.has(row.asset?.symbol) && dimension(row,key) >= 0);
-      if (candidate) add(candidate);
+    // Large, liquid assets get a fair chance even when their daily movement
+    // is modest. Token unit price and manually maintained coin lists are
+    // deliberately NOT ranking inputs.
+    const sleeves = [
+      { key: "volume", slots: Math.floor(limit * 0.40) },
+      { key: "balanced", slots: Math.floor(limit * 0.30) },
+      { key: "momentum", slots: Math.floor(limit * 0.20) },
+      { key: "volatility", slots: Math.floor(limit * 0.10) },
+    ];
+    const dimension = (row, key) => row.opportunity.dimensions?.[key];
+    const compare = (a, b, key) => {
+      const av = key === "balanced" ? a.opportunity.opportunityScore : dimension(a, key);
+      const bv = key === "balanced" ? b.opportunity.opportunityScore : dimension(b, key);
+      const diff = (Number.isFinite(bv) ? bv : -1) - (Number.isFinite(av) ? av : -1);
+      return diff || b.opportunity.opportunityScore - a.opportunity.opportunityScore ||
+        String(a.asset.symbol).localeCompare(String(b.asset.symbol));
+    };
+    for (const sleeve of sleeves) {
+      let added = 0;
+      for (const row of [...qualified].sort((a, b) => compare(a, b, sleeve.key))) {
+        if (added >= sleeve.slots) break;
+        if (sleeve.key !== "balanced" && !Number.isFinite(dimension(row, sleeve.key))) continue;
+        const before = selected.length;
+        add(row);
+        if (selected.length > before) added++;
+      }
     }
   }
   qualified.forEach(add);
@@ -353,7 +370,7 @@ export function rankBotOpportunities(
     qualified,
 
     topCandidates: selected,
-    diversification: { enabled: diversify, selected: selected.length },
+    diversification: { enabled: diversify, selected: selected.length, method: "LIQUIDITY_40_BALANCED_30_MOMENTUM_20_VOLATILITY_10" },
 
     topN,
 

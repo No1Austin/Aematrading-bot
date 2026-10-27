@@ -45,6 +45,7 @@ import evaluateBotSetupQuality
 
 import { buildVolatilityResearchDiagnostic } from "../risk/botVolatilityResearchDiagnostic.js";
 import analyzeAdaptiveStopGeometry from "./botAdaptiveStopGeometryEngine.js";
+import plan15mScenario from "./bot15mPredictionPlanner.js";
 
 /*
  * ---------------------------------------------------------
@@ -693,6 +694,19 @@ if (
       setupQuality?.target
     );
 
+  // Point-in-time 15m scenario research. Keep the strategy geometry published
+  // until historical replay establishes a measurable improvement.
+  const prediction15m = plan15mScenario({
+    candles: closedSetupCandles,
+    interval: setupCandleInterval,
+    direction: researchDirection,
+    strategyEntry: entry,
+    strategyStop: stop,
+    strategyTarget: target,
+    currentPrice: market?.lastPrice ?? market?.markPrice ?? market?.price,
+    minimumRiskReward: qualificationConfig.minimumRiskReward,
+  });
+
   const validGeometry =
     direction === "LONG"
       ? (
@@ -1017,6 +1031,7 @@ if (
             ?.totalNotional
         ),
 
+   prediction15m,
    volatilityResearch,
 stopActivation,
 volatilityStopComparison,

@@ -593,7 +593,7 @@ export async function runCexDiscoveryCycle(
 
     /**
      * =========================================================
-     * 4. TOP 20 FOR RESEARCH
+     * 4. TOP 50 FOR RESEARCH
      * =========================================================
      */
 
@@ -620,7 +620,7 @@ export async function runCexDiscoveryCycle(
       );
 
     pushEvent(
-      "TOP_20",
+      "TOP_50",
       `${
         top20.length
       } tokens selected for research`,

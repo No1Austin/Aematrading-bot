@@ -3,7 +3,7 @@
  * Research Orchestrator
  *
  * Responsibilities:
- * - Receive Top-20 opportunity candidates
+ * - Receive the configured opportunity shortlist (up to 50 by default)
  * - Fetch fresh research evidence
  * - Run all research engines
  * - Preserve unavailable evidence honestly
@@ -162,7 +162,7 @@ export async function researchBotCandidate(
 
 /*
  * ---------------------------------------------------------
- * RESEARCH TOP-20
+ * RESEARCH SHORTLIST (LEGACY EXPORT NAME)
  * ---------------------------------------------------------
  */
 

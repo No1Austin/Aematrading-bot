@@ -28,10 +28,10 @@ export async function runCexDiscoveryCycle(options={}){
     const universe=await getBotFuturesUniverse(options.universe); event(`${universe.assets.length} Coinbase CEX instruments discovered`);
     const eligibility=filterBotHardEligibleAssets(universe.assets,options.eligibility); event(`${eligibility.approved.length} passed market eligibility`);
     const filtered=rankBotOpportunities(eligibility.approved,options.opportunity); event(`Market filters completed · ${filtered.qualified.length} qualified by volume, liquidity, volatility, momentum and activity`);
-    const top20=filtered.topCandidates.slice(0,20).map((row,index)=>({rank:index+1,symbol:row.asset.symbol,baseAsset:row.asset.baseAsset,quoteAsset:row.asset.quoteAsset,
+    const top50=filtered.topCandidates.map((row,index)=>({rank:index+1,symbol:row.asset.symbol,baseAsset:row.asset.baseAsset,quoteAsset:row.asset.quoteAsset,
       opportunityScore:row.opportunity.opportunityScore,dimensions:row.opportunity.dimensions,market:row.asset.market,asset:row.asset,opportunity:row.opportunity}));
-    event(`${top20.length} tokens selected for research`,"accent");
-    const research=await researchBotTop20(top20,options.research); event(`Research engines completed for ${research.completed} tokens`);
+    event(`${top50.length} tokens selected for research`,"accent");
+    const research=await researchBotTop20(top50,options.research); event(`Research engines completed for ${research.completed} tokens`);
     const directional=research.researched.map(row=>determineBotDirection(row,options.direction));
     const ranked=rankBotResearchCandidates(directional,options.ranking); event(`${ranked.top10.length} strongest research candidates identified`);
     const setups=[],failures=[];
@@ -43,7 +43,7 @@ export async function runCexDiscoveryCycle(options={}){
     bestFive.forEach((x,i)=>event(`#${i+1} ${x.symbol} · ${x.direction} · R:R ${Number(x.riskReward||0).toFixed(2)}`,"candidate",{symbol:x.symbol}));
     const strongest=bestFive[0]||null;if(strongest)event(`${strongest.symbol} · ${strongest.direction} · strongest current setup`,"success");
     state.snapshot={cycle,startedAt:state.lastStartedAt,completedAt:new Date().toISOString(),counts:{universe:universe.assets.length,marketEligible:eligibility.approved.length,
-      marketFiltered:filtered.qualified.length,selectedForResearch:top20.length,researchCompleted:research.completed,strongestCandidates:ranked.top10.length,
+      marketFiltered:filtered.qualified.length,selectedForResearch:top50.length,researchCompleted:research.completed,strongestCandidates:ranked.top10.length,
       executableSetups:execution.executable.length,bestSetups:bestFive.length},bestFive,strongest,researchFailures:research.failed.length,setupFailures:failures.length};
     state.lastCompletedAt=state.snapshot.completedAt;state.lastError=null;return state.snapshot;
   }catch(error){state.lastError=error?.message||String(error);event(`Discovery cycle failed · ${state.lastError}`,"error");throw error}

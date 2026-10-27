@@ -205,7 +205,7 @@ export const BOT_CONFIG = Object.freeze({
    * ---------------------------------------------------------
    */
   setup: {
-    candleInterval: "5m",
+    candleInterval: "15m",
 
     candleLimit: 100,
 

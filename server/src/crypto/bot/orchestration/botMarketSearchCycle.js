@@ -43,9 +43,9 @@ export async function runBotMarketSearch(options = {}) {
 
   /*
    * STEP 4
-   * Select Top 20 for deeper research.
+   * Select up to 50 diversified candidates for deeper research.
    */
-  const top20 = opportunity.topCandidates.map(
+  const top50 = opportunity.topCandidates.map(
     (row, index) => ({
       rank: index + 1,
 
@@ -75,7 +75,7 @@ export async function runBotMarketSearch(options = {}) {
    * Fire the deeper research engines.
    */
   const research = await researchBotTop20(
-    top20,
+    top50,
     options.research
   );
 
@@ -413,7 +413,10 @@ const qualifiedSetups =
         opportunity.qualified.length,
 
       top20:
-        top20.length,
+        top50.length, // legacy frontend compatibility
+
+      top50:
+        top50.length,
 
       researchCompleted:
         research.completed,
@@ -465,6 +468,27 @@ const qualifiedSetups =
       research.failed,
 
     setupFailures,
+    // Diagnostic coverage for widely followed majors; this is NOT a
+    // market-cap ranking or a guarantee that every major is listed on Gate.
+    majorAssetCoverage: ["BTC", "ETH", "SOL", "XRP", "BNB", "DOGE", "ADA", "AVAX", "LINK", "LTC"]
+      .map((baseAsset) => {
+        const find = (rows, getter) => rows.find((row) =>
+          String(getter(row) ?? "").toUpperCase() === baseAsset);
+        const universeRow = find(universe.assets, (r) => r.baseAsset);
+        const eligibleRow = find(eligibility.approved, (r) => r.baseAsset);
+        const qualifiedRow = find(opportunity.qualified, (r) => r.asset?.baseAsset);
+        const selectedRow = find(top50, (r) => r.baseAsset);
+        const evaluatedRow = find(opportunity.evaluated, (r) => r.asset?.baseAsset);
+        return {
+          baseAsset,
+          inUniverse: Boolean(universeRow),
+          hardEligible: Boolean(eligibleRow),
+          opportunityQualified: Boolean(qualifiedRow),
+          selectedForResearch: Boolean(selectedRow),
+          opportunityScore: evaluatedRow?.opportunity?.opportunityScore ?? null,
+          blockers: evaluatedRow?.opportunity?.blockers ?? [],
+        };
+      }),
     quantShadow,
     quantPredictionStatus: "SHADOW_ONLY_UNTRAINED",
   };
