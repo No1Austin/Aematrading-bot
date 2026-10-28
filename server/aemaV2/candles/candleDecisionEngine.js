@@ -1,3 +1,4 @@
+import {planStructureExecution} from "../structure/structureExecutionPlan.js";
 /** AEMA V2: independent, research-only multi-timeframe decision engine. */
 const MS = {"5m":300000,"15m":900000,"1h":3600000};
 const finite = n => typeof n === "number" && Number.isFinite(n);
@@ -32,14 +33,22 @@ export function evaluateV2CandleDecision({candles15m,candles5m,candles1h,asOf=Da
   if(!primary.direction)return unavailable("NO_15M_DIRECTION",diagnostics);
   if(!entry.direction)return unavailable("NO_5M_ENTRY_CONFIRMATION",diagnostics);
   if(primary.direction!==entry.direction)return unavailable("15M_5M_DIRECTION_CONFLICT",diagnostics);
-  // Stop at invalidation beyond recent 15m structure with an ATR buffer.
-  const recent=c15.slice(-20),buffer=primary.atr*0.2;
-  const stop=primary.direction==="BULL"?Math.min(...recent.map(x=>x.low))-buffer:Math.max(...recent.map(x=>x.high))+buffer;
-  const proposedEntry=primary.close;
-  const risk=Math.abs(proposedEntry-stop);
-  if(!(risk>0) || (primary.direction==="BULL"&&stop>=proposedEntry) || (primary.direction==="BEAR"&&stop<=proposedEntry))return unavailable("INVALID_STOP_GEOMETRY",diagnostics);
-  const target=primary.direction==="BULL"?proposedEntry+2*risk:proposedEntry-2*risk;
-  if(target<=0)return unavailable("INVALID_TARGET_GEOMETRY",diagnostics);
-  return {status:"RESEARCH_CANDIDATE",direction:primary.direction,reason:"15M_DIRECTION_CONFIRMED_BY_5M",entryReference:proposedEntry,stopReference:stop,targetIllustration:target,nominalRiskReward:2,requiresCostAndLiquidityValidation:true,requiresEntryPriceValidation:true,diagnostics,researchOnly:true,executionAuthority:false,liveExecution:false};
+  // Structure layer changes ONLY entry, stop and target; 15m/5m direction is untouched.
+  const structure=planStructureExecution({direction:primary.direction,candles15m:c15,candles5m:c5,candles1h:c1});
+  const enrichedDiagnostics={...diagnostics,structure:structure.diagnostics};
+  if(structure.decision!=="ENTRY_CANDIDATE_UNVALIDATED")return {
+    status:"NO_SETUP",direction:primary.direction,reason:structure.reason,
+    entryDecision:structure.decision,stopReference:structure.stopReference??null,
+    diagnostics:enrichedDiagnostics,researchOnly:true,executionAuthority:false,liveExecution:false
+  };
+  return {
+    status:"RESEARCH_CANDIDATE",direction:primary.direction,
+    reason:structure.reason,entryDecision:structure.decision,
+    entryReference:structure.entryReference,stopReference:structure.stopReference,
+    targetIllustration:structure.targetIllustration,nominalRiskReward:structure.grossRR,
+    estimatedNetRiskReward:structure.netRR,requiresCostAndLiquidityValidation:true,
+    requiresEntryPriceValidation:true,diagnostics:enrichedDiagnostics,
+    researchOnly:true,executionAuthority:false,liveExecution:false
+  };
 }
 export default evaluateV2CandleDecision;
