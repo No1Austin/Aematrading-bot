@@ -1,18 +1,18 @@
 {
   "version": 1,
-  "createdAt": "2026-10-31T22:56:32.192Z",
+  "createdAt": "2026-10-31T23:08:28.907Z",
   "metadata": {
     "automaticCheckpoint": true,
     "reason": "PERIODIC_CHECKPOINT",
     "dirtyBeforeCheckpoint": true,
-    "requestedAt": "2026-10-31T22:56:32.192Z",
+    "requestedAt": "2026-10-31T23:08:28.906Z",
     "checkpointType": "AEMA_CRYPTO_PAPER_TRADING",
-    "capturedAt": "2026-10-31T22:56:32.192Z",
+    "capturedAt": "2026-10-31T23:08:28.906Z",
     "paperExecution": true,
     "liveExecution": false
   },
   "state": {
-    "capturedAt": "2026-10-31T22:56:32.192Z",
+    "capturedAt": "2026-10-31T23:08:28.906Z",
     "ledger": {
       "version": 1,
       "startingEquity": 10000,
@@ -52,7 +52,7 @@
       "processedCycleKeys": [],
       "processedClientOrderIds": [],
       "lockedSymbols": [],
-      "exportedAt": "2026-10-31T22:56:32.192Z",
+      "exportedAt": "2026-10-31T23:08:28.906Z",
       "paperExecution": true,
       "liveExecution": false,
       "executionAuthority": false
@@ -66,7 +66,7 @@
       "positions": [],
       "fills": [],
       "stops": [],
-      "exportedAt": "2026-10-31T22:56:32.192Z"
+      "exportedAt": "2026-10-31T23:08:28.906Z"
     },
     "safety": {
       "paperExecution": true,
