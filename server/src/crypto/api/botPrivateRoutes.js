@@ -82,10 +82,10 @@ const handle = (fn) => (req, res) =>
 /* -------------------------------------------------------------------------- */
 
 function requireSupabaseIdentity(req, res, next) {
-  if (
-    req.botAuthMethod !== "supabase" ||
-    !req.botUser?.id
-  ) {
+  // requireBotAccess must verify the Supabase bearer token and
+  // populate req.botUser from the verified identity. The private
+  // bot cookie is a separate authorization factor.
+  if (!req.botUser?.id) {
     return res.status(403).json({
       error: "SUPABASE_USER_REQUIRED"
     });

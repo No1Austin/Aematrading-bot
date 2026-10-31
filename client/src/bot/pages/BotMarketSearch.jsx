@@ -981,6 +981,8 @@ function SetupCard({ candidate }) {
 
       <StrategyExplanation candidate={candidate} />
 
+      <QualifiedRefinement candidate={candidate} setup={setup} direction={direction} />
+
       {/* ===============================================
           SETUP LEVELS
           =============================================== */}
@@ -1264,6 +1266,182 @@ function setupBlockerLabels(candidate) {
   }).filter(value => typeof value === "string" && value.trim()))];
 }
 
+/**
+ * Found setups originate in the original search pipeline, so their IDs are
+ * not interchangeable with the short-lived V2 snapshot IDs.
+ * Analyze first to obtain a fresh V2 snapshot, then refine that snapshot.
+ * This is research-only and never changes the original setup qualification.
+ */
+function QualifiedRefinement({ candidate, setup, direction }) {
+  const [busy, setBusy] = useState(false);
+  const [result, setResult] = useState(null);
+  const [error, setError] = useState("");
+  const symbol = candidate?.symbol ?? setup?.symbol;
+  const supported = Boolean(symbol && ["BULL", "BEAR"].includes(direction));
+
+  const postJson = async (path, body) => {
+    const response = await fetch(path, {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    const raw = await response.text();
+    let payload;
+    try {
+      payload = raw ? JSON.parse(raw) : null;
+    } catch {
+      throw new Error(`V2 endpoint returned non-JSON (HTTP ${response.status}).`);
+    }
+    if (!response.ok) {
+      const code = payload?.error ?? payload?.message;
+      throw new Error(code === "BOT_AUTH_REQUIRED"
+        ? "Private bot session expired. Unlock the bot again."
+        : code || `V2 request failed (HTTP ${response.status}).`);
+    }
+    if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
+      throw new Error("V2 endpoint returned no valid research data.");
+    }
+    return payload;
+  };
+
+  const runRefinement = async () => {
+    if (!supported || busy) return;
+    setBusy(true);
+    setError("");
+    setResult(null);
+    try {
+      const analysis = await postJson("/api/crypto/bot/v2/analyze", {
+        market: "crypto", symbol,
+      });
+      if (analysis.direction !== direction) {
+        throw new Error(
+          `Fresh V2 analysis direction is ${analysis.direction || "undetermined"}, ` +
+          `not ${direction}. Original found setup was not modified.`
+        );
+      }
+      if (!analysis.setupId) {
+        throw new Error(
+          `Fresh V2 analysis returned ${analysis.status || "no research candidate"} ` +
+          `without a refinable snapshot. Original found setup remains unchanged.`
+        );
+      }
+      const refined = await postJson("/api/crypto/bot/v2/refine-entry", {
+        setupId: analysis.setupId,
+      });
+      setResult(refined);
+    } catch (e) {
+      setError(e?.message || "Unable to refine found setup.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <section className="developing-refinement">
+      <button type="button" className="developing-refine-button"
+        onClick={runRefinement} disabled={!supported || busy}>
+        {busy ? "Checking fresh candles…" : "✦ Refine Entry"}
+      </button>
+      <small>Fresh V2 analysis and entry refinement · original found setup preserved</small>
+      {!supported && <p>Refinement needs a symbol and BULL or BEAR direction.</p>}
+      {error && <p role="alert" className="developing-refine-error">{error}</p>}
+      {result && (
+        <div className="developing-refine-results" aria-live="polite">
+          <strong>{String(result.decision || result.status || "REVIEW").replaceAll("_", " ")}</strong>
+          {result.reason && <p>{String(result.reason).replaceAll("_", " ")}</p>}
+          <div className="developing-refine-grid">
+            <Level l="Original entry" v={fmt(setup?.entry ?? setup?.entryPrice, 8)} />
+            <Level l="V2 reference entry" v={fmt(result.current?.entry ?? result.original?.entryReference, 8)} />
+            <Level l="Proposed entry" v={fmt(result.refined?.entry, 8)} />
+            <Level l="Proposed stop" v={fmt(result.refined?.stop, 8)} />
+            <Level l="Proposed target" v={fmt(result.refined?.target, 8)} />
+            <Level l="Est. net R:R" v={fmt(result.refined?.estimatedNetRR, 2)} />
+          </div>
+          <p>Research-only refinement. Original setup, monitoring, and qualification are unchanged; no trade is executed.</p>
+        </div>
+      )}
+    </section>
+  );
+}
+
+function DevelopingRefinement({ candidate, setup, direction }) {
+  const [busy, setBusy] = useState(false);
+  const [result, setResult] = useState(null);
+  const [error, setError] = useState("");
+  const symbol = candidate?.symbol ?? setup?.symbol;
+  const supported = Boolean(symbol && ["BULL", "BEAR"].includes(direction));
+
+  const runRefinement = async () => {
+    if (!supported || busy) return;
+    setBusy(true);
+    setError("");
+    setResult(null);
+    try {
+      const response = await fetch("/api/crypto/bot/v2/refine-developing", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ symbol, direction }),
+      });
+      // Read once: an unmounted route, proxy error or server crash may return
+      // an empty body or HTML instead of JSON.
+      const raw = await response.text();
+      const contentType = response.headers.get("content-type") || "";
+      let payload = null;
+      if (raw.trim()) {
+        try {
+          payload = JSON.parse(raw);
+        } catch {
+          throw new Error(
+            `Refinement endpoint returned non-JSON (HTTP ${response.status}, ${contentType || "unknown content type"}). ` +
+            `Check the V2 route mount and Vite API proxy. Response starts: ${raw.slice(0, 120).replace(/\s+/g, " ")}`
+          );
+        }
+      }
+      if (!response.ok) {
+        throw new Error(payload?.error || payload?.message ||
+          `Refinement request failed (HTTP ${response.status}${raw.trim() ? "" : ", empty response"}).`);
+      }
+      if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
+        throw new Error(`Refinement endpoint returned an empty or invalid JSON response (HTTP ${response.status}). Check backend logs.`);
+      }
+      if (payload.error) throw new Error(payload.error);
+      setResult(payload);
+    } catch (e) {
+      setError(e?.message || "Unable to refine developing setup.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <section className="developing-refinement">
+      <button type="button" className="developing-refine-button" onClick={runRefinement}
+        disabled={!supported || busy}>
+        {busy ? "Checking fresh candles…" : "✦ Refine Entry"}
+      </button>
+      <small>Independent V2 candle review · original qualification unchanged</small>
+      {!supported && <p>Refinement needs a symbol and BULL or BEAR direction.</p>}
+      {error && <p role="alert" className="developing-refine-error">{error}</p>}
+      {result && <div className="developing-refine-results" aria-live="polite">
+        <strong>{String(result.decision || "REVIEW").replaceAll("_", " ")}</strong>
+        <p>{String(result.reason || "").replaceAll("_", " ")}</p>
+        <div className="developing-refine-grid">
+          <Level l="Current reference" v={fmt(result.current?.entry, 8)} />
+          <Level l="Proposed entry" v={fmt(result.refined?.entry, 8)} />
+          <Level l="Proposed stop" v={fmt(result.refined?.stop, 8)} />
+          <Level l="Proposed target" v={fmt(result.refined?.target, 8)} />
+          <Level l="Est. net R:R" v={fmt(result.refined?.estimatedNetRR, 2)} />
+          <Level l="V2 candle status" v={result.freshStatus || "—"} />
+        </div>
+        <p><b>NOT QUALIFIED.</b> This review does not override the original rejection reasons,
+          authorize a trade, or guarantee an entry fill.</p>
+      </div>}
+    </section>
+  );
+}
+
 function LifecycleCard({ candidate }) {
   const setup = candidate?.diagnosticSetup ?? candidate?.setup ?? candidate;
   const lifecycle = setup?.lifecycle ?? candidate?.lifecycle ?? {};
@@ -1358,6 +1536,8 @@ function LifecycleCard({ candidate }) {
         <Level l="TP1" v={fmt(targets?.[0], 8)} />
         <Level l="TP2 / TP3" v={targets.length > 1 ? targets.slice(1, 3).map(x => fmt(x, 8)).join(" / ") : "Not ready"} />
       </div>
+
+      <DevelopingRefinement candidate={candidate} setup={setup} direction={direction} />
 
       <div className="lifecycle-meta">
         <span>Class <strong>{setup?.setupClass ?? "—"}</strong></span>
