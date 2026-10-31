@@ -1,15 +1,6 @@
 
 import { researchAuthHeaders } from "../../services/researchAuth.js";
 
-/*
- * AEMA PRIVATE BOT API
- *
- * Use the same origin as the frontend.
- * Vercel forwards /api/* requests to the Render backend.
- *
- * This allows the browser to send the private bot
- * authentication cookie as a same-origin cookie.
- */
 const BASE = "/api/crypto/bot";
 
 async function req(path, options = {}) {
@@ -19,7 +10,7 @@ async function req(path, options = {}) {
   try {
     headers = await researchAuthHeaders({
       "Content-Type": "application/json",
-      ...(options.headers || {}),
+      ...(options.headers || {})
     });
   } catch (error) {
     error.code = "BOT_AUTH_REQUIRED";
@@ -27,9 +18,9 @@ async function req(path, options = {}) {
   }
 
   const r = await fetch(`${BASE}${path}`, {
-    ...options,
     credentials: "include",
-    headers,
+    ...options,
+    headers
   });
 
   let b = null;
@@ -37,7 +28,7 @@ async function req(path, options = {}) {
   try {
     b = await r.json();
   } catch {
-    // Preserve the HTTP error if the response is not JSON.
+    // Preserve the HTTP error below if the response is not JSON.
   }
 
   if (!r.ok) {
@@ -60,12 +51,12 @@ export const getBotAuthStatus = () =>
 export const loginBot = (accessKey) =>
   req("/auth/login", {
     method: "POST",
-    body: JSON.stringify({ accessKey }),
+    body: JSON.stringify({ accessKey })
   });
 
 export const logoutBot = () =>
   req("/auth/logout", {
-    method: "POST",
+    method: "POST"
   });
 
 /* ============================================================
@@ -75,7 +66,7 @@ export const logoutBot = () =>
 export const searchBotMarket = (options = {}) =>
   req("/market/search", {
     method: "POST",
-    body: JSON.stringify({ options }),
+    body: JSON.stringify({ options })
   });
 
 /* ============================================================
@@ -85,13 +76,13 @@ export const searchBotMarket = (options = {}) =>
 export const searchBotStockMarket = (options = {}) =>
   req("/stock/research", {
     method: "POST",
-    body: JSON.stringify(options),
+    body: JSON.stringify(options)
   });
 
 export const discoverBotStockMarket = (options = {}) =>
   req("/stock/discover", {
     method: "POST",
-    body: JSON.stringify(options),
+    body: JSON.stringify(options)
   });
 
 export const getBotStockSetups = () =>
@@ -110,8 +101,8 @@ export const calculateSetupScenario = (
     body: JSON.stringify({
       capitalUsd,
       leverage,
-      feeRatePercent,
-    }),
+      feeRatePercent
+    })
   });
 
 /* ============================================================
@@ -127,8 +118,8 @@ export const monitorSetup = (
     body: JSON.stringify({
       capitalUsd,
       leverage,
-      feeRatePercent,
-    }),
+      feeRatePercent
+    })
   });
 
 export const getBotMonitors = () =>
@@ -140,7 +131,7 @@ export const getBotMonitor = (id) =>
 export const refreshBotMonitor = (id, options = {}) =>
   req(`/monitoring/${encodeURIComponent(id)}/refresh`, {
     method: "POST",
-    body: JSON.stringify({ options }),
+    body: JSON.stringify({ options })
   });
 
 /* ============================================================
@@ -153,7 +144,7 @@ export const getBotManualHistory = () =>
 export const saveBotManualResult = (monitorId, data) =>
   req(`/manual-history/${encodeURIComponent(monitorId)}/result`, {
     method: "POST",
-    body: JSON.stringify(data),
+    body: JSON.stringify(data)
   });
 
 /* ============================================================
@@ -177,41 +168,35 @@ export const setBotAllocation = (allocationUsd) =>
   req("/controls/allocation", {
     method: "PUT",
     body: JSON.stringify({
-      allocationUsd: Number(allocationUsd),
-    }),
+      allocationUsd: Number(allocationUsd)
+    })
   });
 
 export const pauseBot = () =>
   req("/controls/pause", {
-    method: "POST",
+    method: "POST"
   });
 
 export const resumeBot = () =>
   req("/controls/resume", {
-    method: "POST",
+    method: "POST"
   });
 
 export const closeBotPosition = (id) =>
   req(`/positions/${encodeURIComponent(id)}/close`, {
-    method: "POST",
+    method: "POST"
   });
 
 export const emergencyStopBot = () =>
   req("/controls/emergency-stop", {
-    method: "POST",
+    method: "POST"
   });
 
-/* ============================================================
-   V2 CRYPTO RESEARCH AND ENTRY REFINEMENT
-   ============================================================ */
-
+/* V2 refinement: shared Supabase bearer + bot-access cookie */
 export const analyzeBotV2 = (symbol) =>
   req("/v2/analyze", {
     method: "POST",
-    body: JSON.stringify({
-      market: "crypto",
-      symbol,
-    }),
+    body: JSON.stringify({ market: "crypto", symbol }),
   });
 
 export const refineBotV2Entry = (setupId) =>
@@ -223,8 +208,5 @@ export const refineBotV2Entry = (setupId) =>
 export const refineDevelopingSetup = (symbol, direction) =>
   req("/v2/refine-developing", {
     method: "POST",
-    body: JSON.stringify({
-      symbol,
-      direction,
-    }),
+    body: JSON.stringify({ symbol, direction }),
   });
