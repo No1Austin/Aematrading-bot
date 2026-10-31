@@ -1,0 +1,11 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {analyzePrecision} from '../refinement/precisionAnalysis.js';
+import {refineDevelopingEntry,refineEntry} from '../refinement/refineEntry.js';
+const make=(n,ms,dir=1)=>Array.from({length:n},(_,i)=>{const p=100+dir*i*.08+Math.sin(i*.48)*.6;return {openTime:Math.floor(Date.UTC(2026,0,1)/ms)*ms+i*ms,open:p,high:p+.45,low:p-.45,close:p+dir*.12,volume:100+i%8*8};});
+const bundle={candles5m:make(100,300000),candles15m:make(100,900000),candles1h:make(100,3600000)};
+test('precision returns all five evidence sections',()=>{const e=analyzePrecision({direction:'BULL',...bundle});for(const key of ['liquiditySweep','marketStructure','fairValueGaps','volume','orderBookLiquidity','volatility'])assert.ok(Object.hasOwn(e,key));assert.equal(e.orderBookLiquidity.status,'UNAVAILABLE');});
+test('developing is research only and cannot upgrade qualification',()=>{const r=refineDevelopingEntry({direction:'BULL',fresh:{status:'NO_SETUP',direction:null},...bundle});assert.equal(r.qualification,'NOT_QUALIFIED');assert.equal(r.executionAuthority,false);assert.equal(r.liveExecution,false);assert.equal(r.autoApplied,false);assert.ok(Array.isArray(r.candidates));});
+test('conflicting direction is rejected',()=>{const r=refineDevelopingEntry({direction:'BULL',fresh:{direction:'BEAR'},...bundle});assert.equal(r.decision,'DIRECTION_CONFLICT');assert.equal(r.refined,null);});
+test('snapshot refinement keeps original levels and research-only state',()=>{const r=refineEntry({original:{direction:'BULL',entryReference:101,stopReference:99,targetIllustration:105},fresh:{status:'NO_SETUP',direction:null},...bundle});assert.equal(r.original.entry,101);assert.equal(r.executionAuthority,false);});
+test('bad candles fail closed',()=>{assert.throws(()=>analyzePrecision({direction:'BULL',...bundle,candles5m:bundle.candles5m.slice().reverse()}),/INVALID_5M_CANDLES/);});

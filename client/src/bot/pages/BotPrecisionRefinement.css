@@ -1,0 +1,15 @@
+/* Scoped to refinement evidence; inherits existing light/dark theme. */
+.precision-review{margin-top:16px;display:grid;gap:14px;color:inherit}
+.precision-review-heading{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px}
+.precision-review-heading strong{font-size:.94rem}
+.precision-review-heading span,.precision-review-card small{font-size:.78rem;opacity:.76}
+.precision-review-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,215px),1fr));gap:10px}
+.precision-review-card{border:1px solid currentColor;border-color:color-mix(in srgb,currentColor 15%,transparent);border-radius:12px;padding:12px;min-width:0;background:color-mix(in srgb,currentColor 3%,transparent)}
+.precision-review-card h4{margin:0 0 7px;font-size:.85rem}
+.precision-review-card p{margin:0 0 5px;font-size:.84rem;overflow-wrap:anywhere}
+.precision-review-line{display:block;margin-top:4px;overflow-wrap:anywhere}
+.precision-review-scroll{overflow-x:auto;max-width:100%}
+.precision-review-table{width:100%;border-collapse:collapse;white-space:nowrap;font-size:.8rem}
+.precision-review-table th,.precision-review-table td{padding:9px 12px 9px 0;text-align:left;border-bottom:1px solid color-mix(in srgb,currentColor 14%,transparent)}
+.precision-review-table th{opacity:.75;font-weight:600}
+.precision-review-note{margin:0;font-size:.8rem;line-height:1.55;opacity:.8}
