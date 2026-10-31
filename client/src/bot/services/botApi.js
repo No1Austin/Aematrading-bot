@@ -191,3 +191,22 @@ export const emergencyStopBot = () =>
   req("/controls/emergency-stop", {
     method: "POST"
   });
+
+/* V2 research uses the existing Supabase bearer + private bot cookie. */
+export const analyzeBotV2 = (symbol) =>
+  req("/v2/analyze", {
+    method: "POST",
+    body: JSON.stringify({ market: "crypto", symbol }),
+  });
+
+export const refineBotV2Entry = (setupId) =>
+  req("/v2/refine-entry", {
+    method: "POST",
+    body: JSON.stringify({ setupId }),
+  });
+
+export const refineDevelopingSetup = (symbol, direction) =>
+  req("/v2/refine-developing", {
+    method: "POST",
+    body: JSON.stringify({ symbol, direction }),
+  });

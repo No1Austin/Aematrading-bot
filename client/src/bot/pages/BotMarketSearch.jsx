@@ -18,6 +18,9 @@ import {
   calculateSetupScenario,
   monitorSetup,
   searchBotMarket,
+  analyzeBotV2,
+  refineBotV2Entry,
+  refineDevelopingSetup,
 } from "../services/botApi.js";
 
 import {
@@ -1279,41 +1282,13 @@ function QualifiedRefinement({ candidate, setup, direction }) {
   const symbol = candidate?.symbol ?? setup?.symbol;
   const supported = Boolean(symbol && ["BULL", "BEAR"].includes(direction));
 
-  const postJson = async (path, body) => {
-    const response = await fetch(path, {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-    const raw = await response.text();
-    let payload;
-    try {
-      payload = raw ? JSON.parse(raw) : null;
-    } catch {
-      throw new Error(`V2 endpoint returned non-JSON (HTTP ${response.status}).`);
-    }
-    if (!response.ok) {
-      const code = payload?.error ?? payload?.message;
-      throw new Error(code === "BOT_AUTH_REQUIRED"
-        ? "Private bot session expired. Unlock the bot again."
-        : code || `V2 request failed (HTTP ${response.status}).`);
-    }
-    if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
-      throw new Error("V2 endpoint returned no valid research data.");
-    }
-    return payload;
-  };
-
   const runRefinement = async () => {
     if (!supported || busy) return;
     setBusy(true);
     setError("");
     setResult(null);
     try {
-      const analysis = await postJson("/api/crypto/bot/v2/analyze", {
-        market: "crypto", symbol,
-      });
+      const analysis = await analyzeBotV2(symbol);
       if (analysis.direction !== direction) {
         throw new Error(
           `Fresh V2 analysis direction is ${analysis.direction || "undetermined"}, ` +
@@ -1326,9 +1301,7 @@ function QualifiedRefinement({ candidate, setup, direction }) {
           `without a refinable snapshot. Original found setup remains unchanged.`
         );
       }
-      const refined = await postJson("/api/crypto/bot/v2/refine-entry", {
-        setupId: analysis.setupId,
-      });
+      const refined = await refineBotV2Entry(analysis.setupId);
       setResult(refined);
     } catch (e) {
       setError(e?.message || "Unable to refine found setup.");
@@ -1378,33 +1351,9 @@ function DevelopingRefinement({ candidate, setup, direction }) {
     setError("");
     setResult(null);
     try {
-      const response = await fetch("/api/crypto/bot/v2/refine-developing", {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ symbol, direction }),
-      });
-      // Read once: an unmounted route, proxy error or server crash may return
-      // an empty body or HTML instead of JSON.
-      const raw = await response.text();
-      const contentType = response.headers.get("content-type") || "";
-      let payload = null;
-      if (raw.trim()) {
-        try {
-          payload = JSON.parse(raw);
-        } catch {
-          throw new Error(
-            `Refinement endpoint returned non-JSON (HTTP ${response.status}, ${contentType || "unknown content type"}). ` +
-            `Check the V2 route mount and Vite API proxy. Response starts: ${raw.slice(0, 120).replace(/\s+/g, " ")}`
-          );
-        }
-      }
-      if (!response.ok) {
-        throw new Error(payload?.error || payload?.message ||
-          `Refinement request failed (HTTP ${response.status}${raw.trim() ? "" : ", empty response"}).`);
-      }
+      const payload = await refineDevelopingSetup(symbol, direction);
       if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
-        throw new Error(`Refinement endpoint returned an empty or invalid JSON response (HTTP ${response.status}). Check backend logs.`);
+        throw new Error("Invalid refinement response.");
       }
       if (payload.error) throw new Error(payload.error);
       setResult(payload);
