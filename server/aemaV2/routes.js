@@ -75,7 +75,11 @@ router.post('/refine-developing', async (req,res) => {
       return res.status(400).json({error:'VALID_DIRECTION_REQUIRED',executionAuthority:false});
     const bundle = await getV2CryptoCandleBundle(symbol);
     const fresh = evaluateV2CandleDecision(bundle);
-    const result = refineDevelopingEntry({direction,fresh,...bundle});
+    const original = req.body?.original ?? null;
+    const originalValues = original && typeof original === 'object' && !Array.isArray(original) ? {
+      entry: original.entry, stop: original.stop, target: original.target, venue: original.venue
+    } : null;
+    const result = refineDevelopingEntry({direction,fresh,...bundle,original:originalValues,referenceVenue:'GATE'});
     return res.json({market:'crypto',symbol,asOf:bundle.asOf,...result});
   } catch (e) {
     return res.status(422).json({error:e.message||'DEVELOPING_REFINEMENT_FAILED',executionAuthority:false});

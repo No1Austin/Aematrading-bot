@@ -13,14 +13,12 @@ import {
 import { useEffect, useState } from "react";
 
 import BotSidebar from "../components/BotSidebar.jsx";
+import { researchAuthHeaders } from "../../services/researchAuth.js";
 
 import {
   calculateSetupScenario,
   monitorSetup,
   searchBotMarket,
-  analyzeBotV2,
-  refineBotV2Entry,
-  refineDevelopingSetup,
 } from "../services/botApi.js";
 
 import {
@@ -35,6 +33,7 @@ import {
 } from "../components/ResearchUi.jsx";
 
 import "./BotMarketSearch.css";
+import "./BotPrecisionRefinement.css";
 
 
 /* =========================================================
@@ -1270,10 +1269,10 @@ function setupBlockerLabels(candidate) {
 }
 
 /**
- * Found setups originate in the original search pipeline, so their IDs are
- * not interchangeable with the short-lived V2 snapshot IDs.
- * Analyze first to obtain a fresh V2 snapshot, then refine that snapshot.
- * This is research-only and never changes the original setup qualification.
+ * Found setups belong to the original search engine, not the independent V2
+ * snapshot registry. Run the diagnostic refinement directly; never require
+ * V2 to re-qualify the already-found setup just to inspect its market structure.
+ * Original trade levels remain untouched and client values are display-only.
  */
 function QualifiedRefinement({ candidate, setup, direction }) {
   const [busy, setBusy] = useState(false);
@@ -1288,26 +1287,30 @@ function QualifiedRefinement({ candidate, setup, direction }) {
     setError("");
     setResult(null);
     try {
-      const analysis = await analyzeBotV2(symbol);
-      if (analysis.direction !== direction) {
-        throw new Error(
-          `Fresh V2 analysis direction is ${analysis.direction || "undetermined"}, ` +
-          `not ${direction}. Original found setup was not modified.`
-        );
+      const headers = await researchAuthHeaders({ "Content-Type": "application/json" });
+      const apiBase = (import.meta.env.VITE_API_BASE_URL ?? "").replace(/\/+$/, "");
+      const response = await fetch(`${apiBase}/api/crypto/bot/v2/refine-developing`, {
+        method: "POST", credentials: "include", headers,
+        body: JSON.stringify({ symbol, direction, original: {
+          entry: setup?.entry ?? setup?.entryPrice,
+          stop: setup?.stop ?? setup?.stopLoss ?? setup?.stopPrice,
+          target: setup?.target ?? setup?.takeProfit,
+          venue: setup?.exchange ?? candidate?.exchange ?? null,
+        } }),
+      });
+      const raw = await response.text();
+      let payload;
+      try { payload = raw ? JSON.parse(raw) : null; }
+      catch { throw new Error(`Refinement returned non-JSON (HTTP ${response.status}).`); }
+      if (!response.ok) {
+        throw new Error(payload?.error || payload?.message || `Refinement failed (HTTP ${response.status}).`);
       }
-      if (!analysis.setupId) {
-        throw new Error(
-          `Fresh V2 analysis returned ${analysis.status || "no research candidate"} ` +
-          `without a refinable snapshot. Original found setup remains unchanged.`
-        );
-      }
-      const refined = await refineBotV2Entry(analysis.setupId);
-      setResult(refined);
+      if (!payload || typeof payload !== "object" || Array.isArray(payload))
+        throw new Error("Refinement returned no valid market analysis.");
+      setResult(payload);
     } catch (e) {
-      setError(e?.message || "Unable to refine found setup.");
-    } finally {
-      setBusy(false);
-    }
+      setError(e?.message || "Unable to analyze fresh candles.");
+    } finally { setBusy(false); }
   };
 
   return (
@@ -1316,25 +1319,99 @@ function QualifiedRefinement({ candidate, setup, direction }) {
         onClick={runRefinement} disabled={!supported || busy}>
         {busy ? "Checking fresh candles…" : "✦ Refine Entry"}
       </button>
-      <small>Fresh V2 analysis and entry refinement · original found setup preserved</small>
+      <small>Five-part V2 research review · original found setup preserved</small>
       {!supported && <p>Refinement needs a symbol and BULL or BEAR direction.</p>}
       {error && <p role="alert" className="developing-refine-error">{error}</p>}
       {result && (
         <div className="developing-refine-results" aria-live="polite">
-          <strong>{String(result.decision || result.status || "REVIEW").replaceAll("_", " ")}</strong>
+          <strong>{String(result.decision || "REVIEW").replaceAll("_", " ")}</strong>
           {result.reason && <p>{String(result.reason).replaceAll("_", " ")}</p>}
           <div className="developing-refine-grid">
             <Level l="Original entry" v={fmt(setup?.entry ?? setup?.entryPrice, 8)} />
-            <Level l="V2 reference entry" v={fmt(result.current?.entry ?? result.original?.entryReference, 8)} />
+            <Level l="Original stop" v={fmt(setup?.stop ?? setup?.stopLoss ?? setup?.stopPrice, 8)} />
+            <Level l="Original target" v={fmt(setup?.target ?? setup?.takeProfit, 8)} />
+            <Level l="V2 reference" v={fmt(result.evidence?.referencePrice ?? result.current?.entry, 8)} />
             <Level l="Proposed entry" v={fmt(result.refined?.entry, 8)} />
             <Level l="Proposed stop" v={fmt(result.refined?.stop, 8)} />
             <Level l="Proposed target" v={fmt(result.refined?.target, 8)} />
             <Level l="Est. net R:R" v={fmt(result.refined?.estimatedNetRR, 2)} />
+            <Level l="V2 candle status" v={result.freshStatus || "—"} />
           </div>
-          <p>Research-only refinement. Original setup, monitoring, and qualification are unchanged; no trade is executed.</p>
+          {result.originalReview && (
+            <div className="precision-review-card" style={{marginTop:12}}>
+              <h4>Original setup assessment</h4>
+              <p><strong>{String(result.originalReview.decision || '').replaceAll('_',' ')}</strong></p>
+              <p>{String(result.originalReview.reason || '').replaceAll('_',' ')}</p>
+              <p>{result.originalReview.nextAction}</p>
+              {result.originalReview.original?.grossRR != null &&
+                <p>Original gross R:R: {fmt(result.originalReview.original.grossRR,2)} · Original risk: {fmt(result.originalReview.original.riskPct,2)}%</p>}
+              {result.originalReview.comparisonVerified &&
+                <p>Move from original entry in trade direction: {fmt(result.originalReview.moveInTradeDirectionPct,2)}%</p>}
+              {!result.originalReview.comparisonVerified &&
+                <small>Cross-venue price comparison is not verified. The original setup values were supplied by the client and are not independently authenticated.</small>}
+            </div>
+          )}
+          <PrecisionEvidence result={result} />
+          <p>Independent V2 diagnostic only. It does not re-qualify, modify, monitor, or execute the original found setup. Missing refined levels mean no validated alternative was identified.</p>
         </div>
       )}
     </section>
+  );
+}
+
+function PrecisionEvidence({ result }) {
+  const evidence = result?.evidence;
+  if (!evidence) return null;
+  const sweep = evidence.liquiditySweep;
+  const structure = evidence.marketStructure ?? {};
+  const fvg = evidence.fairValueGaps ?? [];
+  const volume = evidence.volume ?? {};
+  const depth = evidence.orderBookLiquidity ?? {};
+  const volatility = evidence.volatility ?? {};
+  const candidates = result.candidates ?? [];
+  const friendly = value => String(value ?? "—").replaceAll("_", " ");
+  const level = value => value == null ? "—" : fmt(value, 8);
+  return (
+    <div className="precision-review">
+      <div className="precision-review-heading">
+        <strong>Five-part precision review</strong>
+        <span>Closed-candle evidence · research only</span>
+      </div>
+      <div className="precision-review-grid">
+        <article className="precision-review-card">
+          <h4>Liquidity sweep</h4>
+          <p>{sweep ? (sweep.confirmed ? "Confirmed sweep pattern" : "Sweep detected; follow-through unconfirmed") : "No qualifying sweep detected"}</p>
+          {sweep && <small>Level {level(sweep.level)} · Extreme {level(sweep.extreme)} · {sweep.age} candles ago</small>}
+        </article>
+        <article className="precision-review-card">
+          <h4>BOS / CHoCH</h4>
+          <p>5m: {friendly(structure.fiveMinute?.kind)} · {friendly(structure.fiveMinute?.trend)}</p>
+          <p>15m: {friendly(structure.fifteenMinute?.kind)} · {friendly(structure.fifteenMinute?.trend)}</p>
+          <small>A missing break is not a confirmed BOS or CHoCH.</small>
+        </article>
+        <article className="precision-review-card">
+          <h4>Fair value gaps</h4>
+          <p>{fvg.length} unfilled directional gap{fvg.length === 1 ? "" : "s"} identified</p>
+          {fvg.slice(0, 2).map((gap, index) => <small key={`${gap.index}-${index}`} className="precision-review-line">{level(gap.lower)}–{level(gap.upper)} · {gap.partiallyMitigated ? "Partially mitigated" : "Not mitigated"}</small>)}
+        </article>
+        <article className="precision-review-card">
+          <h4>Volume &amp; liquidity</h4>
+          <p>Relative volume: {volume.relativeVolume == null ? "Unavailable" : `${fmt(volume.relativeVolume, 2)}×`}</p>
+          <small>Order book: {depth.status === "AVAILABLE" ? `Spread ${fmt(depth.spreadBps, 2)} bps · Depth $${fmt(depth.depthUsd, 0)}` : "Not verified"}</small>
+        </article>
+        <article className="precision-review-card">
+          <h4>Volatility &amp; timing</h4>
+          <p>15m ATR: {level(volatility.atr15)} · 5m ATR: {level(volatility.atr5)}</p>
+          <small>Candle expansion {volatility.candleExpansionRatio == null ? "—" : `${fmt(volatility.candleExpansionRatio, 2)}×`} · {volatility.largeCandle ? "Large candle: avoid chasing" : "No large-candle flag"}</small>
+        </article>
+      </div>
+      <div className="precision-review-heading">
+        <strong>Ranked hypothetical entries</strong>
+        <span>{candidates.length} candidate{candidates.length === 1 ? "" : "s"}</span>
+      </div>
+      {candidates.length ? <div className="precision-review-scroll"><table className="precision-review-table"><thead><tr><th>Rank / method</th><th>Entry</th><th>Stop</th><th>Target</th><th>Est. net R:R</th><th>Distance</th></tr></thead><tbody>{candidates.map((c, index) => <tr key={`${c.kind}-${c.entry}-${index}`}><td>#{index + 1} {friendly(c.kind)}</td><td>{level(c.entry)}</td><td>{level(c.stop)}</td><td>{level(c.target)}</td><td>{fmt(c.estimatedNetRR, 2)}</td><td>{fmt(c.distanceFromCurrentPct, 2)}%</td></tr>)}</tbody></table></div> : <p>No candidate meets the current structural and estimated cost requirements.</p>}
+      <p className="precision-review-note">Decision: {friendly(result.decision)}. {friendly(result.reason)}. Fees/slippage are assumptions; entry fills, order-book liquidity and predictive performance are not verified. Original qualification is unchanged.</p>
+    </div>
   );
 }
 
@@ -1351,9 +1428,35 @@ function DevelopingRefinement({ candidate, setup, direction }) {
     setError("");
     setResult(null);
     try {
-      const payload = await refineDevelopingSetup(symbol, direction);
+      const headers = await researchAuthHeaders({ "Content-Type": "application/json" });
+      const apiBase = (import.meta.env.VITE_API_BASE_URL ?? "").replace(/\/+$/, "");
+      const response = await fetch(`${apiBase}/api/crypto/bot/v2/refine-developing`, {
+        method: "POST",
+        credentials: "include",
+        headers,
+        body: JSON.stringify({ symbol, direction }),
+      });
+      // Read once: an unmounted route, proxy error or server crash may return
+      // an empty body or HTML instead of JSON.
+      const raw = await response.text();
+      const contentType = response.headers.get("content-type") || "";
+      let payload = null;
+      if (raw.trim()) {
+        try {
+          payload = JSON.parse(raw);
+        } catch {
+          throw new Error(
+            `Refinement endpoint returned non-JSON (HTTP ${response.status}, ${contentType || "unknown content type"}). ` +
+            `Check the V2 route mount and Vite API proxy. Response starts: ${raw.slice(0, 120).replace(/\s+/g, " ")}`
+          );
+        }
+      }
+      if (!response.ok) {
+        throw new Error(payload?.error || payload?.message ||
+          `Refinement request failed (HTTP ${response.status}${raw.trim() ? "" : ", empty response"}).`);
+      }
       if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
-        throw new Error("Invalid refinement response.");
+        throw new Error(`Refinement endpoint returned an empty or invalid JSON response (HTTP ${response.status}). Check backend logs.`);
       }
       if (payload.error) throw new Error(payload.error);
       setResult(payload);
@@ -1384,6 +1487,7 @@ function DevelopingRefinement({ candidate, setup, direction }) {
           <Level l="Est. net R:R" v={fmt(result.refined?.estimatedNetRR, 2)} />
           <Level l="V2 candle status" v={result.freshStatus || "—"} />
         </div>
+        <PrecisionEvidence result={result} />
         <p><b>NOT QUALIFIED.</b> This review does not override the original rejection reasons,
           authorize a trade, or guarantee an entry fill.</p>
       </div>}

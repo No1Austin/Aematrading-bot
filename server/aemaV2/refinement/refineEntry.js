@@ -1,3 +1,4 @@
+import {reviewOriginalSetup} from './setupAwareReview.js';
 import {precisionRefinement} from './precisionPlanner.js';
 import { planStructureExecution } from '../structure/structureExecutionPlan.js';
 
@@ -16,9 +17,17 @@ export function refineEntry({original,fresh,candles15m,candles5m,candles1h}) {
  return {...base,...precisionRefinement({direction,candles15m,candles5m,candles1h,original:base.original})};
 }
 /** Unverified legacy developing candidates: evidence only; never upgrades qualification. */
-export function refineDevelopingEntry({direction,fresh,candles15m,candles5m,candles1h}) {
+export function refineDevelopingEntry({direction,fresh,candles15m,candles5m,candles1h,original=null,referenceVenue='GATE'}) {
  if(!['BULL','BEAR'].includes(direction))throw Error('INVALID_DIRECTION');
  const base={direction,source:'UNVERIFIED_CLIENT_CANDIDATE',freshStatus:fresh?.status??null,freshDirection:fresh?.direction??null,current:{entry:fresh?.entryReference??null,stop:fresh?.stopReference??null,target:fresh?.targetIllustration??null}};
- if(['BULL','BEAR'].includes(fresh?.direction)&&fresh.direction!==direction)return {...base,decision:'DIRECTION_CONFLICT',reason:'FRESH_V2_DIRECTION_CONFLICTS_WITH_DEVELOPING_SETUP',refined:null,qualification:'NOT_QUALIFIED',researchOnly:true,executionAuthority:false,liveExecution:false,validatedForTrading:false,autoApplied:false};
- return {...base,...precisionRefinement({direction,candles15m,candles5m,candles1h})};
+ const freshDirectionConflict=['BULL','BEAR'].includes(fresh?.direction)&&fresh.direction!==direction;
+ const precision=precisionRefinement({direction,candles15m,candles5m,candles1h,original});
+ const originalReview=reviewOriginalSetup({direction,original,referencePrice:precision.evidence?.referencePrice,referenceVenue,evidence:precision.evidence});
+ return {...base,...precision,originalReview,freshDirectionConflict,
+  ...(freshDirectionConflict ? {
+    decision:'DIRECTION_CONFLICT',
+    reason:'FRESH_V2_DIRECTION_CONFLICTS_WITH_ORIGINAL_SETUP',
+    refined:null,
+    candidates:[]
+  } : {})};
 }
