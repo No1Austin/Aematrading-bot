@@ -207,7 +207,7 @@ export function createMonitoredSetup(
   { userId } = {}
 ) {
   if (typeof userId !== "string" || !/^[0-9a-f]{8}-[0-9a-f-]{27,}$/i.test(userId)) {
-    throw new Error("SUPABASE_USER_REQUIRED");
+    throw new Error("BOT_OWNER_ID_REQUIRED");
   }
   if (!candidate?.setup?.approved) {
     throw new Error(

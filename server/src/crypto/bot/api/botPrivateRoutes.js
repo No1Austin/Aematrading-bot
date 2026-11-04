@@ -33,7 +33,7 @@ const completeClosedTrade=(position)=>{
   };
 };
 
-const requireSupabaseIdentity=(req,res,next)=> req.botAuthMethod === "supabase" && req.botUser?.id ? next() : res.status(403).json({error:"SUPABASE_USER_REQUIRED"});
+const requireBotIdentity=(req,res,next)=> req.botAuthMethod === "bot_key" && req.botUser?.id ? next() : res.status(401).json({error:"BOT_AUTH_REQUIRED"});
 const belongs=(m,id)=>Boolean(m?.userId && m.userId===id);
 export default function createBotPrivateRoutes(){
   const r=express.Router();
@@ -41,7 +41,7 @@ export default function createBotPrivateRoutes(){
   r.post("/auth/logout",botLogout);
   r.get("/auth/status",botAuthStatus);
   r.use(requireBotAccess);
-  r.use("/manual-history",requireSupabaseIdentity,createBotManualHistoryRoutes({getMonitoredSetup}));
+  r.use("/manual-history",requireBotIdentity,createBotManualHistoryRoutes({getMonitoredSetup}));
   r.get("/dashboard",(_req,res)=>{
     const account=getBotPaperAccount(),memory=getTradeMemory();
     res.json({paperOnly:true,liveExecution:false,portfolioLimit:3,account,
@@ -102,7 +102,7 @@ export default function createBotPrivateRoutes(){
     res.json({setupId:req.params.setupId,scenario:calculateBotPositionScenario(candidate.setup,{capitalUsd:req.body?.capitalUsd,leverage:req.body?.leverage,feeRatePercent:req.body?.feeRatePercent})});
   }));
 
-  r.post("/setups/:setupId/monitor",requireSupabaseIdentity,handle((req,res)=>{
+  r.post("/setups/:setupId/monitor",requireBotIdentity,handle((req,res)=>{
     const candidate=getSearchSetup(req.params.setupId);
     if(!candidate)throw new Error("SETUP_NOT_FOUND");
     const scenario=req.body?.capitalUsd?calculateBotPositionScenario(candidate.setup,{capitalUsd:req.body.capitalUsd,leverage:req.body?.leverage,feeRatePercent:req.body?.feeRatePercent}):null;
@@ -113,8 +113,8 @@ export default function createBotPrivateRoutes(){
   r.post("/stock/discover",handle(async(req,res)=>{res.set("Cache-Control","no-store");res.json(await runStockDiscoveryResearch(req.body??{}));}));
   r.get("/stock/setups",(_req,res)=>{res.set("Cache-Control","no-store");res.json({assetClass:"STOCK",researchOnly:true,executionAuthority:false,liveExecution:false,setups:listPublishedStockSetups()});});
   r.post("/setup/analyze",handle(async(req,res)=>{if(isBotRuntimeBusy())throw new Error("BOT_RUNTIME_BUSY_RETRY");res.set("Cache-Control","no-store");res.json(await analyzeBotSingleSetup(req.body?.symbol,req.body?.options||{}));}));
-  r.get("/monitoring",requireSupabaseIdentity,(req,res)=>res.json({monitors:listMonitoredSetups().filter(m=>belongs(m,req.botUser.id))}));
-  r.get("/monitoring/:id",requireSupabaseIdentity,(req,res)=>{const monitor=getMonitoredSetup(req.params.id);if(!belongs(monitor,req.botUser.id))return res.status(404).json({error:"MONITORED_SETUP_NOT_FOUND"});res.json({monitor});});
-  r.post("/monitoring/:id/refresh",requireSupabaseIdentity,handle(async(req,res)=>{const monitor=getMonitoredSetup(req.params.id);if(!belongs(monitor,req.botUser.id))return res.status(404).json({error:"MONITORED_SETUP_NOT_FOUND"});res.json({monitor:await refreshMonitoredSetup(req.params.id,req.body?.options||{})});}));
+  r.get("/monitoring",requireBotIdentity,(req,res)=>res.json({monitors:listMonitoredSetups().filter(m=>belongs(m,req.botUser.id))}));
+  r.get("/monitoring/:id",requireBotIdentity,(req,res)=>{const monitor=getMonitoredSetup(req.params.id);if(!belongs(monitor,req.botUser.id))return res.status(404).json({error:"MONITORED_SETUP_NOT_FOUND"});res.json({monitor});});
+  r.post("/monitoring/:id/refresh",requireBotIdentity,handle(async(req,res)=>{const monitor=getMonitoredSetup(req.params.id);if(!belongs(monitor,req.botUser.id))return res.status(404).json({error:"MONITORED_SETUP_NOT_FOUND"});res.json({monitor:await refreshMonitoredSetup(req.params.id,req.body?.options||{})});}));
   return r;
 }

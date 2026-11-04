@@ -10,19 +10,19 @@ const directionOf = (v) => {
 const finiteOptional = (v) => v === '' || v === null || v === undefined ? null : Number.isFinite(Number(v)) ? Number(v) : NaN;
 
 function userClient(req) {
-  const token = String(req.headers.authorization || '').match(/^Bearer\s+(.+)$/i)?.[1];
-  const url = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
-  const anon = process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY;
-  if (!req.botUser?.id || req.botAuthMethod !== 'supabase' || !token) return null;
-  if (!url || !anon) throw new Error('SUPABASE_NOT_CONFIGURED');
-  return createClient(url, anon, { global: { headers: { Authorization: `Bearer ${token}` } }, auth: { persistSession: false, autoRefreshToken: false } });
+  if (req.botAuthMethod !== 'bot_key' || !req.botUser?.id) return null;
+  const url = process.env.SUPABASE_URL;
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !serviceKey) throw new Error('BOT_HISTORY_STORAGE_NOT_CONFIGURED');
+  // Server-side only. Never expose this key to the frontend.
+  return createClient(url, serviceKey, {auth:{persistSession:false,autoRefreshToken:false}});
 }
 
 // Pass getMonitoredSetup from the existing store. Never trust client-supplied symbol/direction/signal snapshot.
 export default function createBotManualHistoryRoutes({ getMonitoredSetup }) {
   const router = express.Router();
   router.use((req,res,next) => {
-    if (!req.botUser?.id || req.botAuthMethod !== 'supabase') return res.status(403).json({error:'SUPABASE_USER_REQUIRED'});
+    if (!req.botUser?.id || req.botAuthMethod !== 'bot_key') return res.status(403).json({error:'BOT_AUTH_REQUIRED'});
     next();
   });
   router.get('/', async (req,res) => {
