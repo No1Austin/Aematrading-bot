@@ -13,7 +13,13 @@ import {getBotAuthStatus} from "./services/botApi.js";
 export default function BotApp(){
   const[auth,setAuth]=useState(null);
   useEffect(()=>{
-    getBotAuthStatus().then(x=>setAuth(Boolean(x.authorized))).catch(()=>setAuth(false));
+    let active = true;
+    getBotAuthStatus()
+      .then(x=>{if(active)setAuth(Boolean(x.authorized));})
+      .catch(()=>{if(active)setAuth(false);});
+    const onLocked = () => setAuth(false);
+    window.addEventListener("aema-bot-locked", onLocked);
+    return () => {active=false;window.removeEventListener("aema-bot-locked", onLocked);};
   },[]);
   if(auth===null)return null;
   if(!auth)return <BotLogin onAuthorized={()=>setAuth(true)}/>;

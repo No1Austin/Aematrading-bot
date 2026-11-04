@@ -2,6 +2,7 @@ import crypto from "node:crypto";
 import { createClient } from "@supabase/supabase-js";
 
 const COOKIE = "aema_bot_access";
+const SESSION_HEADER = "x-aema-bot-session";
 const TTL = 8 * 60 * 60 * 1000;
 
 const secret = () => process.env.AEMA_BOT_AUTH_SECRET || process.env.AEMA_BOT_ACCESS_KEY || "";
@@ -77,7 +78,7 @@ export async function botLogin(req, res) {
   const exp = String(Date.now() + TTL);
   const token = `${exp}.${user.id}.${sign(`${exp}.${user.id}`)}`;
   res.setHeader("Set-Cookie", `${COOKIE}=${encodeURIComponent(token)}; ${cookieAttributes()}; Max-Age=${Math.floor(TTL / 1000)}`);
-  return res.json({ authorized: true, method: "bot_key_and_supabase", expiresAt: new Date(Number(exp)).toISOString() });
+  return res.json({ authorized: true, method: "bot_key_and_supabase", sessionToken: token, expiresAt: new Date(Number(exp)).toISOString() });
 }
 
 export function botLogout(_req, res) {
@@ -88,8 +89,8 @@ export function botLogout(_req, res) {
 export async function requireBotAccess(req, res, next) {
   const user = await getSupabaseUser(req);
   if (!user) return res.status(403).json({ error: "SUPABASE_USER_REQUIRED" });
-  const cookieUserId = valid(parseCookies(req)[COOKIE]);
-  if (!cookieUserId || cookieUserId !== user.id) {
+  const sessionUserId = valid(req.headers[SESSION_HEADER]) || valid(parseCookies(req)[COOKIE]);
+  if (!sessionUserId || sessionUserId !== user.id) {
     return res.status(401).json({ error: "BOT_AUTH_REQUIRED", requiresBotUnlock: true });
   }
   req.botUser = user;
@@ -101,6 +102,6 @@ export async function requireBotAccess(req, res, next) {
 export async function botAuthStatus(req, res) {
   const user = await getSupabaseUser(req);
   if (!user) return res.json({ authorized: false, method: null });
-  const authorized = valid(parseCookies(req)[COOKIE]) === user.id;
+  const authorized = (valid(req.headers[SESSION_HEADER]) || valid(parseCookies(req)[COOKIE])) === user.id;
   return res.json({ authorized, method: authorized ? "bot_key_and_supabase" : null });
 }

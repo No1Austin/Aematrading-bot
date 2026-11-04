@@ -1,0 +1,12 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {reviewStockCandles} from './botStockCandleReview.js';
+const now=Date.parse('2026-11-04T20:00:00Z');
+const row={symbol:'AAPL',horizon:'INTRADAY',researchDirection:'BULL',setup:{approved:true,entry:100,stop:95,target:120}};
+const bars=Array.from({length:21},(_,i)=>({timestamp:new Date(now-(22-i)*300000).toISOString(),open:100,high:102,low:98,close:i===20?104:100}));
+bars[20].high=105;
+test('confirmed break is diagnostic only',async()=>{const r=await reviewStockCandles({row,now},{fetchBars:async()=>({approved:true,bars})});assert.equal(r.reviewStatus,'STRUCTURE_BREAK_OBSERVED');assert.equal(r.tradeApproval,false);assert.equal(r.proposedEntry,null);});
+test('opposing direction does not confirm',async()=>{const r=await reviewStockCandles({row:{...row,researchDirection:'BEAR',setup:{approved:true,entry:100,stop:110,target:90}},now},{fetchBars:async()=>({approved:true,bars})});assert.ok(r.blockers.includes('STRUCTURE_BREAK_NOT_CONFIRMED'));});
+test('missing data fails closed',async()=>{const r=await reviewStockCandles({row,now},{fetchBars:async()=>({approved:false,errors:['NO_DATA']})});assert.equal(r.reviewStatus,'REVIEW_REQUIRED');});
+test('invalid symbol rejected before fetch',async()=>{await assert.rejects(reviewStockCandles({row:{...row,symbol:'BAD/PAIR'},now},{fetchBars:async()=>{throw Error('must not fetch')}}),/INPUT_INVALID/);});
+test('unfinished bar excluded',async()=>{const r=await reviewStockCandles({row,now},{fetchBars:async()=>({approved:true,bars:[...bars,{...bars[20],timestamp:new Date(now-60000).toISOString(),close:999,high:1000}]})});assert.equal(r.referenceClose,104);});

@@ -1,0 +1,14 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {reviewStockEntrySnapshot as review} from './botStockEntryReview.js';
+const now='2026-11-04T15:00:00.000Z';
+const bull={symbol:'AAPL',researchDirection:'BULL',setup:{approved:true,entry:100,stop:95,target:110,asOf:'2026-11-04T14:55:00.000Z'}};
+test('preserves original levels and never proposes new ones',()=>{const before=structuredClone(bull);const r=review(bull,{referencePrice:101,asOf:now});assert.equal(r.reviewStatus,'STRUCTURE_NOT_INVALIDATED');assert.equal(r.proposedEntry,null);assert.deepEqual(bull,before);assert.equal(r.estimatedGrossRiskReward,2);});
+test('flags breached bull stop',()=>assert.ok(review(bull,{referencePrice:94,asOf:now}).blockers.includes('STOP_ALREADY_BREACHED')));
+test('flags breached bear stop',()=>assert.ok(review({...bull,researchDirection:'BEAR',setup:{...bull.setup,stop:105,target:90}},{referencePrice:106,asOf:now}).blockers.includes('STOP_ALREADY_BREACHED')));
+test('rejects invalid directional geometry',()=>assert.ok(review({...bull,setup:{...bull.setup,stop:110}},{referencePrice:100,asOf:now}).blockers.includes('INVALID_LEVEL_GEOMETRY')));
+test('does not silently accept missing price',()=>assert.ok(review(bull,{asOf:now}).blockers.includes('REFERENCE_PRICE_UNAVAILABLE')));
+test('does not silently accept missing timestamp',()=>assert.ok(review({...bull,setup:{...bull.setup,asOf:undefined}},{referencePrice:100,asOf:now}).blockers.includes('BAR_TIMESTAMP_UNAVAILABLE')));
+test('flags stale data',()=>assert.ok(review(bull,{referencePrice:100,asOf:'2026-11-04T17:00:00.000Z'}).blockers.includes('STALE_OR_FUTURE_DATA')));
+test('flags opposing horizon',()=>assert.ok(review({...bull,crossHorizonConflict:true},{referencePrice:100,asOf:now}).blockers.includes('CROSS_HORIZON_CONFLICT_REVIEW')));
+test('never upgrades unapproved setup',()=>assert.ok(review({...bull,setup:{...bull.setup,approved:false}},{referencePrice:100,asOf:now}).blockers.includes('ORIGINAL_SETUP_NOT_APPROVED')));
