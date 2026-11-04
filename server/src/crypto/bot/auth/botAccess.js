@@ -1,64 +1,196 @@
-import crypto from "node:crypto";
 
-const COOKIE = "aema_bot_access";
-const SESSION_HEADER = "x-aema-bot-session";
-const TTL = 8 * 60 * 60 * 1000;
-const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-const secret = () => process.env.AEMA_BOT_AUTH_SECRET || "";
-const key = () => process.env.AEMA_BOT_ACCESS_KEY || "";
-const owner = () => process.env.AEMA_BOT_OWNER_ID || "";
-const configured = () => {
-  const checks = {
-    accessKeyValid: key().length >= 12,
-    secretValid: secret().length >= 32,
-    ownerValid: uuid.test(owner()),
-  };
+/**
+ * AEMA BOT ACCESS
+ *
+ * Single-login authentication using Supabase.
+ *
+ * - No separate bot password.
+ * - No bot signing secret.
+ * - No private bot session cookie.
+ * - Every protected request verifies the Supabase user.
+ * - Existing bot middleware exports are preserved.
+ */
 
-  const isConfigured = Object.values(checks).every(Boolean);
+const SUPABASE_URL = (
+  process.env.SUPABASE_URL || ""
+).replace(/\/+$/, "");
 
-  if (!isConfigured) {
-    console.error("[AEMA_BOT_AUTH_CONFIG]", checks);
+const SUPABASE_KEY =
+  process.env.SUPABASE_ANON_KEY ||
+  process.env.SUPABASE_PUBLISHABLE_KEY ||
+  "";
+
+function getBearerToken(req) {
+  const authorization = String(
+    req.headers.authorization || ""
+  );
+
+  const match = authorization.match(/^Bearer\s+(.+)$/i);
+
+  return match?.[1]?.trim() || "";
+}
+
+function authError(message, status = 401) {
+  const error = new Error(message);
+  error.status = status;
+  return error;
+}
+
+async function verifySupabaseUser(req) {
+  const token = getBearerToken(req);
+
+  if (!token) {
+    throw authError("SUPABASE_AUTH_REQUIRED", 401);
   }
 
-  return isConfigured;
-};
-const sign = value => crypto.createHmac("sha256", secret()).update(value).digest("hex");
-const equal = (a,b) => {const x=Buffer.from(String(a)),y=Buffer.from(String(b));return x.length===y.length && crypto.timingSafeEqual(x,y);};
-function cookies(req) {
-  const result={};
-  for(const part of String(req.headers.cookie||"").split(";")) {
-    const i=part.indexOf("="); if(i<0)continue;
-    try {result[part.slice(0,i).trim()]=decodeURIComponent(part.slice(i+1).trim());}catch{}
+  if (!SUPABASE_URL || !SUPABASE_KEY) {
+    throw authError(
+      "SUPABASE_AUTH_NOT_CONFIGURED",
+      503
+    );
   }
-  return result;
+
+  let response;
+
+  try {
+    response = await fetch(
+      `${SUPABASE_URL}/auth/v1/user`,
+      {
+        method: "GET",
+        headers: {
+          apikey: SUPABASE_KEY,
+          Authorization: `Bearer ${token}`,
+        },
+        signal: AbortSignal.timeout(10000),
+      }
+    );
+  } catch {
+    throw authError(
+      "SUPABASE_AUTH_UNAVAILABLE",
+      503
+    );
+  }
+
+  if (!response.ok) {
+    if (
+      response.status === 401 ||
+      response.status === 403
+    ) {
+      throw authError(
+        "SUPABASE_AUTH_INVALID",
+        401
+      );
+    }
+
+    throw authError(
+      "SUPABASE_AUTH_UNAVAILABLE",
+      503
+    );
+  }
+
+  let user;
+
+  try {
+    user = await response.json();
+  } catch {
+    throw authError(
+      "SUPABASE_AUTH_INVALID",
+      401
+    );
+  }
+
+  if (!user?.id) {
+    throw authError(
+      "SUPABASE_AUTH_INVALID",
+      401
+    );
+  }
+
+  return user;
 }
-function valid(token) {
-  if(!configured() || !token)return false;
-  const parts=String(token).split(".");if(parts.length!==3)return false;
-  const [exp,principal,signature]=parts;
-  if(!/^\d+$/.test(exp)||principal!==owner())return false;
-  const timestamp=Number(exp);
-  if(!Number.isSafeInteger(timestamp)||timestamp<=Date.now()||timestamp>Date.now()+TTL)return false;
-  return equal(signature,sign(`${exp}.${principal}`));
+
+function sendAuthError(res, error) {
+  res.set("Cache-Control", "no-store");
+
+  return res.status(error.status || 503).json({
+    error: error.message || "BOT_AUTH_FAILED",
+  });
 }
-function cookieAttributes() {
-  return ["HttpOnly",process.env.NODE_ENV==="production"?"Secure":"", "SameSite=Lax", "Path=/api/crypto/bot"].filter(Boolean).join("; ");
+
+/* ============================================================
+   PROTECTED BOT MIDDLEWARE
+   ============================================================ */
+
+export async function requireBotAccess(
+  req,
+  res,
+  next
+) {
+  try {
+    const user = await verifySupabaseUser(req);
+
+    req.botUser = user;
+    req.botUserId = user.id;
+    req.botAuthMethod = "supabase";
+
+    return next();
+  } catch (error) {
+    return sendAuthError(res, error);
+  }
 }
-function session(req){const header=req.headers[SESSION_HEADER];return valid(header)||valid(cookies(req)[COOKIE]);}
-export function botLogin(req,res) {
-  res.set("Cache-Control","no-store");
-  if(!configured())return res.status(503).json({error:"BOT_ACCESS_NOT_CONFIGURED"});
-  if(!equal(req.body?.accessKey??"",key()))return res.status(401).json({error:"BOT_ACCESS_DENIED"});
-  const exp=String(Date.now()+TTL);
-  const token=`${exp}.${owner()}.${sign(`${exp}.${owner()}`)}`;
-  res.setHeader("Set-Cookie",`${COOKIE}=${encodeURIComponent(token)}; ${cookieAttributes()}; Max-Age=${TTL/1000}`);
-  return res.json({authorized:true,method:"bot_key",sessionToken:token,expiresAt:new Date(Number(exp)).toISOString()});
+
+/* ============================================================
+   AUTH STATUS
+   ============================================================ */
+
+export async function botAuthStatus(req, res) {
+  res.set("Cache-Control", "no-store");
+
+  try {
+    const user = await verifySupabaseUser(req);
+
+    return res.json({
+      authorized: true,
+      method: "supabase",
+      userId: user.id,
+    });
+  } catch {
+    return res.json({
+      authorized: false,
+      method: null,
+    });
+  }
 }
-export function botLogout(_req,res){res.set("Cache-Control","no-store");res.setHeader("Set-Cookie",`${COOKIE}=; ${cookieAttributes()}; Max-Age=0`);return res.json({authorized:false});}
-export function requireBotAccess(req,res,next){
-  if(!configured())return res.status(503).json({error:"BOT_ACCESS_NOT_CONFIGURED"});
-  if(!session(req))return res.status(401).json({error:"BOT_AUTH_REQUIRED",requiresBotUnlock:true});
-  req.botUser={id:owner()};req.botUserId=owner();req.botAuthMethod="bot_key";
-  return next();
+
+/* ============================================================
+   LOGIN COMPATIBILITY
+   ============================================================ */
+
+export async function botLogin(req, res) {
+  res.set("Cache-Control", "no-store");
+
+  try {
+    const user = await verifySupabaseUser(req);
+
+    return res.json({
+      authorized: true,
+      method: "supabase",
+      userId: user.id,
+    });
+  } catch (error) {
+    return sendAuthError(res, error);
+  }
 }
-export function botAuthStatus(req,res){res.set("Cache-Control","no-store");return res.json({authorized:session(req),method:session(req)?"bot_key":null});}
+
+/* ============================================================
+   LOGOUT COMPATIBILITY
+   ============================================================ */
+
+export function botLogout(req, res) {
+  res.set("Cache-Control", "no-store");
+
+  return res.json({
+    authorized: false,
+    method: "supabase",
+  });
+}

@@ -2,74 +2,38 @@
 /**
  * AEMA PRIVATE BOT API
  *
- * Authentication architecture:
+ * Single-login architecture.
  *
- * 1. Main AEMA authentication is handled separately.
- * 2. The private bot requires its own access password.
- * 3. The backend validates the password and issues a bot session.
- * 4. Bot API requests use the private bot session.
- * 5. No Supabase bearer token is required by this API client.
+ * The user signs in to AEMA through Supabase.
+ * The private bot reuses that authenticated session.
  *
- * Supports:
- * - Private bot authentication
- * - Crypto market research
- * - Stock market research
- * - Setup scenarios
- * - Monitoring
- * - Manual trade history
- * - Dashboard and history
- * - Account controls
- * - V2 research
+ * No separate bot password or bot session token.
+ *
+ * Existing API functions are preserved.
  */
 
-/* ============================================================
-   PRIVATE BOT SESSION
-   ============================================================ */
-
-const BOT_SESSION_KEY = "aema_bot_session_v1";
-
-function getBotSession() {
-  try {
-    return sessionStorage.getItem(BOT_SESSION_KEY) || "";
-  } catch {
-    return "";
-  }
-}
-
-function setBotSession(value) {
-  try {
-    if (value) {
-      sessionStorage.setItem(BOT_SESSION_KEY, value);
-    } else {
-      sessionStorage.removeItem(BOT_SESSION_KEY);
-    }
-  } catch {
-    // The HttpOnly cookie remains available as a fallback.
-  }
-}
+import {
+  researchAuthHeaders,
+} from "../../services/researchAuth.js";
 
 /* ============================================================
    API CONFIGURATION
    ============================================================ */
 
 const BASE = `${
-  (import.meta.env.VITE_API_BASE_URL ?? "").replace(/\/+$/, "")
+  (import.meta.env.VITE_API_BASE_URL ?? "")
+    .replace(/\/+$/, "")
 }/api/crypto/bot`;
 
 /* ============================================================
-   PRIVATE BOT REQUEST HANDLER
+   AUTHENTICATED REQUEST HANDLER
    ============================================================ */
 
 async function req(path, options = {}) {
-  const sessionToken = getBotSession();
-
-  const headers = {
+  const headers = await researchAuthHeaders({
     ...(options.headers || {}),
     "Content-Type": "application/json",
-    ...(sessionToken
-      ? { "X-AEMA-Bot-Session": sessionToken }
-      : {}),
-  };
+  });
 
   const response = await fetch(`${BASE}${path}`, {
     ...options,
@@ -82,18 +46,10 @@ async function req(path, options = {}) {
   try {
     body = await response.json();
   } catch {
-    // Preserve the HTTP status if the response is not JSON.
+    // Preserve HTTP errors.
   }
 
   if (!response.ok) {
-    if (body?.error === "BOT_AUTH_REQUIRED") {
-      setBotSession("");
-
-      window.dispatchEvent(
-        new Event("aema-bot-locked")
-      );
-    }
-
     const error = new Error(
       body?.error || `HTTP_${response.status}`
     );
@@ -114,34 +70,15 @@ async function req(path, options = {}) {
 export const getBotAuthStatus = () =>
   req("/auth/status");
 
-export async function loginBot(accessKey) {
-  const result = await req("/auth/login", {
+export const loginBot = () =>
+  req("/auth/login", {
     method: "POST",
-    body: JSON.stringify({ accessKey }),
   });
 
-  if (!result?.authorized || !result?.sessionToken) {
-    throw new Error("BOT_SESSION_NOT_ISSUED");
-  }
-
-  setBotSession(result.sessionToken);
-
-  return result;
-}
-
-export async function logoutBot() {
-  try {
-    return await req("/auth/logout", {
-      method: "POST",
-    });
-  } finally {
-    setBotSession("");
-
-    window.dispatchEvent(
-      new Event("aema-bot-locked")
-    );
-  }
-}
+export const logoutBot = () =>
+  req("/auth/logout", {
+    method: "POST",
+  });
 
 /* ============================================================
    CRYPTO MARKET RESEARCH
@@ -163,7 +100,9 @@ export const searchBotStockMarket = (options = {}) =>
     body: JSON.stringify(options),
   });
 
-export const discoverBotStockMarket = (options = {}) =>
+export const discoverBotStockMarket = (
+  options = {}
+) =>
   req("/stock/discover", {
     method: "POST",
     body: JSON.stringify(options),
@@ -178,7 +117,11 @@ export const getBotStockSetups = () =>
 
 export const calculateSetupScenario = (
   setupId,
-  { capitalUsd, leverage, feeRatePercent } = {}
+  {
+    capitalUsd,
+    leverage,
+    feeRatePercent,
+  } = {}
 ) =>
   req(
     `/setups/${encodeURIComponent(setupId)}/scenario`,
@@ -198,7 +141,11 @@ export const calculateSetupScenario = (
 
 export const monitorSetup = (
   setupId,
-  { capitalUsd, leverage, feeRatePercent } = {}
+  {
+    capitalUsd,
+    leverage,
+    feeRatePercent,
+  } = {}
 ) =>
   req(
     `/setups/${encodeURIComponent(setupId)}/monitor`,
@@ -305,19 +252,12 @@ export const emergencyStopBot = () =>
    V2 RESEARCH API
    ============================================================ */
 
-/**
- * V2 research uses the same private bot API host
- * and authenticated bot session.
- *
- * No separate Supabase bearer token is required.
- */
-
 export const botV2Post = (
   path,
   payload
 ) =>
   req(
-    `/v2/${path.replace(/^\/+/, "")}`,
+    `/v2/${String(path).replace(/^\/+/, "")}`,
     {
       method: "POST",
       body: JSON.stringify(payload),
