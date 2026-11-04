@@ -7,7 +7,21 @@ const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const secret = () => process.env.AEMA_BOT_AUTH_SECRET || "";
 const key = () => process.env.AEMA_BOT_ACCESS_KEY || "";
 const owner = () => process.env.AEMA_BOT_OWNER_ID || "";
-const configured = () => secret().length >= 32 && key().length >= 12 && uuid.test(owner());
+const configured = () => {
+  const checks = {
+    accessKeyValid: key().length >= 12,
+    secretValid: secret().length >= 32,
+    ownerValid: uuid.test(owner()),
+  };
+
+  const isConfigured = Object.values(checks).every(Boolean);
+
+  if (!isConfigured) {
+    console.error("[AEMA_BOT_AUTH_CONFIG]", checks);
+  }
+
+  return isConfigured;
+};
 const sign = value => crypto.createHmac("sha256", secret()).update(value).digest("hex");
 const equal = (a,b) => {const x=Buffer.from(String(a)),y=Buffer.from(String(b));return x.length===y.length && crypto.timingSafeEqual(x,y);};
 function cookies(req) {
