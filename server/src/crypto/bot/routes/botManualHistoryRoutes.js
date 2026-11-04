@@ -10,7 +10,7 @@ const directionOf = (v) => {
 const finiteOptional = (v) => v === '' || v === null || v === undefined ? null : Number.isFinite(Number(v)) ? Number(v) : NaN;
 
 function userClient(req) {
-  if (req.botAuthMethod !== 'bot_key' || !req.botUser?.id) return null;
+  if (req.botAuthMethod !== 'supabase' || !req.botUser?.id) return null;
   const url = process.env.SUPABASE_URL;
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!url || !serviceKey) throw new Error('BOT_HISTORY_STORAGE_NOT_CONFIGURED');
@@ -22,7 +22,7 @@ function userClient(req) {
 export default function createBotManualHistoryRoutes({ getMonitoredSetup }) {
   const router = express.Router();
   router.use((req,res,next) => {
-    if (!req.botUser?.id || req.botAuthMethod !== 'bot_key') return res.status(403).json({error:'BOT_AUTH_REQUIRED'});
+    if (!req.botUser?.id || req.botAuthMethod !== 'supabase') return res.status(403).json({error:'BOT_AUTH_REQUIRED'});
     next();
   });
   router.get('/', async (req,res) => {

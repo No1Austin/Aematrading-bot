@@ -33,7 +33,7 @@ const completeClosedTrade=(position)=>{
   };
 };
 
-const requireBotIdentity=(req,res,next)=> req.botAuthMethod === "bot_key" && req.botUser?.id ? next() : res.status(401).json({error:"BOT_AUTH_REQUIRED"});
+const requireBotIdentity=(req,res,next)=> req.botAuthMethod === "supabase" && req.botUser?.id ? next() : res.status(401).json({error:"BOT_AUTH_REQUIRED"});
 const belongs=(m,id)=>Boolean(m?.userId && m.userId===id);
 export default function createBotPrivateRoutes(){
   const r=express.Router();

@@ -33,9 +33,9 @@ export default function App() {
         <Route path="/register" element={<AuthPage mode="register" />} />
         <Route path="/forgot-password" element={<AuthPage mode="reset" />} />
         <Route path="/update-password" element={<UpdatePassword />} />
-        <Route path="/bot/*" element={<BotApp />} />
 
         <Route element={<RequireAuth />}>
+          <Route path="/bot/*" element={<BotApp />} />
           <Route path="/billing" element={<BillingPage />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/markets" element={<Markets />} />
